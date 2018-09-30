@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerState_GroundMovement : PlayerState
 {
-    public float m_horizontalSpeed = 1.0f;
+    private float m_horizontalSpeed = 1.0f;
 
     //-------------------
     //Initilse the state, runs only once at start
@@ -12,6 +12,7 @@ public class PlayerState_GroundMovement : PlayerState
     public override void StateInit()
     {
         base.StateInit();
+        m_horizontalSpeed = m_parentCharacter.m_groundedHorizontalSpeed;
     }
 
     //-------------------

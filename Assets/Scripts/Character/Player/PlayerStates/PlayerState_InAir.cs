@@ -5,8 +5,8 @@ using UnityEngine;
 public class PlayerState_InAir : PlayerState
 {
     private bool m_doubleJump = true;
-    public float m_inAirHorizontalSpeed = 0.5f;
-    public float m_doubleJumpSpeed = 6.0f;
+    private float m_inAirHorizontalSpeed = 0.5f;
+    private float m_doubleJumpSpeed = 6.0f;
 
     //-------------------
     //Initilse the state, runs only once at start
@@ -14,6 +14,9 @@ public class PlayerState_InAir : PlayerState
     public override void StateInit()
     {
         base.StateInit();
+
+        m_inAirHorizontalSpeed = m_parentCharacter.m_inAirHorizontalSpeed;
+        m_inAirHorizontalSpeed = m_parentCharacter.m_doubleJumpSpeed;
     }
 
     //-------------------

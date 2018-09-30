@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class PlayerState_Attack : PlayerState
 {
+    private float m_attackDamage = 1.0f;
     //-------------------
     //Initilse the state, runs only once at start
     //-------------------
     public override void StateInit()
     {
         base.StateInit();
+        m_attackDamage = m_parentCharacter.m_attackDamage;
     }
 
     //-------------------

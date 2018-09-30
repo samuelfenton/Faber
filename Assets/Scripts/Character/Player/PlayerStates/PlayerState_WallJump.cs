@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class PlayerState_WallJump : PlayerState
 {
-    public float m_inputDelayTime = 0.1f;
+    private float m_wallJumpVerticalSpeed = 5.0f;
+    private float m_wallJumpHorizontalSpeed = 2.0f;
+
+    private float m_inputDelay = 0.1f;
     private float m_inputDelayTimer = 0.0f;
-    public float m_jumpingOffWallVerticalSpeed = 5.0f;
-    public float m_jumpingOffWallHorizontalSpeed = 2.0f;
 
     //-------------------
     //Initilse the state, runs only once at start
@@ -15,6 +16,11 @@ public class PlayerState_WallJump : PlayerState
     public override void StateInit()
     {
         base.StateInit();
+
+        m_wallJumpVerticalSpeed = m_parentCharacter.m_wallJumpVerticalSpeed;
+        m_wallJumpHorizontalSpeed = m_parentCharacter.m_wallJumpHorizontalSpeed;
+
+        m_inputDelay = m_parentCharacter.m_wallJumpInputDelay;
     }
 
     //-------------------
@@ -27,19 +33,19 @@ public class PlayerState_WallJump : PlayerState
 
         if (m_parentCharacter.m_characterCustomPhysics.m_forwardCollision)
         {
-            newVelocity.y = m_jumpingOffWallVerticalSpeed;
-            newVelocity.x = -m_jumpingOffWallHorizontalSpeed;
+            newVelocity.y = m_wallJumpVerticalSpeed;
+            newVelocity.x = -m_wallJumpHorizontalSpeed;
         }
         else if (m_parentCharacter.m_characterCustomPhysics.m_backCollision)
         {
-            newVelocity.y = m_jumpingOffWallVerticalSpeed;
-            newVelocity.x = m_jumpingOffWallHorizontalSpeed;
+            newVelocity.y = m_wallJumpVerticalSpeed;
+            newVelocity.x = m_wallJumpHorizontalSpeed;
         }
 
         m_parentCharacter.m_localVelocity = newVelocity;
 
         //Setup timer
-        m_inputDelayTimer = m_inputDelayTime;
+        m_inputDelayTimer = m_inputDelay;
     }
 
     //-------------------

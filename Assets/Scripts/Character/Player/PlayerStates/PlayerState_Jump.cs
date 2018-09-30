@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerState_Jump : PlayerState
 {
-    public float m_jumpSpeed = 10.0f;
+    private float m_jumpSpeed = 10.0f;
 
     //-------------------
     //Initilse the state, runs only once at start
@@ -12,6 +12,7 @@ public class PlayerState_Jump : PlayerState
     public override void StateInit()
     {
         base.StateInit();
+        m_jumpSpeed = m_parentCharacter.m_jumpSpeed;
     }
 
     //-------------------
@@ -49,6 +50,7 @@ public class PlayerState_Jump : PlayerState
     //-------------------
     public override bool IsValid()
     {
-        return m_inputController.GetInput(InputController.INPUT.JUMP, InputController.INPUT_STATE.DOWNED) && m_parentCharacter.IsGrounded();
+        //Able to jump while jump key is pressed, grounded, and no collision above
+        return m_inputController.GetInput(InputController.INPUT.JUMP, InputController.INPUT_STATE.DOWNED) && m_parentCharacter.IsGrounded() && !m_parentCharacter.m_characterCustomPhysics.m_upCollision;
     }
 }

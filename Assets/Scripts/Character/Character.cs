@@ -17,6 +17,24 @@ public class Character : MonoBehaviour
 
     public Vector3 m_localVelocity = Vector3.zero;
 
+    [Header("Grounded Movement")]
+    public float m_groundedHorizontalSpeed = 1.0f;
+
+    [Header("Jumping Stats")]
+    public float m_jumpSpeed = 10.0f;
+
+    [Header("In Air Stats")]
+    public float m_inAirHorizontalSpeed = 0.5f;
+    public float m_doubleJumpSpeed = 6.0f;
+
+    [Header("Wall Jump Stats")]
+    public float m_wallJumpVerticalSpeed = 5.0f;
+    public float m_wallJumpHorizontalSpeed = 2.0f;
+    public float m_wallJumpInputDelay = 0.1f;
+
+    [Header("Attack Stats")]
+    public float m_attackDamage = 1.0f;
+
     [Header("Character Stats")]
     public float m_maxHealth = 10.0f;
     public float m_currentHealth = 10.0f;

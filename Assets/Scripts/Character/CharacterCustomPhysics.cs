@@ -28,8 +28,8 @@ public class CharacterCustomPhysics : MonoBehaviour
 
     public void UpdateCollisions()
     {
-        m_upCollision = CollidingVertical(m_colliderExtents.y, transform.up, transform.forward * m_colliderExtents.x);
-        m_downCollision = CollidingVertical(m_colliderExtents.y, -transform.up, transform.forward * m_colliderExtents.x);
+        m_upCollision = CollidingVertical(m_colliderExtents.y, transform.up, transform.forward * m_colliderExtents.x * 0.9f);
+        m_downCollision = CollidingVertical(m_colliderExtents.y, -transform.up, transform.forward * m_colliderExtents.x * 0.9f);
 
         m_forwardCollision = CollidingHorizontal(m_colliderExtents.x, transform.forward, transform.up * m_colliderExtents.y);
         m_backCollision = CollidingHorizontal(m_colliderExtents.x, -transform.forward, transform.up * m_colliderExtents.y);
