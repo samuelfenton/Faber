@@ -18,4 +18,10 @@ public class GameController : MonoBehaviour
 
     public LevelController m_levelController = null;
     public InputController m_inputController = null;
+
+    private void Update()
+    {
+        if (m_inputController.GetInput(InputController.INPUT.CANCEL))
+            Application.Quit();
+    }
 }
