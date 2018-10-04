@@ -34,7 +34,7 @@ public class InputController : MonoBehaviour
         m_keyInformation[(int)INPUT.CANCEL] = new KeyInformation("Cancel");
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         for (int i = 0; i < (int)INPUT.INPUT_COUNT; i++)
         {

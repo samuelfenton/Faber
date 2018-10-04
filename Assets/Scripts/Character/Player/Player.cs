@@ -9,9 +9,9 @@ public class Player : Character
         base.Start();
     }
 
-    protected override void FixedUpdate()
+    protected override void Update()
     {
-        base.FixedUpdate();
+        base.Update();
 
         m_characterStateMachine.UpdateStateMachine();
     }

@@ -55,7 +55,7 @@ public class PlayerState_WallJump : PlayerState
     //-------------------
     public override bool UpdateState()
     {
-        m_inputDelayTimer -= Time.fixedDeltaTime;
+        m_inputDelayTimer -= Time.deltaTime;
         return m_inputDelayTimer < 0.0f;
     }
 

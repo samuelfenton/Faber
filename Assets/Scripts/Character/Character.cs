@@ -41,7 +41,7 @@ public class Character : MonoBehaviour
 
     protected virtual void Start()
     {
-        m_animator = GetComponent<Animator>();
+        m_animator = GetComponentInChildren<Animator>();
         m_characterCustomPhysics = GetComponent<CharacterCustomPhysics>();
         m_characterStateMachine = GetComponent<CharacterStateMachine>();
 
@@ -50,10 +50,8 @@ public class Character : MonoBehaviour
         m_currentHealth = m_maxHealth;
     }
 
-    protected virtual void FixedUpdate()
+    protected virtual void Update()
     {
-        //Set up velocity in each characters fixed update
-
         //Apply Velocity
         m_localVelocity.y += PhysicsController.m_gravity * Time.deltaTime;
 
@@ -63,13 +61,24 @@ public class Character : MonoBehaviour
         Vector3 globalVelocity = new Vector3();
         globalVelocity = transform.forward * m_localVelocity.x + transform.up * m_localVelocity.y + transform.right * m_localVelocity.z;
 
-        transform.Translate(globalVelocity * Time.fixedDeltaTime, Space.World);
+        transform.Translate(globalVelocity * Time.deltaTime, Space.World);
 
         //Check for ground collisions when falling
-        if (globalVelocity.y < 0.1f)
+        if (globalVelocity.y < 0)
         {
             m_characterCustomPhysics.GroundCollisionCheck();
         }
+
+        //Setup rotation on game model, completly aesthetic based
+        if(m_localVelocity.x > 0.1f)
+        {
+            m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+        }
+        else if (m_localVelocity.x < -0.1f)
+        {
+            m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+        }
+
     }
 
     public bool IsAlive()

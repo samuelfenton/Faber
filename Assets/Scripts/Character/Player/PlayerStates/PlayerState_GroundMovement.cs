@@ -36,6 +36,8 @@ public class PlayerState_GroundMovement : PlayerState
 
         m_parentCharacter.m_localVelocity = newVelocity;
 
+        m_parentCharacter.m_animator.SetBool("Run", Input.GetAxisRaw("Horizontal") != 0);
+
         return true;
     }
 
