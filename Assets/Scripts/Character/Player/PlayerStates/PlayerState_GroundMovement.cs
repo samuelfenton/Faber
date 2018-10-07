@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerState_GroundMovement : PlayerState
 {
+    public float m_minHorizontalSpeed = 0.1f;
     private float m_horizontalSpeed = 1.0f;
 
     //-------------------
@@ -20,7 +21,7 @@ public class PlayerState_GroundMovement : PlayerState
     //-------------------
     public override void StateStart()
     {
-
+        m_parentCharacter.m_characterAnimationController.PlayAnimation(CharacterAnimationController.ANIMATION.RUN);
     }
 
     //-------------------
@@ -35,9 +36,6 @@ public class PlayerState_GroundMovement : PlayerState
         newVelocity.x = m_horizontalSpeed * Input.GetAxisRaw("Horizontal");
 
         m_parentCharacter.m_localVelocity = newVelocity;
-
-        m_parentCharacter.m_animator.SetBool("Run", Input.GetAxisRaw("Horizontal") != 0);
-
         return true;
     }
 
@@ -46,7 +44,7 @@ public class PlayerState_GroundMovement : PlayerState
     //-------------------
     public override void StateEnd()
     {
-
+        m_parentCharacter.m_localVelocity.x = 0.0f;
     }
 
     //-------------------
@@ -56,6 +54,6 @@ public class PlayerState_GroundMovement : PlayerState
     //-------------------
     public override bool IsValid()
     {
-        return m_parentCharacter.IsGrounded();
+        return m_parentCharacter.IsGrounded() && Input.GetAxisRaw("Horizontal") != 0.0f;
     }
 }

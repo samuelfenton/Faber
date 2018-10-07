@@ -23,6 +23,8 @@ public class PlayerState_Jump : PlayerState
         Vector3 newVelocity = m_parentCharacter.m_localVelocity;
         newVelocity.y = m_jumpSpeed;
         m_parentCharacter.m_localVelocity = newVelocity;
+
+        m_parentCharacter.m_characterAnimationController.PlayAnimation(CharacterAnimationController.ANIMATION.JUMP);
     }
 
     //-------------------

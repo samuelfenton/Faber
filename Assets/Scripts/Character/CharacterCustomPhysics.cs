@@ -31,8 +31,8 @@ public class CharacterCustomPhysics : MonoBehaviour
         m_upCollision = CollidingVertical(m_colliderExtents.y, transform.up, transform.forward * m_colliderExtents.x * 0.9f);
         m_downCollision = CollidingVertical(m_colliderExtents.y, -transform.up, transform.forward * m_colliderExtents.x * 0.9f);
 
-        m_forwardCollision = CollidingHorizontal(m_colliderExtents.x, transform.forward, transform.up * m_colliderExtents.y);
-        m_backCollision = CollidingHorizontal(m_colliderExtents.x, -transform.forward, transform.up * m_colliderExtents.y);
+        m_forwardCollision = CollidingHorizontal(m_colliderExtents.x * 1.1f, transform.forward, transform.up * m_colliderExtents.y);
+        m_backCollision = CollidingHorizontal(m_colliderExtents.x * 1.1f, -transform.forward, transform.up * m_colliderExtents.y);
 
         UpdateCollisionVelocity();
     }
@@ -59,15 +59,15 @@ public class CharacterCustomPhysics : MonoBehaviour
     public bool CollidingVertical(float p_colliderExtent, Vector3 p_direction, Vector3 p_startingOffset)
     {
         //Forward raycast
-        if (Physics.Raycast(transform.position + p_startingOffset, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_enviromentInclined | LayerController.m_enviromentWalkable))
+        if (Physics.Raycast(transform.position + p_startingOffset, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_walkable))
             return true; //Early breakout
 
         //Back raycast
-        if (Physics.Raycast(transform.position - p_startingOffset, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_enviromentInclined | LayerController.m_enviromentWalkable))
+        if (Physics.Raycast(transform.position - p_startingOffset, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_walkable))
             return true; //Early breakout
 
         //Center raycast
-        if (Physics.Raycast(transform.position, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_enviromentInclined | LayerController.m_enviromentWalkable))
+        if (Physics.Raycast(transform.position, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_walkable))
             return true; //Early breakout
 
         return false;
@@ -76,15 +76,15 @@ public class CharacterCustomPhysics : MonoBehaviour
     public bool CollidingHorizontal(float p_colliderExtent, Vector3 p_direction, Vector3 p_startingOffset)
     {
         //Center raycast
-        if (Physics.Raycast(transform.position, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_enviromentInclined | LayerController.m_enviromentWalkable))
+        if (Physics.Raycast(transform.position, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_walkable))
             return true; //Early breakout
 
         //Top raycast
-        if (Physics.Raycast(transform.position + p_startingOffset, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_enviromentInclined | LayerController.m_enviromentWalkable))
+        if (Physics.Raycast(transform.position + p_startingOffset, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_walkable))
             return true; //Early breakout
 
         //Bottom raycast, starting offset has been modified, to all moving up inclines
-        if (Physics.Raycast(transform.position + p_startingOffset, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_enviromentInclined | LayerController.m_enviromentWalkable))
+        if (Physics.Raycast(transform.position + p_startingOffset, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_walkable))
             return true; //Early breakout
 
         return false;
@@ -94,14 +94,16 @@ public class CharacterCustomPhysics : MonoBehaviour
     {
         RaycastHit hit;
 
+        float groundCheckDistance = m_colliderExtents.y * 1.2f;
+
         //Checking y for center
-        if (Physics.Raycast(transform.position, -m_parentCharacter.m_characterModel.transform.up, out hit, m_colliderExtents.y, LayerController.m_enviromentInclined | LayerController.m_enviromentWalkable))
+        if (Physics.Raycast(transform.position, -m_parentCharacter.m_characterModel.transform.up, out hit, groundCheckDistance, LayerController.m_walkable))
             GroundYSet(hit);
         //Checking y for front
-        if (Physics.Raycast(transform.position + transform.forward * m_colliderExtents.x, -m_parentCharacter.m_characterModel.transform.up, out hit, m_colliderExtents.y, LayerController.m_enviromentInclined | LayerController.m_enviromentWalkable))
+        if (Physics.Raycast(transform.position + transform.forward * m_colliderExtents.x, -m_parentCharacter.m_characterModel.transform.up, out hit, groundCheckDistance, LayerController.m_walkable))
             GroundYSet(hit);
         //Checking y for back
-        if (Physics.Raycast(transform.position - transform.forward * m_colliderExtents.x, -m_parentCharacter.m_characterModel.transform.up, out hit, m_colliderExtents.y, LayerController.m_enviromentInclined | LayerController.m_enviromentWalkable))
+        if (Physics.Raycast(transform.position - transform.forward * m_colliderExtents.x, -m_parentCharacter.m_characterModel.transform.up, out hit, groundCheckDistance, LayerController.m_walkable))
             GroundYSet(hit);
     }
 

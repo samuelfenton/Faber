@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_Attack : PlayerState
+public class PlayerState_LightAttack : PlayerState
 {
-    private float m_attackDamage = 1.0f;
+    private float m_attackDistance = 1.0f;
     //-------------------
     //Initilse the state, runs only once at start
     //-------------------
     public override void StateInit()
     {
         base.StateInit();
-        m_attackDamage = m_parentCharacter.m_attackDamage;
     }
 
     //-------------------
@@ -19,7 +18,8 @@ public class PlayerState_Attack : PlayerState
     //-------------------
     public override void StateStart()
     {
-
+        m_parentCharacter.m_characterAnimationController.PlayAnimation(CharacterAnimationController.ANIMATION.LIGHT_ATTACK);
+        m_parentCharacter.m_currentAttackType = Character.ATTACK_TYPE.LIGHT;
     }
 
     //-------------------
@@ -29,7 +29,7 @@ public class PlayerState_Attack : PlayerState
     //-------------------
     public override bool UpdateState()
     {
-        return true;
+        return !m_parentCharacter.m_characterAnimationController.m_currentlyAnimating;
     }
 
     //-------------------
@@ -47,6 +47,6 @@ public class PlayerState_Attack : PlayerState
     //-------------------
     public override bool IsValid()
     {
-        return false;
+        return m_inputController.GetInput(InputController.INPUT.ATTACK, InputController.INPUT_STATE.DOWNED);
     }
 }

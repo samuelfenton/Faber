@@ -25,6 +25,7 @@ public class PlayerState_InAir : PlayerState
     public override void StateStart()
     {
         m_doubleJump = true;
+        m_parentCharacter.m_characterAnimationController.PlayAnimation(CharacterAnimationController.ANIMATION.IN_AIR);
     }
 
     //-------------------
@@ -55,7 +56,7 @@ public class PlayerState_InAir : PlayerState
     //-------------------
     public override void StateEnd()
     {
-
+        m_parentCharacter.m_localVelocity.x = 0.0f;
     }
 
     //-------------------

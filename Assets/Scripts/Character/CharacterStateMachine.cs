@@ -34,8 +34,8 @@ public class CharacterStateMachine : MonoBehaviour
                 }
             }
 
-            //No valid states default to the defualt state
-            if(m_currentState.m_defaultState != null)
+            //No valid states and current state is not valid, default to the defualt state
+            if(m_currentState.m_defaultState != null && !m_currentState.IsValid())
             {
                 SwapState(m_currentState.m_defaultState);
             }

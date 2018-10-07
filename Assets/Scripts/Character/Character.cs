@@ -6,16 +6,21 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterStateMachine))]
 public class Character : MonoBehaviour
 {
-    public Animator m_animator = null;
+    [HideInInspector]
     public CharacterCustomPhysics m_characterCustomPhysics = null;
-    protected CharacterStateMachine m_characterStateMachine  = null;
+    [HideInInspector]
+    public CharacterStateMachine m_characterStateMachine  = null;
+    [HideInInspector]
+    public CharacterAnimationController m_characterAnimationController = null;
 
+    [Header("Basic Character Varibles")]
     [Tooltip("Set in inspector")]
     public GameController m_gameController = null;
 
     public GameObject m_characterModel = null;
 
-    public Vector3 m_localVelocity = Vector3.zero;
+    public enum TEAM {PLAYER, NPC, GAIA}
+    public TEAM m_characterTeam = TEAM.GAIA;
 
     [Header("Grounded Movement")]
     public float m_groundedHorizontalSpeed = 1.0f;
@@ -32,18 +37,30 @@ public class Character : MonoBehaviour
     public float m_wallJumpHorizontalSpeed = 2.0f;
     public float m_wallJumpInputDelay = 0.1f;
 
+    public enum ATTACK_TYPE {NONE, LIGHT, HEAVY}
+
     [Header("Attack Stats")]
-    public float m_attackDamage = 1.0f;
+    public ATTACK_TYPE m_currentAttackType = ATTACK_TYPE.NONE;
+    protected Weapon m_weapon = null;
 
     [Header("Character Stats")]
     public float m_maxHealth = 10.0f;
-    public float m_currentHealth = 10.0f;
+    private float m_currentHealth = 10.0f;
+
+    public Vector3 m_localVelocity = Vector3.zero;
+    public bool m_currentlyAnimating = false;
 
     protected virtual void Start()
     {
-        m_animator = GetComponentInChildren<Animator>();
+#if UNITY_EDITOR
+        if (m_gameController == null)
+            Debug.Log("Character " + this + " hasnt had game controller selected in inspector");
+#endif
         m_characterCustomPhysics = GetComponent<CharacterCustomPhysics>();
         m_characterStateMachine = GetComponent<CharacterStateMachine>();
+        m_characterAnimationController = GetComponentInChildren<CharacterAnimationController>();
+
+        m_weapon = GetComponentInChildren<Weapon>();
 
         m_characterStateMachine.InitStateMachine();
 
@@ -58,19 +75,19 @@ public class Character : MonoBehaviour
         //Stop colliding with objects
         m_characterCustomPhysics.UpdateCollisions();
 
+        //Check for ground collisions when falling
+        if (m_localVelocity.y <= 0)
+        {
+            m_characterCustomPhysics.GroundCollisionCheck();
+        }
+
         Vector3 globalVelocity = new Vector3();
         globalVelocity = transform.forward * m_localVelocity.x + transform.up * m_localVelocity.y + transform.right * m_localVelocity.z;
 
         transform.Translate(globalVelocity * Time.deltaTime, Space.World);
 
-        //Check for ground collisions when falling
-        if (globalVelocity.y < 0)
-        {
-            m_characterCustomPhysics.GroundCollisionCheck();
-        }
-
         //Setup rotation on game model, completly aesthetic based
-        if(m_localVelocity.x > 0.1f)
+        if (m_localVelocity.x > 0.1f)
         {
             m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
         }
@@ -91,8 +108,32 @@ public class Character : MonoBehaviour
 
     }
 
+    public void ModifyHealth(float p_value)
+    {
+        m_currentHealth += p_value;
+    }
+
     public bool IsGrounded()
     {
         return m_characterCustomPhysics.m_downCollision;
+    }
+
+    public void DealDamage()
+    {
+        Debug.Log("STAB");
+
+        foreach (Character character in m_weapon.m_hitCharacters)
+        {
+            if(character.m_characterTeam != m_characterTeam)
+            {
+                //determine damage
+                float totalDamage = m_weapon.m_weaponLightDamage;
+
+                if (m_currentAttackType == ATTACK_TYPE.HEAVY)
+                    totalDamage = m_weapon.m_weaponHeavyDamage;
+
+                character.ModifyHealth(totalDamage);
+            }
+        }
     }
 }
