@@ -5,7 +5,10 @@ using UnityEngine;
 public class PlayerState_InAir : PlayerState
 {
     private bool m_doubleJump = true;
-    private float m_inAirHorizontalSpeed = 0.5f;
+
+    private float m_horizontalSpeedMax = 1.0f;
+    private float m_horizontalAcceleration = 0.5f;
+
     private float m_doubleJumpSpeed = 6.0f;
 
     //-------------------
@@ -15,8 +18,9 @@ public class PlayerState_InAir : PlayerState
     {
         base.StateInit();
 
-        m_inAirHorizontalSpeed = m_parentCharacter.m_inAirHorizontalSpeed;
-        m_inAirHorizontalSpeed = m_parentCharacter.m_doubleJumpSpeed;
+        m_horizontalSpeedMax = m_parentCharacter.m_groundedHorizontalSpeedMax; //Always use grounded as max speed
+        m_horizontalAcceleration = m_parentCharacter.m_inAirHorizontalAcceleration;
+        m_doubleJumpSpeed = m_parentCharacter.m_doubleJumpSpeed;
     }
 
     //-------------------
@@ -25,7 +29,7 @@ public class PlayerState_InAir : PlayerState
     public override void StateStart()
     {
         m_doubleJump = true;
-        m_parentCharacter.m_characterAnimationController.PlayAnimation(CharacterAnimationController.ANIMATION.IN_AIR);
+        m_parentCharacter.m_characterAnimationController.SetAnimation(CharacterAnimationController.ANIMATIONS.IN_AIR);
     }
 
     //-------------------
@@ -37,7 +41,9 @@ public class PlayerState_InAir : PlayerState
     {
         //Movement
         Vector3 newVelocity = m_parentCharacter.m_localVelocity;
-        newVelocity.x = m_inAirHorizontalSpeed * Input.GetAxisRaw("Horizontal");
+
+        newVelocity.x += m_horizontalAcceleration * Input.GetAxisRaw("Horizontal") * Time.deltaTime;
+        newVelocity.x = Mathf.Clamp(newVelocity.x, -m_horizontalSpeedMax, m_horizontalSpeedMax);
 
         //Double Jump
         if (m_doubleJump && m_inputController.GetInput(InputController.INPUT.JUMP, InputController.INPUT_STATE.DOWNED))
@@ -48,6 +54,8 @@ public class PlayerState_InAir : PlayerState
 
         m_parentCharacter.m_localVelocity = newVelocity;
 
+        m_parentCharacter.m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.MOVEMENT_SPEED, Mathf.Abs(newVelocity.x / m_horizontalSpeedMax));
+
         return true;
     }
 
@@ -56,7 +64,6 @@ public class PlayerState_InAir : PlayerState
     //-------------------
     public override void StateEnd()
     {
-        m_parentCharacter.m_localVelocity.x = 0.0f;
     }
 
     //-------------------
@@ -66,6 +73,6 @@ public class PlayerState_InAir : PlayerState
     //-------------------
     public override bool IsValid()
     {
-        return !m_parentCharacter.IsGrounded();
+        return !m_parentCharacter.m_characterCustomPhysics.m_downCollision;
     }
 }

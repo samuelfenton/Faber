@@ -17,7 +17,8 @@ public class PlayerState_Idle : PlayerState
     //-------------------
     public override void StateStart()
     {
-        m_parentCharacter.m_characterAnimationController.PlayAnimation(CharacterAnimationController.ANIMATION.IDLE);
+        m_parentCharacter.m_characterAnimationController.SetAnimation(CharacterAnimationController.ANIMATIONS.LOCOMOTION);
+        m_parentCharacter.m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.MOVEMENT_SPEED, 0.0f);
     }
 
     //-------------------
@@ -45,6 +46,6 @@ public class PlayerState_Idle : PlayerState
     //-------------------
     public override bool IsValid()
     {
-        return false;
+        return m_parentCharacter.m_localVelocity.x == 0.0f && m_parentCharacter.m_characterCustomPhysics.m_downCollision;
     }
 }

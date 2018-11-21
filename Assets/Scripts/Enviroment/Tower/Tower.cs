@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tower : MonoBehaviour
+public class Tower : NavigationControl
 {
-    public List<Character> m_currentCharacters = new List<Character>();
     public float m_towerRadius = 4.0f;
 
-    private	void Update ()
+    private void Update ()
     {
         foreach (Character character in m_currentCharacters)
         {
@@ -33,17 +32,17 @@ public class Tower : MonoBehaviour
         }
 	}
 
-    public void AddCharacter(Character p_character)
+    public override void AddCharacter(Character p_character)
     {
         if (!m_currentCharacters.Contains(p_character))
             m_currentCharacters.Add(p_character);
     }
 
-    public void RemoveCharacter(Character p_character, TowerTrigger p_towerTrigger)
+    public override void RemoveCharacter(Character p_character, NavigationTrigger p_navigationTrigger)
     {
-        m_currentCharacters.Remove(p_character);
+        base.RemoveCharacter(p_character, p_navigationTrigger);
 
         //Reset rotation of character
-        p_character.transform.rotation = Quaternion.Euler(p_towerTrigger.m_globalExitRotationVector);
+        p_character.transform.rotation = Quaternion.Euler(p_navigationTrigger.m_globalExitRotation);
     }
 }

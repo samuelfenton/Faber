@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class PlayerState_GroundMovement : PlayerState
 {
-    public float m_minHorizontalSpeed = 0.1f;
-    private float m_horizontalSpeed = 1.0f;
+    private float m_horizontalSpeedMax = 1.0f;
+    private float m_horizontalAcceleration = 1.0f;
+    private float m_horizontalDeacceleration = 1.0f;
 
     //-------------------
     //Initilse the state, runs only once at start
@@ -13,7 +14,9 @@ public class PlayerState_GroundMovement : PlayerState
     public override void StateInit()
     {
         base.StateInit();
-        m_horizontalSpeed = m_parentCharacter.m_groundedHorizontalSpeed;
+        m_horizontalSpeedMax = m_parentCharacter.m_groundedHorizontalSpeedMax;
+        m_horizontalAcceleration = m_parentCharacter.m_groundedHorizontalAcceleration;
+        m_horizontalDeacceleration = m_parentCharacter.m_groundedHorizontalDeacceleration;
     }
 
     //-------------------
@@ -21,7 +24,7 @@ public class PlayerState_GroundMovement : PlayerState
     //-------------------
     public override void StateStart()
     {
-        m_parentCharacter.m_characterAnimationController.PlayAnimation(CharacterAnimationController.ANIMATION.RUN);
+        m_parentCharacter.m_characterAnimationController.SetAnimation(CharacterAnimationController.ANIMATIONS.LOCOMOTION);
     }
 
     //-------------------
@@ -33,9 +36,26 @@ public class PlayerState_GroundMovement : PlayerState
     {
         //Movement
         Vector3 newVelocity = m_parentCharacter.m_localVelocity;
-        newVelocity.x = m_horizontalSpeed * Input.GetAxisRaw("Horizontal");
+
+
+        if(Input.GetAxisRaw("Horizontal") == 0.0f) //No input, slowdown
+        {
+            float deltaSpeed = m_horizontalDeacceleration * Time.deltaTime;
+            if (deltaSpeed > Mathf.Abs(newVelocity.x))//Close enough to stopping this frame
+                newVelocity.x = 0.0f;
+            else
+                newVelocity.x += newVelocity.x < 0 ? deltaSpeed : -deltaSpeed;//Still have high velocity, just slow down
+        }
+        else//Input so normal movemnt
+        {
+            newVelocity.x += m_horizontalAcceleration * Input.GetAxisRaw("Horizontal") * Time.deltaTime;
+            newVelocity.x = Mathf.Clamp(newVelocity.x, -m_horizontalSpeedMax, m_horizontalSpeedMax);
+        }
 
         m_parentCharacter.m_localVelocity = newVelocity;
+
+        m_parentCharacter.m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.MOVEMENT_SPEED, Mathf.Abs(newVelocity.x/ m_horizontalSpeedMax));
+
         return true;
     }
 
@@ -44,7 +64,6 @@ public class PlayerState_GroundMovement : PlayerState
     //-------------------
     public override void StateEnd()
     {
-        m_parentCharacter.m_localVelocity.x = 0.0f;
     }
 
     //-------------------
@@ -54,6 +73,6 @@ public class PlayerState_GroundMovement : PlayerState
     //-------------------
     public override bool IsValid()
     {
-        return m_parentCharacter.IsGrounded() && Input.GetAxisRaw("Horizontal") != 0.0f;
+        return m_parentCharacter.m_characterCustomPhysics.m_downCollision && (m_parentCharacter.m_localVelocity.x != 0.0f || Input.GetAxisRaw("Horizontal") != 0.0f) ;
     }
 }

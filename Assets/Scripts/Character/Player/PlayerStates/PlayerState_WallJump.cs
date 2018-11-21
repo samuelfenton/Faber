@@ -77,6 +77,6 @@ public class PlayerState_WallJump : PlayerState
         return 
         m_inputController.GetInput(InputController.INPUT.JUMP, InputController.INPUT_STATE.DOWNED) &&
         (m_parentCharacter.m_characterCustomPhysics.m_forwardCollision || m_parentCharacter.m_characterCustomPhysics.m_backCollision) &&
-        !m_parentCharacter.IsGrounded();
+        !m_parentCharacter.m_characterCustomPhysics.m_downCollision;
     }
 }

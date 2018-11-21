@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_LightAttack : PlayerState
+public class PlayerState_Land : PlayerState
 {
-    private float m_attackDistance = 1.0f;
     //-------------------
     //Initilse the state, runs only once at start
     //-------------------
@@ -18,8 +17,7 @@ public class PlayerState_LightAttack : PlayerState
     //-------------------
     public override void StateStart()
     {
-        m_parentCharacter.m_characterAnimationController.SetAnimation(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK);
-        m_parentCharacter.m_currentAttackType = Character.ATTACK_TYPE.LIGHT;
+        m_parentCharacter.m_characterAnimationController.SetAnimation(CharacterAnimationController.ANIMATIONS.LAND);
     }
 
     //-------------------
@@ -47,6 +45,6 @@ public class PlayerState_LightAttack : PlayerState
     //-------------------
     public override bool IsValid()
     {
-        return m_inputController.GetInput(InputController.INPUT.ATTACK, InputController.INPUT_STATE.DOWNED);
+        return m_parentCharacter.m_characterCustomPhysics.m_downCollision;
     }
 }

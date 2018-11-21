@@ -23,13 +23,15 @@ public class Character : MonoBehaviour
     public TEAM m_characterTeam = TEAM.GAIA;
 
     [Header("Grounded Movement")]
-    public float m_groundedHorizontalSpeed = 1.0f;
+    public float m_groundedHorizontalSpeedMax = 1.0f;
+    public float m_groundedHorizontalAcceleration = 1.0f;
+    public float m_groundedHorizontalDeacceleration = 1.0f;
 
     [Header("Jumping Stats")]
     public float m_jumpSpeed = 10.0f;
 
     [Header("In Air Stats")]
-    public float m_inAirHorizontalSpeed = 0.5f;
+    public float m_inAirHorizontalAcceleration = 0.5f;
     public float m_doubleJumpSpeed = 6.0f;
 
     [Header("Wall Jump Stats")]
@@ -48,7 +50,6 @@ public class Character : MonoBehaviour
     private float m_currentHealth = 10.0f;
 
     public Vector3 m_localVelocity = Vector3.zero;
-    public bool m_currentlyAnimating = false;
 
     protected virtual void Start()
     {
@@ -111,11 +112,6 @@ public class Character : MonoBehaviour
     public void ModifyHealth(float p_value)
     {
         m_currentHealth += p_value;
-    }
-
-    public bool IsGrounded()
-    {
-        return m_characterCustomPhysics.m_downCollision;
     }
 
     public void DealDamage()
