@@ -21,7 +21,7 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
-        if (m_inputController.GetInput(InputController.INPUT.CANCEL))
+        if (m_inputController.GetKeyInput(InputController.INPUT_KEY.CANCEL))
             Application.Quit();
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPC : Character
+public class Character_NPC : Character
 {
     protected override void Start()
     {

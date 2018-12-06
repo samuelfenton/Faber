@@ -132,4 +132,9 @@ public class Character : MonoBehaviour
             }
         }
     }
+
+    public virtual NavigationController.FACING_DIR GetDesiredDirection()
+    {
+        return NavigationController.FACING_DIR.NORTH;
+    }
 }

@@ -17,7 +17,7 @@ public class PlayerState_Land : PlayerState
     //-------------------
     public override void StateStart()
     {
-        m_parentCharacter.m_characterAnimationController.SetAnimation(CharacterAnimationController.ANIMATIONS.LAND);
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LAND, true);
     }
 
     //-------------------
@@ -35,7 +35,7 @@ public class PlayerState_Land : PlayerState
     //-------------------
     public override void StateEnd()
     {
-
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LAND, false);
     }
 
     //-------------------

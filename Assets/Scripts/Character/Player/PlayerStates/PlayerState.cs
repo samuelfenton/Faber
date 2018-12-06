@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerState : CharacterState
 {
-    protected Player m_parentCharacter = null;
+    protected Character_Player m_parentCharacter = null;
     protected InputController m_inputController = null;
 
     //-------------------
@@ -12,7 +12,7 @@ public class PlayerState : CharacterState
     //-------------------
     public override void StateInit()
     {
-        m_parentCharacter = GetComponent<Player>();
+        m_parentCharacter = GetComponent<Character_Player>();
         m_inputController = m_parentCharacter.m_gameController.m_inputController;
     }
 }

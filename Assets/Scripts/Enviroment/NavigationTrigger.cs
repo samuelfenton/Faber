@@ -5,12 +5,10 @@ using UnityEngine;
 public class NavigationTrigger : MonoBehaviour {
 
     //Determines the plane of collision
-    public Vector3 m_globalEntranceVector = Vector3.zero;
+    protected Vector3 m_globalEntranceVector = Vector3.zero;
     protected Vector4 m_planeEquation = Vector4.zero;
 
-    public Vector3 m_globalExitRotation = Vector3.zero;
-
-    protected NavigationControl m_navigationController = null;
+    protected NavigationLogic m_navigationController = null;
 
     protected void Start()
     {
@@ -21,7 +19,7 @@ public class NavigationTrigger : MonoBehaviour {
 
         m_planeEquation = new Vector4(m_globalEntranceVector.x, m_globalEntranceVector.y, m_globalEntranceVector.z, planeZ);
 
-        m_navigationController = transform.parent.GetComponent<NavigationControl>();
+        m_navigationController = transform.parent.GetComponent<NavigationLogic>();
 
 #if UNITY_EDITOR
         if (m_navigationController == null)
@@ -44,7 +42,7 @@ public class NavigationTrigger : MonoBehaviour {
             {
                 m_navigationController.AddCharacter(collidingCharacter);
             }
-            else //Exiting
+            else//Exiting
             {
                 m_navigationController.RemoveCharacter(collidingCharacter, this);
             }

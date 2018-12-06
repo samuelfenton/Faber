@@ -5,12 +5,17 @@ using UnityEngine;
 public class PlayerState_LightAttack : PlayerState
 {
     private float m_attackDistance = 1.0f;
+    private float m_horizontalSpeedMax = 1.0f;
+    private float m_horizontalDeacceleration = 1.0f;
+
     //-------------------
     //Initilse the state, runs only once at start
     //-------------------
     public override void StateInit()
     {
         base.StateInit();
+        m_horizontalSpeedMax = m_parentCharacter.m_groundedHorizontalSpeedMax;
+        m_horizontalDeacceleration = m_parentCharacter.m_groundedHorizontalDeacceleration;
     }
 
     //-------------------
@@ -18,7 +23,7 @@ public class PlayerState_LightAttack : PlayerState
     //-------------------
     public override void StateStart()
     {
-        m_parentCharacter.m_characterAnimationController.SetAnimation(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK);
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, true);
         m_parentCharacter.m_currentAttackType = Character.ATTACK_TYPE.LIGHT;
     }
 
@@ -29,6 +34,19 @@ public class PlayerState_LightAttack : PlayerState
     //-------------------
     public override bool UpdateState()
     {
+        //Movement slowdown
+        Vector3 newVelocity = m_parentCharacter.m_localVelocity;
+
+        float deltaSpeed = m_horizontalDeacceleration * Time.deltaTime;
+        if (deltaSpeed > Mathf.Abs(newVelocity.x))//Close enough to stopping this frame
+            newVelocity.x = 0.0f;
+        else
+            newVelocity.x += newVelocity.x < 0 ? deltaSpeed : -deltaSpeed;//Still have high velocity, just slow down
+
+        m_parentCharacter.m_localVelocity = newVelocity;
+
+        m_parentCharacter.m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.MOVEMENT_SPEED, Mathf.Abs(newVelocity.x / m_horizontalSpeedMax));
+
         return !m_parentCharacter.m_characterAnimationController.m_currentlyAnimating;
     }
 
@@ -37,7 +55,7 @@ public class PlayerState_LightAttack : PlayerState
     //-------------------
     public override void StateEnd()
     {
-
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, false);
     }
 
     //-------------------
@@ -47,6 +65,6 @@ public class PlayerState_LightAttack : PlayerState
     //-------------------
     public override bool IsValid()
     {
-        return m_inputController.GetInput(InputController.INPUT.ATTACK, InputController.INPUT_STATE.DOWNED);
+        return m_inputController.GetKeyInput(InputController.INPUT_KEY.ATTACK, InputController.INPUT_STATE.DOWNED);
     }
 }

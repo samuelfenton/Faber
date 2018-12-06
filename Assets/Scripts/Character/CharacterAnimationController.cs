@@ -32,14 +32,12 @@ public class CharacterAnimationController : MonoBehaviour
         m_animator = GetComponentInChildren<Animator>();
     }
 
-    public void SetAnimation(ANIMATIONS p_animation)
+    public void SetBool(ANIMATIONS p_animation, bool p_val)
     {
-        if (p_animation == m_currentAnimation)
-            return;
-        m_animator.SetBool(m_animationStringDicitonary[m_currentAnimation], false);
         m_currentAnimation = p_animation;
-        m_animator.SetBool(m_animationStringDicitonary[m_currentAnimation], true);
-        m_currentlyAnimating = true;
+        m_currentlyAnimating = p_val;
+
+        m_animator.SetBool(m_animationStringDicitonary[p_animation], p_val);
     }
 
     public void SetVarible(VARIBLES p_varible, float p_val)

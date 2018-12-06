@@ -75,7 +75,7 @@ public class PlayerState_WallJump : PlayerState
     public override bool IsValid()
     {
         return 
-        m_inputController.GetInput(InputController.INPUT.JUMP, InputController.INPUT_STATE.DOWNED) &&
+        m_inputController.GetKeyInput(InputController.INPUT_KEY.JUMP, InputController.INPUT_STATE.DOWNED) &&
         (m_parentCharacter.m_characterCustomPhysics.m_forwardCollision || m_parentCharacter.m_characterCustomPhysics.m_backCollision) &&
         !m_parentCharacter.m_characterCustomPhysics.m_downCollision;
     }

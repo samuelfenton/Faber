@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4225682364153490}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Platform (19)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,7 +36,7 @@ GameObject:
   - component: {fileID: 4103018313758542}
   - component: {fileID: 33523436109123244}
   - component: {fileID: 64542218336488662}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: QuadCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -53,7 +53,7 @@ GameObject:
   - component: {fileID: 4967407109723336}
   - component: {fileID: 33390749471034334}
   - component: {fileID: 23000677554991378}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -70,7 +70,7 @@ GameObject:
   - component: {fileID: 4911883591507272}
   - component: {fileID: 33711850943567060}
   - component: {fileID: 64923892305987300}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: QuadCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,8 +103,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4121719974928854}
-  - component: {fileID: 114490314924361680}
   - component: {fileID: 65604233988308644}
+  - component: {fileID: 114001464010858782}
   m_Layer: 0
   m_Name: TowerTrigger
   m_TagString: Untagged
@@ -135,7 +135,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4474484186402998}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Platform (23)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -150,7 +150,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4514678708507534}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Platform (21)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -167,7 +167,7 @@ GameObject:
   - component: {fileID: 4379446376214526}
   - component: {fileID: 33927593254592706}
   - component: {fileID: 64151689475462166}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: QuadCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 4426387451026348}
   - component: {fileID: 33974742759728216}
   - component: {fileID: 64170471664413854}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: QuadCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -217,7 +217,7 @@ GameObject:
   - component: {fileID: 4814873592407620}
   - component: {fileID: 33317153279665494}
   - component: {fileID: 23290852027739406}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -234,7 +234,7 @@ GameObject:
   - component: {fileID: 4708478923281672}
   - component: {fileID: 33392467516256962}
   - component: {fileID: 23907631814432258}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -249,8 +249,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4315065346661244}
-  - component: {fileID: 114078873480110868}
   - component: {fileID: 65072810805050834}
+  - component: {fileID: 114386120655639412}
   m_Layer: 0
   m_Name: TowerTrigger (1)
   m_TagString: Untagged
@@ -266,7 +266,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4659630407582354}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: WalkwayCorner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -296,7 +296,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4146400249103678}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Platform (18)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -313,7 +313,7 @@ GameObject:
   - component: {fileID: 4316172048516254}
   - component: {fileID: 33899937249992288}
   - component: {fileID: 23897224815665490}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -330,7 +330,7 @@ GameObject:
   - component: {fileID: 4206250772696342}
   - component: {fileID: 33564743844943510}
   - component: {fileID: 23080469406970820}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -347,7 +347,7 @@ GameObject:
   - component: {fileID: 4435086169512456}
   - component: {fileID: 33105583671076722}
   - component: {fileID: 64665065760063742}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: QuadCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -361,7 +361,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1629743534164912}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.29, y: 0, z: 1.175}
+  m_LocalPosition: {x: 1.21, y: 1.25, z: 1.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4121719974928854}
@@ -388,13 +388,13 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1415479093773974}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 7.289999, z: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 5.82, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1.0000005}
   m_Children: []
   m_Father: {fileID: 4080451199046866}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!4 &4146400249103678
 Transform:
   m_ObjectHideFlags: 1
@@ -416,7 +416,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1791435481219312}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 3, y: 10, z: 3}
   m_Children:
@@ -427,7 +427,7 @@ Transform:
   - {fileID: 4474484186402998}
   m_Father: {fileID: 4380221326796518}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!4 &4206250772696342
 Transform:
   m_ObjectHideFlags: 1
@@ -463,7 +463,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1781222857289648}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1, y: 7.29, z: 0}
+  m_LocalPosition: {x: 1, y: 5.82, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1.0000005}
   m_Children: []
   m_Father: {fileID: 4080451199046866}
@@ -501,8 +501,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1415697107381770}
-  m_LocalRotation: {x: -0, y: 0.70710737, z: -0, w: 0.7071062}
-  m_LocalPosition: {x: 10.459991, y: 13.35, z: 7.3369923}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.885095, y: 10.576184, z: 7.685243}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4640164731974550}
@@ -510,7 +510,7 @@ Transform:
   - {fileID: 4080451199046866}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 90.00001, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4426387451026348
 Transform:
   m_ObjectHideFlags: 1
@@ -837,7 +837,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: c76047c1fc68b5b40ab21d4030d42027, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1040,7 +1040,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 12, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114078873480110868
+--- !u!114 &114001464010858782
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1415479093773974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4db79f80f28d0214a95c7f7941aa6864, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_globalExitRotation: {x: 0, y: -90, z: 0}
+--- !u!114 &114386120655639412
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1048,11 +1060,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1781222857289648}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdb1a853a6df042479a17c327fe6e2fa, type: 3}
+  m_Script: {fileID: 11500000, guid: 4db79f80f28d0214a95c7f7941aa6864, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_globalEntranceVector: {x: 0, y: 0, z: 1}
-  m_globalExitRotationVector: {x: 0, y: -180, z: 0}
+  m_globalExitRotation: {x: 0, y: 0, z: 0}
 --- !u!114 &114481993112569506
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1066,16 +1077,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_currentCharacters: []
   m_towerRadius: 1
---- !u!114 &114490314924361680
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1415479093773974}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdb1a853a6df042479a17c327fe6e2fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_globalEntranceVector: {x: -1, y: 0, z: 0}
-  m_globalExitRotationVector: {x: 0, y: -90, z: 0}

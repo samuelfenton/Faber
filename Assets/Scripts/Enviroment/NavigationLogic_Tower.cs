@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tower : NavigationControl
+public class NavigationLogic_Tower : NavigationLogic
 {
     public float m_towerRadius = 4.0f;
 
@@ -24,25 +24,27 @@ public class Tower : NavigationControl
             characterPosition.x = transform.position.x + towertoCharacterVector.x;
             characterPosition.z = transform.position.z + towertoCharacterVector.z;
 
+            character.transform.position = characterPosition;
+
             //Rotational Perpendicular Vector
             Vector3 rotationVector = new Vector3(-towertoCharacterVector.z, 0.0f, towertoCharacterVector.x);
 
-            character.transform.position = characterPosition;
-            character.transform.rotation = Quaternion.LookRotation(rotationVector, Vector3.up);
+            float dotRotationToForward = Vector3.Dot(rotationVector.normalized, character.transform.forward);
+            if (dotRotationToForward >= 0)
+                character.transform.rotation = Quaternion.LookRotation(rotationVector, Vector3.up);
+            else
+                character.transform.rotation = Quaternion.LookRotation(-rotationVector, Vector3.up);
         }
 	}
 
-    public override void AddCharacter(Character p_character)
-    {
-        if (!m_currentCharacters.Contains(p_character))
-            m_currentCharacters.Add(p_character);
-    }
-
     public override void RemoveCharacter(Character p_character, NavigationTrigger p_navigationTrigger)
     {
-        base.RemoveCharacter(p_character, p_navigationTrigger);
+        if (m_currentCharacters.Contains(p_character))
+        {
+            m_currentCharacters.Remove(p_character);
 
-        //Reset rotation of character
-        p_character.transform.rotation = Quaternion.Euler(p_navigationTrigger.m_globalExitRotation);
+            //Reset rotation of character
+            ClampRotationOnExit(p_character);
+        }
     }
 }

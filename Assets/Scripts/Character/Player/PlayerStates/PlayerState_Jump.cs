@@ -24,7 +24,7 @@ public class PlayerState_Jump : PlayerState
         newVelocity.y = m_jumpSpeed;
         m_parentCharacter.m_localVelocity = newVelocity;
 
-        m_parentCharacter.m_characterAnimationController.SetAnimation(CharacterAnimationController.ANIMATIONS.JUMP);
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.JUMP, true);
     }
 
     //-------------------
@@ -42,7 +42,7 @@ public class PlayerState_Jump : PlayerState
     //-------------------
     public override void StateEnd()
     {
-
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.JUMP, false);
     }
 
     //-------------------
@@ -53,6 +53,6 @@ public class PlayerState_Jump : PlayerState
     public override bool IsValid()
     {
         //Able to jump while jump key is pressed, grounded, and no collision above
-        return m_inputController.GetInput(InputController.INPUT.JUMP, InputController.INPUT_STATE.DOWNED) && m_parentCharacter.m_characterCustomPhysics.m_downCollision && !m_parentCharacter.m_characterCustomPhysics.m_upCollision;
+        return m_inputController.GetKeyInput(InputController.INPUT_KEY.JUMP, InputController.INPUT_STATE.DOWNED) && m_parentCharacter.m_characterCustomPhysics.m_downCollision && !m_parentCharacter.m_characterCustomPhysics.m_upCollision;
     }
 }

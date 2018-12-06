@@ -24,7 +24,7 @@ public class PlayerState_GroundMovement : PlayerState
     //-------------------
     public override void StateStart()
     {
-        m_parentCharacter.m_characterAnimationController.SetAnimation(CharacterAnimationController.ANIMATIONS.LOCOMOTION);
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LOCOMOTION, true);
     }
 
     //-------------------
@@ -37,8 +37,7 @@ public class PlayerState_GroundMovement : PlayerState
         //Movement
         Vector3 newVelocity = m_parentCharacter.m_localVelocity;
 
-
-        if(Input.GetAxisRaw("Horizontal") == 0.0f) //No input, slowdown
+        if(!m_inputController.GetAxisBool(InputController.INPUT_AXIS.HORIZONTAL)) //No input, slowdown
         {
             float deltaSpeed = m_horizontalDeacceleration * Time.deltaTime;
             if (deltaSpeed > Mathf.Abs(newVelocity.x))//Close enough to stopping this frame
@@ -48,7 +47,7 @@ public class PlayerState_GroundMovement : PlayerState
         }
         else//Input so normal movemnt
         {
-            newVelocity.x += m_horizontalAcceleration * Input.GetAxisRaw("Horizontal") * Time.deltaTime;
+            newVelocity.x += m_horizontalAcceleration * m_inputController.GetAxisFloat(InputController.INPUT_AXIS.HORIZONTAL) * Time.deltaTime;
             newVelocity.x = Mathf.Clamp(newVelocity.x, -m_horizontalSpeedMax, m_horizontalSpeedMax);
         }
 
@@ -64,6 +63,7 @@ public class PlayerState_GroundMovement : PlayerState
     //-------------------
     public override void StateEnd()
     {
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LOCOMOTION, false);
     }
 
     //-------------------
@@ -73,6 +73,6 @@ public class PlayerState_GroundMovement : PlayerState
     //-------------------
     public override bool IsValid()
     {
-        return m_parentCharacter.m_characterCustomPhysics.m_downCollision && (m_parentCharacter.m_localVelocity.x != 0.0f || Input.GetAxisRaw("Horizontal") != 0.0f) ;
+        return m_parentCharacter.m_characterCustomPhysics.m_downCollision && (m_parentCharacter.m_localVelocity.x != 0.0f || m_inputController.GetAxisBool(InputController.INPUT_AXIS.HORIZONTAL)) ;
     }
 }

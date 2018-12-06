@@ -29,7 +29,7 @@ public class PlayerState_InAir : PlayerState
     public override void StateStart()
     {
         m_doubleJump = true;
-        m_parentCharacter.m_characterAnimationController.SetAnimation(CharacterAnimationController.ANIMATIONS.IN_AIR);
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.IN_AIR, true);
     }
 
     //-------------------
@@ -42,11 +42,11 @@ public class PlayerState_InAir : PlayerState
         //Movement
         Vector3 newVelocity = m_parentCharacter.m_localVelocity;
 
-        newVelocity.x += m_horizontalAcceleration * Input.GetAxisRaw("Horizontal") * Time.deltaTime;
+        newVelocity.x += m_horizontalAcceleration * m_inputController.GetAxisFloat(InputController.INPUT_AXIS.HORIZONTAL) * Time.deltaTime;
         newVelocity.x = Mathf.Clamp(newVelocity.x, -m_horizontalSpeedMax, m_horizontalSpeedMax);
 
         //Double Jump
-        if (m_doubleJump && m_inputController.GetInput(InputController.INPUT.JUMP, InputController.INPUT_STATE.DOWNED))
+        if (m_doubleJump && m_inputController.GetKeyInput(InputController.INPUT_KEY.JUMP, InputController.INPUT_STATE.DOWNED))
         {
             m_doubleJump = false;
             newVelocity.y = m_doubleJumpSpeed;
@@ -64,6 +64,7 @@ public class PlayerState_InAir : PlayerState
     //-------------------
     public override void StateEnd()
     {
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.IN_AIR, false);
     }
 
     //-------------------

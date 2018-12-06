@@ -91,8 +91,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4242499689544362}
-  - component: {fileID: 114479640585017474}
   - component: {fileID: 65881902903144610}
+  - component: {fileID: 114297375592911280}
   m_Layer: 0
   m_Name: TowerTrigger
   m_TagString: Untagged
@@ -1016,8 +1016,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4694823829286344}
-  - component: {fileID: 114341044596199188}
   - component: {fileID: 65131496864782600}
+  - component: {fileID: 114137913265623298}
   m_Layer: 0
   m_Name: TowerTrigger (1)
   m_TagString: Untagged
@@ -5360,6 +5360,30 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 12, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114137913265623298
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1904887930820534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4db79f80f28d0214a95c7f7941aa6864, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_globalExitRotation: {x: 0, y: 0, z: 0}
+--- !u!114 &114297375592911280
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1053980482805784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4db79f80f28d0214a95c7f7941aa6864, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_globalExitRotation: {x: 0, y: 0, z: 0}
 --- !u!114 &114337755885443742
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5373,29 +5397,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_currentCharacters: []
   m_towerRadius: 8.5
---- !u!114 &114341044596199188
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1904887930820534}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdb1a853a6df042479a17c327fe6e2fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_globalEntranceVector: {x: 0, y: 0, z: -1}
-  m_globalExitRotation: {x: 0, y: 0, z: 0}
---- !u!114 &114479640585017474
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1053980482805784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdb1a853a6df042479a17c327fe6e2fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_globalEntranceVector: {x: 0, y: 0, z: 1}
-  m_globalExitRotation: {x: 0, y: 0, z: 0}

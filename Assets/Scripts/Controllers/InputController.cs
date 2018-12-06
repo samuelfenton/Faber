@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class InputController : MonoBehaviour
 {
-    public enum INPUT {ATTACK, DEFEND, ATTACK_ALT, JUMP, SUBMIT, CANCEL, INPUT_COUNT};
+    public enum INPUT_KEY {ATTACK, DEFEND, ATTACK_ALT, JUMP, SUBMIT, CANCEL, INPUT_COUNT};
+    public enum INPUT_AXIS {HORIZONTAL, VERTICAL, INPUT_COUNT };
     public enum INPUT_STATE {DOWNED, UPPED, CURRENT};
 
-    public KeyInformation[] m_keyInformation = new KeyInformation[(int)INPUT.INPUT_COUNT]; 
+    public KeyInformation[] m_keyInformation = new KeyInformation[(int)INPUT_KEY.INPUT_COUNT];
+    public Dictionary<INPUT_AXIS, string> m_axisInformation = new Dictionary<INPUT_AXIS, string>();
 
     public class KeyInformation
     {
@@ -26,17 +28,20 @@ public class InputController : MonoBehaviour
 
     private void Start()
     {
-        m_keyInformation[(int)INPUT.ATTACK] = new KeyInformation("Attack");
-        m_keyInformation[(int)INPUT.DEFEND] = new KeyInformation("Defend");
-        m_keyInformation[(int)INPUT.ATTACK_ALT] = new KeyInformation("AttackAlt");
-        m_keyInformation[(int)INPUT.JUMP] = new KeyInformation("Jump");
-        m_keyInformation[(int)INPUT.SUBMIT] = new KeyInformation("Submit");
-        m_keyInformation[(int)INPUT.CANCEL] = new KeyInformation("Cancel");
+        m_keyInformation[(int)INPUT_KEY.ATTACK] = new KeyInformation("Attack");
+        m_keyInformation[(int)INPUT_KEY.DEFEND] = new KeyInformation("Defend");
+        m_keyInformation[(int)INPUT_KEY.ATTACK_ALT] = new KeyInformation("AttackAlt");
+        m_keyInformation[(int)INPUT_KEY.JUMP] = new KeyInformation("Jump");
+        m_keyInformation[(int)INPUT_KEY.SUBMIT] = new KeyInformation("Submit");
+        m_keyInformation[(int)INPUT_KEY.CANCEL] = new KeyInformation("Cancel");
+
+        m_axisInformation.Add(INPUT_AXIS.HORIZONTAL, "Horizontal");
+        m_axisInformation.Add(INPUT_AXIS.VERTICAL, "Vertical");
     }
 
     private void Update()
     {
-        for (int i = 0; i < (int)INPUT.INPUT_COUNT; i++)
+        for (int i = 0; i < (int)INPUT_KEY.INPUT_COUNT; i++)
         {
             UpdateKey(i);
         }
@@ -53,8 +58,24 @@ public class InputController : MonoBehaviour
         m_keyInformation[index].m_state[2] = currentState; //Store current state for next frame
     }
 
-    public bool GetInput(INPUT p_input, INPUT_STATE p_inputState = INPUT_STATE.CURRENT)
+    public bool GetKeyInput(INPUT_KEY p_input, INPUT_STATE p_inputState = INPUT_STATE.CURRENT)
     {
-        return m_keyInformation[(int)p_input].m_state[(int)p_inputState];
+        if (p_input < INPUT_KEY.INPUT_COUNT)
+            return m_keyInformation[(int)p_input].m_state[(int)p_inputState];
+        return false;
+    }
+
+    public bool GetAxisBool(INPUT_AXIS p_input)
+    {
+        if(p_input < INPUT_AXIS.INPUT_COUNT)
+            return Input.GetAxisRaw(m_axisInformation[p_input]) != 0.0f;
+        return false;
+    }
+
+    public float GetAxisFloat(INPUT_AXIS p_input)
+    {
+        if (p_input < INPUT_AXIS.INPUT_COUNT)
+            return Input.GetAxisRaw(m_axisInformation[p_input]);
+        return 0.0f;
     }
 }
