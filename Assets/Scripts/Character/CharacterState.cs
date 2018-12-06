@@ -5,6 +5,7 @@ using UnityEngine;
 public class CharacterState : MonoBehaviour
 {
     public List<CharacterState> m_nextStates = new List<CharacterState>();
+    public CharacterStateMachine.STATE m_stateType = CharacterStateMachine.STATE.IDLE;
 
     //-------------------
     //Initilse the state, runs only once at start

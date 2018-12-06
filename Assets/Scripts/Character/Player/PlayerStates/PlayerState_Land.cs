@@ -10,6 +10,7 @@ public class PlayerState_Land : PlayerState
     public override void StateInit()
     {
         base.StateInit();
+        m_stateType = CharacterStateMachine.STATE.LAND;
     }
 
     //-------------------

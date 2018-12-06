@@ -21,6 +21,8 @@ public class PlayerState_InAir : PlayerState
         m_horizontalSpeedMax = m_parentCharacter.m_groundedHorizontalSpeedMax; //Always use grounded as max speed
         m_horizontalAcceleration = m_parentCharacter.m_inAirHorizontalAcceleration;
         m_doubleJumpSpeed = m_parentCharacter.m_doubleJumpSpeed;
+
+        m_stateType = CharacterStateMachine.STATE.IN_AIR;
     }
 
     //-------------------

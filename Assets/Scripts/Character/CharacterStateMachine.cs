@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CharacterStateMachine : MonoBehaviour
 {
+    public enum STATE {IDLE, GROUND, IN_AIR, JUMP, LAND, ATTACK, WALL_JUMP, DEATH }
+    public STATE m_currentStateType = STATE.IDLE;
+
     public CharacterState m_currentState = null;
 
     public void InitStateMachine()
@@ -18,6 +21,7 @@ public class CharacterStateMachine : MonoBehaviour
 
         //Run first state
         m_currentState.StateStart();
+        m_currentStateType = m_currentState.m_stateType;
     }
 
     public void UpdateStateMachine()
@@ -39,7 +43,10 @@ public class CharacterStateMachine : MonoBehaviour
     private void SwapState(CharacterState p_nextState)
     {
         m_currentState.StateEnd();
+
         m_currentState = p_nextState;
+
         m_currentState.StateStart();
+        m_currentStateType = m_currentState.m_stateType;
     }
 }

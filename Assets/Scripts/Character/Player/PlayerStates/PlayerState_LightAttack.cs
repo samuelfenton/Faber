@@ -16,6 +16,8 @@ public class PlayerState_LightAttack : PlayerState
         base.StateInit();
         m_horizontalSpeedMax = m_parentCharacter.m_groundedHorizontalSpeedMax;
         m_horizontalDeacceleration = m_parentCharacter.m_groundedHorizontalDeacceleration;
+
+        m_stateType = CharacterStateMachine.STATE.ATTACK;
     }
 
     //-------------------
@@ -66,5 +68,13 @@ public class PlayerState_LightAttack : PlayerState
     public override bool IsValid()
     {
         return m_inputController.GetKeyInput(InputController.INPUT_KEY.ATTACK, InputController.INPUT_STATE.DOWNED);
+    }
+
+    //-------------------
+    //Perform combo of attack, jump to next attack in animaiton tree
+    //-------------------
+    public void PerformCombo()
+    {
+        m_parentCharacter.m_characterAnimationController.SetTrigger(CharacterAnimationController.TRIGGERS.LIGHT_ATTACK_COMBO);
     }
 }

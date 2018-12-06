@@ -9,7 +9,7 @@ public class Character : MonoBehaviour
     [HideInInspector]
     public CharacterCustomPhysics m_characterCustomPhysics = null;
     [HideInInspector]
-    public CharacterStateMachine m_characterStateMachine  = null;
+    public CharacterStateMachine m_characterStateMachine = null;
     [HideInInspector]
     public CharacterAnimationController m_characterAnimationController = null;
 
@@ -19,7 +19,7 @@ public class Character : MonoBehaviour
 
     public GameObject m_characterModel = null;
 
-    public enum TEAM {PLAYER, NPC, GAIA}
+    public enum TEAM { PLAYER, NPC, GAIA }
     public TEAM m_characterTeam = TEAM.GAIA;
 
     [Header("Grounded Movement")]
@@ -39,7 +39,7 @@ public class Character : MonoBehaviour
     public float m_wallJumpHorizontalSpeed = 2.0f;
     public float m_wallJumpInputDelay = 0.1f;
 
-    public enum ATTACK_TYPE {NONE, LIGHT, HEAVY}
+    public enum ATTACK_TYPE { NONE, LIGHT, HEAVY }
 
     [Header("Attack Stats")]
     public ATTACK_TYPE m_currentAttackType = ATTACK_TYPE.NONE;
@@ -120,7 +120,7 @@ public class Character : MonoBehaviour
 
         foreach (Character character in m_weapon.m_hitCharacters)
         {
-            if(character.m_characterTeam != m_characterTeam)
+            if (character.m_characterTeam != m_characterTeam)
             {
                 //determine damage
                 float totalDamage = m_weapon.m_weaponLightDamage;
@@ -131,6 +131,10 @@ public class Character : MonoBehaviour
                 character.ModifyHealth(totalDamage);
             }
         }
+    }
+
+    public virtual void PerformCombo()
+    {
     }
 
     public virtual NavigationController.FACING_DIR GetDesiredDirection()

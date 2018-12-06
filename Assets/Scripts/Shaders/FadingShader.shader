@@ -4,7 +4,7 @@
 	{
 		_MainTex ("Texture", 2D) = "white" {}
 		_Transparancy("Transparancy", Float) = 0.5
-
+		_BaseColor("Base Colour", Color) = (1,1,1,1)
 		_PlayerWorldPostion("Player World Postion", Vector) = (0,0,0,1)
 	}
 	SubShader
@@ -31,6 +31,7 @@
 			sampler2D _MainTex;
 			float _Transparancy;
 			vector _PlayerWorldPostion;
+			fixed4 _BaseColor;
 			
 			v2f vert (float4 p_vertex : POSITION, float3 p_normal : NORMAL, float2 p_UV : TEXCOORD0)
 			{
@@ -43,7 +44,7 @@
 			
 			fixed4 frag (v2f fragIn) : SV_Target
 			{
-				fixed4 color = tex2D(_MainTex, fragIn.UV);
+				fixed4 color = tex2D(_MainTex, fragIn.UV) * _BaseColor;
 				float3 cameraToPlayer = _PlayerWorldPostion - _WorldSpaceCameraPos;
 				cameraToPlayer.y = 0;
 				float3 playerToFrag = _PlayerWorldPostion - fragIn.worldPosition;

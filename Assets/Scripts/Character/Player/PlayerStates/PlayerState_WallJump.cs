@@ -21,6 +21,8 @@ public class PlayerState_WallJump : PlayerState
         m_wallJumpHorizontalSpeed = m_parentCharacter.m_wallJumpHorizontalSpeed;
 
         m_inputDelay = m_parentCharacter.m_wallJumpInputDelay;
+
+        m_stateType = CharacterStateMachine.STATE.WALL_JUMP;
     }
 
     //-------------------

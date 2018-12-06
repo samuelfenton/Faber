@@ -10,6 +10,7 @@ public class PlayerState_Idle : PlayerState
     public override void StateInit()
     {
         base.StateInit();
+        m_stateType = CharacterStateMachine.STATE.IDLE;
     }
 
     //-------------------

@@ -17,6 +17,9 @@ public class PlayerState_GroundMovement : PlayerState
         m_horizontalSpeedMax = m_parentCharacter.m_groundedHorizontalSpeedMax;
         m_horizontalAcceleration = m_parentCharacter.m_groundedHorizontalAcceleration;
         m_horizontalDeacceleration = m_parentCharacter.m_groundedHorizontalDeacceleration;
+
+        m_stateType = CharacterStateMachine.STATE.GROUND;
+
     }
 
     //-------------------

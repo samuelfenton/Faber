@@ -13,6 +13,8 @@ public class PlayerState_Jump : PlayerState
     {
         base.StateInit();
         m_jumpSpeed = m_parentCharacter.m_jumpSpeed;
+
+        m_stateType = CharacterStateMachine.STATE.JUMP;
     }
 
     //-------------------

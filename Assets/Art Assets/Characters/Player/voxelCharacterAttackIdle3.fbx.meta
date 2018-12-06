@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: d888ac5a1c15e1f4abc9cc446838d619
+guid: 5df20e2cbcab9984499b2bdc3fe94f11
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
@@ -37,9 +37,8 @@ ModelImporter:
     400028: WristLeft_JNT
     400030: WristRight_JNT
     400032: RT_JNT
-    7400000: voxelCharacterAttackRunning
+    7400000: voxelCharacterAttackIdle3
     9500000: //RootNode
-    2186277476908879412: ImportLogs
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -55,8 +54,7 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: Event EndOfAnimation has a time (1.000000) outside the
-      clip's valid range (0.000000..1.000000). It will never be fired
+    animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -70,10 +68,10 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: voxelCharacterAttackRunning
-      takeName: voxelCharacterAttackRunning
+      name: voxelCharacterAttackIdle3
+      takeName: voxelCharacterAttackIdle3
       firstFrame: 1
-      lastFrame: 25
+      lastFrame: 20
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -95,13 +93,6 @@ ModelImporter:
       events:
       - time: 1
         functionName: EndOfAnimation
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.6719135
-        functionName: ComboAttack
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
