@@ -2,15 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NavigationTrigger : MonoBehaviour {
+[RequireComponent(typeof(BoxCollider))]
+[ExecuteInEditMode]
+public class Navigation_Trigger : MonoBehaviour
+{
+    static Vector3 triggerSize = new Vector3(1,5,0);
 
     //Determines the plane of collision
     protected Vector3 m_globalEntranceVector = Vector3.zero;
     protected Vector4 m_planeEquation = Vector4.zero;
 
-    protected NavigationLogic m_navigationController = null;
+    protected void SetupBoxCollider()
+    {
+        BoxCollider boxCol = GetComponent<BoxCollider>();
 
-    protected void Start()
+        boxCol.size = triggerSize;
+        boxCol.center = new Vector3(0, triggerSize.y/2, 0);
+    }
+
+    protected virtual void Start()
     {
         m_globalEntranceVector = transform.forward;
 
@@ -18,13 +28,6 @@ public class NavigationTrigger : MonoBehaviour {
         float planeZ = (-triggerPos.x * m_globalEntranceVector.x) + (-triggerPos.y * m_globalEntranceVector.y) + (-triggerPos.z * m_globalEntranceVector.z);
 
         m_planeEquation = new Vector4(m_globalEntranceVector.x, m_globalEntranceVector.y, m_globalEntranceVector.z, planeZ);
-
-        m_navigationController = transform.parent.GetComponent<NavigationLogic>();
-
-#if UNITY_EDITOR
-        if (m_navigationController == null)
-            Debug.Log("Trigger has no parent");
-#endif
     }
 
     protected void OnTriggerStay(Collider p_other)
@@ -40,12 +43,26 @@ public class NavigationTrigger : MonoBehaviour {
 
             if (expandedDot >= 0) //Entering
             {
-                m_navigationController.AddCharacter(collidingCharacter);
+                HandleTrigger(collidingCharacter, TRIGGER_DIRECTION.ENTERING);
             }
             else//Exiting
             {
-                m_navigationController.RemoveCharacter(collidingCharacter, this);
+                HandleTrigger(collidingCharacter, TRIGGER_DIRECTION.EXITING);
             }
         }
     }
+
+    public enum TRIGGER_DIRECTION {ENTERING, EXITING }
+    protected virtual void HandleTrigger(Character p_character, TRIGGER_DIRECTION p_direction)
+    {
+
+    }
+
+#if UNITY_EDITOR
+    private void Update()
+    {
+        SetupBoxCollider();
+    }
+#endif
+
 }

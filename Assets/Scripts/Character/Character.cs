@@ -74,18 +74,7 @@ public class Character : MonoBehaviour
         m_localVelocity.y += PhysicsController.m_gravity * Time.deltaTime;
 
         //Stop colliding with objects
-        m_characterCustomPhysics.UpdateCollisions();
-
-        //Check for ground collisions when falling
-        if (m_localVelocity.y <= 0)
-        {
-            m_characterCustomPhysics.GroundCollisionCheck();
-        }
-
-        Vector3 globalVelocity = new Vector3();
-        globalVelocity = transform.forward * m_localVelocity.x + transform.up * m_localVelocity.y + transform.right * m_localVelocity.z;
-
-        transform.Translate(globalVelocity * Time.deltaTime, Space.World);
+        m_characterCustomPhysics.UpdatePhysics();
 
         //Setup rotation on game model, completly aesthetic based
         if (m_localVelocity.x > 0.1f)

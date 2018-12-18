@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class CharacterCustomPhysics : MonoBehaviour
 {
+    private const float GROUND_DETECTION = 0.5f; 
+
     private Character m_parentCharacter = null;
+
+    public Navigation_Spline m_currentSpline = null;
+
+    public float m_currentSplinePercent = 0.0f;
 
     [Header("Collision Details")]
     public bool m_upCollision = false;
@@ -24,6 +30,53 @@ public class CharacterCustomPhysics : MonoBehaviour
 
         m_colliderExtents.x = m_colliderExtents.z = capculeCollider.radius;
         m_colliderExtents.y = capculeCollider.height / 2.0f;
+
+        m_currentSpline.AddCharacter(m_parentCharacter);
+    }
+
+    public void UpdatePhysics()
+    {
+        UpdateCollisions();
+
+        //Setup forwards direction
+        Vector3 desiredForwards = m_currentSpline.GetForwardsDir(transform.position);
+        float relativeDot = Vector3.Dot(desiredForwards, transform.forward);
+        if (relativeDot > 0)
+        {
+            transform.rotation = Quaternion.LookRotation(desiredForwards, Vector3.up);
+            m_currentSplinePercent += m_currentSpline.GetSplinePercent(m_parentCharacter.m_localVelocity.x * Time.deltaTime);
+        }
+        else
+        {
+            transform.rotation = Quaternion.LookRotation(-desiredForwards, Vector3.up);
+            m_currentSplinePercent += m_currentSpline.GetSplinePercent(-m_parentCharacter.m_localVelocity.x * Time.deltaTime);
+        }
+
+        Vector3 splinePosition = m_currentSpline.GetSplinePosition(m_currentSplinePercent);
+
+        //Check for ground collisions when falling
+        Vector3 position = transform.position;
+
+        position.x = splinePosition.x;
+        position.z = splinePosition.z;
+        position.y += m_parentCharacter.m_localVelocity.y * Time.deltaTime;
+
+        float distanceToGround = (transform.position.y - m_colliderExtents.y) - splinePosition.y;
+
+        //Override down collision dependant on spline collision
+        m_downCollision = distanceToGround < GROUND_DETECTION;
+
+        if (m_parentCharacter.m_localVelocity.y <= 0 && distanceToGround < 0)
+        {
+            //Set y-pos
+            position.y = splinePosition.y + m_colliderExtents.y;
+
+            //Grounded change y-component of velocity
+            m_parentCharacter.m_localVelocity.y = 0.0f;
+        }
+
+        transform.position = position;
+
     }
 
     public void UpdateCollisions()
@@ -88,33 +141,5 @@ public class CharacterCustomPhysics : MonoBehaviour
             return true; //Early breakout
 
         return false;
-    }
-
-    public void GroundCollisionCheck()
-    {
-        RaycastHit hit;
-
-        float groundCheckDistance = m_colliderExtents.y * 1.2f;
-
-        //Checking y for center
-        if (Physics.Raycast(transform.position, -m_parentCharacter.m_characterModel.transform.up, out hit, groundCheckDistance, LayerController.m_walkable))
-            GroundYSet(hit);
-        //Checking y for front
-        if (Physics.Raycast(transform.position + transform.forward * m_colliderExtents.x, -m_parentCharacter.m_characterModel.transform.up, out hit, groundCheckDistance, LayerController.m_walkable))
-            GroundYSet(hit);
-        //Checking y for back
-        if (Physics.Raycast(transform.position - transform.forward * m_colliderExtents.x, -m_parentCharacter.m_characterModel.transform.up, out hit, groundCheckDistance, LayerController.m_walkable))
-            GroundYSet(hit);
-    }
-
-    private void GroundYSet(RaycastHit p_hit)
-    {
-        //Set y-pos
-        Vector3 position = transform.position;
-        position.y = p_hit.point.y + m_colliderExtents.y;
-        transform.position = position;
-
-        //Grounded change y-component of velocity
-        m_parentCharacter.m_localVelocity.y = 0.0f;
     }
 }

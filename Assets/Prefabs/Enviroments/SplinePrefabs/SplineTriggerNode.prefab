@@ -9,60 +9,60 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1183810965150738}
+  m_RootGameObject: {fileID: 1468631223264824}
   m_IsPrefabAsset: 1
---- !u!1 &1183810965150738
+--- !u!1 &1468631223264824
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4684232317907116}
-  - component: {fileID: 114160434395486694}
-  - component: {fileID: 65143573240662648}
+  - component: {fileID: 4431470181099482}
+  - component: {fileID: 114683818667627234}
+  - component: {fileID: 65505660005677892}
   m_Layer: 0
-  m_Name: TowerTrigger
+  m_Name: SplineTriggerNode
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4684232317907116
+--- !u!4 &4431470181099482
 Transform:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1183810965150738}
+  m_GameObject: {fileID: 1468631223264824}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1.0000005}
+  m_LocalPosition: {x: 15.296565, y: 10.511118, z: 11.347712}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &65143573240662648
+--- !u!65 &65505660005677892
 BoxCollider:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1183810965150738}
+  m_GameObject: {fileID: 1468631223264824}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 12, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114160434395486694
+  m_Size: {x: 1, y: 5, z: 0}
+  m_Center: {x: 0, y: 2.5, z: 0}
+--- !u!114 &114683818667627234
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1183810965150738}
+  m_GameObject: {fileID: 1468631223264824}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdb1a853a6df042479a17c327fe6e2fa, type: 3}
+  m_Script: {fileID: 11500000, guid: 999e3ed32cec04549b6dc865d7ac4b93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_globalEntranceVector: {x: 1, y: 0, z: 0}
-  m_globalExitRotationVector: {x: 0, y: 0, z: 0}
+  m_forwardSpline: {fileID: 0}
+  m_backSpline: {fileID: 0}
