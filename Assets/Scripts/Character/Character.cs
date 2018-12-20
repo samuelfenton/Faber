@@ -126,6 +126,11 @@ public class Character : MonoBehaviour
     {
     }
 
+    public virtual NavigationController.TURNING GetDesiredTurning()
+    {
+        return NavigationController.TURNING.CENTER;
+    }
+
     public virtual NavigationController.FACING_DIR GetDesiredDirection()
     {
         return NavigationController.FACING_DIR.NORTH;

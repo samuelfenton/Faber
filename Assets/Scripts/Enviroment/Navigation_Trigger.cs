@@ -6,6 +6,13 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class Navigation_Trigger : MonoBehaviour
 {
+    [System.Serializable]
+    public struct SplineInfo
+    {
+        public Navigation_Spline m_spline;
+        public float m_splinePercent;
+    }
+
     static Vector3 triggerSize = new Vector3(1,5,0);
 
     //Determines the plane of collision
@@ -49,6 +56,19 @@ public class Navigation_Trigger : MonoBehaviour
             {
                 HandleTrigger(collidingCharacter, TRIGGER_DIRECTION.EXITING);
             }
+        }
+    }
+
+
+    protected void SwapSplines(Character p_character, Navigation_Spline p_newSpline, float p_newSplinePercent)
+    {
+        if (!p_newSpline.m_activeCharacters.Contains(p_character))
+        {
+            p_character.m_characterCustomPhysics.m_currentSpline.RemoveCharacter(p_character);
+            p_newSpline.AddCharacter(p_character);
+
+            p_character.m_characterCustomPhysics.m_currentSpline = p_newSpline;
+            p_character.m_characterCustomPhysics.m_currentSplinePercent = p_newSplinePercent;
         }
     }
 

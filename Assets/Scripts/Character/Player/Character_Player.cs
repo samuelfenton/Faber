@@ -32,16 +32,22 @@ public class Character_Player : Character
         }
     }
 
-    public override NavigationController.FACING_DIR GetDesiredDirection()
+    public override NavigationController.TURNING GetDesiredTurning()
     {
         //Right is negitive on vertical, left is positive
-        NavigationController.FACING_DIR currentDir = NavigationController.GetFacingDir(transform.forward);
         float verticalInput = m_inputController.GetAxisFloat(InputController.INPUT_AXIS.VERTICAL);
         if (verticalInput > 0)
-            return NavigationController.GetTurningDirection(currentDir, NavigationController.TURNING.LEFT);
+            return NavigationController.TURNING.LEFT;
         if (verticalInput < 0)
-            return NavigationController.GetTurningDirection(currentDir, NavigationController.TURNING.RIGHT);
-        return NavigationController.GetFacingDir(m_characterModel.transform.forward);
+            return NavigationController.TURNING.RIGHT;
+        return NavigationController.TURNING.CENTER;
+    }
+
+    public override NavigationController.FACING_DIR GetDesiredDirection()
+    {
+        NavigationController.FACING_DIR currentDir = NavigationController.GetFacingDir(transform.forward);
+
+        return NavigationController.GetTurningDirection(currentDir, GetDesiredTurning());
     }
 
 

@@ -6,6 +6,7 @@ public class Navigation_Spline_Line : Navigation_Spline
 {
     private Vector3 m_lineEquation = Vector3.zero;
     private Vector3 m_forwardsDir = Vector3.zero;
+
     public override void Start()
     {
         base.Start();
