@@ -17,9 +17,9 @@ public class Navigation_Spline_Curve : Navigation_Spline
     {
         base.Start();
 
-        float radius = m_splineStart.position.magnitude;
+        float radius = (m_splineStart.position - transform.position).magnitude;
 
-        m_splineLength = Mathf.PI * radius / (360/ m_totalDegrees); //Total = PI*r    90 degrees = total/4
+        m_splineLength = 2 * Mathf.PI * radius * (m_totalDegrees/360); //Total = PI*r    90 degrees = total/4
         m_startingOffset = m_splineStart.position - transform.position;
     }
 
