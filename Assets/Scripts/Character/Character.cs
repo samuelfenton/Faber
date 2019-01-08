@@ -53,10 +53,8 @@ public class Character : MonoBehaviour
 
     protected virtual void Start()
     {
-#if UNITY_EDITOR
-        if (m_gameController == null)
-            Debug.Log("Character " + this + " hasnt had game controller selected in inspector");
-#endif
+        m_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+
         m_characterCustomPhysics = GetComponent<CharacterCustomPhysics>();
         m_characterStateMachine = GetComponent<CharacterStateMachine>();
         m_characterAnimationController = GetComponentInChildren<CharacterAnimationController>();
@@ -126,13 +124,8 @@ public class Character : MonoBehaviour
     {
     }
 
-    public virtual NavigationController.TURNING GetDesiredTurning()
+    public virtual NavigationController.TURNING GetDesiredTurning(Vector3 p_triggerForwardVector)
     {
         return NavigationController.TURNING.CENTER;
-    }
-
-    public virtual NavigationController.FACING_DIR GetDesiredDirection()
-    {
-        return NavigationController.FACING_DIR.NORTH;
     }
 }

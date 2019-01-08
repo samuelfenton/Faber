@@ -32,23 +32,26 @@ public class Character_Player : Character
         }
     }
 
-    public override NavigationController.TURNING GetDesiredTurning()
+    public override NavigationController.TURNING GetDesiredTurning(Vector3 p_triggerForwardVector)
     {
-        //Right is negitive on vertical, left is positive
+        float relativeDot = Vector3.Dot(transform.forward, p_triggerForwardVector);
+
         float verticalInput = m_inputController.GetAxisFloat(InputController.INPUT_AXIS.VERTICAL);
-        if (verticalInput > 0)
-            return NavigationController.TURNING.LEFT;
-        if (verticalInput < 0)
-            return NavigationController.TURNING.RIGHT;
+
+        if(relativeDot <= 0)//Right is positive on vertical, left is negative
+        {
+            if (verticalInput > 0)
+                return NavigationController.TURNING.RIGHT;
+            if (verticalInput < 0)
+                return NavigationController.TURNING.LEFT;
+        }
+        else//Right is negative on vertical, left is positive
+        {
+            if (verticalInput > 0)
+                return NavigationController.TURNING.LEFT;
+            if (verticalInput < 0)
+                return NavigationController.TURNING.RIGHT;
+        }
         return NavigationController.TURNING.CENTER;
     }
-
-    public override NavigationController.FACING_DIR GetDesiredDirection()
-    {
-        NavigationController.FACING_DIR currentDir = NavigationController.GetFacingDir(transform.forward);
-
-        return NavigationController.GetTurningDirection(currentDir, GetDesiredTurning());
-    }
-
-
 }

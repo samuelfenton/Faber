@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class FadingShaderCompanionScript : MonoBehaviour
 {
-    public Texture m_modelTexture = null;
     private Transform m_playerTransform = null;
     private Material m_companionMaterial = null;
 
@@ -12,8 +11,6 @@ public class FadingShaderCompanionScript : MonoBehaviour
     {
         m_playerTransform = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
         m_companionMaterial = GetComponent<Renderer>().materials[0];
-
-        m_companionMaterial.SetTexture("_MainTex", m_modelTexture);
     }
 
     private void Update ()
