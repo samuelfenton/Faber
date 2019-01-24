@@ -51,6 +51,9 @@ public class Character : MonoBehaviour
 
     public Vector3 m_localVelocity = Vector3.zero;
 
+    protected CharacterInput m_characterInput = null;
+    public CharacterInput.InputState m_currentCharacterInput;
+
     protected virtual void Start()
     {
         m_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -58,6 +61,9 @@ public class Character : MonoBehaviour
         m_characterCustomPhysics = GetComponent<CharacterCustomPhysics>();
         m_characterStateMachine = GetComponent<CharacterStateMachine>();
         m_characterAnimationController = GetComponentInChildren<CharacterAnimationController>();
+
+        m_characterInput = GetComponent<CharacterInput>();
+        m_currentCharacterInput = m_characterInput.GetInputState();
 
         m_weapon = GetComponentInChildren<Weapon>();
 
@@ -68,6 +74,8 @@ public class Character : MonoBehaviour
 
     protected virtual void Update()
     {
+        m_currentCharacterInput = m_characterInput.GetInputState();
+
         //Apply Velocity
         m_localVelocity.y += PhysicsController.m_gravity * Time.deltaTime;
 
@@ -84,6 +92,7 @@ public class Character : MonoBehaviour
             m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
         }
 
+        m_characterStateMachine.UpdateStateMachine();
     }
 
     public bool IsAlive()
@@ -118,10 +127,6 @@ public class Character : MonoBehaviour
                 character.ModifyHealth(totalDamage);
             }
         }
-    }
-
-    public virtual void PerformCombo()
-    {
     }
 
     public virtual NavigationController.TURNING GetDesiredTurning(Vector3 p_triggerForwardVector)

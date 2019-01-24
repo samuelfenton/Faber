@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_Land : PlayerState
+public class CharacterState_Jump : CharacterState
 {
+    private float m_jumpSpeed = 10.0f;
+
     //-------------------
     //Initilse the state, runs only once at start
     //-------------------
     public override void StateInit()
     {
         base.StateInit();
-        m_stateType = CharacterStateMachine.STATE.LAND;
+        m_jumpSpeed = m_parentCharacter.m_jumpSpeed;
+
+        m_stateType = CharacterStateMachine.STATE.JUMP;
     }
 
     //-------------------
@@ -18,7 +22,11 @@ public class PlayerState_Land : PlayerState
     //-------------------
     public override void StateStart()
     {
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LAND, true);
+        Vector3 newVelocity = m_parentCharacter.m_localVelocity;
+        newVelocity.y = m_jumpSpeed;
+        m_parentCharacter.m_localVelocity = newVelocity;
+
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.JUMP, true);
     }
 
     //-------------------
@@ -36,7 +44,7 @@ public class PlayerState_Land : PlayerState
     //-------------------
     public override void StateEnd()
     {
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LAND, false);
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.JUMP, false);
     }
 
     //-------------------
@@ -46,6 +54,7 @@ public class PlayerState_Land : PlayerState
     //-------------------
     public override bool IsValid()
     {
-        return m_parentCharacter.m_characterCustomPhysics.m_downCollision;
+        //Able to jump while jump key is pressed, grounded, and no collision above
+        return m_parentCharacter.m_currentCharacterInput.m_jump && m_parentCharacter.m_characterCustomPhysics.m_downCollision && !m_parentCharacter.m_characterCustomPhysics.m_upCollision;
     }
 }

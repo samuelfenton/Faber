@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_LightAttack : PlayerState
+public class CharacterState_LightAttack : CharacterState
 {
     private float m_attackDistance = 1.0f;
     private float m_horizontalSpeedMax = 1.0f;
@@ -67,7 +67,7 @@ public class PlayerState_LightAttack : PlayerState
     //-------------------
     public override bool IsValid()
     {
-        return m_inputController.GetKeyInput(InputController.INPUT_KEY.ATTACK, InputController.INPUT_STATE.DOWNED);
+        return m_parentCharacter.m_currentCharacterInput.m_lightAttack;
     }
 
     //-------------------

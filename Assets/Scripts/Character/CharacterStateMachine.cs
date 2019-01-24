@@ -26,7 +26,7 @@ public class CharacterStateMachine : MonoBehaviour
 
     public void UpdateStateMachine()
     {
-        if(m_currentState.UpdateState())
+        if (m_currentState.UpdateState())
         {
             //Find next valid state
             foreach (CharacterState characterState in m_currentState.m_nextStates)

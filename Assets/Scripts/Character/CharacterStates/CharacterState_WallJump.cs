@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_WallJump : PlayerState
+public class CharacterState_WallJump : CharacterState
 {
     private float m_wallJumpVerticalSpeed = 5.0f;
     private float m_wallJumpHorizontalSpeed = 2.0f;
@@ -76,8 +76,8 @@ public class PlayerState_WallJump : PlayerState
     //-------------------
     public override bool IsValid()
     {
-        return 
-        m_inputController.GetKeyInput(InputController.INPUT_KEY.JUMP, InputController.INPUT_STATE.DOWNED) &&
+        return
+        m_parentCharacter.m_currentCharacterInput.m_jump &&
         (m_parentCharacter.m_characterCustomPhysics.m_forwardCollision || m_parentCharacter.m_characterCustomPhysics.m_backCollision) &&
         !m_parentCharacter.m_characterCustomPhysics.m_downCollision;
     }

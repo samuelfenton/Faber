@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_Idle : PlayerState
+public class CharacterState_Idle : CharacterState
 {
     //-------------------
     //Initilse the state, runs only once at start

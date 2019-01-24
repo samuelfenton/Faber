@@ -41,6 +41,10 @@ public class InputController : MonoBehaviour
 
     private void Update()
     {
+        //Todo, make menu
+        if (GetKeyInput(InputController.INPUT_KEY.CANCEL))
+            Application.Quit();
+
         for (int i = 0; i < (int)INPUT_KEY.INPUT_COUNT; i++)
         {
             UpdateKey(i);

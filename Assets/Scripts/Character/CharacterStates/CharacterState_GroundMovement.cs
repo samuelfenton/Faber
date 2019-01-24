@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_GroundMovement : PlayerState
+public class CharacterState_GroundMovement : CharacterState
 {
     private float m_horizontalSpeedMax = 1.0f;
     private float m_horizontalAcceleration = 1.0f;
@@ -40,7 +40,7 @@ public class PlayerState_GroundMovement : PlayerState
         //Movement
         Vector3 newVelocity = m_parentCharacter.m_localVelocity;
 
-        if(!m_inputController.GetAxisBool(InputController.INPUT_AXIS.HORIZONTAL)) //No input, slowdown
+        if(m_parentCharacter.m_currentCharacterInput.m_horizontal == 0.0f) //No input, slowdown
         {
             float deltaSpeed = m_horizontalDeacceleration * Time.deltaTime;
             if (deltaSpeed > Mathf.Abs(newVelocity.x))//Close enough to stopping this frame
@@ -50,7 +50,7 @@ public class PlayerState_GroundMovement : PlayerState
         }
         else//Input so normal movemnt
         {
-            newVelocity.x += m_horizontalAcceleration * m_inputController.GetAxisFloat(InputController.INPUT_AXIS.HORIZONTAL) * Time.deltaTime;
+            newVelocity.x += m_horizontalAcceleration * m_parentCharacter.m_currentCharacterInput.m_horizontal * Time.deltaTime;
             newVelocity.x = Mathf.Clamp(newVelocity.x, -m_horizontalSpeedMax, m_horizontalSpeedMax);
         }
 
@@ -76,6 +76,6 @@ public class PlayerState_GroundMovement : PlayerState
     //-------------------
     public override bool IsValid()
     {
-        return m_parentCharacter.m_characterCustomPhysics.m_downCollision && (m_parentCharacter.m_localVelocity.x != 0.0f || m_inputController.GetAxisBool(InputController.INPUT_AXIS.HORIZONTAL)) ;
+        return m_parentCharacter.m_characterCustomPhysics.m_downCollision && (m_parentCharacter.m_localVelocity.x != 0.0f || m_parentCharacter.m_currentCharacterInput.m_horizontal != 0.0f) ;
     }
 }

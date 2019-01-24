@@ -27,11 +27,11 @@
 		float3 _PlayerWorldPostion;
 
 		//Alpha value of object when needing to be faded
-		static float _FadeAlpha = 0.2;
+		static float _FadeAlpha = 0.08;
 
 		//Angle from camera-player vector to fragment-player in radians
 		//values should be in range -1 to 1
-		static float _RadiansFromPlayer = 0.2;
+		static float _RadiansFromPlayer = 0.1;
 
 		//Height difference between frag and player where fading is no longer needed
 		static float _HeightCuttoff = 1;

@@ -2,21 +2,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_Death : PlayerState
+public class CharacterState : MonoBehaviour
 {
+    public List<CharacterState> m_nextStates = new List<CharacterState>();
+    public CharacterStateMachine.STATE m_stateType = CharacterStateMachine.STATE.IDLE;
+
+    protected CharacterStateMachine m_parentStateMachine = null;
+    protected Character m_parentCharacter = null;
+    protected CharacterInput m_characterInput = null;
+
     //-------------------
     //Initilse the state, runs only once at start
     //-------------------
-    public override void StateInit()
+    public virtual void StateInit()
     {
-        base.StateInit();
-        m_stateType = CharacterStateMachine.STATE.DEATH;
+        m_parentStateMachine = GetComponent<CharacterStateMachine>();
+        m_parentCharacter = GetComponent<Character>();
+
+        m_characterInput = GetComponent<CharacterInput>();
     }
 
     //-------------------
     //When swapping to this state, this is called.
     //-------------------
-    public override void StateStart()
+    public virtual void StateStart()
     {
 
     }
@@ -26,7 +35,7 @@ public class PlayerState_Death : PlayerState
     //
     //Return bool: Has this state been completed, e.g. Attack has completed, idle would always return true 
     //-------------------
-    public override bool UpdateState()
+    public virtual bool UpdateState()
     {
         return true;
     }
@@ -34,7 +43,7 @@ public class PlayerState_Death : PlayerState
     //-------------------
     //When swapping to a new state, this is called.
     //-------------------
-    public override void StateEnd()
+    public virtual void StateEnd()
     {
 
     }
@@ -44,7 +53,7 @@ public class PlayerState_Death : PlayerState
     //
     //Return bool: Is this valid, e.g. Death requires players to have no health
     //-------------------
-    public override bool IsValid()
+    public virtual bool IsValid()
     {
         return false;
     }

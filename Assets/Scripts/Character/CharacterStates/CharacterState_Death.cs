@@ -2,23 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterState : MonoBehaviour
+public class CharacterState_Death : CharacterState
 {
-    public List<CharacterState> m_nextStates = new List<CharacterState>();
-    public CharacterStateMachine.STATE m_stateType = CharacterStateMachine.STATE.IDLE;
-
     //-------------------
     //Initilse the state, runs only once at start
     //-------------------
-    public virtual void StateInit()
+    public override void StateInit()
     {
-
+        base.StateInit();
+        m_stateType = CharacterStateMachine.STATE.DEATH;
     }
 
     //-------------------
     //When swapping to this state, this is called.
     //-------------------
-    public virtual void StateStart()
+    public override void StateStart()
     {
 
     }
@@ -28,7 +26,7 @@ public class CharacterState : MonoBehaviour
     //
     //Return bool: Has this state been completed, e.g. Attack has completed, idle would always return true 
     //-------------------
-    public virtual bool UpdateState()
+    public override bool UpdateState()
     {
         return true;
     }
@@ -36,7 +34,7 @@ public class CharacterState : MonoBehaviour
     //-------------------
     //When swapping to a new state, this is called.
     //-------------------
-    public virtual void StateEnd()
+    public override void StateEnd()
     {
 
     }
@@ -46,8 +44,8 @@ public class CharacterState : MonoBehaviour
     //
     //Return bool: Is this valid, e.g. Death requires players to have no health
     //-------------------
-    public virtual bool IsValid()
+    public override bool IsValid()
     {
-        return false;
+        return !m_parentCharacter.IsAlive();
     }
 }

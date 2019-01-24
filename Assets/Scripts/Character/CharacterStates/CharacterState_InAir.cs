@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_InAir : PlayerState
+public class CharacterState_InAir : CharacterState
 {
     private bool m_doubleJump = true;
 
@@ -44,11 +44,11 @@ public class PlayerState_InAir : PlayerState
         //Movement
         Vector3 newVelocity = m_parentCharacter.m_localVelocity;
 
-        newVelocity.x += m_horizontalAcceleration * m_inputController.GetAxisFloat(InputController.INPUT_AXIS.HORIZONTAL) * Time.deltaTime;
+        newVelocity.x += m_horizontalAcceleration * m_parentCharacter.m_currentCharacterInput.m_horizontal * Time.deltaTime;
         newVelocity.x = Mathf.Clamp(newVelocity.x, -m_horizontalSpeedMax, m_horizontalSpeedMax);
 
         //Double Jump
-        if (m_doubleJump && m_inputController.GetKeyInput(InputController.INPUT_KEY.JUMP, InputController.INPUT_STATE.DOWNED))
+        if (m_doubleJump && m_parentCharacter.m_currentCharacterInput.m_jump)
         {
             m_doubleJump = false;
             newVelocity.y = m_doubleJumpSpeed;
