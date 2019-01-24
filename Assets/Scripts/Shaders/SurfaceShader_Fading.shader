@@ -26,6 +26,16 @@
         sampler2D _MainTex;
 		float3 _PlayerWorldPostion;
 
+		//Alpha value of object when needing to be faded
+		static float _FadeAlpha = 0.2;
+
+		//Angle from camera-player vector to fragment-player in radians
+		//values should be in range -1 to 1
+		static float _RadiansFromPlayer = 0.2;
+
+		//Height difference between frag and player where fading is no longer needed
+		static float _HeightCuttoff = 1;
+
         struct Input
         {
             float2 uv_MainTex;
@@ -51,7 +61,7 @@
 			float cameraToObjectDot = dot(normalize(cameraToPlayer), normalize(playerToFrag));
 
 			//Only obscure objects which are between player and camera and higher than player, e.g dont obscure ground.
-			o.Alpha = cameraToObjectDot >= 0.6 && playerToFrag.y < -0.1 ? 0.3 : 1;
+			o.Alpha = cameraToObjectDot >= _RadiansFromPlayer && playerToFrag.y < _HeightCuttoff ? _FadeAlpha : 1;
         }
         ENDCG
     }

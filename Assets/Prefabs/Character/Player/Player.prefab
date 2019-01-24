@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 4188590013953960}
   - component: {fileID: 33561062339494958}
   - component: {fileID: 23770076031450140}
+  - component: {fileID: 1863964365}
   m_Layer: 0
   m_Name: Dagger
   m_TagString: Untagged
@@ -87,8 +88,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 53aab2832a1fa7c49b95d891c6c182a8, type: 2}
+  m_Materials: []
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -108,6 +108,22 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &1863964365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1019501169191468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b14b3e400987ab04982e650e0d29e01d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_voxel: {fileID: 904737219738579102, guid: 435488760295d8c4c961e8a255ad9854, type: 3}
+  m_voxelSize: 0.1
+  m_voxelComputeShader: {fileID: 7200000, guid: 1462c3a4671caad4994ba994e918f3a5,
+    type: 3}
 --- !u!1 &1022284719920320
 GameObject:
   m_ObjectHideFlags: 0
@@ -673,6 +689,7 @@ GameObject:
   - component: {fileID: 4780777831806186}
   - component: {fileID: 95869369857301116}
   - component: {fileID: 114339389431195854}
+  - component: {fileID: 655689532}
   m_Layer: 0
   m_Name: voxelCharacterBaseModel
   m_TagString: Untagged
@@ -735,6 +752,22 @@ MonoBehaviour:
   m_canCombo: 0
   m_currentAnimation: 0
   m_animator: {fileID: 0}
+--- !u!114 &655689532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662067591425320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d36136e1ee1755449821ae869860fa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_voxel: {fileID: 904737219738579102, guid: d9f8bf52f4bc4544eb934552238c5c51, type: 3}
+  m_voxelSize: 0.1
+  m_voxelComputeShader: {fileID: 7200000, guid: 1462c3a4671caad4994ba994e918f3a5,
+    type: 3}
 --- !u!1 &1666522654678068
 GameObject:
   m_ObjectHideFlags: 0
@@ -960,15 +993,14 @@ SkinnedMeshRenderer:
   m_GameObject: {fileID: 1784304874936534}
   m_Enabled: 1
   m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: f778d18836511f044927085546b6af32, type: 2}
+  m_Materials: []
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -991,7 +1023,7 @@ SkinnedMeshRenderer:
   serializedVersion: 2
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
-  m_SkinnedMotionVectors: 1
+  m_SkinnedMotionVectors: 0
   m_Mesh: {fileID: 4300000, guid: 07d418f1d80b7b1498988c8b5a257126, type: 3}
   m_Bones:
   - {fileID: 4358443586248384}

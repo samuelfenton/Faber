@@ -1,0 +1,113 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel Voxelise
+
+float PARAM_gridSize;
+
+float4x4 IN_transformMatrix;
+
+StructuredBuffer<float3> IN_verts;
+StructuredBuffer<int> IN_tris;
+
+RWStructuredBuffer<int> OUT_voxelCount;
+AppendStructuredBuffer<float3> OUT_voxelPositions;
+
+float3 GetGlobalPosition(float3 p_position);
+float3 SnapToGrid(float3 p_position);
+void DrawTri(float3 p_point1, float3 p_point2, float3 p_point3);
+float GetHighest(float p_val1, float p_val2, float p_val3);
+float GetLowest(float p_val1, float p_val2, float p_val3);
+
+[numthreads(8, 1, 1)]
+void Voxelise(uint3 id : SV_DispatchThreadID)
+{
+	int tri0Vert = id.x * 3 + 0;
+	int tri1Vert = id.x * 3 + 1;
+	int tri2Vert = id.x * 3 + 2;
+
+	DrawTri(GetGlobalPosition(IN_verts[IN_tris[tri0Vert]]), GetGlobalPosition(IN_verts[IN_tris[tri1Vert]]), GetGlobalPosition(IN_verts[IN_tris[tri2Vert]]));
+}
+
+//--------------------
+//	Convert from local to world postion
+//	Build voxels for single tri, based off world positions
+//	params:
+//		p_position - World position of a given voxel 
+//	return:
+//		float3 - Postioned in global space
+//--------------------
+float3 GetGlobalPosition(float3 p_position)
+{
+	return mul(IN_transformMatrix, float4(p_position, 1)).xyz;
+}
+
+//--------------------
+//	Snap to postion grid
+//	params:
+//		p_position - World position of a given voxel 
+//	return:
+//		float3 - Postioned "Snapped" to a world grid with increments of PARAM_gridSize 
+//--------------------
+float3 SnapToGrid(float3 p_position)
+{
+	p_position.x -= p_position.x < 0 ? p_position.x % -PARAM_gridSize : p_position.x % PARAM_gridSize;
+	p_position.y -= p_position.y < 0 ? p_position.y % -PARAM_gridSize : p_position.y % PARAM_gridSize;
+	p_position.z -= p_position.x < 0 ? p_position.z % -PARAM_gridSize : p_position.z % PARAM_gridSize;
+
+	return p_position;
+}
+
+//--------------------
+//	Build Trianlge of voxels
+//  Algoritum based off Barycentric rasterization
+//  TODO change to using Bresenham's line algoritum, line sweeping, and split tri. 
+//	Example found here "https://www.mathworks.com/matlabcentral/fileexchange/21057-3d-bresenham-s-line-generation", ":https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling"
+//	params:
+//		p_pointA - Tri vert 1
+//		p_pointB - Tri vert 2
+//		p_pointC - Tri vert 3
+//--------------------
+void DrawTri(float3 p_pointA, float3 p_pointB, float3 p_pointC)
+{
+	int stepCount = 4;
+
+	float3 a2bStep = (p_pointB - p_pointA) / stepCount;
+	float3 b2cStep = (p_pointC - p_pointB) / stepCount;
+	float3 c2aStep = (p_pointA - p_pointC) / stepCount;
+
+	for (int i = 0; i < stepCount; i++)
+	{
+		OUT_voxelPositions.Append(SnapToGrid(p_pointA + i * a2bStep));
+		OUT_voxelPositions.Append(SnapToGrid(p_pointB + i * b2cStep));
+		OUT_voxelPositions.Append(SnapToGrid(p_pointC + i * c2aStep));
+	}
+}
+
+//--------------------
+//	Get highest of 3 values
+//	params:
+//		p_val1 - First to compare with
+//		p_val2 - Second to compare with
+//		p_val3 - Third to compare with
+//	return:
+//		float - Highest of the three values
+//--------------------
+float GetHighest(float p_val1, float p_val2, float p_val3)
+{
+	//current highest = p_val2 > p_val3 ? p_val2 : p_val3
+	return p_val1 > (p_val2 > p_val3 ? p_val2 : p_val3) ? p_val1 : (p_val2 > p_val3 ? p_val2 : p_val3);
+}
+
+//--------------------
+//	Get lowest of 3 values
+//	params:
+//		p_val1 - First to compare with
+//		p_val2 - Second to compare with
+//		p_val3 - Third to compare with
+//	return:
+//		float - Lowest of the three values
+//--------------------
+float GetLowest(float p_val1, float p_val2, float p_val3)
+{
+	//current lowest = p_val2 < p_val3 ? p_val2 : p_val3
+	return p_val1 < (p_val2 < p_val3 ? p_val2 : p_val3) ? p_val1 : (p_val2 < p_val3 ? p_val2 : p_val3);
+}
