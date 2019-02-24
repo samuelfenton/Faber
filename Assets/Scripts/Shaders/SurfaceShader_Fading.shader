@@ -3,7 +3,7 @@
     Properties
     {
 		_MainTex("Texture", 2D) = "white" {}
-		_PlayerWorldPostion("Player World Postion", Vector) = (0,0,0,1)
+		_PlayerWorldPostion("Player World Postion", Vector) = (0,1000,0,1)
     }
     SubShader
     { 
@@ -27,14 +27,14 @@
 		float3 _PlayerWorldPostion;
 
 		//Alpha value of object when needing to be faded
-		static float _FadeAlpha = 0.08;
+		static float _FadeAlpha = 0.04;
 
 		//Angle from camera-player vector to fragment-player in radians
 		//values should be in range -1 to 1
-		static float _RadiansFromPlayer = 0.1;
+		static float _RadiansFromPlayer = 0.4;
 
 		//Height difference between frag and player where fading is no longer needed
-		static float _HeightCuttoff = 1;
+		static float _HeightCuttoff = 0;
 
         struct Input
         {
@@ -55,9 +55,11 @@
             o.Albedo = c.rgb;
             
 			float3 cameraToPlayer = _PlayerWorldPostion - _WorldSpaceCameraPos;
-			//cameraToPlayer.y = 0;
+
 			float3 playerToFrag = _PlayerWorldPostion - IN.worldPos;
-			//playerToFrag.y = 0;
+
+			cameraToPlayer.y = playerToFrag.y;//Dont worry about y difference
+
 			float cameraToObjectDot = dot(normalize(cameraToPlayer), normalize(playerToFrag));
 
 			//Only obscure objects which are between player and camera and higher than player, e.g dont obscure ground.
