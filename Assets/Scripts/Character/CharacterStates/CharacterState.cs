@@ -11,6 +11,8 @@ public class CharacterState : MonoBehaviour
     protected Character m_parentCharacter = null;
     protected CharacterInput m_characterInput = null;
 
+    protected CharacterAnimationController m_characterAnimationController = null;
+
     //-------------------
     //Initilse the state, runs only once at start
     //-------------------
@@ -20,6 +22,8 @@ public class CharacterState : MonoBehaviour
         m_parentCharacter = GetComponent<Character>();
 
         m_characterInput = GetComponent<CharacterInput>();
+
+        m_characterAnimationController = GetComponentInChildren<CharacterAnimationController>();
     }
 
     //-------------------

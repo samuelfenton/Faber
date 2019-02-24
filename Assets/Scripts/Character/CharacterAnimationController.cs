@@ -14,7 +14,7 @@ public class CharacterAnimationController : MonoBehaviour
     public Dictionary<TRIGGERS, string> m_triggerStringDicitonary = new Dictionary<TRIGGERS, string>();
 
     private Character m_parentCharacter = null;
-    public bool m_currentlyAnimating = false;
+
     public bool m_canCombo = false;
     public ANIMATIONS m_currentAnimation = ANIMATIONS.LOCOMOTION;
     public Animator m_animator = null;
@@ -46,7 +46,6 @@ public class CharacterAnimationController : MonoBehaviour
     public void SetBool(ANIMATIONS p_animation, bool p_val)
     {
         m_currentAnimation = p_animation;
-        m_currentlyAnimating = p_val;
 
         m_animator.SetBool(m_animationStringDicitonary[p_animation], p_val);
     }
@@ -61,9 +60,9 @@ public class CharacterAnimationController : MonoBehaviour
         m_animator.SetFloat(m_varibleStringDicitonary[p_varible], p_val);
     }
 
-    public void EndOfAnimation()
+    public bool EndOfAnimation()
     {
-        m_currentlyAnimating = false;
+        return m_animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1;
     }
 
     public void ComboAttack()

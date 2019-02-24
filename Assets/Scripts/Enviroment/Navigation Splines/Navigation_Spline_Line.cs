@@ -11,7 +11,7 @@ public class Navigation_Spline_Line : Navigation_Spline
     {
         base.Start();
 
-        m_lineEquation = m_splineEnd.position - m_splineStart.position;
+        m_lineEquation = m_splineEnd.transform.position - m_splineStart.transform.position;
         m_splineLength = m_lineEquation.magnitude;
 
         //Setup forwards direction
@@ -22,7 +22,7 @@ public class Navigation_Spline_Line : Navigation_Spline
 
     public override Vector3 GetSplinePosition(float p_splinePercent)
     {
-        return m_splineStart.position + p_splinePercent * m_lineEquation;
+        return m_splineStart.transform.position + p_splinePercent * m_lineEquation;
     }
 
     public override Vector3 GetForwardsDir(Vector3 p_splinePosition)
@@ -34,10 +34,10 @@ public class Navigation_Spline_Line : Navigation_Spline
     {
         //Draw line
         Gizmos.color = Color.blue;
-        Gizmos.DrawLine(m_splineStart.position, m_splineEnd.position);
+        Gizmos.DrawLine(m_splineStart.transform.position, m_splineEnd.transform.position);
 
         //Draw start side
-        Vector3 startDisplayPos = m_splineStart.position + (m_splineEnd.position - m_splineStart.position) * 0.1f;
+        Vector3 startDisplayPos = m_splineStart.transform.position + (m_splineEnd.transform.position - m_splineStart.transform.position) * 0.1f;
 
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(startDisplayPos, 0.2f);

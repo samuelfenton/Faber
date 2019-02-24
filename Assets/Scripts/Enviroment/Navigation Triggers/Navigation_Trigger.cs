@@ -17,6 +17,8 @@ public class Navigation_Trigger : MonoBehaviour
     protected Vector3 m_globalEntranceVector = Vector3.zero;
     protected Vector4 m_planeEquation = Vector4.zero;
 
+    public List<Navigation_Spline> m_adjacentSplines = new List<Navigation_Spline>();
+
     protected void SetupBoxCollider()
     {
         BoxCollider boxCol = GetComponent<BoxCollider>();
@@ -78,5 +80,4 @@ public class Navigation_Trigger : MonoBehaviour
     {
 
     }
-
 }

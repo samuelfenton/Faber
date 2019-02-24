@@ -9,20 +9,26 @@ public class Navigation_Trigger_One2One : Navigation_Trigger
 
     protected override void Start()
     {
-#if UNITY_EDITOR
         if(m_forwardSplineInfo.m_spline == null || m_backwardSplineInfo.m_spline == null)
         {
+            #if UNITY_EDITOR
             Debug.Log("One to One spline trigger has no attached splines");
+            #endif
         }
         else //Connected splines exist, so set up percentages of connected splines for when exiting
         {
             if (m_backwardSplineInfo.m_spline != null)
-                m_backwardSplineInfo.m_splinePercent = m_backwardSplineInfo.m_spline.GetPositionOfSplineTransform(transform);
+            {
+                m_backwardSplineInfo.m_splinePercent = m_backwardSplineInfo.m_spline.GetPositionOfSplineTransform(this);
+                m_adjacentSplines.Add(m_backwardSplineInfo.m_spline);
+            }
 
             if (m_forwardSplineInfo.m_spline != null)
-                m_forwardSplineInfo.m_splinePercent = m_forwardSplineInfo.m_spline.GetPositionOfSplineTransform(transform);
+            {
+                m_forwardSplineInfo.m_splinePercent = m_forwardSplineInfo.m_spline.GetPositionOfSplineTransform(this);
+                m_adjacentSplines.Add(m_forwardSplineInfo.m_spline);
+            }
         }
-#endif
         base.Start();
     }
 

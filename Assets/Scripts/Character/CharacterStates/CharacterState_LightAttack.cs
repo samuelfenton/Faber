@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class CharacterState_LightAttack : CharacterState
 {
-    private float m_attackDistance = 1.0f;
     private float m_horizontalSpeedMax = 1.0f;
     private float m_horizontalDeacceleration = 1.0f;
 
@@ -47,9 +46,9 @@ public class CharacterState_LightAttack : CharacterState
 
         m_parentCharacter.m_localVelocity = newVelocity;
 
-        m_parentCharacter.m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.MOVEMENT_SPEED, Mathf.Abs(newVelocity.x / m_horizontalSpeedMax));
+        m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.MOVEMENT_SPEED, Mathf.Abs(newVelocity.x / m_horizontalSpeedMax));
 
-        return !m_parentCharacter.m_characterAnimationController.m_currentlyAnimating;
+        return m_characterAnimationController.EndOfAnimation();
     }
 
     //-------------------
@@ -57,7 +56,7 @@ public class CharacterState_LightAttack : CharacterState
     //-------------------
     public override void StateEnd()
     {
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, false);
+        m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, false);
     }
 
     //-------------------
@@ -75,6 +74,7 @@ public class CharacterState_LightAttack : CharacterState
     //-------------------
     public void PerformCombo()
     {
-        m_parentCharacter.m_characterAnimationController.SetTrigger(CharacterAnimationController.TRIGGERS.LIGHT_ATTACK_COMBO);
+        if(m_characterInput.GetInputState().m_lightCombo)
+            m_characterAnimationController.SetTrigger(CharacterAnimationController.TRIGGERS.LIGHT_ATTACK_COMBO);
     }
 }

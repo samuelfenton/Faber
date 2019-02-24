@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2768924277635456094}
   - component: {fileID: 3762699539839753747}
   - component: {fileID: 8323200677179758760}
+  - component: {fileID: 534440636728503440}
   m_Layer: 0
   m_Name: Voxel
   m_TagString: Untagged
@@ -77,3 +78,16 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &534440636728503440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904737219738579102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29b5c748c3d364cea8f3d3ebd2cebcbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_voxelMaterial: {fileID: 0}

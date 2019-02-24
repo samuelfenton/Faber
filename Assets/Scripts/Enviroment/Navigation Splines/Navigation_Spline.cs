@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Navigation_Spline : MonoBehaviour
 {
-    public Transform m_splineStart = null;
-    public Transform m_splineEnd = null;
+    public Navigation_Trigger m_splineStart = null;
+    public Navigation_Trigger m_splineEnd = null;
 
     [HideInInspector]
     public float m_splineLength = 1.0f;
@@ -45,9 +45,9 @@ public class Navigation_Spline : MonoBehaviour
             m_activeCharacters.Remove(p_character);
     }
 
-    public float GetPositionOfSplineTransform(Transform p_splineTransform)
+    public float GetPositionOfSplineTransform(Navigation_Trigger p_spline)
     {
-        if (p_splineTransform == m_splineStart)
+        if (p_spline == m_splineStart)
             return 0;
         return 1;
     }

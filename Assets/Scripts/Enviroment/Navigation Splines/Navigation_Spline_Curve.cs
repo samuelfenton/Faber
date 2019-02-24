@@ -20,16 +20,16 @@ public class Navigation_Spline_Curve : Navigation_Spline
     {
         base.Start();
 
-        float radius = (m_splineStart.position - transform.position).magnitude;
+        float radius = (m_splineStart.transform.position - transform.position).magnitude;
 
         m_splineLength = 2 * Mathf.PI * radius * (m_totalDegrees/360); //Total = PI*r    90 degrees = total/4
-        m_startingOffset = m_splineStart.position - transform.position;
+        m_startingOffset = m_splineStart.transform.position - transform.position;
     }
 
     public override Vector3 GetSplinePosition(float p_splinePercent)
     {
         Quaternion rotAngle = Quaternion.AngleAxis(m_totalDegrees * p_splinePercent * (int)m_rotationDirection, Vector3.up);
-        float heightStep = (m_splineEnd.position.y - m_splineStart.position.y) * p_splinePercent;
+        float heightStep = (m_splineEnd.transform.position.y - m_splineStart.transform.position.y) * p_splinePercent;
 
         Vector3 splinePosition = transform.position + rotAngle * m_startingOffset;
         splinePosition.y = transform.position.y + heightStep;
@@ -51,12 +51,12 @@ public class Navigation_Spline_Curve : Navigation_Spline
 
         Gizmos.color = Color.blue;
 
-        Vector3 startingVector = m_splineStart.position - transform.position;
+        Vector3 startingVector = m_splineStart.transform.position - transform.position;
         Vector3 nextVector = Vector3.zero;
 
         Quaternion rotAngle = Quaternion.AngleAxis(m_totalDegrees / DEBUG_STEPS * (int)m_rotationDirection, Vector3.up);
 
-        float heightStep = (m_splineEnd.position.y - m_splineStart.position.y) / DEBUG_STEPS;
+        float heightStep = (m_splineEnd.transform.position.y - m_splineStart.transform.position.y) / DEBUG_STEPS;
         //Loop through approximating circle, every (m_totalDegrees / DEBUG_STEPS) degrees
         for (int i = 0; i < DEBUG_STEPS; i++)
         {
@@ -67,7 +67,7 @@ public class Navigation_Spline_Curve : Navigation_Spline
         }
 
         //Draw start side
-        Vector3 startDisplayPos = transform.position + (rotAngle * (m_splineStart.position - transform.position)) + new Vector3(0.0f, heightStep, 0.0f);
+        Vector3 startDisplayPos = transform.position + (rotAngle * (m_splineStart.transform.position - transform.position)) + new Vector3(0.0f, heightStep, 0.0f);
 
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(startDisplayPos, 0.2f);

@@ -28,7 +28,7 @@ public class CharacterState_Land : CharacterState
     //-------------------
     public override bool UpdateState()
     {
-        return !m_parentCharacter.m_characterAnimationController.m_currentlyAnimating;
+        return m_characterAnimationController.EndOfAnimation();
     }
 
     //-------------------

@@ -11,24 +11,36 @@ public class Navigation_Trigger_Junction : Navigation_Trigger
 
     protected override void Start()
     {
-#if UNITY_EDITOR
         if ((m_forwardSplineInfo.m_spline == null && m_forwardRightSplineInfo.m_spline == null && m_forwardLeftSplineInfo.m_spline == null) || m_backwardSplineInfo.m_spline == null)
         {
+            #if UNITY_EDITOR
             Debug.Log("Junction trigger is missing exit spline or at least one entering spline");
+            #endif
         }
         else //Connected splines exist, so set up percentages of connected splines for when exiting
         {
             if(m_backwardSplineInfo.m_spline != null)
-                m_backwardSplineInfo.m_splinePercent = m_backwardSplineInfo.m_spline.GetPositionOfSplineTransform(transform);
+            {
+                m_backwardSplineInfo.m_splinePercent = m_backwardSplineInfo.m_spline.GetPositionOfSplineTransform(this);
+                m_adjacentSplines.Add(m_backwardSplineInfo.m_spline);
+            }
 
             if (m_forwardSplineInfo.m_spline != null)
-                m_forwardSplineInfo.m_splinePercent = m_forwardSplineInfo.m_spline.GetPositionOfSplineTransform(transform);
+            {
+                m_forwardSplineInfo.m_splinePercent = m_forwardSplineInfo.m_spline.GetPositionOfSplineTransform(this);
+                m_adjacentSplines.Add(m_forwardSplineInfo.m_spline);
+            }
             if (m_forwardRightSplineInfo.m_spline != null)
-                m_forwardRightSplineInfo.m_splinePercent = m_forwardRightSplineInfo.m_spline.GetPositionOfSplineTransform(transform);
+            {
+                m_forwardRightSplineInfo.m_splinePercent = m_forwardRightSplineInfo.m_spline.GetPositionOfSplineTransform(this);
+                m_adjacentSplines.Add(m_forwardRightSplineInfo.m_spline);
+            }
             if (m_forwardLeftSplineInfo.m_spline != null)
-                m_forwardLeftSplineInfo.m_splinePercent = m_forwardLeftSplineInfo.m_spline.GetPositionOfSplineTransform(transform);
+            {
+                m_forwardLeftSplineInfo.m_splinePercent = m_forwardLeftSplineInfo.m_spline.GetPositionOfSplineTransform(this);
+                m_adjacentSplines.Add(m_forwardLeftSplineInfo.m_spline);
+            }
         }
-#endif
         base.Start();
     }
 

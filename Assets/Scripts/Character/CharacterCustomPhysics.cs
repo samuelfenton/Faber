@@ -63,7 +63,7 @@ public class CharacterCustomPhysics : MonoBehaviour
         position.z = splinePosition.z;
         position.y += m_parentCharacter.m_localVelocity.y * Time.deltaTime;
 
-        float distanceToGround = (transform.position.y - m_colliderExtents.y) - splinePosition.y;
+        float distanceToGround = transform.position.y - splinePosition.y;
 
         //Override down collision dependant on spline collision
         m_downCollision = distanceToGround < GROUND_DETECTION;
@@ -71,7 +71,7 @@ public class CharacterCustomPhysics : MonoBehaviour
         if (m_parentCharacter.m_localVelocity.y <= 0 && distanceToGround < 0)
         {
             //Set y-pos
-            position.y = splinePosition.y + m_colliderExtents.y;
+            position.y = splinePosition.y;
 
             //Grounded change y-component of velocity
             m_parentCharacter.m_localVelocity.y = 0.0f;
@@ -83,11 +83,13 @@ public class CharacterCustomPhysics : MonoBehaviour
 
     public void UpdateCollisions()
     {
-        m_upCollision = CollidingVertical(m_colliderExtents.y, transform.up, transform.forward * m_colliderExtents.x * 0.9f);
-        m_downCollision = CollidingVertical(m_colliderExtents.y, -transform.up, transform.forward * m_colliderExtents.x * 0.9f);
+        Vector3 centerPos = transform.position + Vector3.up * m_colliderExtents.y;
 
-        m_forwardCollision = CollidingHorizontal(m_colliderExtents.x * 1.1f, transform.forward, transform.up * m_colliderExtents.y);
-        m_backCollision = CollidingHorizontal(m_colliderExtents.x * 1.1f, -transform.forward, transform.up * m_colliderExtents.y);
+        m_upCollision = CollidingVertical(transform.up, centerPos);
+        m_downCollision = CollidingVertical(-transform.up, centerPos);
+
+        m_forwardCollision = CollidingHorizontal(transform.forward, centerPos);
+        m_backCollision = CollidingHorizontal(-transform.forward, centerPos);
 
         UpdateCollisionVelocity();
     }
@@ -111,35 +113,35 @@ public class CharacterCustomPhysics : MonoBehaviour
         }
     }
 
-    public bool CollidingVertical(float p_colliderExtent, Vector3 p_direction, Vector3 p_startingOffset)
+    public bool CollidingVertical(Vector3 p_direction, Vector3 p_centerPos)
     {
         //Forward raycast
-        if (Physics.Raycast(transform.position + p_startingOffset, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_walkable))
+        if (Physics.Raycast(p_centerPos + Vector3.forward * m_colliderExtents.x, p_direction, m_colliderExtents.y + m_collisionDetection, LayerController.m_walkable))
             return true; //Early breakout
 
         //Back raycast
-        if (Physics.Raycast(transform.position - p_startingOffset, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_walkable))
+        if (Physics.Raycast(p_centerPos* m_colliderExtents.x, p_direction, m_colliderExtents.y + m_collisionDetection, LayerController.m_walkable))
             return true; //Early breakout
 
         //Center raycast
-        if (Physics.Raycast(transform.position, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_walkable))
+        if (Physics.Raycast(p_centerPos - Vector3.forward * m_colliderExtents.x, p_direction, m_colliderExtents.y + m_collisionDetection, LayerController.m_walkable))
             return true; //Early breakout
 
         return false;
     }
 
-    public bool CollidingHorizontal(float p_colliderExtent, Vector3 p_direction, Vector3 p_startingOffset)
+    public bool CollidingHorizontal(Vector3 p_direction, Vector3 p_centerPos)
     {
-        //Center raycast
-        if (Physics.Raycast(transform.position, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_walkable))
+        //Top raycast
+        if (Physics.Raycast(p_centerPos + Vector3.up * m_colliderExtents.x, p_direction, m_colliderExtents.z + m_collisionDetection, LayerController.m_walkable))
             return true; //Early breakout
 
-        //Top raycast
-        if (Physics.Raycast(transform.position + p_startingOffset, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_walkable))
+        //Center raycast
+        if (Physics.Raycast(p_centerPos * m_colliderExtents.x, p_direction, m_colliderExtents.z + m_collisionDetection, LayerController.m_walkable))
             return true; //Early breakout
 
         //Bottom raycast, starting offset has been modified, to all moving up inclines
-        if (Physics.Raycast(transform.position + p_startingOffset, p_direction, p_colliderExtent + m_collisionDetection, LayerController.m_walkable))
+        if (Physics.Raycast(p_centerPos - Vector3.up * m_colliderExtents.x, p_direction, m_colliderExtents.z + m_collisionDetection, LayerController.m_walkable))
             return true; //Early breakout
 
         return false;
