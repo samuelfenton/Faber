@@ -58,13 +58,14 @@ public class VoxeliserHandler_Trail : VoxeliserHandler
 
         //Decided trailing effect
         Vector3 trailingDir = GetTrailDirection().normalized;
+        float trailingSpeed = GetTrailSpeed();
         float chanceOfTrailing = GetChanceOfTrailing();
 
         if (m_voxelsInUse.TryGetValue(p_position, out removedVoxel))
         {
             if (Random.Range(0f, 100f) < chanceOfTrailing)
             {
-                ((Voxel_Trailing)removedVoxel).ApplyTrail(trailingDir, m_trailingSpeed);
+                ((Voxel_Trailing)removedVoxel).ApplyTrail(trailingDir, trailingSpeed);
             }
             else
                 FreedVoxel(removedVoxel);
@@ -92,6 +93,16 @@ public class VoxeliserHandler_Trail : VoxeliserHandler
     public virtual float GetChanceOfTrailing()
     {
         return m_chanceOfTrailing;
+    }
+
+    //--------------------
+    //  Get voxel speed
+    //  return:
+    //      float - Varible m_trailingSpeed
+    //--------------------
+    public virtual float GetTrailSpeed()
+    {
+        return m_trailingSpeed;
     }
 
     //--------------------

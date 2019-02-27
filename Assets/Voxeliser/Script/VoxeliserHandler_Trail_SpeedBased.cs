@@ -8,6 +8,8 @@ public class VoxeliserHandler_Trail_SpeedBased : VoxeliserHandler_Trail
     public float m_minChanceToEmit = 0.0f;
     public float m_maxChanceToEmit = 5.0f;
 
+    private float m_currentSpeedPercent = 0.0f;
+
     //--------------------
     //  Get trail direction
     //  param:
@@ -18,6 +20,7 @@ public class VoxeliserHandler_Trail_SpeedBased : VoxeliserHandler_Trail
     {
         m_trailDirection = p_velocity; //Go backwards from the velocity
         m_chanceOfTrailing = m_minChanceToEmit + p_percentToMaxVelocity * (m_maxChanceToEmit - m_minChanceToEmit);
+        m_currentSpeedPercent = p_percentToMaxVelocity;
     }
 
     //--------------------
@@ -28,5 +31,15 @@ public class VoxeliserHandler_Trail_SpeedBased : VoxeliserHandler_Trail
     public override Vector3 GetTrailDirection()
     {
         return m_trailDirection;
+    }
+
+    //--------------------
+    //  Get voxel speed
+    //  return:
+    //      float - Varible m_trailingSpeed
+    //--------------------
+    public override float GetTrailSpeed()
+    {
+        return m_trailingSpeed * m_currentSpeedPercent;
     }
 }
