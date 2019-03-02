@@ -15,5 +15,5 @@ public class GameController : MonoBehaviour
     //Return bool:
     //-------------------
     public LevelController m_levelController = null;
-    public InputController m_inputController = null;
+    public PlayerInputController m_inputController = null;
 }

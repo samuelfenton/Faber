@@ -43,4 +43,12 @@ public class Navigation_Trigger_One2One : Navigation_Trigger
             SwapSplines(p_character, m_backwardSplineInfo.m_spline, m_backwardSplineInfo.m_splinePercent);
         }
     }
+
+    public override bool ContainsSpine(Navigation_Spline p_spline)
+    {
+
+        return
+            m_backwardSplineInfo.m_spline == p_spline ||
+            m_forwardSplineInfo.m_spline == p_spline;
+    }
 }

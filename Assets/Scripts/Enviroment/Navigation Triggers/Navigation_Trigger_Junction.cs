@@ -87,4 +87,13 @@ public class Navigation_Trigger_Junction : Navigation_Trigger
             return m_forwardRightSplineInfo;
         return m_forwardLeftSplineInfo;
     }
+
+    public override bool ContainsSpine(Navigation_Spline p_spline)
+    {
+        return
+            m_backwardSplineInfo.m_spline == p_spline ||
+            m_forwardSplineInfo.m_spline == p_spline ||
+            m_forwardLeftSplineInfo.m_spline == p_spline ||
+            m_forwardRightSplineInfo.m_spline == p_spline;
+    }
 }

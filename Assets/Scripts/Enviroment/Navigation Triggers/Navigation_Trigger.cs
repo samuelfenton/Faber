@@ -80,4 +80,9 @@ public class Navigation_Trigger : MonoBehaviour
     {
 
     }
+
+    public virtual bool ContainsSpine(Navigation_Spline p_spline)
+    {
+        return false;
+    }
 }

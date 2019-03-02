@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputController : MonoBehaviour
+public class PlayerInputController : MonoBehaviour
 {
     public enum INPUT_KEY {ATTACK, DEFEND, ATTACK_ALT, JUMP, SUBMIT, CANCEL, INPUT_COUNT};
     public enum INPUT_AXIS {HORIZONTAL, VERTICAL, INPUT_COUNT };
@@ -42,7 +42,7 @@ public class InputController : MonoBehaviour
     private void Update()
     {
         //Todo, make menu
-        if (GetKeyInput(InputController.INPUT_KEY.CANCEL))
+        if (GetKeyInput(PlayerInputController.INPUT_KEY.CANCEL))
             Application.Quit();
 
         for (int i = 0; i < (int)INPUT_KEY.INPUT_COUNT; i++)

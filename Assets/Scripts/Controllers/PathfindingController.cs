@@ -20,7 +20,7 @@ public class PathfindingController : MonoBehaviour
         }
     }
 
-    public List<Navigation_Spline> GetPath(Character p_character, Navigation_Spline p_goalSpline)
+    public static List<Navigation_Spline> GetPath(Character p_character, Navigation_Spline p_goalSpline)
     {
         List<Navigation_Spline> path = new List<Navigation_Spline>();
 
@@ -59,14 +59,14 @@ public class PathfindingController : MonoBehaviour
         return path;
     }
 
-    private Navigation_Trigger GetStartingTrigger(Navigation_Spline p_currentSpline, float p_currentPercent)
+    private static Navigation_Trigger GetStartingTrigger(Navigation_Spline p_currentSpline, float p_currentPercent)
     {
         if (p_currentPercent <= 0.5f)
             return p_currentSpline.m_splineStart;
         return p_currentSpline.m_splineEnd;
     }
 
-    private void AddToOpenList(PathfindingNode p_currentNode, List<PathfindingNode> p_openList, List<PathfindingNode> p_closedList)
+    private static void AddToOpenList(PathfindingNode p_currentNode, List<PathfindingNode> p_openList, List<PathfindingNode> p_closedList)
     {
         foreach (Navigation_Spline adjacentSpline in p_currentNode.m_trigger.m_adjacentSplines)
         {
@@ -79,7 +79,7 @@ public class PathfindingController : MonoBehaviour
         }
     }
 
-    private bool ListContainsSpline(List<PathfindingNode> p_searchList, Navigation_Spline p_spline)
+    private static bool ListContainsSpline(List<PathfindingNode> p_searchList, Navigation_Spline p_spline)
     {
         foreach (PathfindingNode pathfindingNode in p_searchList)
         {
@@ -89,7 +89,7 @@ public class PathfindingController : MonoBehaviour
         return false;
     }
 
-    private PathfindingNode GetCheapestNode(List<PathfindingNode> p_openList)
+    private static PathfindingNode GetCheapestNode(List<PathfindingNode> p_openList)
     {
         float lowestCost = float.PositiveInfinity;
         PathfindingNode cheapestNode = null;

@@ -20,7 +20,7 @@ public class CharacterAnimationController : MonoBehaviour
     public Animator m_animator = null;
     private CharacterState_LightAttack m_lightAttackState = null;
 
-    private void Start()
+    public void InitAnimationController()
     {
         m_animationStringDicitonary.Add(ANIMATIONS.LOCOMOTION, "Locomotion");
         m_animationStringDicitonary.Add(ANIMATIONS.LIGHT_ATTACK, "LightAttack");

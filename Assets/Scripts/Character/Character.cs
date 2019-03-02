@@ -61,6 +61,7 @@ public class Character : MonoBehaviour
         m_characterCustomPhysics = GetComponent<CharacterCustomPhysics>();
         m_characterStateMachine = GetComponent<CharacterStateMachine>();
         m_characterAnimationController = GetComponentInChildren<CharacterAnimationController>();
+        m_characterAnimationController.InitAnimationController();
 
         m_characterInput = GetComponent<CharacterInput>();
         m_currentCharacterInput = m_characterInput.GetInputState();

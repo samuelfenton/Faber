@@ -10,7 +10,7 @@ public class CompositeOR : Composite
         {
             RESULT pendingResult = m_childBehaviours[(int)m_pendingIndex].Execute(p_character);
 
-            if (pendingResult != RESULT.FAILED)//Behavior have concluded this frame
+            if (pendingResult != RESULT.PENDING)//Behavior have concluded this frame
                 return pendingResult;
         }
         else
