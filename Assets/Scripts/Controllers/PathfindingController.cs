@@ -49,11 +49,14 @@ public class PathfindingController : MonoBehaviour
             AddToOpenList(currentNode, openNodes, closedNodes);
         }
 
-        //Build path
-        while(currentNode.m_previousNode != null)
+        if (currentNode.m_navigationBranch == p_goalSpline)//Was able to find goal
         {
-            path.Add(currentNode.m_navigationBranch);
-            currentNode = currentNode.m_previousNode;
+            //Build path
+            while(currentNode.m_previousNode != null)
+            {
+                path.Add(currentNode.m_navigationBranch);
+                currentNode = currentNode.m_previousNode;
+            }
         }
 
         return path;
