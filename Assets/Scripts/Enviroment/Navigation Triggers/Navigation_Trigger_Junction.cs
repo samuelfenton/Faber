@@ -11,6 +11,8 @@ public class Navigation_Trigger_Junction : Navigation_Trigger
 
     protected override void Start()
     {
+        base.Start();
+
         if ((m_forwardSplineInfo.m_spline == null && m_forwardRightSplineInfo.m_spline == null && m_forwardLeftSplineInfo.m_spline == null) || m_backwardSplineInfo.m_spline == null)
         {
             #if UNITY_EDITOR
@@ -24,7 +26,6 @@ public class Navigation_Trigger_Junction : Navigation_Trigger
                 m_backwardSplineInfo.m_splinePercent = m_backwardSplineInfo.m_spline.GetPositionOfSplineTransform(this);
                 m_adjacentSplines.Add(m_backwardSplineInfo.m_spline);
             }
-
             if (m_forwardSplineInfo.m_spline != null)
             {
                 m_forwardSplineInfo.m_splinePercent = m_forwardSplineInfo.m_spline.GetPositionOfSplineTransform(this);
@@ -41,7 +42,6 @@ public class Navigation_Trigger_Junction : Navigation_Trigger
                 m_adjacentSplines.Add(m_forwardLeftSplineInfo.m_spline);
             }
         }
-        base.Start();
     }
 
     protected override void HandleTrigger(Character p_character, TRIGGER_DIRECTION p_direction)
@@ -59,7 +59,7 @@ public class Navigation_Trigger_Junction : Navigation_Trigger
 
     private SplineInfo GetEnteringSpline(Character p_character)
     {
-        NavigationController.TURNING turningDir = p_character.GetDesiredTurning(transform.forward);
+        NavigationController.TURNING turningDir = p_character.GetDesiredTurning(this);
 
         //Get desired turning dir
         switch (turningDir)

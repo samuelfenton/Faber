@@ -30,8 +30,6 @@ public class CharacterCustomPhysics : MonoBehaviour
 
         m_colliderExtents.x = m_colliderExtents.z = capculeCollider.radius;
         m_colliderExtents.y = capculeCollider.height / 2.0f;
-
-        m_currentSpline.AddCharacter(m_parentCharacter);
     }
 
     public void UpdatePhysics()

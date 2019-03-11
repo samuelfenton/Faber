@@ -10,8 +10,16 @@ public class CompositeAND : Composite
         {
             RESULT pendingResult = m_childBehaviours[(int)m_pendingIndex].Execute(p_character);
 
-            if (pendingResult != RESULT.SUCCESS)//Behavior have concluded this frame
-                return pendingResult;
+            if (pendingResult == RESULT.FAILED)//Behavior have concluded this frame, AND has failed
+            {
+                m_pendingIndex = null;
+                return RESULT.FAILED;
+            }
+            if (pendingResult == RESULT.PENDING)//Behaviour still continuing
+            {
+                return RESULT.PENDING;
+            }
+            m_pendingIndex++;//Success, try next behaviour
         }
         else
         {
@@ -22,7 +30,11 @@ public class CompositeAND : Composite
         {
             RESULT pendingResult = m_childBehaviours[(int)m_pendingIndex].Execute(p_character);
             if (pendingResult != RESULT.SUCCESS)//Behavior have concluded this frame
+            {
+                if (pendingResult != RESULT.PENDING)
+                    m_pendingIndex = null; //Reset count
                 return pendingResult;
+            }
         }
 
         m_pendingIndex = null; //Reset count

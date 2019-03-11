@@ -22,9 +22,9 @@ public class Character_Player : Character
         m_voxelHandler.UpdateTrailingVelocity(transform.localToWorldMatrix * trailDir, trailDir.magnitude / m_groundedHorizontalSpeedMax);
     }
 
-    public override NavigationController.TURNING GetDesiredTurning(Vector3 p_triggerForwardVector)
+    public override NavigationController.TURNING GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
     {
-        float relativeDot = Vector3.Dot(transform.forward, p_triggerForwardVector);
+        float relativeDot = Vector3.Dot(transform.forward, p_trigger.transform.forward);
 
         float verticalInput = m_currentCharacterInput.m_vertical;
 

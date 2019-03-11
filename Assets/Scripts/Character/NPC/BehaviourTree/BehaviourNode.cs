@@ -8,7 +8,7 @@ public class BehaviourNode : MonoBehaviour
 
     protected CharacterInput_NPC m_characterInput_NPC = null;
 
-    private void Start()
+    protected virtual void Start()
     {
         m_characterInput_NPC = GetComponent<CharacterInput_NPC>();
     }

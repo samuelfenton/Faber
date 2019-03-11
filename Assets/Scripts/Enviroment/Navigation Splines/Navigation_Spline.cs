@@ -10,9 +10,6 @@ public class Navigation_Spline : MonoBehaviour
     [HideInInspector]
     public float m_splineLength = 1.0f;
 
-    [HideInInspector]
-    public List<Character> m_activeCharacters = new List<Character>();
-
     public virtual void Start()
     {
 
@@ -31,18 +28,6 @@ public class Navigation_Spline : MonoBehaviour
     public float GetSplinePercent(float p_movement)
     {
         return p_movement / m_splineLength;
-    }
-
-    public void AddCharacter(Character p_character)
-    {
-        if (!m_activeCharacters.Contains(p_character))
-            m_activeCharacters.Add(p_character);
-    }
-
-    public void RemoveCharacter(Character p_character)
-    {
-        if (m_activeCharacters.Contains(p_character))
-            m_activeCharacters.Remove(p_character);
     }
 
     public float GetPositionOfSplineTransform(Navigation_Trigger p_spline)

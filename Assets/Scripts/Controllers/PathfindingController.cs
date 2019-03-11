@@ -7,15 +7,13 @@ public class PathfindingController : MonoBehaviour
     public class PathfindingNode
     {
         public float m_cost;
-        public Navigation_Spline m_navigationBranch;
-        public Navigation_Trigger m_trigger;
+        public Navigation_Spline m_nodeSpline;
         public PathfindingNode m_previousNode;
 
-        public PathfindingNode(float p_cost, Navigation_Spline p_navigationBranch, Navigation_Trigger p_trigger, PathfindingNode p_previousNode)
+        public PathfindingNode(float p_cost, Navigation_Spline p_nodeSpline, PathfindingNode p_previousNode)
         {
             m_cost = p_cost;
-            m_navigationBranch = p_navigationBranch;
-            m_trigger = p_trigger;
+            m_nodeSpline = p_nodeSpline;
             m_previousNode = p_previousNode;
         }
     }
@@ -30,32 +28,34 @@ public class PathfindingController : MonoBehaviour
         if (currentSpline == null || p_goalSpline == null || currentSpline == p_goalSpline)
             return path;
 
-        Navigation_Trigger startingTrigger = GetStartingTrigger(p_character.m_characterCustomPhysics.m_currentSpline, p_character.m_characterCustomPhysics.m_currentSplinePercent);
-
         List<PathfindingNode> openNodes = new List<PathfindingNode>();
         List<PathfindingNode> closedNodes = new List<PathfindingNode>();
 
-        PathfindingNode currentNode = new PathfindingNode(0.0f, null, startingTrigger, null);
+        PathfindingNode currentNode = new PathfindingNode(0.0f, currentSpline, null);
 
+        closedNodes.Add(currentNode);
         AddToOpenList(currentNode, openNodes, closedNodes);
 
         //Dijkstra pathfinding
-        while (openNodes.Count > 0 || currentNode.m_navigationBranch == p_goalSpline)
+        while (openNodes.Count > 0 && currentNode.m_nodeSpline != p_goalSpline)
         {
-            closedNodes.Add(currentNode);
             currentNode = GetCheapestNode(openNodes);
+            closedNodes.Add(currentNode);
             openNodes.Remove(currentNode);
 
             AddToOpenList(currentNode, openNodes, closedNodes);
         }
 
-        //Build path
-        while(currentNode.m_previousNode != null)
+        if(currentNode.m_nodeSpline == p_goalSpline)
         {
-            path.Add(currentNode.m_navigationBranch);
-            currentNode = currentNode.m_previousNode;
+            //Build path
+            while(currentNode.m_previousNode != null)
+            {
+                path.Add(currentNode.m_nodeSpline);
+                currentNode = currentNode.m_previousNode; 
+            }
         }
-
+        path.Reverse();
         return path;
     }
 
@@ -68,13 +68,29 @@ public class PathfindingController : MonoBehaviour
 
     private static void AddToOpenList(PathfindingNode p_currentNode, List<PathfindingNode> p_openList, List<PathfindingNode> p_closedList)
     {
-        foreach (Navigation_Spline adjacentSpline in p_currentNode.m_trigger.m_adjacentSplines)
+        HashSet<Navigation_Spline> adjacentSplines = new HashSet<Navigation_Spline>();//Unique list
+
+        if (p_currentNode.m_nodeSpline.m_splineStart != null)//add start of spline adjacent splines if start exists
+        { 
+            foreach (Navigation_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_splineStart.m_adjacentSplines) 
+            {
+                adjacentSplines.Add(adjacentSpline);
+            }
+        }
+        if (p_currentNode.m_nodeSpline.m_splineStart != null)//add end of spline adjacent splines if end exists
+        {
+            foreach (Navigation_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_splineEnd.m_adjacentSplines)
+            {
+                adjacentSplines.Add(adjacentSpline);
+            }
+        }
+
+        foreach (Navigation_Spline adjacentSpline in adjacentSplines)
         {
             if(!(ListContainsSpline(p_openList, adjacentSpline) || ListContainsSpline(p_closedList, adjacentSpline)))//Is spline already in the list
             {
                 //Get other trigger attached to spline
-                Navigation_Trigger newTrigger = adjacentSpline.m_splineStart == p_currentNode.m_trigger ? adjacentSpline.m_splineEnd : adjacentSpline.m_splineStart;
-                p_openList.Add(new PathfindingNode(p_currentNode.m_cost + adjacentSpline.m_splineLength, adjacentSpline, newTrigger, p_currentNode));
+                p_openList.Add(new PathfindingNode(p_currentNode.m_cost + adjacentSpline.m_splineLength, adjacentSpline, p_currentNode));
             }
         }
     }
@@ -83,7 +99,7 @@ public class PathfindingController : MonoBehaviour
     {
         foreach (PathfindingNode pathfindingNode in p_searchList)
         {
-            if (pathfindingNode.m_navigationBranch == p_spline)
+            if (pathfindingNode.m_nodeSpline == p_spline)
                 return true;
         }
         return false;
@@ -93,6 +109,11 @@ public class PathfindingController : MonoBehaviour
     {
         float lowestCost = float.PositiveInfinity;
         PathfindingNode cheapestNode = null;
+
+        if (p_openList.Count == 0)
+        {
+            Debug.Log("BBB");
+        }
 
         foreach (PathfindingNode pathfindingNode in p_openList)
         {
@@ -105,5 +126,4 @@ public class PathfindingController : MonoBehaviour
 
         return cheapestNode;
     }
-
 }

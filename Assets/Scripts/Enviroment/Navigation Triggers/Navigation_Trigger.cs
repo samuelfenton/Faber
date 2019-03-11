@@ -19,6 +19,9 @@ public class Navigation_Trigger : MonoBehaviour
 
     public List<Navigation_Spline> m_adjacentSplines = new List<Navigation_Spline>();
 
+    [HideInInspector]
+    public Dictionary<Collider, TRIGGER_DIRECTION> m_activeColliders = new Dictionary<Collider, TRIGGER_DIRECTION>();
+
     protected void SetupBoxCollider()
     {
         BoxCollider boxCol = GetComponent<BoxCollider>();
@@ -38,6 +41,8 @@ public class Navigation_Trigger : MonoBehaviour
         float planeZ = (-triggerPos.x * m_globalEntranceVector.x) + (-triggerPos.y * m_globalEntranceVector.y) + (-triggerPos.z * m_globalEntranceVector.z);
 
         m_planeEquation = new Vector4(m_globalEntranceVector.x, m_globalEntranceVector.y, m_globalEntranceVector.z, planeZ);
+
+        m_adjacentSplines = new List<Navigation_Spline>(); //Clear due to running in editor
     }
 
     protected void OnTriggerStay(Collider p_other)
@@ -51,28 +56,36 @@ public class Navigation_Trigger : MonoBehaviour
             Vector3 characterPosition = collidingCharacter.transform.position;
             float expandedDot = m_planeEquation.x * characterPosition.x + m_planeEquation.y * characterPosition.y + m_planeEquation.z * characterPosition.z + m_planeEquation.w;
 
-            if (expandedDot >= 0) //Entering
+            TRIGGER_DIRECTION triggerDirection = expandedDot >= 0.0f ? TRIGGER_DIRECTION.ENTERING : TRIGGER_DIRECTION.EXITING;
+
+            if(m_activeColliders.ContainsKey(p_other))//Already entered
             {
-                HandleTrigger(collidingCharacter, TRIGGER_DIRECTION.ENTERING);
+                if(m_activeColliders[p_other] != triggerDirection) //Updating dir
+                {
+                    m_activeColliders[p_other] = triggerDirection;
+                    HandleTrigger(collidingCharacter, triggerDirection);
+                }
             }
-            else//Exiting
+            else//New entry
             {
-                HandleTrigger(collidingCharacter, TRIGGER_DIRECTION.EXITING);
+                m_activeColliders.Add(p_other, triggerDirection);
+                HandleTrigger(collidingCharacter, triggerDirection);
             }
         }
+    }
+
+    protected void OnTriggerExit(Collider p_other)
+    {
+        if (m_activeColliders.ContainsKey(p_other))
+            m_activeColliders.Remove(p_other);
+
     }
 
 
     protected void SwapSplines(Character p_character, Navigation_Spline p_newSpline, float p_newSplinePercent)
     {
-        if (!p_newSpline.m_activeCharacters.Contains(p_character))
-        {
-            p_character.m_characterCustomPhysics.m_currentSpline.RemoveCharacter(p_character);
-            p_newSpline.AddCharacter(p_character);
-
-            p_character.m_characterCustomPhysics.m_currentSpline = p_newSpline;
-            p_character.m_characterCustomPhysics.m_currentSplinePercent = p_newSplinePercent;
-        }
+        p_character.m_characterCustomPhysics.m_currentSpline = p_newSpline;
+        p_character.m_characterCustomPhysics.m_currentSplinePercent = p_newSplinePercent;
     }
 
     public enum TRIGGER_DIRECTION {ENTERING, EXITING }

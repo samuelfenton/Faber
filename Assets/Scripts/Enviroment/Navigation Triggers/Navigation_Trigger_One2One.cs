@@ -9,6 +9,8 @@ public class Navigation_Trigger_One2One : Navigation_Trigger
 
     protected override void Start()
     {
+        base.Start();
+
         if(m_forwardSplineInfo.m_spline == null || m_backwardSplineInfo.m_spline == null)
         {
             #if UNITY_EDITOR
@@ -29,7 +31,6 @@ public class Navigation_Trigger_One2One : Navigation_Trigger
                 m_adjacentSplines.Add(m_forwardSplineInfo.m_spline);
             }
         }
-        base.Start();
     }
 
     protected override void HandleTrigger(Character p_character, TRIGGER_DIRECTION p_direction)

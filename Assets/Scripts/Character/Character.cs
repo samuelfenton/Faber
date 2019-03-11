@@ -130,7 +130,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    public virtual NavigationController.TURNING GetDesiredTurning(Vector3 p_triggerForwardVector)
+    public virtual NavigationController.TURNING GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
     {
         return NavigationController.TURNING.CENTER;
     }

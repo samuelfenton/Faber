@@ -23,4 +23,20 @@ public class Character_NPC : Character
 
         m_behaviourTree.RunBehaviourTree(this);
     }
+
+    public override NavigationController.TURNING GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
+    {
+        if(m_path.Count > 0)
+        {
+            Navigation_Spline desiredSpline = m_path[0];
+
+            if (p_trigger.m_forwardLeftSplineInfo.m_spline == desiredSpline)
+                return NavigationController.TURNING.LEFT;
+
+            if (p_trigger.m_forwardRightSplineInfo.m_spline == desiredSpline)
+                return NavigationController.TURNING.RIGHT;
+        }
+
+        return NavigationController.TURNING.CENTER;
+    }
 }
