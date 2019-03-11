@@ -54,21 +54,34 @@ public class Character : MonoBehaviour
     protected CharacterInput m_characterInput = null;
     public CharacterInput.InputState m_currentCharacterInput;
 
+    protected CharacterInventory m_characterInventory = null;
+
+    protected VoxeliserHandler m_voxeliserHandler = null;
+
     protected virtual void Start()
     {
+        //Get references
         m_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 
         m_characterCustomPhysics = GetComponent<CharacterCustomPhysics>();
         m_characterStateMachine = GetComponent<CharacterStateMachine>();
         m_characterAnimationController = GetComponentInChildren<CharacterAnimationController>();
-        m_characterAnimationController.InitAnimationController();
-
+        m_characterInventory = GetComponent<CharacterInventory>();
+        m_voxeliserHandler = GetComponentInChildren<VoxeliserHandler>();
         m_characterInput = GetComponent<CharacterInput>();
-        m_currentCharacterInput = m_characterInput.GetInputState();
 
+        m_currentCharacterInput = new CharacterInput.InputState();
+
+        //Init
+        if(m_characterAnimationController!=null)
+            m_characterAnimationController.InitAnimationController();
+        if (m_characterStateMachine != null)
+            m_characterStateMachine.InitStateMachine();
+        if (m_characterInventory != null)
+            m_characterInventory.InitInventory();
+
+        //Secondary references
         m_weapon = GetComponentInChildren<Weapon>();
-
-        m_characterStateMachine.InitStateMachine();
 
         m_currentHealth = m_maxHealth;
     }
@@ -103,27 +116,30 @@ public class Character : MonoBehaviour
 
     public void OnDeath()
     {
-
+        m_voxeliserHandler.EnableDisassemble();
     }
 
     public void ModifyHealth(float p_value)
     {
         m_currentHealth += p_value;
+
+        if (!IsAlive())
+            OnDeath();
     }
 
     public void DealDamage()
     {
-        Debug.Log("STAB");
-
+        Debug.Log("Stabbing");
         foreach (Character character in m_weapon.m_hitCharacters)
         {
+            Debug.Log("Hit");
             if (character.m_characterTeam != m_characterTeam)
             {
                 //determine damage
-                float totalDamage = m_weapon.m_weaponLightDamage;
+                float totalDamage = -m_weapon.m_weaponLightDamage;
 
                 if (m_currentAttackType == ATTACK_TYPE.HEAVY)
-                    totalDamage = m_weapon.m_weaponHeavyDamage;
+                    totalDamage = -m_weapon.m_weaponHeavyDamage;
 
                 character.ModifyHealth(totalDamage);
             }

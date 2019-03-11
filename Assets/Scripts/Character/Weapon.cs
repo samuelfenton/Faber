@@ -9,7 +9,6 @@ public class Weapon : MonoBehaviour
     public List<Character> m_hitCharacters = new List<Character>();
 
     private BoxCollider m_boxCollider = null;
-    private Character m_parentCharacter = null;
 
     [Header("Weapon Stats")]
     public float m_weaponLightDamage = 1.0f;
@@ -22,10 +21,19 @@ public class Weapon : MonoBehaviour
 
     private void OnTriggerEnter(Collider p_other)
     {
-        Character otherCharacter = p_other.GetComponent<Character>();
+        Character otherCharacter = p_other.GetComponentInChildren<Character>();
         if (otherCharacter != null && !m_hitCharacters.Contains(otherCharacter))
         {
             m_hitCharacters.Add(otherCharacter);
+        }
+    }
+
+    private void OnTriggerExit(Collider p_other)
+    {
+        Character otherCharacter = p_other.GetComponentInChildren<Character>();
+        if (otherCharacter != null && m_hitCharacters.Contains(otherCharacter))
+        {
+            m_hitCharacters.Remove(otherCharacter);
         }
     }
 
