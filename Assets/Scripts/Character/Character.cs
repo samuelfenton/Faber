@@ -129,10 +129,8 @@ public class Character : MonoBehaviour
 
     public void DealDamage()
     {
-        Debug.Log("Stabbing");
         foreach (Character character in m_weapon.m_hitCharacters)
         {
-            Debug.Log("Hit");
             if (character.m_characterTeam != m_characterTeam)
             {
                 //determine damage
