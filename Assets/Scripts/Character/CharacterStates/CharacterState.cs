@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class CharacterState : MonoBehaviour
 {
+    [HideInInspector]
     public List<CharacterState> m_nextStates = new List<CharacterState>();
+    [HideInInspector]
     public CharacterStateMachine.STATE m_stateType = CharacterStateMachine.STATE.IDLE;
 
     protected CharacterStateMachine m_parentStateMachine = null;

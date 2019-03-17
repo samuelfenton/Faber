@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Attacking_CanAttack : BehaviourNode
+public class Qualifier_Distance : BehaviourNode
 {
     public float m_closeEnoughDistance = 0.1f;
     private float m_closeEnoughDistanceSqr = 0.0f;
-    protected override void Start()
+
+    public override void InitNode()
     {
-        base.Start();
         m_closeEnoughDistanceSqr = m_closeEnoughDistance * m_closeEnoughDistance;
     }
 

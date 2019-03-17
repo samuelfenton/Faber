@@ -7,6 +7,8 @@ public class Character_NPC : Character
     [Header("NPC Logic")]
     public List<Navigation_Spline> m_path = new List<Navigation_Spline>();
     public Character m_targetCharacter = null;
+    public float m_attackingDistance = 0.0f;
+    public float m_detectionDistance = 0.0f;
 
     private BehaviourTree m_behaviourTree = null;
 

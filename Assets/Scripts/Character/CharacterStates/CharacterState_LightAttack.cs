@@ -57,6 +57,7 @@ public class CharacterState_LightAttack : CharacterState
     public override void StateEnd()
     {
         m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, false);
+        m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK_COMBO, false);
     }
 
     //-------------------
@@ -75,6 +76,8 @@ public class CharacterState_LightAttack : CharacterState
     public void PerformCombo()
     {
         if(m_characterInput.GetInputState().m_lightCombo)
-            m_characterAnimationController.SetTrigger(CharacterAnimationController.TRIGGERS.LIGHT_ATTACK_COMBO);
+        {
+            m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK_COMBO, true);
+        }
     }
 }

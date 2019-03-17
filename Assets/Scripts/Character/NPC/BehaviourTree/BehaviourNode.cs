@@ -13,6 +13,15 @@ public class BehaviourNode : MonoBehaviour
         m_characterInput_NPC = GetComponent<CharacterInput_NPC>();
     }
 
+    //-------------------
+    // Initilaise a node
+    // Start by setting up initial varibles, then init. E.g. set target first, init will build path
+    //-------------------
+    public virtual void InitNode()
+    {
+
+    }
+
     public virtual RESULT Execute(Character_NPC p_character)
     {
         return RESULT.FAILED;

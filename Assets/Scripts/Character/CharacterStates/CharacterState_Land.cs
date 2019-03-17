@@ -46,6 +46,6 @@ public class CharacterState_Land : CharacterState
     //-------------------
     public override bool IsValid()
     {
-        return m_parentCharacter.m_characterCustomPhysics.m_downCollision;
+        return m_parentCharacter.m_characterCustomPhysics.m_downCollision && m_parentCharacter.m_localVelocity.y < 0.0f;
     }
 }
