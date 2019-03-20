@@ -9,7 +9,7 @@ public class CharacterStateMachine : MonoBehaviour
 
     public CharacterState m_currentState = null;
 
-    public void InitStateMachine()
+    public virtual void InitStateMachine()
     {
         //Initilise all states
         CharacterState[] m_characterStates = GetComponentsInChildren<CharacterState>();
@@ -18,7 +18,10 @@ public class CharacterStateMachine : MonoBehaviour
         {
             m_characterStates[i].StateInit();
         }
+    }
 
+    public void StartStateMachine()
+    {
         //Run first state
         m_currentState.StateStart();
         m_currentStateType = m_currentState.m_stateType;

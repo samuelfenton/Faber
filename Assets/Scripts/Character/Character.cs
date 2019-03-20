@@ -73,13 +73,16 @@ public class Character : MonoBehaviour
         m_currentCharacterInput = new CharacterInput.InputState();
 
         //Init
+        if (m_characterStateMachine != null)
+            m_characterStateMachine.InitStateMachine();//Run first as animation depends on states being created
         if(m_characterAnimationController!=null)
             m_characterAnimationController.InitAnimationController();
-        if (m_characterStateMachine != null)
-            m_characterStateMachine.InitStateMachine();
         if (m_characterInventory != null)
-            m_characterInventory.InitInventory();
+            m_characterInventory.InitInventory();//Least importance as has no dependances
 
+        //
+        if (m_characterStateMachine != null)
+            m_characterStateMachine.StartStateMachine();//Run intial state
         //Secondary references
         m_weapon = GetComponentInChildren<Weapon>();
 

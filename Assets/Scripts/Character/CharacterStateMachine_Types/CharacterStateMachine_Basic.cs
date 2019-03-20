@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CharacterStateMachine_Basic : CharacterStateMachine
 {
-    private void Start()
+    public override void InitStateMachine()
     {
         CharacterState_Idle idle = gameObject.AddComponent<CharacterState_Idle>();
         CharacterState_GroundMovement ground = gameObject.AddComponent<CharacterState_GroundMovement>();
@@ -42,6 +42,8 @@ public class CharacterStateMachine_Basic : CharacterStateMachine
         lightAttack.m_nextStates.Add(inAir);
 
         m_currentState = inAir;
+
+        base.InitStateMachine();
     }
 
 

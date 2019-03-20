@@ -49,6 +49,7 @@ public class VoxeliserHandler_Static : VoxeliserHandler
 
         CustomMeshHandeling.SetMesh(CustomMeshHandeling.CombineMeshes(meshObjects, transform.position), gameObject);
 
+#if UNITY_EDITOR
         //Saving
         if (m_saveMeshOnPlay)
         {
@@ -63,6 +64,7 @@ public class VoxeliserHandler_Static : VoxeliserHandler
                 AssetDatabase.SaveAssets();
             }
         }
+#endif
 
         //Voxels placed relative to orginal rotation so remove roation once new mesh created
         transform.rotation = Quaternion.identity;

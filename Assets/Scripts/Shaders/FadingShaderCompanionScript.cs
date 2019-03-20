@@ -7,9 +7,8 @@ public class FadingShaderCompanionScript : MonoBehaviour
     private Transform m_playerTransform = null;
     private Material m_companionMaterial = null;
 
-#if UNITY_EDITOR 
+
     [ExecuteInEditMode]
-#endif
     private void Start()
     {
         m_playerTransform = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();

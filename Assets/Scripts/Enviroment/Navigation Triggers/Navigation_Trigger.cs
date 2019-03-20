@@ -22,19 +22,8 @@ public class Navigation_Trigger : MonoBehaviour
     [HideInInspector]
     public Dictionary<Collider, TRIGGER_DIRECTION> m_activeColliders = new Dictionary<Collider, TRIGGER_DIRECTION>();
 
-    protected void SetupBoxCollider()
-    {
-        BoxCollider boxCol = GetComponent<BoxCollider>();
-
-        boxCol.center = new Vector3(0, boxCol.size.y/2, 0);
-    }
-
     protected virtual void Start()
     {
-        #if UNITY_EDITOR
-        SetupBoxCollider();
-        #endif
-
         m_globalEntranceVector = transform.forward;
 
         Vector3 triggerPos = transform.position;

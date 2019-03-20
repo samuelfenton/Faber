@@ -43,6 +43,7 @@ public class Navigation_Spline_Curve : Navigation_Spline
         return desiredDir.normalized * (int)m_rotationDirection;
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         //Draw curved line
@@ -73,7 +74,6 @@ public class Navigation_Spline_Curve : Navigation_Spline
         Gizmos.DrawSphere(startDisplayPos, 0.2f);
     }
 
-#if UNITY_EDITOR
     private void Update()
     {
         if(SetupEndNode)
