@@ -46,8 +46,7 @@ public class Voxel : MonoBehaviour
     //--------------------
     public void SetupVoxel(Vector3 p_localOffset, Vector3 p_color)
     {
-        m_localOffset = p_localOffset;
-        transform.position = m_parentVoxeliser.transform.position + m_localOffset;
+        transform.localPosition = p_localOffset;
 
         Color voxelColor = new Color
         {
@@ -56,16 +55,6 @@ public class Voxel : MonoBehaviour
             b = p_color.z
         };
         m_voxelMaterial.color = voxelColor;
-    }
-
-    //--------------------
-    //  Give same effect as having object set as parent, but not effected by scale or rotation
-    //  params:
-    //      p_parentPosition - Parents position
-    //--------------------
-    public void UpdatePositionToParent(Vector3 p_parentPosition)
-    {
-        transform.position = p_parentPosition + m_localOffset;
     }
 
     //--------------------

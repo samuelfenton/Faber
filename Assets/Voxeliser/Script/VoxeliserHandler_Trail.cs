@@ -30,7 +30,6 @@ public class VoxeliserHandler_Trail : VoxeliserHandler
     //--------------------
     public override void InitVoxels(int p_voxelCount)
     {
-        m_disableMaterialsOnRun = true;
         base.InitVoxels(p_voxelCount);
 
         Voxel[] voxels = m_voxelsAvailable.ToArray();
@@ -80,6 +79,7 @@ public class VoxeliserHandler_Trail : VoxeliserHandler
     //--------------------
     public void FreedVoxel(Voxel p_voxel)
     {
+        p_voxel.transform.parent = gameObject.transform;
         m_voxelsAvailable.Enqueue(p_voxel);
         p_voxel.ResetVoxel();
 

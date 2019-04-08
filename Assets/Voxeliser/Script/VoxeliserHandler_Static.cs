@@ -9,18 +9,6 @@ public class VoxeliserHandler_Static : VoxeliserHandler
     public bool m_saveMeshOnPlay = false;
 
     //--------------------
-    //  Initialise all voxels used
-    //  Static mesh requires material to function, so dont disable.
-    //  params:
-    //      p_voxelCount - How many voxels to create
-    //--------------------
-    public override void InitVoxels(int p_voxelCount)
-    {
-        m_disableMaterialsOnRun = false;
-        base.InitVoxels(p_voxelCount);
-    }
-
-    //--------------------
     //  Static meshes dont need to be updated every frame, instead single mesh can be created and used
     //      Setup voxels as needed, Combine meshes
     //      In case of saving, do so

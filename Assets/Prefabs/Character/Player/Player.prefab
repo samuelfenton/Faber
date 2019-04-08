@@ -565,8 +565,8 @@ GameObject:
   - component: {fileID: 4780777831806186}
   - component: {fileID: 95869369857301116}
   - component: {fileID: 114339389431195854}
-  - component: {fileID: 4944581908134387068}
-  - component: {fileID: 5752717985869058918}
+  - component: {fileID: 8731695131116451511}
+  - component: {fileID: 4575927733527551333}
   m_Layer: 0
   m_Name: voxelCharacterBaseModel
   m_TagString: Untagged
@@ -628,7 +628,7 @@ MonoBehaviour:
   m_canCombo: 0
   m_currentAnimation: 0
   m_animator: {fileID: 0}
---- !u!114 &4944581908134387068
+--- !u!114 &8731695131116451511
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -642,8 +642,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   VOXEL_COUNT: 800
   UPDATE_N_FRAMES: 1
+  DISABLE_MATERIAL: 1
+  m_objectWithMesh: {fileID: 1784304874936534}
   m_modelMesh: {fileID: 0}
---- !u!114 &5752717985869058918
+--- !u!114 &4575927733527551333
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -660,6 +662,7 @@ MonoBehaviour:
   m_chanceOfExplode: 5
   m_explosionFactor: 5
   m_shrinkTime: 2
+  m_voxelParent: {fileID: 0}
   m_disassemble: 0
   m_chanceOfTrailing: 5
   m_trailingShrinkTime: 2
@@ -1098,7 +1101,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_currentSpline: {fileID: 0}
-  m_currentSplinePercent: 0
+  m_currentSplinePercent: 0.5
   m_upCollision: 0
   m_downCollision: 0
   m_forwardCollision: 0

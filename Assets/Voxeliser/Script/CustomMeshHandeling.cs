@@ -17,14 +17,14 @@ public class CustomMeshHandeling : MonoBehaviour
         if (p_object == null) //Early breakout
             return null;
 
-        MeshFilter meshFilter = p_object.GetComponentInChildren<MeshFilter>();
+        MeshFilter meshFilter = p_object.GetComponent<MeshFilter>();
         if (meshFilter != null)
         {
             return meshFilter.mesh;
         }
         else
         {
-            SkinnedMeshRenderer skinnedMeshRenderer = p_object.GetComponentInChildren<SkinnedMeshRenderer>();
+            SkinnedMeshRenderer skinnedMeshRenderer = p_object.GetComponent<SkinnedMeshRenderer>();
             if (skinnedMeshRenderer != null)
             {
                 Mesh bakedMesh = new Mesh();
@@ -48,14 +48,14 @@ public class CustomMeshHandeling : MonoBehaviour
         if (p_mesh == null || p_object == null) //Early breakout
             return;
 
-        MeshFilter meshFilter = p_object.GetComponentInChildren<MeshFilter>();
+        MeshFilter meshFilter = p_object.GetComponent<MeshFilter>();
         if(meshFilter != null)
         {
             meshFilter.mesh = p_mesh;
         }
         else
         {
-            SkinnedMeshRenderer skinnedMeshRenderer = p_object.GetComponentInChildren<SkinnedMeshRenderer>();
+            SkinnedMeshRenderer skinnedMeshRenderer = p_object.GetComponent<SkinnedMeshRenderer>();
             if (skinnedMeshRenderer != null)
                 skinnedMeshRenderer.sharedMesh = p_mesh;
         }
@@ -65,26 +65,26 @@ public class CustomMeshHandeling : MonoBehaviour
     //  Combine a series of meshes into a single one
     //  
     //  params:
-    //      m_meshObjects - objects to combine
+    //      p_meshObjects - objects to combine
     //      p_offsetPosition - Offset for all objects, example if in reference to parent object
     //  return:
     //      Mesh - single combined mesh
     //--------------------
-    public static Mesh CombineMeshes(GameObject[] m_meshObjects, Vector3 p_offsetPosition)
+    public static Mesh CombineMeshes(GameObject[] p_meshObjects, Vector3 p_offsetPosition)
     {
-        if (m_meshObjects.Length == 0) //Early breakout
+        if (p_meshObjects.Length == 0) //Early breakout
             return null;
 
         // combine meshes
-        CombineInstance[] combine = new CombineInstance[m_meshObjects.Length];
+        CombineInstance[] combine = new CombineInstance[p_meshObjects.Length];
         int i = 0;
-        while (i < m_meshObjects.Length)
+        while (i < p_meshObjects.Length)
         {
-            Transform newTransform = m_meshObjects[i].transform;
+            Transform newTransform = p_meshObjects[i].transform;
 
             newTransform.position -= p_offsetPosition;//Apply offset in position
 
-            combine[i].mesh = GetMesh(m_meshObjects[i]);
+            combine[i].mesh = GetMesh(p_meshObjects[i]);
             combine[i].transform = newTransform.localToWorldMatrix;
 
             i++;
@@ -101,12 +101,33 @@ public class CustomMeshHandeling : MonoBehaviour
     //  Combine a series of meshes into a single one
     //  
     //  params:
-    //      m_meshObjects - objects to combine
+    //      p_meshObjects - objects to combine
     //  return:
     //      Mesh - single combined mesh
     //--------------------
-    public static Mesh CombineMeshes(GameObject[] m_meshObjects)
+    public static Mesh CombineMeshes(GameObject[] p_meshObjects)
     {
-        return CombineMeshes(m_meshObjects, Vector3.zero);
+        return CombineMeshes(p_meshObjects, Vector3.zero);
+    }
+
+    //--------------------
+    //  Remove all materials attached to an object
+    //  
+    //  params:
+    //      p_object - object to remove material from
+    //--------------------
+    public static void DisableMaterial(GameObject p_object)
+    {
+        MeshRenderer meshRenderer = p_object.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            meshRenderer.materials = new Material[0];
+        }
+        else
+        {
+            SkinnedMeshRenderer skinnedMeshRenderer = p_object.GetComponent<SkinnedMeshRenderer>();
+            if (skinnedMeshRenderer != null)
+                skinnedMeshRenderer.materials = new Material[0];
+        }
     }
 }

@@ -25,23 +25,10 @@ public class VoxeliserHandler : MonoBehaviour
     protected Dictionary<VectorDouble, Voxel> m_voxelsInUse = new Dictionary<VectorDouble, Voxel>();
     protected HashSet<VectorDouble> m_voxelPositions = new HashSet<VectorDouble>();
 
-    protected bool m_disableMaterialsOnRun = true;
     protected VoxeliserCompanion m_voxelCompanion = null;
 
-    
+    public Transform m_voxelParent = null;//Used when child is in place
     public bool m_disassemble = false;
-
-    //--------------------
-    //  Late update
-    //  Runs at same time as transform updates to give same illusion as parenting voxels
-    //--------------------
-    private void LateUpdate()
-    {
-        foreach (Voxel voxel in m_voxelsInUse.Values)
-        {
-            voxel.UpdatePositionToParent(transform.position);
-        }
-    }
 
     //--------------------
     //  Snap to postion grid
@@ -67,8 +54,12 @@ public class VoxeliserHandler : MonoBehaviour
     //--------------------
     public virtual void InitVoxels(int p_voxelCount)
     {
+        CheckForParent();
+
         GameObject voxelPool = new GameObject();
         voxelPool.name = gameObject.name + " Voxel Pool";
+
+        voxelPool.transform.SetParent(m_voxelParent == null ? this.transform : m_voxelParent, false);
 
         for (int i = 0; i < p_voxelCount; i++)
         {
@@ -79,10 +70,32 @@ public class VoxeliserHandler : MonoBehaviour
 
             m_voxelsAvailable.Enqueue(newVoxelScript);
         }
-        m_voxelCompanion = GetComponent<VoxeliserCompanion>();
 
-        if (m_disableMaterialsOnRun)
-            DisableMaterial();
+        m_voxelCompanion = GetComponent<VoxeliserCompanion>();
+    }
+
+    public void CheckForParent()
+    {
+        VoxeliserCompanion_Child childScript = GetComponent<VoxeliserCompanion_Child>();
+        if(childScript!= null)//Requires parent setup
+        {
+            Transform parent = transform.parent;
+            VoxeliserCompanion parentVoxeliser = null;
+
+            while (parent != null) //Stop searching when there are no more parents
+            {
+                parentVoxeliser = parent.GetComponent<VoxeliserCompanion>();
+                if (parentVoxeliser != null) //Found a parent voxeliser
+                {
+                    m_voxelParent = parent;
+                    break;
+                }
+                else //No voxeliser on object, move to next parent
+                {
+                    parent = parent.parent;
+                }
+            }
+        }
     }
 
     //--------------------
@@ -152,7 +165,7 @@ public class VoxeliserHandler : MonoBehaviour
     //      Remove from available, add to inUse
     //      Set color
     //  params:
-    //      p_position - Positions of voxel, used in getting voxel from dictionary
+    //      p_position - Positions of voxel, used in getting voxel from dictionary relative to voxeliser
     //      p_color -  color of voxel, in Vector3 format(x = r, y = g, z = b)
     //--------------------
     protected virtual void AddVoxel(VectorDouble p_position, Vector3 p_color)
@@ -160,7 +173,9 @@ public class VoxeliserHandler : MonoBehaviour
         if (m_voxelsAvailable.Count > 0 && !m_voxelsInUse.ContainsKey(p_position)) //voxel availble and current voxels dont already have this postion
         {
             Voxel newVoxel = m_voxelsAvailable.Dequeue();
-            newVoxel.SetupVoxel(VectorDouble.GetVector3(p_position), p_color);
+            Vector3 offset = m_voxelParent == null ? transform.worldToLocalMatrix * VectorDouble.GetVector3(p_position) : m_voxelParent.worldToLocalMatrix * ((transform.position - m_voxelParent.position) + VectorDouble.GetVector3(p_position)); 
+
+            newVoxel.SetupVoxel(offset, p_color);
             m_voxelsInUse.Add(p_position, newVoxel);
         }
     }
@@ -232,27 +247,6 @@ public class VoxeliserHandler : MonoBehaviour
         {
             if (freeVoxel != null)
                 Destroy(freeVoxel.gameObject);
-        }
-    }
-
-    //--------------------
-    //  Disable all materials used by mesh renderer
-    //  Typically used in the cause of dynamic voxel movement, as base mesh shouldnt be shown.
-    //--------------------
-    protected void DisableMaterial()
-    {
-        MeshRenderer meshRenderer = GetComponentInChildren<MeshRenderer>();
-        if (meshRenderer != null)
-        {
-            meshRenderer.materials = new Material[0];
-        }
-        else
-        {
-            SkinnedMeshRenderer skinnedMeshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
-            if (skinnedMeshRenderer != null)
-            {
-                skinnedMeshRenderer.materials = new Material[0];
-            }
         }
     }
 }

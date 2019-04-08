@@ -11,10 +11,17 @@ public class VoxeliserCompanion : MonoBehaviour
     [Tooltip("How often this voxeliser will update, it is this varible + 2. So N = 1, updates every 3 frames")]
     public int UPDATE_N_FRAMES = 1;
 
+    [Tooltip("Should the material be disabled on play")]
+    public bool DISABLE_MATERIAL = false;
+
+    [Tooltip("Gameobject which holds the mesh for the voxeliser, with none assigned, assumption is mesh is on script gameobject")]
+    public GameObject m_objectWithMesh = null;
+
     protected VoxeliserHandler m_voxelHandler = null;
 
     [HideInInspector]
-    public Mesh m_modelMesh = null;
+    public Mesh m_modelMesh;
+
     protected Texture2D m_mainTexture = null;
     protected Color m_backupColor = Color.white;
 
@@ -32,8 +39,11 @@ public class VoxeliserCompanion : MonoBehaviour
     //      Setup required varibles
     //--------------------
     protected virtual void Start ()
-    { 
-        m_modelMesh = CustomMeshHandeling.GetMesh(gameObject);
+    {
+        if (m_objectWithMesh == null)
+            m_objectWithMesh = gameObject;
+
+        m_modelMesh = CustomMeshHandeling.GetMesh(m_objectWithMesh);
 
         if (m_modelMesh == null)
         {
@@ -72,12 +82,16 @@ public class VoxeliserCompanion : MonoBehaviour
 #endif
         }
 
-
         m_meshTris = m_modelMesh.triangles;
         m_vertColors = SetupMeshColor(m_modelMesh.vertices);
 
         //Voxel handler
         m_voxelHandler.InitVoxels(VOXEL_COUNT);
+
+        if (DISABLE_MATERIAL)
+        {
+            CustomMeshHandeling.DisableMaterial(m_objectWithMesh);
+        }
 
         StartCoroutine(VoxeliserUpdate());
     }
@@ -90,6 +104,11 @@ public class VoxeliserCompanion : MonoBehaviour
     {
         if (Time.frameCount % (2 + UPDATE_N_FRAMES) == 0) //Run every third frame
         {
+            foreach (VoxeliserCompanion_Child voxelChild in GetComponentsInChildren<VoxeliserCompanion_Child>())
+            {
+                StartCoroutine(voxelChild.VoxeliserUpdate());
+            }
+
             UpdateMesh();
             StartCoroutine(ConvertToVoxels());
         }
@@ -118,13 +137,6 @@ public class VoxeliserCompanion : MonoBehaviour
         HashSet<VectorDouble> voxelPositions = new HashSet<VectorDouble>(); 
         List<Vector3> voxelColors = new List<Vector3>();
 
-        Matrix4x4 noPositionMatrix = transform.localToWorldMatrix;
-
-        //Set position to 0
-        noPositionMatrix.m03 = 0.0f;
-        noPositionMatrix.m13 = 0.0f;
-        noPositionMatrix.m23 = 0.0f;
-
         //Build tris
         int coroutineIndex = 0;
         int totalTris = m_meshTris.Length / 3;
@@ -141,9 +153,9 @@ public class VoxeliserCompanion : MonoBehaviour
                 int vertAIndex = m_meshTris[loopIndex * 3];
                 int vertBIndex = m_meshTris[loopIndex * 3 + 1];
                 int vertCIndex = m_meshTris[loopIndex * 3 + 2];
-                VectorDouble vertA = GetGlobalPosition(VectorDouble.GetVectorDouble(meshVerts[vertAIndex]), noPositionMatrix);
-                VectorDouble vertB = GetGlobalPosition(VectorDouble.GetVectorDouble(meshVerts[vertBIndex]), noPositionMatrix);
-                VectorDouble vertC = GetGlobalPosition(VectorDouble.GetVectorDouble(meshVerts[vertCIndex]), noPositionMatrix);
+                VectorDouble vertA = VectorDouble.GetVectorDouble(transform.localToWorldMatrix * meshVerts[vertAIndex]);
+                VectorDouble vertB = VectorDouble.GetVectorDouble(transform.localToWorldMatrix * meshVerts[vertBIndex]);
+                VectorDouble vertC = VectorDouble.GetVectorDouble(transform.localToWorldMatrix * meshVerts[vertCIndex]);
 
                 //Build orginal vertA to vertB line
                 List<Vector3> a2bColors = new List<Vector3>();
@@ -193,7 +205,7 @@ public class VoxeliserCompanion : MonoBehaviour
         Vector3[] vertColors = new Vector3[p_meshVerts.Length];
 
         //Attempt to get MAIN_TEX
-        MeshRenderer meshRenderer = GetComponentInChildren<MeshRenderer>();
+        MeshRenderer meshRenderer = m_objectWithMesh.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
         {
             m_mainTexture = (Texture2D)meshRenderer.material.mainTexture;
@@ -201,7 +213,7 @@ public class VoxeliserCompanion : MonoBehaviour
         }
         else
         {
-            SkinnedMeshRenderer skinnedMeshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+            SkinnedMeshRenderer skinnedMeshRenderer = m_objectWithMesh.GetComponent<SkinnedMeshRenderer>();
             if (skinnedMeshRenderer != null)
             {
                 m_mainTexture = (Texture2D)skinnedMeshRenderer.material.mainTexture;
@@ -222,10 +234,6 @@ public class VoxeliserCompanion : MonoBehaviour
         {
             Vector2[] uvs;
 
-            //Ensure m_modelMesh has been assigned
-            if (m_modelMesh == null)
-                m_modelMesh = CustomMeshHandeling.GetMesh(gameObject);
-                
             uvs = m_modelMesh.uv;
 
             for (int i = 0; i < p_meshVerts.Length; i++)
@@ -336,20 +344,6 @@ public class VoxeliserCompanion : MonoBehaviour
         }
 
         return linePoints;
-    }
-
-    //--------------------
-    //  Convert from local to world postion
-    //  Build voxels for single tri, based off world positions
-    //  params:
-    //      p_position - World position of a given voxel 
-    //  return:
-    //      float3 - Postioned in global space
-    //--------------------
-    VectorDouble GetGlobalPosition(VectorDouble p_position, Matrix4x4 p_noPositionMatrix)
-    {
-        Vector4 newPosition = p_noPositionMatrix * new Vector4((float)p_position.m_x, (float)p_position.m_y, (float)p_position.m_z, 1);
-        return VectorDouble.GetVectorDouble(new Vector3(newPosition.x, newPosition.y, newPosition.z));
     }
 
     //--------------------

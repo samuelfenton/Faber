@@ -13,9 +13,8 @@ public class VoxeliserCompanion_SkinnedMeshRenderer : VoxeliserCompanion
     //--------------------
     protected override void Start()
     {
-        m_skinnedMeshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
-
         base.Start();
+        m_skinnedMeshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
     }
 
     //--------------------

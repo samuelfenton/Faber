@@ -54,6 +54,9 @@ public class Voxel_Trailing : Voxel
     {
         m_driftingDir = p_driftingDir;
         m_trailingSpeed = p_speed;
+
+        transform.SetParent(null, true);
+
         StartCoroutine(TrailingEffect());
     }
 }

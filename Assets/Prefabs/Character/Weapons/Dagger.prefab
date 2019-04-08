@@ -88,8 +88,8 @@ GameObject:
   - component: {fileID: 7041772245054400364}
   - component: {fileID: 2923343958938500771}
   - component: {fileID: 4537279537247318086}
-  - component: {fileID: 7115976870652488985}
   - component: {fileID: 5778646661041190443}
+  - component: {fileID: 1478112073381078783}
   m_Layer: 0
   m_Name: Dagger
   m_TagString: Untagged
@@ -140,21 +140,6 @@ MonoBehaviour:
   m_hitCharacters: []
   m_weaponLightDamage: 1
   m_weaponHeavyDamage: 2
---- !u!114 &7115976870652488985
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7048626540013319165}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 644ab212a30f8cc46a235789abe4b31d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  VOXEL_COUNT: 30
-  UPDATE_N_FRAMES: 1
-  m_modelMesh: {fileID: 0}
 --- !u!114 &5778646661041190443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,3 +159,18 @@ MonoBehaviour:
   m_shrinkTime: 2
   m_disassemble: 0
   m_saveMeshOnPlay: 0
+--- !u!114 &1478112073381078783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7048626540013319165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 596d3ef90f56d4a47a68fc7b60a41305, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  VOXEL_COUNT: 30
+  UPDATE_N_FRAMES: 1
+  m_modelMesh: {fileID: 0}

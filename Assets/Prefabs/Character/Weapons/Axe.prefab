@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7048626540013319165
+--- !u!1 &1427725771260923690
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,62 +8,49 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7041772245054400364}
-  - component: {fileID: 2923343958938500771}
-  - component: {fileID: 2725623468044899619}
-  - component: {fileID: 2849401606821738383}
-  - component: {fileID: 4537279537247318086}
-  - component: {fileID: 3486476064242768198}
-  - component: {fileID: 7969605138877179371}
+  - component: {fileID: 3258439498364290224}
+  - component: {fileID: 3368990340265028355}
+  - component: {fileID: 6268164660878607139}
+  - component: {fileID: 3796659183917070951}
+  - component: {fileID: 8444611201719002886}
+  - component: {fileID: 226470341416530623}
+  - component: {fileID: 49968763006265788}
   m_Layer: 0
-  m_Name: GodDagger
+  m_Name: Axe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7041772245054400364
+--- !u!4 &3258439498364290224
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7048626540013319165}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 1427725771260923690}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 20.51686, y: -1.0023346, z: 4.2630363}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &2923343958938500771
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7048626540013319165}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.25, y: 0.36, z: 0.27}
-  m_Center: {x: 0, y: 0.39, z: 0}
---- !u!33 &2725623468044899619
+--- !u!33 &3368990340265028355
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7048626540013319165}
-  m_Mesh: {fileID: 4300000, guid: 064f449e0152df14eac00616a2a0a1a7, type: 3}
---- !u!23 &2849401606821738383
+  m_GameObject: {fileID: 1427725771260923690}
+  m_Mesh: {fileID: 4300000, guid: 1195da2ff0d32a641825ee0935ad4c5f, type: 3}
+--- !u!23 &6268164660878607139
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7048626540013319165}
+  m_GameObject: {fileID: 1427725771260923690}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -74,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 064f449e0152df14eac00616a2a0a1a7, type: 3}
+  - {fileID: 2100000, guid: 1195da2ff0d32a641825ee0935ad4c5f, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -94,54 +81,66 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &4537279537247318086
+--- !u!114 &3796659183917070951
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7048626540013319165}
+  m_GameObject: {fileID: 1427725771260923690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 596d3ef90f56d4a47a68fc7b60a41305, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  VOXEL_COUNT: 1000
+  UPDATE_N_FRAMES: 1
+  DISABLE_MATERIAL: 0
+  m_modelMesh: {fileID: 0}
+--- !u!114 &8444611201719002886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427725771260923690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 039c728536b724bee8e72258e9f937cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_voxel: {fileID: 904737219738579102, guid: d9f8bf52f4bc4544eb934552238c5c51, type: 3}
+  m_voxelSize: 0.2
+  m_chanceOfExplode: 5
+  m_explosionFactor: 5
+  m_shrinkTime: 2
+  m_disassemble: 0
+  m_saveMeshOnPlay: 0
+--- !u!65 &226470341416530623
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427725771260923690}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &49968763006265788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427725771260923690}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb49449ba0b5550468adcb436c5bb3f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_hitCharacters: []
-  m_weaponLightDamage: 100
-  m_weaponHeavyDamage: 200
---- !u!114 &3486476064242768198
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7048626540013319165}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 596d3ef90f56d4a47a68fc7b60a41305, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  VOXEL_COUNT: 300
-  UPDATE_N_FRAMES: 1
-  DISABLE_MATERIAL: 1
-  m_objectWithMesh: {fileID: 0}
-  m_modelMesh: {fileID: 0}
---- !u!114 &7969605138877179371
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7048626540013319165}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c9b6f7ee2f8f422aa733b7211ed43c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_voxel: {fileID: 904737219738579102, guid: d9f8bf52f4bc4544eb934552238c5c51, type: 3}
-  m_voxelSize: 0.06
-  m_chanceOfExplode: 5
-  m_explosionFactor: 5
-  m_shrinkTime: 2
-  m_voxelParent: {fileID: 0}
-  m_disassemble: 0
+  m_weaponLightDamage: 1
+  m_weaponHeavyDamage: 2
