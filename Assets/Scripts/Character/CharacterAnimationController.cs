@@ -7,7 +7,7 @@ public class CharacterAnimationController : MonoBehaviour
     public enum ANIMATIONS {LOCOMOTION, LIGHT_ATTACK, HEAVY_ATTACK, LIGHT_ATTACK_COMBO, HEAVY_ATTACK_COMBO, DODGE, JUMP, IN_AIR, LAND}
     public Dictionary<ANIMATIONS, string> m_animationStringDicitonary = new Dictionary<ANIMATIONS, string>();
 
-    public enum VARIBLES {MOVEMENT_SPEED}
+    public enum VARIBLES {WEAPON_SLOT, MOVEMENT_SPEED}
     public Dictionary<VARIBLES, string> m_varibleStringDicitonary = new Dictionary<VARIBLES, string>();
 
     private Character m_parentCharacter = null;
@@ -29,6 +29,7 @@ public class CharacterAnimationController : MonoBehaviour
         m_animationStringDicitonary.Add(ANIMATIONS.IN_AIR, "InAir");
         m_animationStringDicitonary.Add(ANIMATIONS.LAND, "Land");
 
+        m_varibleStringDicitonary.Add(VARIBLES.WEAPON_SLOT, "WeaponSlot");
         m_varibleStringDicitonary.Add(VARIBLES.MOVEMENT_SPEED, "Speed");
 
         m_parentCharacter = transform.parent.GetComponent<Character>();

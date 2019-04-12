@@ -86,6 +86,11 @@ public class Character : MonoBehaviour
         //Secondary references
         m_weapon = GetComponentInChildren<Weapon>();
 
+        if(m_weapon != null)
+        {
+            m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.WEAPON_SLOT, (float)m_weapon.m_animationIndex);
+        }
+
         m_currentHealth = m_maxHealth;
     }
 

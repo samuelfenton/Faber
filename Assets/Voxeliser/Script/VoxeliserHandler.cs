@@ -142,8 +142,8 @@ public class VoxeliserHandler : MonoBehaviour
             colorIndex++;
         }
 
-        //Wait till next frame
-        yield return null; 
+        if(m_voxelCompanion.PERFORM_OVER_FRAMES)//Wait till next frame
+            yield return null; 
 
         //Remove voxels
         while (voxelsToRemove.Count > 0)

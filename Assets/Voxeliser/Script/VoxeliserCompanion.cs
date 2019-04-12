@@ -8,6 +8,9 @@ public class VoxeliserCompanion : MonoBehaviour
     [Tooltip("Set how many voxels will be used, in the case of missing voxels increase this number. Too high will cause lag")]
     public int VOXEL_COUNT = 1000;
 
+    [Tooltip("Will this voxeliser perform over a series of frames, minimum of 3")]
+    public bool PERFORM_OVER_FRAMES = false;
+
     [Tooltip("How often this voxeliser will update, it is this varible + 2. So N = 1, updates every 3 frames")]
     public int UPDATE_N_FRAMES = 1;
 
@@ -74,12 +77,9 @@ public class VoxeliserCompanion : MonoBehaviour
 #endif
         }
 
-        if (UPDATE_N_FRAMES < 0)
+        if (UPDATE_N_FRAMES < 0 || PERFORM_OVER_FRAMES)
         {
             UPDATE_N_FRAMES = 0;
-#if UNITY_EDITOR
-            Debug.Log("Frame update on " + gameObject.name + " shouldn't be set as less than 0");
-#endif
         }
 
         m_meshTris = m_modelMesh.triangles;
@@ -102,7 +102,8 @@ public class VoxeliserCompanion : MonoBehaviour
     //--------------------
     protected virtual IEnumerator VoxeliserUpdate()
     {
-        if (Time.frameCount % (2 + UPDATE_N_FRAMES) == 0) //Run every third frame
+        yield return null;
+        if (PERFORM_OVER_FRAMES && Time.frameCount % (2 + UPDATE_N_FRAMES) == 0 || !PERFORM_OVER_FRAMES) //Run every third frame if perform over frames is chosen
         {
             foreach (VoxeliserCompanion_Child voxelChild in GetComponentsInChildren<VoxeliserCompanion_Child>())
             {
@@ -113,7 +114,6 @@ public class VoxeliserCompanion : MonoBehaviour
             StartCoroutine(ConvertToVoxels());
         }
 
-        yield return null;
         StartCoroutine(VoxeliserUpdate());
     }
 
@@ -181,13 +181,14 @@ public class VoxeliserCompanion : MonoBehaviour
 
             //Coroutine Logic
             coroutineIndex++;
-            if (coroutineIndex < UPDATE_N_FRAMES)
+            if (PERFORM_OVER_FRAMES && coroutineIndex < UPDATE_N_FRAMES)
                 yield return null;
 
         }
         while (coroutineIndex < UPDATE_N_FRAMES);
 
-        yield return null;
+        if (PERFORM_OVER_FRAMES)
+            yield return null;
 
         StartCoroutine(m_voxelHandler.HandleVoxels(voxelPositions, voxelColors));
     }

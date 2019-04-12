@@ -5,6 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider))]
 public class Weapon : MonoBehaviour
 {
+    [Tooltip("Weapon index for swinging animation, 0 = unarmed, 1 = axe")]
+    public int m_animationIndex = 0;
+
     [HideInInspector]
     public List<Character> m_hitCharacters = new List<Character>();
 
