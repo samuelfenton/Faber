@@ -60,7 +60,7 @@ ModelImporter:
       curves: []
       events:
       - time: 0.46501875
-        functionName: DealDamage
+        functionName: EnableDamage
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
@@ -68,6 +68,13 @@ ModelImporter:
         messageOptions: 0
       - time: 0.87982166
         functionName: ComboAttack
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.76621616
+        functionName: DisableDamage
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

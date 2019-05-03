@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class CharacterCustomPhysics : MonoBehaviour
 {
     private const float GROUND_DETECTION = 0.5f; 
@@ -10,6 +11,7 @@ public class CharacterCustomPhysics : MonoBehaviour
 
     public Navigation_Spline m_currentSpline = null;
 
+    [Range(0,1)]
     public float m_currentSplinePercent = 0.0f;
 
     [Header("Collision Details")]
@@ -31,6 +33,20 @@ public class CharacterCustomPhysics : MonoBehaviour
         m_colliderExtents.x = m_colliderExtents.z = capculeCollider.radius;
         m_colliderExtents.y = capculeCollider.height / 2.0f;
     }
+
+#if UNITY_EDITOR
+
+    private void OnValidate()
+    {
+        //Update position in scene 
+        if(m_currentSpline!=null)
+        {
+            m_currentSpline.Start();
+
+            transform.position = m_currentSpline.GetSplinePosition(m_currentSplinePercent);
+        }
+    }
+#endif
 
     public void UpdatePhysics()
     {

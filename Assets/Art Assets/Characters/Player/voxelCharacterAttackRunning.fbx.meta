@@ -1,45 +1,119 @@
 fileFormatVersion: 2
 guid: d888ac5a1c15e1f4abc9cc446838d619
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: ElbowLeft_JNT
-    100002: ElbowRight_JNT
-    100004: FootLeft_JNT
-    100006: FootRight_JNT
-    100008: Hips_JNT
-    100010: jointHipLeft_JNT
-    100012: jointHipRight_JNT
-    100014: KneeLeft_JNT
-    100016: KneeRight_JNT
-    100018: Neck_JNT
-    100020: ShoulderLeft_JNT
-    100022: ShoulderRight_JNT
-    100024: Spine_JNT
-    100026: //RootNode
-    100028: WristLeft_JNT
-    100030: WristRight_JNT
-    100032: RT_JNT
-    400000: ElbowLeft_JNT
-    400002: ElbowRight_JNT
-    400004: FootLeft_JNT
-    400006: FootRight_JNT
-    400008: Hips_JNT
-    400010: jointHipLeft_JNT
-    400012: jointHipRight_JNT
-    400014: KneeLeft_JNT
-    400016: KneeRight_JNT
-    400018: Neck_JNT
-    400020: ShoulderLeft_JNT
-    400022: ShoulderRight_JNT
-    400024: Spine_JNT
-    400026: //RootNode
-    400028: WristLeft_JNT
-    400030: WristRight_JNT
-    400032: RT_JNT
-    7400000: voxelCharacterAttackRunning
-    9500000: //RootNode
-    2186277476908879412: ImportLogs
+  serializedVersion: 25
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: ElbowLeft_JNT
+  - first:
+      1: 100002
+    second: ElbowRight_JNT
+  - first:
+      1: 100004
+    second: FootLeft_JNT
+  - first:
+      1: 100006
+    second: FootRight_JNT
+  - first:
+      1: 100008
+    second: Hips_JNT
+  - first:
+      1: 100010
+    second: jointHipLeft_JNT
+  - first:
+      1: 100012
+    second: jointHipRight_JNT
+  - first:
+      1: 100014
+    second: KneeLeft_JNT
+  - first:
+      1: 100016
+    second: KneeRight_JNT
+  - first:
+      1: 100018
+    second: Neck_JNT
+  - first:
+      1: 100020
+    second: ShoulderLeft_JNT
+  - first:
+      1: 100022
+    second: ShoulderRight_JNT
+  - first:
+      1: 100024
+    second: Spine_JNT
+  - first:
+      1: 100026
+    second: //RootNode
+  - first:
+      1: 100028
+    second: WristLeft_JNT
+  - first:
+      1: 100030
+    second: WristRight_JNT
+  - first:
+      1: 100032
+    second: RT_JNT
+  - first:
+      4: 400000
+    second: ElbowLeft_JNT
+  - first:
+      4: 400002
+    second: ElbowRight_JNT
+  - first:
+      4: 400004
+    second: FootLeft_JNT
+  - first:
+      4: 400006
+    second: FootRight_JNT
+  - first:
+      4: 400008
+    second: Hips_JNT
+  - first:
+      4: 400010
+    second: jointHipLeft_JNT
+  - first:
+      4: 400012
+    second: jointHipRight_JNT
+  - first:
+      4: 400014
+    second: KneeLeft_JNT
+  - first:
+      4: 400016
+    second: KneeRight_JNT
+  - first:
+      4: 400018
+    second: Neck_JNT
+  - first:
+      4: 400020
+    second: ShoulderLeft_JNT
+  - first:
+      4: 400022
+    second: ShoulderRight_JNT
+  - first:
+      4: 400024
+    second: Spine_JNT
+  - first:
+      4: 400026
+    second: //RootNode
+  - first:
+      4: 400028
+    second: WristLeft_JNT
+  - first:
+      4: 400030
+    second: WristRight_JNT
+  - first:
+      4: 400032
+    second: RT_JNT
+  - first:
+      74: 7400000
+    second: voxelCharacterAttackRunning
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      41386430: 2186277476908879412
+    second: ImportLogs
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -71,6 +145,7 @@ ModelImporter:
     - serializedVersion: 16
       name: voxelCharacterAttackRunning
       takeName: voxelCharacterAttackRunning
+      internalID: 7400000
       firstFrame: 1
       lastFrame: 25
       wrapMode: 0
@@ -92,6 +167,13 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
+      - time: 0.4030822
+        functionName: EnableDamage
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       - time: 0.6719135
         functionName: ComboAttack
         data: 
@@ -99,8 +181,8 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.5005181
-        functionName: DealDamage
+      - time: 0.60162157
+        functionName: DisableDamage
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
@@ -124,18 +206,19 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 0.01
-    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -144,10 +227,11 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 1
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human:
     - boneName: Hips_JNT
       humanName: Hips
@@ -427,6 +511,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 1

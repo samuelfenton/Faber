@@ -47,6 +47,7 @@ public class Character : MonoBehaviour
 
     [Header("Character Stats")]
     public float m_maxHealth = 10.0f;
+    [SerializeField]
     private float m_currentHealth = 10.0f;
 
     public Vector3 m_localVelocity = Vector3.zero;
@@ -89,6 +90,7 @@ public class Character : MonoBehaviour
         if(m_weapon != null)
         {
             m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.WEAPON_SLOT, (float)m_weapon.m_animationIndex);
+            m_weapon.m_parentCharacter = this;
         }
 
         m_currentHealth = m_maxHealth;
@@ -125,6 +127,7 @@ public class Character : MonoBehaviour
     public void OnDeath()
     {
         m_voxeliserHandler.EnableDisassemble();
+        m_weapon.transform.parent = null;
     }
 
     public void ModifyHealth(float p_value)
@@ -135,25 +138,16 @@ public class Character : MonoBehaviour
             OnDeath();
     }
 
-    public void DealDamage()
-    {
-        foreach (Character character in m_weapon.m_hitCharacters)
-        {
-            if (character.m_characterTeam != m_characterTeam)
-            {
-                //determine damage
-                float totalDamage = -m_weapon.m_weaponLightDamage;
-
-                if (m_currentAttackType == ATTACK_TYPE.HEAVY)
-                    totalDamage = -m_weapon.m_weaponHeavyDamage;
-
-                character.ModifyHealth(totalDamage);
-            }
-        }
-    }
-
     public virtual NavigationController.TURNING GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
     {
         return NavigationController.TURNING.CENTER;
+    }
+
+    public void ToggleWeapon(bool p_val)
+    {
+        if(p_val)
+            m_weapon.EnableWeaponCollisions();
+        else
+            m_weapon.DisableWeaponCollisions();
     }
 }

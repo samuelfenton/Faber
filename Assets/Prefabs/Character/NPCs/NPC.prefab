@@ -335,7 +335,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   VOXEL_COUNT: 800
+  PERFORM_OVER_FRAMES: 0
   UPDATE_N_FRAMES: 1
+  DISABLE_MATERIAL: 1
+  m_objectWithMesh: {fileID: 1604321139137051139}
   m_modelMesh: {fileID: 0}
 --- !u!114 &1191175614226164203
 MonoBehaviour:
@@ -354,6 +357,7 @@ MonoBehaviour:
   m_chanceOfExplode: 5
   m_explosionFactor: 5
   m_shrinkTime: 2
+  m_voxelParent: {fileID: 0}
   m_disassemble: 0
   m_chanceOfTrailing: 5
   m_trailingShrinkTime: 2
@@ -583,7 +587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_currentSpline: {fileID: 0}
-  m_currentSplinePercent: 0.5
+  m_currentSplinePercent: 0.673
   m_upCollision: 0
   m_downCollision: 0
   m_forwardCollision: 0

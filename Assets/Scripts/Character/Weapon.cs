@@ -17,9 +17,12 @@ public class Weapon : MonoBehaviour
     public float m_weaponLightDamage = 1.0f;
     public float m_weaponHeavyDamage = 2.0f;
 
+    public Character m_parentCharacter = null;
+
     private void Start()
     {
         m_boxCollider = GetComponent<BoxCollider>();
+        m_boxCollider.enabled = false;
     }
 
     private void OnTriggerEnter(Collider p_other)
@@ -27,6 +30,14 @@ public class Weapon : MonoBehaviour
         Character otherCharacter = p_other.GetComponentInChildren<Character>();
         if (otherCharacter != null && !m_hitCharacters.Contains(otherCharacter))
         {
+            if (otherCharacter.m_characterTeam != m_parentCharacter.m_characterTeam)
+            {
+                //determine damage
+                float totalDamage = m_parentCharacter.m_currentAttackType == Character.ATTACK_TYPE.LIGHT ? - m_weaponLightDamage : -m_weaponHeavyDamage;
+
+                otherCharacter.ModifyHealth(totalDamage);
+            }
+
             m_hitCharacters.Add(otherCharacter);
         }
     }

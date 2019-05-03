@@ -62,8 +62,13 @@ public class CharacterAnimationController : MonoBehaviour
         m_lightAttackState.PerformCombo();
     }
 
-    public void DealDamage()
+    public void EnableDamage()
     {
-        m_parentCharacter.DealDamage();
+        m_parentCharacter.ToggleWeapon(true);
+    }
+
+    public void DisableDamage()
+    {
+        m_parentCharacter.ToggleWeapon(false);
     }
 }

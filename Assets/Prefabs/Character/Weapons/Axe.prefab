@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 9045111330229846595}
   - component: {fileID: 1552168416773554855}
   - component: {fileID: 4726038835521287459}
-  - component: {fileID: 803024058649819454}
   - component: {fileID: 2903256521573918519}
+  - component: {fileID: 803024058649819454}
   - component: {fileID: 2646025721578793879}
   - component: {fileID: 518363021187527624}
   m_Layer: 0
@@ -81,6 +81,19 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &2903256521573918519
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5401493378431731845}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.01, y: 0.07613675, z: 0.97}
+  m_Center: {x: -0.52, y: 0, z: -0.06421719}
 --- !u!114 &803024058649819454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,19 +112,6 @@ MonoBehaviour:
   DISABLE_MATERIAL: 0
   m_objectWithMesh: {fileID: 0}
   m_modelMesh: {fileID: 0}
---- !u!65 &2903256521573918519
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5401493378431731845}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.84873575, y: 0.07613675, z: 0.45713365}
-  m_Center: {x: -0.049034745, y: 0, z: -0.06421719}
 --- !u!114 &2646025721578793879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,6 +128,7 @@ MonoBehaviour:
   m_hitCharacters: []
   m_weaponLightDamage: 1
   m_weaponHeavyDamage: 2
+  m_parentCharacter: {fileID: 0}
 --- !u!114 &518363021187527624
 MonoBehaviour:
   m_ObjectHideFlags: 0
