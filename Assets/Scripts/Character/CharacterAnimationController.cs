@@ -15,7 +15,6 @@ public class CharacterAnimationController : MonoBehaviour
     public bool m_canCombo = false;
     public ANIMATIONS m_currentAnimation = ANIMATIONS.LOCOMOTION;
     public Animator m_animator = null;
-    private CharacterState_LightAttack m_lightAttackState = null;
 
     public void InitAnimationController()
     {
@@ -35,9 +34,7 @@ public class CharacterAnimationController : MonoBehaviour
         m_parentCharacter = transform.parent.GetComponent<Character>();
 
         m_animator = GetComponentInChildren<Animator>();
-        
-        //references to attacking states, used to trigger combos
-        m_lightAttackState = m_parentCharacter.GetComponent<CharacterState_LightAttack>();
+       
     }
 
     public void SetBool(ANIMATIONS p_animation, bool p_val)
@@ -57,9 +54,14 @@ public class CharacterAnimationController : MonoBehaviour
         return m_animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1;
     }
 
-    public void ComboAttack()
+    public void EnableComboAttack()
     {
-        m_lightAttackState.PerformCombo();
+        m_canCombo = true;
+    }
+
+    public void DisableComboAttack()
+    {
+        m_canCombo = false;
     }
 
     public void EnableDamage()

@@ -46,6 +46,12 @@ public class CharacterState_LightAttack : CharacterState
 
         m_parentCharacter.m_localVelocity = newVelocity;
 
+        //Perform combo of attack, jump to next attack in animaiton tree
+        if (m_characterInput.GetInputState().m_lightCombo && m_characterAnimationController.m_canCombo)
+        {
+            m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK_COMBO, true);
+        }
+
         m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.MOVEMENT_SPEED, Mathf.Abs(newVelocity.x / m_horizontalSpeedMax));
 
         return m_characterAnimationController.EndOfAnimation();
@@ -68,16 +74,5 @@ public class CharacterState_LightAttack : CharacterState
     public override bool IsValid()
     {
         return m_parentCharacter.m_currentCharacterInput.m_lightAttack;
-    }
-
-    //-------------------
-    //Perform combo of attack, jump to next attack in animaiton tree
-    //-------------------
-    public void PerformCombo()
-    {
-        if(m_characterInput.GetInputState().m_lightCombo)
-        {
-            m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK_COMBO, true);
-        }
     }
 }

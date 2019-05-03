@@ -164,13 +164,6 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.6719135
-        functionName: ComboAttack
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
       - time: 0.45336786
         functionName: EnableDamage
         data: 
@@ -180,6 +173,20 @@ ModelImporter:
         messageOptions: 0
       - time: 0.5278378
         functionName: DisableDamage
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.6227332
+        functionName: EnableComboAttack
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.7442105
+        functionName: DisableComboAttack
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

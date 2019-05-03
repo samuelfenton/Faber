@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Attacking_SingleAttack : BehaviourNode
+public class Attacking_ComboAttack : BehaviourNode
 {
     private bool m_trigger = false;
     public override RESULT Execute(Character_NPC p_character)
@@ -10,9 +10,9 @@ public class Attacking_SingleAttack : BehaviourNode
         //Setup input
         m_characterInput_NPC.m_currentState = new CharacterInput.InputState();
 
-        if(!m_trigger)
+        if (!m_trigger)
         {
-            m_characterInput_NPC.m_currentState.m_lightAttack = true;
+            m_characterInput_NPC.m_currentState.m_lightCombo = true;
             m_trigger = true;
         }
         else
@@ -20,7 +20,7 @@ public class Attacking_SingleAttack : BehaviourNode
             if (p_character.m_characterAnimationController.m_canCombo || p_character.m_characterAnimationController.EndOfAnimation())
             {
                 m_trigger = false;
-                return RESULT.SUCCESS; 
+                return RESULT.SUCCESS;
             }
         }
         return RESULT.PENDING;

@@ -174,15 +174,22 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.6719135
-        functionName: ComboAttack
+      - time: 0.60162157
+        functionName: DisableDamage
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.60162157
-        functionName: DisableDamage
+      - time: 0.6719135
+        functionName: EnableComboAttack
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.7774029
+        functionName: DisableComboAttack
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
