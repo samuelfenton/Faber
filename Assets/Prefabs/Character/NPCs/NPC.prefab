@@ -556,11 +556,12 @@ MonoBehaviour:
   m_wallJumpHorizontalSpeed: 2
   m_wallJumpInputDelay: 0.1
   m_currentAttackType: 0
-  m_maxHealth: 10
+  m_maxHealth: 1
+  m_currentHealth: 10
   m_localVelocity: {x: 0, y: 0, z: 0}
   m_path: []
   m_targetCharacter: {fileID: 0}
-  m_attackingDistance: 5
+  m_attackingDistance: 2
   m_detectionDistance: 20
 --- !u!114 &213440121849905867
 MonoBehaviour:
@@ -587,7 +588,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_currentSpline: {fileID: 0}
-  m_currentSplinePercent: 0.673
+  m_currentSplinePercent: 0.729
   m_upCollision: 0
   m_downCollision: 0
   m_forwardCollision: 0
@@ -604,7 +605,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd4f6501f8172394089bb6240cb43757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_equipedWeapon: {fileID: 7048626540013319165, guid: dd693970b15994a49be6cba3d6933e8b,
+  m_equipedWeapon: {fileID: 7048626540013319165, guid: e69a6197583d5d54bb17897d1dcb6fe9,
     type: 3}
 --- !u!114 &1754773886236863161
 MonoBehaviour:

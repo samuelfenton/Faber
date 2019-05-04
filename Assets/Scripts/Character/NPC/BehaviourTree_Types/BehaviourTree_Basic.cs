@@ -11,10 +11,13 @@ public class BehaviourTree_Basic : BehaviourTree
         //Top
         CompositeOR topBranch = gameObject.AddComponent<CompositeOR>();
 
-        CompositeAND attackingBranch = gameObject.AddComponent<CompositeAND>();
 
         //Attacking Logic
         CompositeAND attackingLogic = gameObject.AddComponent<CompositeAND>();
+
+        CompositeOR singleAttackLogic = gameObject.AddComponent<CompositeOR>();
+        CompositeOR firstComboAttackLogic = gameObject.AddComponent<CompositeOR>();
+        CompositeOR secondComboAttackLogic = gameObject.AddComponent<CompositeOR>();
 
         CompositeAND singleAttackBranch = gameObject.AddComponent<CompositeAND>();
         CompositeAND firstComboAttackBranch = gameObject.AddComponent<CompositeAND>();
@@ -41,14 +44,19 @@ public class BehaviourTree_Basic : BehaviourTree
         secondComboAttackBranch.m_childBehaviours.Add(canCombo);
         secondComboAttackBranch.m_childBehaviours.Add(comboAttack);
 
-        attackingLogic.m_childBehaviours.Add(singleAttackBranch);
-        attackingLogic.m_childBehaviours.Add(firstComboAttackBranch);
-        attackingLogic.m_childBehaviours.Add(secondComboAttackBranch);
-        attackingLogic.m_childBehaviours.Add(endAttack);
-
         //Attacking Branch
-        attackingBranch.m_childBehaviours.Add(attackingLogic);
-        attackingBranch.m_childBehaviours.Add(endAttack);
+        singleAttackLogic.m_childBehaviours.Add(singleAttackBranch);
+        singleAttackLogic.m_childBehaviours.Add(endAttack);
+
+        firstComboAttackLogic.m_childBehaviours.Add(firstComboAttackBranch);
+        firstComboAttackLogic.m_childBehaviours.Add(endAttack);
+
+        secondComboAttackLogic.m_childBehaviours.Add(secondComboAttackBranch);
+        secondComboAttackLogic.m_childBehaviours.Add(endAttack);
+
+        attackingLogic.m_childBehaviours.Add(singleAttackLogic);
+        attackingLogic.m_childBehaviours.Add(firstComboAttackLogic);
+        attackingLogic.m_childBehaviours.Add(secondComboAttackLogic);
 
         //Moving Logic
         CompositeAND pathingLogic = gameObject.AddComponent<CompositeAND>();
@@ -72,7 +80,7 @@ public class BehaviourTree_Basic : BehaviourTree
         pathingLogic.m_childBehaviours.Add(moveTowardsTarget);
 
         //Top branch
-        topBranch.m_childBehaviours.Add(attackingBranch);
+        topBranch.m_childBehaviours.Add(attackingLogic);
         topBranch.m_childBehaviours.Add(pathingLogic);
 
         m_topNode = topBranch;

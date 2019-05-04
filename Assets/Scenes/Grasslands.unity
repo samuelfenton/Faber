@@ -210,32 +210,11 @@ PrefabInstance:
       propertyPath: m_targetCharacter
       value: 
       objectReference: {fileID: 241914041}
-    - target: {fileID: 3465731815076398150, guid: 71d80bf540728154f83b250a5362efec,
-        type: 3}
-      propertyPath: m_maxHealth
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3465731815076398150, guid: 71d80bf540728154f83b250a5362efec,
-        type: 3}
-      propertyPath: m_attackingDistance
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 6614654900178028120, guid: 71d80bf540728154f83b250a5362efec,
         type: 3}
       propertyPath: m_currentSpline
       value: 
       objectReference: {fileID: 36612583}
-    - target: {fileID: 6614654900178028120, guid: 71d80bf540728154f83b250a5362efec,
-        type: 3}
-      propertyPath: m_currentSplinePercent
-      value: 0.729
-      objectReference: {fileID: 0}
-    - target: {fileID: 8897214013314396245, guid: 71d80bf540728154f83b250a5362efec,
-        type: 3}
-      propertyPath: m_equipedWeapon
-      value: 
-      objectReference: {fileID: 7048626540013319165, guid: e69a6197583d5d54bb17897d1dcb6fe9,
-        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 71d80bf540728154f83b250a5362efec, type: 3}
 --- !u!1001 &75241308
@@ -464,46 +443,6 @@ PrefabInstance:
       propertyPath: m_currentSpline
       value: 
       objectReference: {fileID: 927748422}
-    - target: {fileID: 114222748025272242, guid: f12995016aeda9b4a83a0fa91161fea8,
-        type: 3}
-      propertyPath: m_currentSplinePercent
-      value: 0.506
-      objectReference: {fileID: 0}
-    - target: {fileID: 4884235445557264763, guid: f12995016aeda9b4a83a0fa91161fea8,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4884235445557264763, guid: f12995016aeda9b4a83a0fa91161fea8,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4884235445557264763, guid: f12995016aeda9b4a83a0fa91161fea8,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 4884235445557264763, guid: f12995016aeda9b4a83a0fa91161fea8,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4884235445557264763, guid: f12995016aeda9b4a83a0fa91161fea8,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.62
-      objectReference: {fileID: 0}
-    - target: {fileID: 4884235445557264763, guid: f12995016aeda9b4a83a0fa91161fea8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 4884235445557264763, guid: f12995016aeda9b4a83a0fa91161fea8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 180
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f12995016aeda9b4a83a0fa91161fea8, type: 3}
 --- !u!1 &241914035 stripped

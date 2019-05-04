@@ -10,7 +10,7 @@ public class Attack_EndAttack : BehaviourNode
         m_characterInput_NPC.m_currentState = new CharacterInput.InputState();
         if (p_character.m_characterAnimationController.EndOfAnimation())
         {
-            return RESULT.SUCCESS;
+            return RESULT.FAILED;
         }
         return RESULT.PENDING;
     }
