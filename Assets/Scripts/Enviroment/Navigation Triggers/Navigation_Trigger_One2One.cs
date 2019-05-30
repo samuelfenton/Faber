@@ -13,11 +13,16 @@ public class Navigation_Trigger_One2One : Navigation_Trigger
 
         if(m_forwardSplineInfo.m_spline == null || m_backwardSplineInfo.m_spline == null)
         {
+            //Debug message, remove collider
             #if UNITY_EDITOR
             Debug.Log("One to One spline trigger has no attached splines");
-            #endif
+#endif
+
+            BoxCollider boxCollider = GetComponent<BoxCollider>();
+            if (boxCollider != null)
+                boxCollider.enabled = false;
         }
-        else //Connected splines exist, so set up percentages of connected splines for when exiting
+        else //Connected splines exist, so set up percentages of connected splines for when exiting, ensure colider is enabled
         {
             if (m_backwardSplineInfo.m_spline != null)
             {
@@ -30,6 +35,10 @@ public class Navigation_Trigger_One2One : Navigation_Trigger
                 m_forwardSplineInfo.m_splinePercent = m_forwardSplineInfo.m_spline.GetPositionOfSplineTransform(this);
                 m_adjacentSplines.Add(m_forwardSplineInfo.m_spline);
             }
+
+            BoxCollider boxCollider = GetComponent<BoxCollider>();
+            if(boxCollider!=null)
+                boxCollider.enabled = true;
         }
     }
 

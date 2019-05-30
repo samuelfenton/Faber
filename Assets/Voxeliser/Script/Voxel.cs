@@ -47,6 +47,7 @@ public class Voxel : MonoBehaviour
     public void SetupVoxel(Vector3 p_localOffset, Vector3 p_color)
     {
         transform.localPosition = p_localOffset;
+        transform.rotation = Quaternion.identity; // Always stay at no rotation
 
         Color voxelColor = new Color
         {
@@ -64,6 +65,7 @@ public class Voxel : MonoBehaviour
     {
         transform.position = POOLING_LOCATION;
         transform.localScale = m_scale;
+        transform.rotation = Quaternion.identity; // Always stay at no rotation
     }
 
     //--------------------
