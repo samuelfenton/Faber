@@ -1346,6 +1346,16 @@ PrefabInstance:
       propertyPath: m_currentSpline
       value: 
       objectReference: {fileID: 2133755290}
+    - target: {fileID: 4575927733527551333, guid: f12995016aeda9b4a83a0fa91161fea8,
+        type: 3}
+      propertyPath: m_chanceOfTrailing
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4575927733527551333, guid: f12995016aeda9b4a83a0fa91161fea8,
+        type: 3}
+      propertyPath: m_maxChanceToEmit
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f12995016aeda9b4a83a0fa91161fea8, type: 3}
 --- !u!1 &241914035 stripped
@@ -2844,6 +2854,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: SplineNodeJunction
       objectReference: {fileID: 0}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_forwardSplineInfo.m_spline
+      value: 
+      objectReference: {fileID: 1262087526}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_backwardSplineInfo.m_spline
+      value: 
+      objectReference: {fileID: 547911845}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_forwardLeftSplineInfo.m_spline
+      value: 
+      objectReference: {fileID: 1825656538}
     - target: {fileID: 4431470181099482, guid: 2d662a0d4978cfc41bb213f885eb7938, type: 3}
       propertyPath: m_LocalPosition.x
       value: 56
@@ -2888,21 +2913,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_forwardSplineInfo.m_spline
-      value: 
-      objectReference: {fileID: 1262087526}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_backwardSplineInfo.m_spline
-      value: 
-      objectReference: {fileID: 547911845}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_forwardLeftSplineInfo.m_spline
-      value: 
-      objectReference: {fileID: 1825656538}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d662a0d4978cfc41bb213f885eb7938, type: 3}
 --- !u!1001 &566665863
@@ -6821,6 +6831,46 @@ PrefabInstance:
       propertyPath: m_Name
       value: SplineNodeJunction (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_adjacentSplines.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_backwardSplineInfo.m_spline
+      value: 
+      objectReference: {fileID: 2032785646}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_forwardLeftSplineInfo.m_spline
+      value: 
+      objectReference: {fileID: 1159319590}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_forwardRightSplineInfo.m_spline
+      value: 
+      objectReference: {fileID: 1825656538}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_adjacentSplines.Array.data[0]
+      value: 
+      objectReference: {fileID: 2032785646}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_adjacentSplines.Array.data[1]
+      value: 
+      objectReference: {fileID: 1159319590}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_adjacentSplines.Array.data[2]
+      value: 
+      objectReference: {fileID: 1825656538}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_backwardSplineInfo.m_splinePercent
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4431470181099482, guid: 2d662a0d4978cfc41bb213f885eb7938, type: 3}
       propertyPath: m_LocalPosition.x
       value: 58
@@ -6864,46 +6914,6 @@ PrefabInstance:
     - target: {fileID: 4431470181099482, guid: 2d662a0d4978cfc41bb213f885eb7938, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_adjacentSplines.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_backwardSplineInfo.m_spline
-      value: 
-      objectReference: {fileID: 2032785646}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_forwardLeftSplineInfo.m_spline
-      value: 
-      objectReference: {fileID: 1159319590}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_forwardRightSplineInfo.m_spline
-      value: 
-      objectReference: {fileID: 1825656538}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_adjacentSplines.Array.data[0]
-      value: 
-      objectReference: {fileID: 2032785646}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_adjacentSplines.Array.data[1]
-      value: 
-      objectReference: {fileID: 1159319590}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_adjacentSplines.Array.data[2]
-      value: 
-      objectReference: {fileID: 1825656538}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_backwardSplineInfo.m_splinePercent
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d662a0d4978cfc41bb213f885eb7938, type: 3}
@@ -13918,6 +13928,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: SplineNodeJunction (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_backwardSplineInfo.m_spline
+      value: 
+      objectReference: {fileID: 166926079}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_forwardSplineInfo.m_spline
+      value: 
+      objectReference: {fileID: 1262087526}
+    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
+        type: 3}
+      propertyPath: m_forwardRightSplineInfo.m_spline
+      value: 
+      objectReference: {fileID: 1159319590}
     - target: {fileID: 4431470181099482, guid: 2d662a0d4978cfc41bb213f885eb7938, type: 3}
       propertyPath: m_LocalPosition.x
       value: 60
@@ -13962,21 +13987,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_backwardSplineInfo.m_spline
-      value: 
-      objectReference: {fileID: 166926079}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_forwardSplineInfo.m_spline
-      value: 
-      objectReference: {fileID: 1262087526}
-    - target: {fileID: 1937899495649051671, guid: 2d662a0d4978cfc41bb213f885eb7938,
-        type: 3}
-      propertyPath: m_forwardRightSplineInfo.m_spline
-      value: 
-      objectReference: {fileID: 1159319590}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d662a0d4978cfc41bb213f885eb7938, type: 3}
 --- !u!4 &1680441282 stripped
