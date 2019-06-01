@@ -22,9 +22,8 @@ public class BehaviourTree_Basic : BehaviourTree
         CompositeAND firstComboAttackBranch = gameObject.AddComponent<CompositeAND>();
         CompositeAND secondComboAttackBranch = gameObject.AddComponent<CompositeAND>();
 
-        Qualifier_Distance isAttackingDistance = gameObject.AddComponent<Qualifier_Distance>();
+        Qualifier_AttackingDistance isAttackingDistance = gameObject.AddComponent<Qualifier_AttackingDistance>();
         isAttackingDistance.m_closeEnoughDistance = parentNPC.m_attackingDistance;
-        isAttackingDistance.InitNode();
 
         Qualifier_CanCombo canCombo = gameObject.AddComponent<Qualifier_CanCombo>();
 
