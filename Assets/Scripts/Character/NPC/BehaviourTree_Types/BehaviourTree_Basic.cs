@@ -11,7 +11,6 @@ public class BehaviourTree_Basic : BehaviourTree
         //Top
         CompositeOR topBranch = gameObject.AddComponent<CompositeOR>();
 
-
         //Attacking Logic
         CompositeAND attackingLogic = gameObject.AddComponent<CompositeAND>();
 
@@ -33,15 +32,12 @@ public class BehaviourTree_Basic : BehaviourTree
         Attacking_ComboAttack comboAttack = gameObject.AddComponent<Attacking_ComboAttack>();
         Attack_EndAttack endAttack = gameObject.AddComponent<Attack_EndAttack>();
 
-        singleAttackBranch.m_childBehaviours.Add(isAttackingDistance);
         singleAttackBranch.m_childBehaviours.Add(singleLightAttack);
+        singleAttackBranch.m_childBehaviours.Add(isAttackingDistance);
 
-        firstComboAttackBranch.m_childBehaviours.Add(isAttackingDistance);
-        firstComboAttackBranch.m_childBehaviours.Add(canCombo);
         firstComboAttackBranch.m_childBehaviours.Add(comboAttack);
+        firstComboAttackBranch.m_childBehaviours.Add(isAttackingDistance);
 
-        secondComboAttackBranch.m_childBehaviours.Add(isAttackingDistance);
-        secondComboAttackBranch.m_childBehaviours.Add(canCombo);
         secondComboAttackBranch.m_childBehaviours.Add(comboAttack);
 
         //Attacking Branch
@@ -54,6 +50,7 @@ public class BehaviourTree_Basic : BehaviourTree
         secondComboAttackLogic.m_childBehaviours.Add(secondComboAttackBranch);
         secondComboAttackLogic.m_childBehaviours.Add(endAttack);
 
+        attackingLogic.m_childBehaviours.Add(isAttackingDistance);
         attackingLogic.m_childBehaviours.Add(singleAttackLogic);
         attackingLogic.m_childBehaviours.Add(firstComboAttackLogic);
         attackingLogic.m_childBehaviours.Add(secondComboAttackLogic);

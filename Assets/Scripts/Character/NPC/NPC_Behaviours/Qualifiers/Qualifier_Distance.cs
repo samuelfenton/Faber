@@ -14,7 +14,7 @@ public class Qualifier_Distance : BehaviourNode
 
     public override RESULT Execute(Character_NPC p_character)
     {
-        if (MOARMaths.SqrDistance(p_character.transform.position, p_character.m_targetCharacter.transform.position) < m_closeEnoughDistanceSqr)
+        if (p_character.m_targetCharacter != null && MOARMaths.SqrDistance(p_character.transform.position, p_character.m_targetCharacter.transform.position) < m_closeEnoughDistanceSqr)
             return RESULT.SUCCESS;
         return RESULT.FAILED;
     }
