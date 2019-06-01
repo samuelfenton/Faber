@@ -17,10 +17,10 @@ public class NPC_State : MonoBehaviour
     //-------------------
     //Initilse the state, runs only once at start
     //-------------------
-    public virtual void StateInit()
+    public virtual void StateInit(Character_NPC p_parentNPC)
     {
         m_parentStateMachine = GetComponent<NPC_StateMachine>();
-        m_parentNPC = GetComponent<Character_NPC>();
+        m_parentNPC = p_parentNPC;
 
         m_NPCInput = GetComponent<CharacterInput_NPC>();
 

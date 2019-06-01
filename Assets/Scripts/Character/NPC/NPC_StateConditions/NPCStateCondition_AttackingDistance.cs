@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPC_StateCondition_AttackingDistance : NPC_StateCondition
+public class NPCStateCondition_AttackingDistance : NPC_StateCondition
 {
     public float m_closeEnoughDistance = 0.1f;
 

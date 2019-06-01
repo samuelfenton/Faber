@@ -17,6 +17,9 @@ public class Character_NPC : Character
         base.Start();
 
         m_NPCStateMachine = GetComponent<NPC_StateMachine>();
+
+        m_NPCStateMachine.InitStateMachine(this);
+        m_NPCStateMachine.InitStates();
     }
 
     protected override void Update()

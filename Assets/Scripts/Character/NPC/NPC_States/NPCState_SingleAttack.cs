@@ -5,21 +5,13 @@ using UnityEngine;
 public class NPCState_SingleAttack : NPC_State
 {
     //-------------------
-    //Initilse the state, runs only once at start
-    //-------------------
-    public override void StateInit()
-    {
-        m_NPCInput.m_currentState = new CharacterInput.InputState();
-
-        m_NPCInput.m_currentState.m_lightAttack = true;
-    }
-
-    //-------------------
     //When swapping to this state, this is called.
     //-------------------
     public override void StateStart()
     {
+        m_NPCInput.m_currentState = new CharacterInput.InputState();
 
+        m_NPCInput.m_currentState.m_lightAttack = true;
     }
 
     //-------------------

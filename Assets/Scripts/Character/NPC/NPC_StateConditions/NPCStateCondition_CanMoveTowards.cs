@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPC_StateCondition_CanMoveTowards : NPC_StateCondition
+public class NPCStateCondition_CanMoveTowards : NPC_StateCondition
 {
     //-------------------
     //Do all of this states preconditions return true

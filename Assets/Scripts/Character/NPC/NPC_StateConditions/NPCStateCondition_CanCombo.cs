@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPC_StateCondition_CanCombo : NPC_StateCondition
+public class NPCStateCondition_CanCombo : NPC_StateCondition
 {
     //-------------------
     //Do all of this states preconditions return true
@@ -11,10 +11,6 @@ public class NPC_StateCondition_CanCombo : NPC_StateCondition
     //-------------------
     public override bool Execute(Character_NPC p_character)
     {
-        if (p_character.m_characterAnimationController.m_canCombo)
-        {
-            return true;
-        }
-        return false;
+        return p_character.m_characterAnimationController.m_canCombo;
     }
 }

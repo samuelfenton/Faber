@@ -5,14 +5,6 @@ using UnityEngine;
 public class NPCState_MoveTowardsTarget : NPC_State
 {
     //-------------------
-    //Initilse the state, runs only once at start
-    //-------------------
-    public override void StateInit()
-    {
-
-    }
-
-    //-------------------
     //When swapping to this state, this is called.
     //-------------------
     public override void StateStart()
