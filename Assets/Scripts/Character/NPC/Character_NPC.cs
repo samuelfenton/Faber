@@ -20,6 +20,7 @@ public class Character_NPC : Character
 
         m_NPCStateMachine.InitStateMachine(this);
         m_NPCStateMachine.InitStates();
+        m_NPCStateMachine.StartStateMachine();
     }
 
     protected override void Update()

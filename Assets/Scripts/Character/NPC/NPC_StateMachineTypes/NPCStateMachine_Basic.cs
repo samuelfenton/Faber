@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class NPCStateMachine_Basic : NPC_StateMachine
 {
+    //-------------------
+    //Initilise the state machine
+    //
+    //Param
+    //      p_parentNPC: parent NPC script used
+    //-------------------
     public override void InitStateMachine(Character_NPC p_parentNPC)
     {
         m_parentNPC = p_parentNPC;
@@ -16,9 +22,9 @@ public class NPCStateMachine_Basic : NPC_StateMachine
         NPCMoveTowardsTarget_TargetDistance.m_closeEnoughDistance = m_parentNPC.m_detectionDistance;
 
         //Attacking conditions
-        NPCStateCondition_AttackingDistance NPCAttack_CloseEnough = gameObject.AddComponent<NPCStateCondition_AttackingDistance>();
-        NPCAttack_CloseEnough.m_closeEnoughDistance = m_parentNPC.m_attackingDistance;
-        NPCStateCondition_CanCombo NPCAttack_CanCombo = gameObject.AddComponent<NPCStateCondition_CanCombo>();
+        NPCStateCondition_AttackingDistance NPCAttack_closeEnough = gameObject.AddComponent<NPCStateCondition_AttackingDistance>();
+        NPCAttack_closeEnough.m_closeEnoughDistance = m_parentNPC.m_attackingDistance;
+        NPCStateCondition_CanCombo NPCAttack_canCombo = gameObject.AddComponent<NPCStateCondition_CanCombo>();
 
         NPCState_SingleAttack NPCSingleAttack = gameObject.AddComponent<NPCState_SingleAttack>();
         NPCState_ComboAttack NPCFirstComboAttack = gameObject.AddComponent<NPCState_ComboAttack>();
@@ -27,13 +33,13 @@ public class NPCStateMachine_Basic : NPC_StateMachine
         //Adding in conditions
         NPCMoveTowardsTarget.AddCondition(NPCMoveTowardsTarget_TargetDistance);
 
-        NPCSingleAttack.AddCondition(NPCAttack_CloseEnough);
+        NPCSingleAttack.AddCondition(NPCAttack_closeEnough);
 
-        NPCFirstComboAttack.AddCondition(NPCAttack_CloseEnough);
-        NPCFirstComboAttack.AddCondition(NPCAttack_CanCombo);
+        NPCFirstComboAttack.AddCondition(NPCAttack_closeEnough);
+        NPCFirstComboAttack.AddCondition(NPCAttack_canCombo);
 
-        NPCSecondComboAttack.AddCondition(NPCAttack_CloseEnough);
-        NPCSecondComboAttack.AddCondition(NPCAttack_CanCombo);
+        NPCSecondComboAttack.AddCondition(NPCAttack_closeEnough);
+        NPCSecondComboAttack.AddCondition(NPCAttack_canCombo);
 
         //Adding state links
         NPCIdle.AddNextState(NPCMoveTowardsTarget);

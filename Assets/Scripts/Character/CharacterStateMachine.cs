@@ -9,6 +9,9 @@ public class CharacterStateMachine : MonoBehaviour
 
     public CharacterState m_currentState = null;
 
+    //-------------------
+    //Initilise the state machine
+    //-------------------
     public virtual void InitStateMachine()
     {
         //Initilise all states
@@ -20,6 +23,9 @@ public class CharacterStateMachine : MonoBehaviour
         }
     }
 
+    //-------------------
+    //Run first time, similar to InitStateMachine, but runs last
+    //-------------------
     public void StartStateMachine()
     {
         //Run first state
@@ -27,6 +33,9 @@ public class CharacterStateMachine : MonoBehaviour
         m_currentStateType = m_currentState.m_stateType;
     }
 
+    //-------------------
+    //Update state machine and check for current state completion
+    //-------------------
     public void UpdateStateMachine()
     {
         if (m_currentState.UpdateState())
@@ -43,6 +52,12 @@ public class CharacterStateMachine : MonoBehaviour
         }
     }
 
+    //-------------------
+    //Swap between states, run end state, and start state functions
+    //
+    //Param
+    //      p_nextState: next state to use
+    //-------------------
     private void SwapState(CharacterState p_nextState)
     {
         m_currentState.StateEnd();
