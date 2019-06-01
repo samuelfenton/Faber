@@ -53,11 +53,11 @@ public class Character_NPC : Character
             float relativeDot = Vector3.Dot(desiredForwards, transform.forward);
             if (relativeDot > 0)
             {
-                transform.rotation = Quaternion.LookRotation(-desiredForwards, Vector3.up);
+                m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
             }
             else
             {
-                transform.rotation = Quaternion.LookRotation(desiredForwards, Vector3.up);
+                m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
             }
         }
     }
