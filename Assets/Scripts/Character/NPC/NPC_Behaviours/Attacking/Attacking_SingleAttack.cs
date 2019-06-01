@@ -9,6 +9,7 @@ public class Attacking_SingleAttack : BehaviourNode
     {
         //Setup input
         m_characterInput_NPC.m_currentState = new CharacterInput.InputState();
+        p_character.FaceTowardsTarget();
 
         if(!m_trigger)
         {

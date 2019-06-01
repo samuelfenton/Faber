@@ -65,6 +65,7 @@ public class CharacterCustomPhysics : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(-desiredForwards, Vector3.up);
             m_currentSplinePercent += m_currentSpline.GetSplinePercent(-m_parentCharacter.m_localVelocity.x * Time.deltaTime);
         }
+
         //Lock spline percent between close enough to 0 - 1
         m_currentSplinePercent = Mathf.Clamp(m_currentSplinePercent, -0.01f, 1.01f);
 

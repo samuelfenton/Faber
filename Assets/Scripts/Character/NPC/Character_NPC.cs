@@ -41,4 +41,24 @@ public class Character_NPC : Character
 
         return NavigationController.TURNING.CENTER;
     }
+
+    public void FaceTowardsTarget()
+    {
+        if (m_targetCharacter == null)//Check has target
+            return;
+
+        if(Vector3.Dot(Vector3.Normalize(m_targetCharacter.transform.position - transform.position), transform.forward) < 0)//Should I turn to face?
+        {
+            Vector3 desiredForwards = m_characterCustomPhysics.m_currentSpline.GetForwardsDir(transform.position);
+            float relativeDot = Vector3.Dot(desiredForwards, transform.forward);
+            if (relativeDot > 0)
+            {
+                transform.rotation = Quaternion.LookRotation(-desiredForwards, Vector3.up);
+            }
+            else
+            {
+                transform.rotation = Quaternion.LookRotation(desiredForwards, Vector3.up);
+            }
+        }
+    }
 }
