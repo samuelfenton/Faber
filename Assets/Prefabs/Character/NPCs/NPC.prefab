@@ -471,11 +471,11 @@ GameObject:
   - component: {fileID: 18688317220628999}
   - component: {fileID: 6431780812786141404}
   - component: {fileID: 3465731815076398150}
+  - component: {fileID: 8446496064934084064}
   - component: {fileID: 213440121849905867}
   - component: {fileID: 6614654900178028120}
   - component: {fileID: 8897214013314396245}
   - component: {fileID: 1754773886236863161}
-  - component: {fileID: 3961835411787579085}
   m_Layer: 10
   m_Name: NPC
   m_TagString: Enemy
@@ -563,6 +563,19 @@ MonoBehaviour:
   m_targetCharacter: {fileID: 0}
   m_attackingDistance: 1
   m_detectionDistance: 20
+--- !u!114 &8446496064934084064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3033098025281127392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c24c85241b07704785e7b6c631e4a77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_currentState: {fileID: 0}
 --- !u!114 &213440121849905867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -621,18 +634,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_currentStateType: 0
   m_currentState: {fileID: 0}
---- !u!114 &3961835411787579085
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3033098025281127392}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1036875ecece02b48a7ac8ddc85a835a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &3077028608457675471
 GameObject:
   m_ObjectHideFlags: 0

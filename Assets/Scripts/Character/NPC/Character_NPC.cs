@@ -10,20 +10,20 @@ public class Character_NPC : Character
     public float m_attackingDistance = 0.0f;
     public float m_detectionDistance = 0.0f;
 
-    private BehaviourTree m_behaviourTree = null;
+    private NPC_StateMachine m_NPCStateMachine = null;
 
     protected override void Start()
     {
         base.Start();
 
-        m_behaviourTree = GetComponent<BehaviourTree>();
+        m_NPCStateMachine = GetComponent<NPC_StateMachine>();
     }
 
     protected override void Update()
     {
         base.Update();
 
-        m_behaviourTree.RunBehaviourTree(this);
+        m_NPCStateMachine.UpdateStateMachine();
     }
 
     public override NavigationController.TURNING GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
