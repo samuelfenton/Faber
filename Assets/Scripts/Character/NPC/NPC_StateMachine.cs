@@ -17,9 +17,13 @@ public class NPC_StateMachine : MonoBehaviour
         //Initilise all states
         NPC_State[] m_NPCStates = GetComponents<NPC_State>();
 
-        for (int i = 0; i < m_NPCStates.Length; i++)
+        foreach (NPC_State state in m_NPCStates)//Init states
         {
-            m_NPCStates[i].StateInit(m_parentNPC);
+            state.StateInit(m_parentNPC);
+            foreach (NPC_StateCondition stateCondition in state.m_NPCStateConditions)//Init state conditions
+            {
+                stateCondition.Init(m_parentNPC);
+            }
         }
 
         m_currentState = m_NPCStates[0];
