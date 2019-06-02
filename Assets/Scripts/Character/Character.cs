@@ -59,6 +59,9 @@ public class Character : MonoBehaviour
 
     protected VoxeliserHandler m_voxeliserHandler = null;
 
+    [SerializeField]
+    private float m_destructionTime = 1.0f;
+
     protected virtual void Start()
     {
         //Get references
@@ -127,7 +130,15 @@ public class Character : MonoBehaviour
     public void OnDeath()
     {
         m_voxeliserHandler.EnableDisassemble();
-        m_weapon.transform.parent = null;
+        m_weapon.DropWeapon();
+
+        StartCoroutine(DestroyObject());
+    }
+
+    private IEnumerator DestroyObject()
+    {
+        yield return new WaitForSeconds(m_destructionTime);
+        Destroy(gameObject);
     }
 
     public void ModifyHealth(float p_value)

@@ -11,8 +11,9 @@ public class Weapon : MonoBehaviour
     [HideInInspector]
     public List<Character> m_hitCharacters = new List<Character>();
 
-    private BoxCollider m_boxCollider = null;
-
+    public BoxCollider m_hitCollider = null;
+    public BoxCollider m_physicsCollider = null;
+    private Rigidbody m_rigidBody = null;
     [Header("Weapon Stats")]
     public float m_weaponLightDamage = 1.0f;
     public float m_weaponHeavyDamage = 2.0f;
@@ -21,8 +22,9 @@ public class Weapon : MonoBehaviour
 
     private void Start()
     {
-        m_boxCollider = GetComponent<BoxCollider>();
-        m_boxCollider.enabled = false;
+        m_hitCollider.enabled = false;
+        m_physicsCollider.enabled = false;
+        m_rigidBody = GetComponent<Rigidbody>();
     }
 
     private void OnTriggerEnter(Collider p_other)
@@ -53,12 +55,19 @@ public class Weapon : MonoBehaviour
 
     public void EnableWeaponCollisions()
     {
-        m_boxCollider.enabled = true;
+        m_hitCollider.enabled = true;
         m_hitCharacters.Clear();
     }
 
     public void DisableWeaponCollisions()
     {
-        m_boxCollider.enabled = false;
+        m_hitCollider.enabled = false;
+    }
+
+    public void DropWeapon()
+    {
+        transform.parent = null;
+        m_physicsCollider.enabled = true;
+        m_rigidBody.useGravity = true;
     }
 }

@@ -17,6 +17,7 @@ public class FadingShaderCompanionScript : MonoBehaviour
 
     private void Update ()
     {
-        m_companionMaterial.SetVector("_PlayerWorldPostion", m_playerTransform.position);
+        if(m_playerTransform != null)
+            m_companionMaterial.SetVector("_PlayerWorldPostion", m_playerTransform.position);
     }
 }
