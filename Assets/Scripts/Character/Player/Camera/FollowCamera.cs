@@ -12,6 +12,9 @@ public class FollowCamera : MonoBehaviour
 
     private void Update ()
     {
+        if (m_followTarget == null)//Early breakout
+            return;
+
         //Get desired position
         Vector3 cameraOffset = m_followTarget.transform.forward * m_cameraOffset.z + m_followTarget.transform.right * m_cameraOffset.x + m_followTarget.transform.up * m_cameraOffset.y;
         Vector3 cameraDesiredPos = m_followTarget.transform.position + cameraOffset;
