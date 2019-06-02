@@ -665,13 +665,13 @@ MonoBehaviour:
   m_shrinkTime: 2
   m_voxelParent: {fileID: 0}
   m_disassemble: 0
-  m_chanceOfTrailing: 5
+  m_chanceOfTrailing: 0
   m_trailingShrinkTime: 2
   m_trailingSpeed: 0.5
   m_trailingType: 3
   m_trailDirection: {x: 0, y: 0, z: 0}
   m_minChanceToEmit: 0
-  m_maxChanceToEmit: 5
+  m_maxChanceToEmit: 0
 --- !u!1 &1666522654678068
 GameObject:
   m_ObjectHideFlags: 0
@@ -1052,6 +1052,7 @@ MonoBehaviour:
   m_maxHealth: 10
   m_currentHealth: 10
   m_localVelocity: {x: 0, y: 0, z: 0}
+  m_destructionTime: 1
 --- !u!114 &1229247551941344078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1088,7 +1089,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd4f6501f8172394089bb6240cb43757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_equipedWeapon: {fileID: 5401493378431731845, guid: 9b6c23ce9d31fc144915994972c7facc,
+  m_equipedWeapon: {fileID: 1113675248736125742, guid: 32ec337327089e140b08bf3753033f45,
     type: 3}
 --- !u!114 &114222748025272242
 MonoBehaviour:
@@ -1271,13 +1272,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5207353847652550064}
-  m_LocalRotation: {x: -0.7071068, y: -0, z: 0.7071068, w: 0}
-  m_LocalPosition: {x: 0.108, y: 0, z: 0.62}
+  m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4759550199270984}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 180}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 90}
 --- !u!114 &7104548678634361095
 MonoBehaviour:
   m_ObjectHideFlags: 0

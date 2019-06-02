@@ -699,6 +699,12 @@ PrefabInstance:
       propertyPath: m_currentSpline
       value: 
       objectReference: {fileID: 96243025}
+    - target: {fileID: 8897214013314396245, guid: 71d80bf540728154f83b250a5362efec,
+        type: 3}
+      propertyPath: m_equipedWeapon
+      value: 
+      objectReference: {fileID: 6325115673862731029, guid: 247f835dcfb75894cbcfc915b5060e66,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 71d80bf540728154f83b250a5362efec, type: 3}
 --- !u!4 &69741985 stripped
@@ -2266,10 +2272,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 1812822953487848, guid: f12995016aeda9b4a83a0fa91161fea8, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4798978458762796, guid: f12995016aeda9b4a83a0fa91161fea8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 25.194
@@ -2319,16 +2321,6 @@ PrefabInstance:
       propertyPath: m_currentSpline
       value: 
       objectReference: {fileID: 2133755290}
-    - target: {fileID: 4575927733527551333, guid: f12995016aeda9b4a83a0fa91161fea8,
-        type: 3}
-      propertyPath: m_chanceOfTrailing
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4575927733527551333, guid: f12995016aeda9b4a83a0fa91161fea8,
-        type: 3}
-      propertyPath: m_maxChanceToEmit
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f12995016aeda9b4a83a0fa91161fea8, type: 3}
 --- !u!1 &241914035 stripped
