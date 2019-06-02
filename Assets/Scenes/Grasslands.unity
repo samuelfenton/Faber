@@ -637,7 +637,7 @@ PrefabInstance:
     - target: {fileID: 4665312896720742281, guid: 71d80bf540728154f83b250a5362efec,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -64.1
+      value: 54.09
       objectReference: {fileID: 0}
     - target: {fileID: 4665312896720742281, guid: 71d80bf540728154f83b250a5362efec,
         type: 3}
@@ -698,7 +698,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_currentSpline
       value: 
-      objectReference: {fileID: 96243025}
+      objectReference: {fileID: 547911845}
+    - target: {fileID: 6614654900178028120, guid: 71d80bf540728154f83b250a5362efec,
+        type: 3}
+      propertyPath: m_currentSplinePercent
+      value: 0.618
+      objectReference: {fileID: 0}
     - target: {fileID: 8897214013314396245, guid: 71d80bf540728154f83b250a5362efec,
         type: 3}
       propertyPath: m_equipedWeapon
@@ -2274,7 +2279,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4798978458762796, guid: f12995016aeda9b4a83a0fa91161fea8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 25.194
+      value: -10.23
       objectReference: {fileID: 0}
     - target: {fileID: 4798978458762796, guid: f12995016aeda9b4a83a0fa91161fea8, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2320,7 +2325,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_currentSpline
       value: 
-      objectReference: {fileID: 2133755290}
+      objectReference: {fileID: 1627452062}
+    - target: {fileID: 114222748025272242, guid: f12995016aeda9b4a83a0fa91161fea8,
+        type: 3}
+      propertyPath: m_currentSplinePercent
+      value: 0.341
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f12995016aeda9b4a83a0fa91161fea8, type: 3}
 --- !u!1 &241914035 stripped
