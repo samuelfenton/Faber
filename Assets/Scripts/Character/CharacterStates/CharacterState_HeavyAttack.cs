@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterState_LightAttack : CharacterState_BaseAttack
+public class CharacterState_HeavyAttack : CharacterState_BaseAttack
 {
     //-------------------
     //When swapping to this state, this is called.
     //-------------------
     public override void StateStart()
     {
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, true);
-        m_parentCharacter.m_currentAttackType = Character.ATTACK_TYPE.LIGHT;
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.HEAVY_ATTACK, true);
+        m_parentCharacter.m_currentAttackType = Character.ATTACK_TYPE.HEAVY;
     }
 
     //-------------------
@@ -31,7 +31,7 @@ public class CharacterState_LightAttack : CharacterState_BaseAttack
     //-------------------
     public override void StateEnd()
     {
-        m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, false);
+        m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.HEAVY_ATTACK, false);
     }
 
     //-------------------
@@ -41,6 +41,6 @@ public class CharacterState_LightAttack : CharacterState_BaseAttack
     //-------------------
     public override bool IsValid()
     {
-        return m_characterInput.GetInputState().m_lightAttack;
+        return m_characterInput.GetInputState().m_heavyAttack;
     }
 }

@@ -34,7 +34,6 @@ public class CharacterAnimationController : MonoBehaviour
         m_parentCharacter = transform.parent.GetComponent<Character>();
 
         m_animator = GetComponentInChildren<Animator>();
-       
     }
 
     public void SetBool(ANIMATIONS p_animation, bool p_val)

@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterState_LightAttack : CharacterState_BaseAttack
+public class CharacterState_LightAttackCombo : CharacterState_BaseAttack
 {
+    private bool m_delayTrigger = false;
+
     //-------------------
     //When swapping to this state, this is called.
     //-------------------
     public override void StateStart()
     {
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, true);
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK_COMBO, true);
         m_parentCharacter.m_currentAttackType = Character.ATTACK_TYPE.LIGHT;
+
+        m_delayTrigger = false;
     }
 
     //-------------------
@@ -23,7 +27,12 @@ public class CharacterState_LightAttack : CharacterState_BaseAttack
         //Slowdown movement
         base.UpdateState();
 
-        return m_characterAnimationController.EndOfAnimation() || m_characterAnimationController.m_canCombo;
+        if(!m_delayTrigger && !(m_characterAnimationController.EndOfAnimation() || m_characterAnimationController.m_canCombo))//Wait for everything to be set to false
+        {
+            m_delayTrigger = true;
+        }
+
+        return m_delayTrigger && (m_characterAnimationController.EndOfAnimation() || m_characterAnimationController.m_canCombo);
     }
 
     //-------------------
@@ -31,7 +40,7 @@ public class CharacterState_LightAttack : CharacterState_BaseAttack
     //-------------------
     public override void StateEnd()
     {
-        m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, false);
+        m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK_COMBO, false);
     }
 
     //-------------------
@@ -41,6 +50,6 @@ public class CharacterState_LightAttack : CharacterState_BaseAttack
     //-------------------
     public override bool IsValid()
     {
-        return m_characterInput.GetInputState().m_lightAttack;
+        return m_characterInput.GetInputState().m_lightCombo && m_characterAnimationController.m_canCombo;
     }
 }
