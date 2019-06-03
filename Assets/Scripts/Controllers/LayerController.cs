@@ -8,6 +8,9 @@ public class LayerController : MonoBehaviour
 
     public static int m_character = 0;
 
+    //-------------------
+    //Get masks for future use
+    //-------------------
     static LayerController()
     {
         m_walkable = LayerMask.GetMask("Walkable");

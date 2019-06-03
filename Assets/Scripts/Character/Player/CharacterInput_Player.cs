@@ -6,11 +6,19 @@ public class CharacterInput_Player : CharacterInput
 {
     private PlayerInputController m_inputController = null;
 
+    //-------------------
+    //Initialise, get varibles used for future
+    //-------------------
     private void Start()
     {
         m_inputController = GetComponent<PlayerInputController>();
     }
 
+    //-------------------
+    //Get the characters current input state. Use player input
+    //
+    //Return InputState: structer containing all required data
+    //-------------------
     public override InputState GetInputState()
     {
         InputState currentInput = new InputState();

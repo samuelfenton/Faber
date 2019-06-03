@@ -12,6 +12,11 @@ public class Character_NPC : Character
 
     private NPC_StateMachine m_NPCStateMachine = null;
 
+    //-------------------
+    //Character setup
+    //  Ensure all need componets are attached, and get initilised if needed
+    //  Setup NPC state machine for input control
+    //-------------------
     protected override void Start()
     {
         base.Start();
@@ -23,6 +28,11 @@ public class Character_NPC : Character
         m_NPCStateMachine.StartStateMachine();
     }
 
+    //-------------------
+    //Character update
+    //  Get input, apply physics, update character state machine
+    //  Update NPC state machine for inputs
+    //-------------------
     protected override void Update()
     {
         base.Update();
@@ -30,6 +40,14 @@ public class Character_NPC : Character
         m_NPCStateMachine.UpdateStateMachine();
     }
 
+    //-------------------
+    //Get turning direction for junction navigation, based off current input
+    //  Rather than using input, desired path will be based off generated path to player
+    //
+    //Param p_trigger: junction character will pass through
+    //
+    //Return NavigationController.TURNING: Path character will desire to take
+    //-------------------
     public override NavigationController.TURNING GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
     {
         if(m_path.Count > 0)
@@ -46,6 +64,9 @@ public class Character_NPC : Character
         return NavigationController.TURNING.CENTER;
     }
 
+    //-------------------
+    //Face NPC to look towards target when movement isnt needed
+    //-------------------
     public void FaceTowardsTarget()
     {
         if (m_targetCharacter == null)//Check has target

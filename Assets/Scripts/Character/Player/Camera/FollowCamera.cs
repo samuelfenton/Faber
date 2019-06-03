@@ -10,6 +10,9 @@ public class FollowCamera : MonoBehaviour
 
     public float m_cameraSpeed = 1.0f;
 
+    //-------------------
+    //Have camera follow target 
+    //-------------------
     private void Update ()
     {
         if (m_followTarget == null)//Early breakout

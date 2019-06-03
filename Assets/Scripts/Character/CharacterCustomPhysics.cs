@@ -24,6 +24,10 @@ public class CharacterCustomPhysics : MonoBehaviour
     protected Vector3 m_colliderExtents = Vector3.zero;
     protected float m_collisionDetection = 0.1f;
 
+    //-------------------
+    //Initilise character physics
+    //  Setup collider extents for future use
+    //-------------------
     private void Start()
     {
         m_parentCharacter = GetComponent<Character>();
@@ -35,7 +39,9 @@ public class CharacterCustomPhysics : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-
+    //-------------------
+    //DEV_MODE, places character on current spline based on its spline percent
+    //-------------------
     private void OnValidate()
     {
         //Update position in scene 
@@ -48,6 +54,12 @@ public class CharacterCustomPhysics : MonoBehaviour
     }
 #endif
 
+    //-------------------
+    //Updates characters physics
+    //  Set rotation to be based off spline position
+    //  Clamp on spline
+    //  Check for ground collisions
+    //-------------------
     public void UpdatePhysics()
     {
         UpdateCollisions();
@@ -96,6 +108,9 @@ public class CharacterCustomPhysics : MonoBehaviour
 
     }
 
+    //-------------------
+    //Check for collisions in horizontal and vertical axis
+    //-------------------
     public void UpdateCollisions()
     {
         Vector3 centerPos = transform.position + Vector3.up * m_colliderExtents.y;
@@ -109,25 +124,38 @@ public class CharacterCustomPhysics : MonoBehaviour
         UpdateCollisionVelocity();
     }
 
+    //-------------------
+    //Update local velocity based off collisions
+    //-------------------
     public void UpdateCollisionVelocity()
     {
-        if (m_parentCharacter.m_localVelocity.y > 0)//check upwards
+        if (m_upCollision && m_parentCharacter.m_localVelocity.y > 0)//Check Upwards
         {
-            if (m_upCollision)
-                m_parentCharacter.m_localVelocity.y = 0;
+            m_parentCharacter.m_localVelocity.y = 0;
         }
-        if (m_parentCharacter.m_localVelocity.x > 0)//Forwards
+        else if (m_downCollision &&  m_parentCharacter.m_localVelocity.y < 0)//Downwards
         {
-            if (m_forwardCollision)
-                m_parentCharacter.m_localVelocity.x = 0;
+            m_parentCharacter.m_localVelocity.y = 0;
         }
-        else if (m_parentCharacter.m_localVelocity.x < 0)//Backwards
+        if (m_forwardCollision && m_parentCharacter.m_localVelocity.x > 0)//Forwards
         {
-            if (m_backCollision)
-                m_parentCharacter.m_localVelocity.x = 0;
+            m_parentCharacter.m_localVelocity.x = 0;
+        }
+        else if (m_backCollision && m_parentCharacter.m_localVelocity.x < 0)//Backwards
+        {
+            m_parentCharacter.m_localVelocity.x = 0;
         }
     }
 
+    //-------------------
+    //Check for collisions vertically
+    //  Creates three raycasts, front center and back
+    //
+    //Param p_direction: Casting up or down
+    //      p_centerPos: What is current center position of charater
+    //
+    //Return bool: if any collisions occur return true
+    //-------------------
     public bool CollidingVertical(Vector3 p_direction, Vector3 p_centerPos)
     {
         //Forward raycast
@@ -145,6 +173,15 @@ public class CharacterCustomPhysics : MonoBehaviour
         return false;
     }
 
+    //-------------------
+    //Check for collisions horizontally
+    //  Creates three raycasts, top center and bottom
+    //
+    //Param p_direction: Casting forward or backwards
+    //      p_centerPos: What is current center position of charater
+    //
+    //Return bool: if any collisions occur return true
+    //-------------------
     public bool CollidingHorizontal(Vector3 p_direction, Vector3 p_centerPos)
     {
         //Top raycast

@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LevelController : MonoBehaviour {
-
-	// Use this for initialization
-	void Start ()
-    {
-		
-	}
-	
-	// Update is called once per frame
-	void Update ()
+public class LevelController : MonoBehaviour 
+{
+    //-------------------
+    //Check for player input, changing to next level
+    //-------------------
+    void Update ()
     {
 		if(Input.GetKeyDown(KeyCode.L))
         {

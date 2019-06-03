@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class CharacterStateMachine_Basic : CharacterStateMachine
 {
+    //-------------------
+    //Initilise the state machine
+    //  Add all needed states for basic character
+    //-------------------
     public override void InitStateMachine()
     {
         CharacterState_Idle idle = gameObject.AddComponent<CharacterState_Idle>();
@@ -74,6 +78,4 @@ public class CharacterStateMachine_Basic : CharacterStateMachine
 
         base.InitStateMachine();
     }
-
-
 }

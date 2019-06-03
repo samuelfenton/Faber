@@ -16,6 +16,9 @@ public class CharacterAnimationController : MonoBehaviour
     public ANIMATIONS m_currentAnimation = ANIMATIONS.LOCOMOTION;
     public Animator m_animator = null;
 
+    //-------------------
+    //Initilise controller, setup dicionaries used
+    //-------------------
     public void InitAnimationController()
     {
         m_animationStringDicitonary.Add(ANIMATIONS.LOCOMOTION, "Locomotion");
@@ -36,6 +39,12 @@ public class CharacterAnimationController : MonoBehaviour
         m_animator = GetComponentInChildren<Animator>();
     }
 
+    //-------------------
+    //Set animator boolean values
+    //
+    //Param p_animation: Dictionary animation enum, used to convert to string values
+    //      p_val: boolean value to set in animator
+    //-------------------
     public void SetBool(ANIMATIONS p_animation, bool p_val)
     {
         m_currentAnimation = p_animation;
@@ -43,33 +52,55 @@ public class CharacterAnimationController : MonoBehaviour
         m_animator.SetBool(m_animationStringDicitonary[p_animation], p_val);
     }
 
+    //-------------------
+    //Set animator float values
+    //
+    //Param p_varible: Dictionary animation enum, used to convert to string values
+    //      p_val: float value to set in animator
+    //-------------------
     public void SetVarible(VARIBLES p_varible, float p_val)
     {
         m_animator.SetFloat(m_varibleStringDicitonary[p_varible], p_val);
     }
 
+    //-------------------
+    //Determine if it is currently the end of the animation
+    //Return bool: true when normalized time is greater than 1
+    //-------------------
     public bool EndOfAnimation()
     {
         return m_animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1;
     }
 
-    public void EnableComboAttack()
-    {
-        m_canCombo = true;
-    }
-
-    public void DisableComboAttack()
-    {
-        m_canCombo = false;
-    }
-
+    //-------------------
+    //Enable damage for the weapon
+    //-------------------
     public void EnableDamage()
     {
         m_parentCharacter.ToggleWeapon(true);
     }
 
+    //-------------------
+    //Disable damage for the weapon
+    //-------------------
     public void DisableDamage()
     {
         m_parentCharacter.ToggleWeapon(false);
+    }
+
+    //-------------------
+    //Set combo boolean varible to true
+    //-------------------
+    public void EnableComboAttack()
+    {
+        m_canCombo = true;
+    }
+
+    //-------------------
+    //Set combo boolean varible to false
+    //-------------------
+    public void DisableComboAttack()
+    {
+        m_canCombo = false;
     }
 }

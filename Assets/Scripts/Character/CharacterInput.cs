@@ -28,6 +28,11 @@ public class CharacterInput : MonoBehaviour
         }
     }
 
+    //-------------------
+    //Get the characters current input state, NPC vs Player
+    //
+    //Return InputState: structer containing all required data
+    //-------------------
     public virtual InputState GetInputState()
     {
         return new InputState();

@@ -110,11 +110,6 @@ public class PathfindingController : MonoBehaviour
         float lowestCost = float.PositiveInfinity;
         PathfindingNode cheapestNode = null;
 
-        if (p_openList.Count == 0)
-        {
-            Debug.Log("BBB");
-        }
-
         foreach (PathfindingNode pathfindingNode in p_openList)
         {
             if (pathfindingNode.m_cost < lowestCost)

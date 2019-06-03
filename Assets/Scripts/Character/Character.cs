@@ -62,6 +62,10 @@ public class Character : MonoBehaviour
     [SerializeField]
     private float m_destructionTime = 1.0f;
 
+    //-------------------
+    //Character setup
+    //  Ensure all need componets are attached, and get initilised if needed
+    //-------------------
     protected virtual void Start()
     {
         //Get references
@@ -84,7 +88,6 @@ public class Character : MonoBehaviour
         if (m_characterInventory != null)
             m_characterInventory.InitInventory();//Least importance as has no dependances
 
-        //
         if (m_characterStateMachine != null)
             m_characterStateMachine.StartStateMachine();//Run intial state
         //Secondary references
@@ -99,6 +102,10 @@ public class Character : MonoBehaviour
         m_currentHealth = m_maxHealth;
     }
 
+    //-------------------
+    //Character update
+    //  Get input, apply physics, update character state machine
+    //-------------------
     protected virtual void Update()
     {
         m_currentCharacterInput = m_characterInput.GetInputState();
@@ -122,11 +129,19 @@ public class Character : MonoBehaviour
         m_characterStateMachine.UpdateStateMachine();
     }
 
+    //-------------------
+    //Is current character alive
+    //
+    //Return bool: Is health greater than 0
+    //-------------------
     public bool IsAlive()
     {
         return m_currentHealth > 0.0f;
     }
 
+    //-------------------
+    //Character death function call
+    //-------------------
     public void OnDeath()
     {
         m_voxeliserHandler.EnableDisassemble();
@@ -135,12 +150,20 @@ public class Character : MonoBehaviour
         StartCoroutine(DestroyObject());
     }
 
+    //-------------------
+    //Apply delay for character destruction to allow after death effects
+    //-------------------
     private IEnumerator DestroyObject()
     {
         yield return new WaitForSeconds(m_destructionTime);
         Destroy(gameObject);
     }
 
+    //-------------------
+    //Change characters health and check for death after health change
+    //
+    //Param p_value: how much to change health by
+    //-------------------
     public void ModifyHealth(float p_value)
     {
         m_currentHealth += p_value;
@@ -149,11 +172,23 @@ public class Character : MonoBehaviour
             OnDeath();
     }
 
+    //-------------------
+    //Get turning direction for junction navigation, based off current input
+    //
+    //Param p_trigger: junction character will pass through
+    //
+    //Return NavigationController.TURNING: Path character will desire to take
+    //-------------------
     public virtual NavigationController.TURNING GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
     {
         return NavigationController.TURNING.CENTER;
     }
 
+    //-------------------
+    //Enable to disable weapon damage
+    //
+    //Param p_val: true = Enabled, false = disabled
+    //-------------------
     public void ToggleWeapon(bool p_val)
     {
         if(p_val)

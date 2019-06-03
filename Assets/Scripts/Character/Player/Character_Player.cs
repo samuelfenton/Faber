@@ -6,6 +6,10 @@ public class Character_Player : Character
 {
     private VoxeliserHandler_Trail_SpeedBased m_voxelHandler = null;
 
+    //-------------------
+    //Character setup
+    //  Ensure all need componets are attached, and get initilised if needed
+    //-------------------
     protected override void Start()
     {
         base.Start();
@@ -13,6 +17,11 @@ public class Character_Player : Character
         m_voxelHandler = GetComponentInChildren<VoxeliserHandler_Trail_SpeedBased>();
     }
 
+    //-------------------
+    //Character update
+    //  Get input, apply physics, update character state machine
+    //  Update voxel trails
+    //-------------------
     protected override void Update()
     {
         base.Update();
@@ -22,6 +31,13 @@ public class Character_Player : Character
         m_voxelHandler.UpdateTrailingVelocity(transform.localToWorldMatrix * trailDir, trailDir.magnitude / m_groundedHorizontalSpeedMax);
     }
 
+    //-------------------
+    //Get turning direction for junction navigation, based off current input
+    //
+    //Param p_trigger: junction character will pass through
+    //
+    //Return NavigationController.TURNING: Path character will desire to take
+    //-------------------
     public override NavigationController.TURNING GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
     {
         float relativeDot = Vector3.Dot(transform.forward, p_trigger.transform.forward);
