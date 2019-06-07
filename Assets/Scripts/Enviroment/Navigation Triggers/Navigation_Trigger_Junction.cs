@@ -59,20 +59,20 @@ public class Navigation_Trigger_Junction : Navigation_Trigger
 
     private SplineInfo GetEnteringSpline(Character p_character)
     {
-        NavigationController.TURNING turningDir = p_character.GetDesiredTurning(this);
+        Character.TURNING_DIR turningDir = p_character.GetDesiredTurning(this);
 
         //Get desired turning dir
         switch (turningDir)
         {
-            case NavigationController.TURNING.CENTER:
+            case Character.TURNING_DIR.CENTER:
                 if (m_forwardSplineInfo.m_spline != null)
                     return m_forwardSplineInfo;
                 break;
-            case NavigationController.TURNING.RIGHT:
+            case Character.TURNING_DIR.RIGHT:
                 if (m_forwardRightSplineInfo.m_spline != null)
                     return m_forwardRightSplineInfo;
                 break;
-            case NavigationController.TURNING.LEFT:
+            case Character.TURNING_DIR.LEFT:
                 if (m_forwardLeftSplineInfo.m_spline != null)
                     return m_forwardLeftSplineInfo;
                 break;

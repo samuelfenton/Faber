@@ -48,20 +48,20 @@ public class Character_NPC : Character
     //
     //Return NavigationController.TURNING: Path character will desire to take
     //-------------------
-    public override NavigationController.TURNING GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
+    public override TURNING_DIR GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
     {
         if(m_path.Count > 0)
         {
             Navigation_Spline desiredSpline = m_path[0];
 
             if (p_trigger.m_forwardLeftSplineInfo.m_spline == desiredSpline)
-                return NavigationController.TURNING.LEFT;
+                return TURNING_DIR.LEFT;
 
             if (p_trigger.m_forwardRightSplineInfo.m_spline == desiredSpline)
-                return NavigationController.TURNING.RIGHT;
+                return TURNING_DIR.RIGHT;
         }
 
-        return NavigationController.TURNING.CENTER;
+        return TURNING_DIR.CENTER;
     }
 
     //-------------------

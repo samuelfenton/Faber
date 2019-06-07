@@ -38,7 +38,7 @@ public class Character_Player : Character
     //
     //Return NavigationController.TURNING: Path character will desire to take
     //-------------------
-    public override NavigationController.TURNING GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
+    public override TURNING_DIR GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
     {
         float relativeDot = Vector3.Dot(transform.forward, p_trigger.transform.forward);
 
@@ -47,17 +47,17 @@ public class Character_Player : Character
         if(relativeDot >= 0)//Right is positive on vertical, left is negative
         {
             if (verticalInput < 0)
-                return NavigationController.TURNING.RIGHT;
+                return TURNING_DIR.RIGHT;
             if (verticalInput > 0)
-                return NavigationController.TURNING.LEFT;
+                return TURNING_DIR.LEFT;
         }
         else//Right is negative on vertical, left is positive
         {
             if (verticalInput < 0)
-                return NavigationController.TURNING.LEFT;
+                return TURNING_DIR.LEFT;
             if (verticalInput > 0)
-                return NavigationController.TURNING.RIGHT;
+                return TURNING_DIR.RIGHT;
         }
-        return NavigationController.TURNING.CENTER;
+        return TURNING_DIR.CENTER;
     }
 }

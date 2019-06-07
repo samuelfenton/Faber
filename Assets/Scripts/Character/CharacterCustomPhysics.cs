@@ -62,6 +62,15 @@ public class CharacterCustomPhysics : MonoBehaviour
     //-------------------
     public void UpdatePhysics()
     {
+        if (m_currentSpline == null)//Safety breakout
+        {
+#if UNITY_EDITOR
+            Debug.Log(this + " Does not have a spline set in custom physics");
+#endif
+            m_parentCharacter.OnDeath();
+            return;
+        }
+
         UpdateCollisions();
 
         //Setup forwards direction

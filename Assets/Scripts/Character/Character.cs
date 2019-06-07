@@ -6,6 +6,8 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterStateMachine))]
 public class Character : MonoBehaviour
 {
+    public enum TURNING_DIR {CENTER, LEFT, RIGHT }
+
     [HideInInspector]
     public CharacterCustomPhysics m_characterCustomPhysics = null;
     [HideInInspector]
@@ -177,11 +179,11 @@ public class Character : MonoBehaviour
     //
     //Param p_trigger: junction character will pass through
     //
-    //Return NavigationController.TURNING: Path character will desire to take
+    //Return TURNING_DIR: Path character will desire to take
     //-------------------
-    public virtual NavigationController.TURNING GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
+    public virtual TURNING_DIR GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
     {
-        return NavigationController.TURNING.CENTER;
+        return TURNING_DIR.CENTER;
     }
 
     //-------------------

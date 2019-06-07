@@ -18,6 +18,7 @@ public class PathfindingController : MonoBehaviour
         }
     }
 
+
     public static List<Navigation_Spline> GetPath(Character p_character, Navigation_Spline p_goalSpline)
     {
         List<Navigation_Spline> path = new List<Navigation_Spline>();
