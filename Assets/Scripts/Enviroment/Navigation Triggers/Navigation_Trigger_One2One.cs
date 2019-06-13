@@ -56,9 +56,18 @@ public class Navigation_Trigger_One2One : Navigation_Trigger
 
     public override bool ContainsSpine(Navigation_Spline p_spline)
     {
-
         return
             m_backwardSplineInfo.m_spline == p_spline ||
             m_forwardSplineInfo.m_spline == p_spline;
+    }
+
+    public override bool HasForwardSpline()
+    {
+        return m_forwardSplineInfo.m_spline !=null;
+    }
+
+    public override bool HasBackwardsSpline()
+    {
+        return m_backwardSplineInfo.m_spline != null;
     }
 }

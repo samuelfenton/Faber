@@ -87,4 +87,14 @@ public class Navigation_Trigger : MonoBehaviour
     {
         return false;
     }
+
+    public virtual bool HasForwardSpline()
+    {
+        return false;
+    }
+
+    public virtual bool HasBackwardsSpline()
+    {
+        return false;
+    }
 }

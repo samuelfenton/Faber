@@ -96,4 +96,14 @@ public class Navigation_Trigger_Junction : Navigation_Trigger
             m_forwardLeftSplineInfo.m_spline == p_spline ||
             m_forwardRightSplineInfo.m_spline == p_spline;
     }
+
+    public override bool HasForwardSpline()
+    {
+        return m_forwardSplineInfo.m_spline != null || m_forwardRightSplineInfo.m_spline != null || m_forwardLeftSplineInfo.m_spline != null;
+    }
+
+    public override bool HasBackwardsSpline()
+    {
+        return m_backwardSplineInfo.m_spline != null;
+    }
 }
