@@ -96,7 +96,7 @@ public class Navigation_SplineBuilder : MonoBehaviour
                 }
 
                 //Create
-                Vector3 spawnDir = m_spawnDir == SPAWN_DIR.FORWARD ? transform.localToWorldMatrix * m_one2OneSplineDir : transform.localToWorldMatrix * -m_one2OneSplineDir;
+                Vector3 spawnDir = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.localToWorldMatrix * m_one2OneSplineDir);
 
                 GameObject nextTrigger = Instantiate(m_one2OneTriggerPrefab, transform.position + spawnDir, transform.rotation);
                 Navigation_Trigger_One2One nextTriggerScript = nextTrigger.GetComponent<Navigation_Trigger_One2One>();
@@ -160,18 +160,16 @@ public class Navigation_SplineBuilder : MonoBehaviour
 
                 if (m_curveType == CURVE_SETTING.CLOCKWISE)
                 {
-                    triggerSpawnDir = m_spawnDir == SPAWN_DIR.FORWARD ? (transform.forward + transform.right) * m_curveRadius : (-transform.forward + transform.right) * m_curveRadius;
-                    splineSpawnDir = m_spawnDir == SPAWN_DIR.FORWARD ? transform.right * m_curveRadius : -transform.right * m_curveRadius;
-
+                    triggerSpawnDir = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * ((transform.forward + transform.right) * m_curveRadius);
+                    splineSpawnDir = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.right * m_curveRadius);
                     nextTrigger = Instantiate(m_one2OneTriggerPrefab, transform.position + triggerSpawnDir, transform.rotation * Quaternion.Euler(Vector3.up * 90));
                 }
                 else
                 {
-                    triggerSpawnDir = m_spawnDir == SPAWN_DIR.FORWARD ? (transform.forward - transform.right) * m_curveRadius : (-transform.forward - transform.right) * m_curveRadius;
-                    splineSpawnDir = m_spawnDir == SPAWN_DIR.FORWARD ? -transform.right * m_curveRadius : transform.right * m_curveRadius;
+                    triggerSpawnDir = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) *(transform.forward - transform.right) * m_curveRadius;
+                    splineSpawnDir = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * -transform.right * m_curveRadius;
 
                     nextTrigger = Instantiate(m_one2OneTriggerPrefab, transform.position + triggerSpawnDir, transform.rotation * Quaternion.Euler(Vector3.up * -90));
-
                 }
 
 
@@ -233,14 +231,14 @@ public class Navigation_SplineBuilder : MonoBehaviour
                 if(m_junctionType == JUNCTION_TYPE.X_SECTION)
                 {
                     //Creation
-                    Vector3 xLeftTriggerSpawn = m_spawnDir == SPAWN_DIR.FORWARD ? -transform.right * m_curveRadius + transform.forward * m_curveRadius : -transform.right * m_curveRadius - transform.forward * m_curveRadius;
-                    Vector3 xForwardTriggerSpawn = m_spawnDir == SPAWN_DIR.FORWARD ? transform.forward * m_curveRadius * 2: -transform.forward * m_curveRadius * 2;
-                    Vector3 xRightTriggerSpawn = m_spawnDir == SPAWN_DIR.FORWARD ? transform.right * m_curveRadius + transform.forward * m_curveRadius : transform.right * m_curveRadius - transform.forward * m_curveRadius;
+                    Vector3 xLeftTriggerSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (-transform.right * m_curveRadius + transform.forward * m_curveRadius);
+                    Vector3 xForwardTriggerSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.forward * m_curveRadius * 2);
+                    Vector3 xRightTriggerSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.right * m_curveRadius + transform.forward * m_curveRadius);
 
-                    Vector3 x_blSplineSpawn = m_spawnDir == SPAWN_DIR.FORWARD ? -transform.right * m_curveRadius : transform.right * m_curveRadius;//bottom left
-                    Vector3 x_brSplineSpawn = m_spawnDir == SPAWN_DIR.FORWARD ? transform.right * m_curveRadius : -transform.right * m_curveRadius;//bottom right
-                    Vector3 x_tlSplineSpawn = m_spawnDir == SPAWN_DIR.FORWARD ? -transform.right * m_curveRadius + transform.forward * m_curveRadius * 2 : transform.right * m_curveRadius - transform.forward * m_curveRadius * 2;//top left
-                    Vector3 x_trSplineSpawn = m_spawnDir == SPAWN_DIR.FORWARD ? transform.right * m_curveRadius + transform.forward * m_curveRadius * 2 : -transform.right * m_curveRadius - transform.forward * m_curveRadius * 2;//top right
+                    Vector3 x_blSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (-transform.right * m_curveRadius);//bottom left
+                    Vector3 x_brSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.right * m_curveRadius);//bottom right
+                    Vector3 x_tlSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (-transform.right * m_curveRadius + transform.forward * m_curveRadius * 2);//top left
+                    Vector3 x_trSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.right * m_curveRadius + transform.forward * m_curveRadius * 2);//top right
 
                     GameObject xLeftJunction = Instantiate(m_junctionTriggerPrefab, transform.position + xLeftTriggerSpawn, transform.rotation * Quaternion.Euler(Vector3.up * 90));
                     GameObject xForwardJunction = Instantiate(m_junctionTriggerPrefab, transform.position + xForwardTriggerSpawn, transform.rotation * Quaternion.Euler(Vector3.up * 180));
@@ -251,8 +249,8 @@ public class Navigation_SplineBuilder : MonoBehaviour
                     GameObject xSplineTL = Instantiate(m_curvedSplinePrefab, transform.position + x_tlSplineSpawn, transform.rotation);
                     GameObject xSplineTR = Instantiate(m_curvedSplinePrefab, transform.position + x_trSplineSpawn, transform.rotation);
 
-                    Vector3 xLeft2RightSpawn = m_spawnDir == SPAWN_DIR.FORWARD ? -transform.right + transform.forward * m_junctionRadius : transform.right - transform.forward * m_junctionRadius;
-                    Vector3 xTop2BottomSpawn = m_spawnDir == SPAWN_DIR.FORWARD ? transform.forward * m_junctionRadius * 0.9f : -transform.forward * m_junctionRadius * 0.9f;
+                    Vector3 xLeft2RightSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * ((-transform.right + transform.forward) * m_junctionRadius);
+                    Vector3 xTop2BottomSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.forward * m_junctionRadius * 0.9f);
 
                     GameObject xLeft2RightSpline = Instantiate(m_strightSplinePrefab, transform.position - xLeft2RightSpawn, transform.rotation);
                     GameObject xTop2BottomSpline = Instantiate(m_strightSplinePrefab, transform.position + xTop2BottomSpawn, transform.rotation);
@@ -306,6 +304,86 @@ public class Navigation_SplineBuilder : MonoBehaviour
                     xRightJunctionScript.m_forwardLeftSplineInfo.m_spline = xSplineBRScript;
                     xRightJunctionScript.m_forwardSplineInfo.m_spline = xLeft2RightSplineScript;
                     xRightJunctionScript.m_forwardRightSplineInfo.m_spline = xSplineTRScript;
+                }
+                else//Tsection
+                {
+                    Vector3 tLeftTriggerSpawn = Vector3.zero;
+                    Vector3 tRightTriggerSpawn = Vector3.zero;
+                    Vector3 tCenterTriggerSpawn = Vector3.zero;
+
+                    Vector3 tLeftSplineSpawn = Vector3.zero;
+                    Vector3 tRightSplineSpawn = Vector3.zero;
+                    Vector3 tLeft2RightSplineSpawn = Vector3.zero;
+
+                    GameObject tLeftJunction = null;
+                    GameObject tCenterJunction = null;
+                    GameObject tRightJunction = null;
+
+                    //Setup used varibles
+                    if (m_tSectionStart == T_SECTION_START.LEFT_T)
+                    {
+                        tLeftTriggerSpawn = Vector3.zero;
+                        tRightTriggerSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.forward * m_junctionRadius * 2);
+                        tCenterTriggerSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * ((transform.forward + transform.right) * m_junctionRadius);
+
+                        tLeftSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.right * m_junctionRadius);
+                        tRightSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.forward * m_junctionRadius * 2 + transform.right * m_junctionRadius);
+                        tLeft2RightSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.forward * m_junctionRadius * 1.8f);
+
+                        tLeftJunction = gameObject;
+                        tRightJunction = Instantiate(m_junctionTriggerPrefab, transform.position + tRightTriggerSpawn, transform.rotation * Quaternion.Euler(Vector3.up * 180));
+                        tCenterJunction = Instantiate(m_junctionTriggerPrefab, transform.position + tCenterTriggerSpawn, transform.rotation * Quaternion.Euler(Vector3.up * 90));
+                    }
+                    else if (m_tSectionStart == T_SECTION_START.CENTER_T)
+                    {
+                        tLeftTriggerSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * ((transform.forward - transform.right) * m_junctionRadius);
+                        tRightTriggerSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * ((transform.forward + transform.right) * m_junctionRadius);
+                        tCenterTriggerSpawn = Vector3.zero;
+
+                        tLeftSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * ((-transform.right + transform.forward) * m_junctionRadius);
+                        tRightSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * ((transform.right + transform.forward) * m_junctionRadius);
+
+                        tLeftJunction = Instantiate(m_junctionTriggerPrefab, transform.position + tLeftTriggerSpawn, transform.rotation * Quaternion.Euler(Vector3.up * 90)); ;
+                        tRightJunction = Instantiate(m_junctionTriggerPrefab, transform.position + tRightTriggerSpawn, transform.rotation * Quaternion.Euler(Vector3.up * -90));
+                        tCenterJunction = gameObject;
+                    }
+                    else if (m_tSectionStart == T_SECTION_START.RIGHT_T)
+                    {
+                        tLeftTriggerSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.forward * m_junctionRadius * 2);
+                        tRightTriggerSpawn = Vector3.zero;
+                        tCenterTriggerSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * ((transform.forward - transform.right) * m_junctionRadius);
+
+                        tLeftSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.forward * m_junctionRadius * 2 - transform.right * m_junctionRadius); 
+                        tRightSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (-transform.right * m_junctionRadius);
+
+                        tLeftJunction = Instantiate(m_junctionTriggerPrefab, transform.position + tLeftTriggerSpawn, transform.rotation * Quaternion.Euler(Vector3.up * 180)); ;
+                        tRightJunction = gameObject;
+                        tCenterJunction = Instantiate(m_junctionTriggerPrefab, transform.position + tCenterTriggerSpawn, transform.rotation * Quaternion.Euler(Vector3.up * 180));
+                    }
+
+                    GameObject tLeftSpline = null;
+                    GameObject tRightSpline = null;
+
+                    GameObject tStrightSpline = Instantiate(m_strightSplinePrefab, transform.position - xLeft2RightSpawn, transform.rotation);
+
+                    //Build connetions
+                    Navigation_Trigger_Junction tLeftJunctionScript = tLeftJunction.GetComponent<Navigation_Trigger_Junction>();
+                    Navigation_Trigger_Junction tCenterJunctionScript = tCenterJunction.GetComponent<Navigation_Trigger_Junction>();
+                    Navigation_Trigger_Junction tRightJunctionScript = tRightJunction.GetComponent<Navigation_Trigger_Junction>();
+
+                    Navigation_Spline_Curve tSplineLeftScript = tLeftSpline.GetComponent<Navigation_Spline_Curve>();
+                    tSplineLeftScript.m_rotationDirection = MOAREnums.ROT_DIRECTION.ANTI_CLOCKWISE;
+                    tSplineLeftScript.m_splineStart = tCenterJunctionScript;
+                    tSplineLeftScript.m_splineEnd = tLeftJunctionScript;
+
+                    Navigation_Spline_Curve tSplineRightScript = tRightSpline.GetComponent<Navigation_Spline_Curve>();
+                    tSplineRightScript.m_rotationDirection = MOAREnums.ROT_DIRECTION.CLOCKWISE;
+                    tSplineRightScript.m_splineStart = tCenterJunctionScript;
+                    tSplineRightScript.m_splineEnd = tRightJunctionScript;
+
+                    Navigation_Spline_Line tLeft2RightSplineScript = tStrightSpline.GetComponent<Navigation_Spline_Line>();
+                    tLeft2RightSplineScript.m_splineStart = tLeftJunctionScript;
+                    tLeft2RightSplineScript.m_splineEnd = tRightJunctionScript;
                 }
             }
         }
