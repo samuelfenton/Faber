@@ -340,8 +340,9 @@ public class Navigation_SplineBuilder : MonoBehaviour
                         tRightTriggerSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * ((transform.forward + transform.right) * m_junctionRadius);
                         tCenterTriggerSpawn = Vector3.zero;
 
-                        tLeftSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * ((-transform.right + transform.forward) * m_junctionRadius);
-                        tRightSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * ((transform.right + transform.forward) * m_junctionRadius);
+                        tLeftSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (-transform.right * m_junctionRadius);
+                        tRightSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.right * m_junctionRadius);
+                        tLeft2RightSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * ((transform.forward * m_junctionRadius) + (-transform.right * 0.9f * m_junctionRadius));
 
                         tLeftJunction = Instantiate(m_junctionTriggerPrefab, transform.position + tLeftTriggerSpawn, transform.rotation * Quaternion.Euler(Vector3.up * 90)); ;
                         tRightJunction = Instantiate(m_junctionTriggerPrefab, transform.position + tRightTriggerSpawn, transform.rotation * Quaternion.Euler(Vector3.up * -90));
@@ -355,16 +356,17 @@ public class Navigation_SplineBuilder : MonoBehaviour
 
                         tLeftSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.forward * m_junctionRadius * 2 - transform.right * m_junctionRadius); 
                         tRightSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (-transform.right * m_junctionRadius);
+                        tLeft2RightSplineSpawn = (m_spawnDir == SPAWN_DIR.FORWARD ? 1 : -1) * (transform.forward * m_junctionRadius * 0.2f);
 
                         tLeftJunction = Instantiate(m_junctionTriggerPrefab, transform.position + tLeftTriggerSpawn, transform.rotation * Quaternion.Euler(Vector3.up * 180)); ;
                         tRightJunction = gameObject;
                         tCenterJunction = Instantiate(m_junctionTriggerPrefab, transform.position + tCenterTriggerSpawn, transform.rotation * Quaternion.Euler(Vector3.up * 180));
                     }
 
-                    GameObject tLeftSpline = null;
-                    GameObject tRightSpline = null;
+                    GameObject tLeftSpline = Instantiate(m_curvedSplinePrefab, transform.position + tLeftSplineSpawn, transform.rotation);
+                    GameObject tRightSpline = Instantiate(m_curvedSplinePrefab, transform.position + tRightSplineSpawn, transform.rotation);
 
-                    GameObject tStrightSpline = Instantiate(m_strightSplinePrefab, transform.position - xLeft2RightSpawn, transform.rotation);
+                    GameObject tStrightSpline = Instantiate(m_strightSplinePrefab, transform.position + tLeft2RightSplineSpawn, transform.rotation);
 
                     //Build connetions
                     Navigation_Trigger_Junction tLeftJunctionScript = tLeftJunction.GetComponent<Navigation_Trigger_Junction>();
@@ -384,6 +386,15 @@ public class Navigation_SplineBuilder : MonoBehaviour
                     Navigation_Spline_Line tLeft2RightSplineScript = tStrightSpline.GetComponent<Navigation_Spline_Line>();
                     tLeft2RightSplineScript.m_splineStart = tLeftJunctionScript;
                     tLeft2RightSplineScript.m_splineEnd = tRightJunctionScript;
+
+                    tLeftJunctionScript.m_forwardSplineInfo.m_spline = tLeft2RightSplineScript;
+                    tLeftJunctionScript.m_forwardRightSplineInfo.m_spline = tSplineLeftScript;
+
+                    tCenterJunctionScript.m_forwardLeftSplineInfo.m_spline = tSplineLeftScript;
+                    tCenterJunctionScript.m_forwardRightSplineInfo.m_spline = tSplineRightScript;
+
+                    tRightJunctionScript.m_forwardLeftSplineInfo.m_spline = tSplineRightScript;
+                    tRightJunctionScript.m_forwardSplineInfo.m_spline = tLeft2RightSplineScript;
                 }
             }
         }
