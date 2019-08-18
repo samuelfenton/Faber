@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Character_Player : Character
 {
-    private VoxeliserHandler_Trail_SpeedBased m_voxelHandler = null;
-
     //-------------------
     //Character setup
     //  Ensure all need componets are attached, and get initilised if needed
@@ -13,8 +11,6 @@ public class Character_Player : Character
     protected override void Start()
     {
         base.Start();
-
-        m_voxelHandler = GetComponentInChildren<VoxeliserHandler_Trail_SpeedBased>();
     }
 
     //-------------------
@@ -25,10 +21,6 @@ public class Character_Player : Character
     protected override void Update()
     {
         base.Update();
-
-        Vector3 trailDir = new Vector3(0.0f, m_localVelocity.y, -m_localVelocity.x);
-
-        m_voxelHandler.UpdateTrailingVelocity(transform.localToWorldMatrix * trailDir, trailDir.magnitude / m_groundedHorizontalSpeedMax);
     }
 
     //-------------------

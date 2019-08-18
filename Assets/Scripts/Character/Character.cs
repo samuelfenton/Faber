@@ -59,8 +59,6 @@ public class Character : MonoBehaviour
 
     protected CharacterInventory m_characterInventory = null;
 
-    protected VoxeliserHandler m_voxeliserHandler = null;
-
     [SerializeField]
     private float m_destructionTime = 1.0f;
 
@@ -77,7 +75,6 @@ public class Character : MonoBehaviour
         m_characterStateMachine = GetComponent<CharacterStateMachine>();
         m_characterAnimationController = GetComponentInChildren<CharacterAnimationController>();
         m_characterInventory = GetComponent<CharacterInventory>();
-        m_voxeliserHandler = GetComponentInChildren<VoxeliserHandler>();
         m_characterInput = GetComponent<CharacterInput>();
 
         m_currentCharacterInput = new CharacterInput.InputState();
@@ -146,7 +143,6 @@ public class Character : MonoBehaviour
     //-------------------
     public void OnDeath()
     {
-        m_voxeliserHandler.EnableDisassemble();
         m_weapon.DropWeapon();
 
         StartCoroutine(DestroyObject());

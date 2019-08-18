@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VoxeliserCompanion_SkinnedMeshRenderer : VoxeliserCompanion
+public class ECS_Voxeliser_SkinnedMesh : ECS_Voxeliser
 {
-    SkinnedMeshRenderer m_skinnedMeshRenderer = null;
+    private SkinnedMeshRenderer m_skinnedMeshRenderer = null;
 
     //--------------------
     //  Setup of the Voxeliser
@@ -29,5 +29,4 @@ public class VoxeliserCompanion_SkinnedMeshRenderer : VoxeliserCompanion
         m_modelMesh = new Mesh();
         m_skinnedMeshRenderer.BakeMesh(m_modelMesh);
     }
-
 }

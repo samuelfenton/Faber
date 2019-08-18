@@ -130,4 +130,27 @@ public class CustomMeshHandeling : MonoBehaviour
                 skinnedMeshRenderer.materials = new Material[0];
         }
     }
+
+    //--------------------
+    //  Remove all materials attached to an object
+    //  
+    //  params:
+    //      p_object - object to remove material from
+    //--------------------
+    public static Material GetMaterial(GameObject p_object)
+    {
+        MeshRenderer meshRenderer = p_object.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            return meshRenderer.material;
+        }
+        else
+        {
+            SkinnedMeshRenderer skinnedMeshRenderer = p_object.GetComponent<SkinnedMeshRenderer>();
+            if (skinnedMeshRenderer != null)
+                return skinnedMeshRenderer.material;
+        }
+
+        return null;
+    }
 }

@@ -565,8 +565,6 @@ GameObject:
   - component: {fileID: 4780777831806186}
   - component: {fileID: 95869369857301116}
   - component: {fileID: 114339389431195854}
-  - component: {fileID: 8731695131116451511}
-  - component: {fileID: 4575927733527551333}
   m_Layer: 0
   m_Name: voxelCharacterBaseModel
   m_TagString: Untagged
@@ -628,50 +626,6 @@ MonoBehaviour:
   m_canCombo: 0
   m_currentAnimation: 0
   m_animator: {fileID: 0}
---- !u!114 &8731695131116451511
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1662067591425320}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c650a34f6744fc24883c9b6f91a58083, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  VOXEL_COUNT: 800
-  PERFORM_OVER_FRAMES: 0
-  UPDATE_N_FRAMES: 1
-  DISABLE_MATERIAL: 1
-  m_objectWithMesh: {fileID: 1784304874936534}
-  m_modelMesh: {fileID: 0}
---- !u!114 &4575927733527551333
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1662067591425320}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d94f2783c0ca54cd7b82cbbe45f9445d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_voxel: {fileID: 904737219738579102, guid: 95d3e273b403536479b2720e4b0969dc, type: 3}
-  m_voxelSize: 0.08
-  m_chanceOfExplode: 5
-  m_explosionFactor: 5
-  m_shrinkTime: 2
-  m_voxelParent: {fileID: 0}
-  m_disassemble: 0
-  m_chanceOfTrailing: 0
-  m_trailingShrinkTime: 2
-  m_trailingSpeed: 0.5
-  m_trailingType: 3
-  m_trailDirection: {x: 0, y: 0, z: 0}
-  m_minChanceToEmit: 0
-  m_maxChanceToEmit: 0
 --- !u!1 &1666522654678068
 GameObject:
   m_ObjectHideFlags: 0
@@ -969,6 +923,7 @@ GameObject:
   - component: {fileID: 5562677752453028297}
   - component: {fileID: 114222748025272242}
   - component: {fileID: 5764393745768356377}
+  - component: {fileID: 6273493540542298216}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -1123,6 +1078,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_currentStateType: 0
   m_currentState: {fileID: 0}
+--- !u!114 &6273493540542298216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1812822953487848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50a8deb56ebe0da499b8cd39026202bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  VOXEL_SIZE: 0.1
+  m_objectWithMesh: {fileID: 1784304874936534}
+  m_stepModifier: 5
+  m_maxVoxelCount: 10000
+  m_modelMesh: {fileID: 0}
 --- !u!1 &1869570341365886
 GameObject:
   m_ObjectHideFlags: 0
