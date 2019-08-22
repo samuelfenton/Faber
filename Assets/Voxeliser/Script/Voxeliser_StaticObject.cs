@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ECS_Voxeliser_StaticObject : ECS_Voxeliser
+public class Voxeliser_StaticObject : Voxeliser
 {
     /// <summary>
     /// Rather than using Update Voxeliser is Enumerator driven.

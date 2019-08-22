@@ -25,7 +25,8 @@ public class ECS_Voxeliser : MonoBehaviour
 
     [HideInInspector]
     public Mesh m_modelMesh = null;
-    private Mesh m_voxelMesh = null; 
+    protected GameObject m_voxelObject = null;
+    protected Mesh m_voxelMesh = null;
 
     protected Texture2D m_mainTexture = null;
     #endregion
@@ -99,21 +100,18 @@ public class ECS_Voxeliser : MonoBehaviour
             }
         }
 
-        //--------------------
-        //  Build line of voxels
-        //  Using Bresenham's line algorithum draw a line of voxels
-        //  Example found here "https://www.mathworks.com/matlabcentral/fileexchange/21057-3d-bresenham-s-line-generation", ":https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling"
-        //  All points made are stored in list, and NOT snapped to the grid
-        //  params:
-        //      p_pointA - Tri vert 1
-        //      p_pointB - Tri vert 2
-        //      p_pointAUV - UV of point A
-        //      p_pointBUV - UV of point B
-        //      p_points - List to store verts in.
-        //      p_pointUVs - List to store UVs in.
-        //  return:
-        //      List<VectorDouble> - Points calculated along Bresenhams line
-        //--------------------
+        /// <summary>
+        /// Build line of voxels
+        /// Using Bresenham's line algorithum draw a line of voxels
+        /// Example found here "https://www.mathworks.com/matlabcentral/fileexchange/21057-3d-bresenham-s-line-generation", ":https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling"
+        /// All points made are stored in list, and NOT snapped to the grid
+        /// </summary>
+        /// <param name="p_pointA">Tri vert A</param>
+        /// <param name="p_pointB">Tri vert B</param>
+        /// <param name="p_pointAUV">UV of point A</param>
+        /// <param name="p_pointBUV">UV of point B</param>
+        /// <param name="p_points">List to store verts in.</param>
+        /// <param name="p_pointUVs">List to store UVs in.</param>
         private void InitialBresenhamDrawEachPoint(float4 p_pointA, float4 p_pointB, float2 p_pointAUV, float2 p_pointBUV, NativeList<float4> p_points, NativeList<float2> p_pointUVs)
         {
             //Basic Values
@@ -202,17 +200,16 @@ public class ECS_Voxeliser : MonoBehaviour
             }
         }
 
-        //--------------------
-        //  Build line of voxels
-        //  Using Bresenham's line algorithum draw a line of voxels
-        //  Example found here "https://www.mathworks.com/matlabcentral/fileexchange/21057-3d-bresenham-s-line-generation", ":https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling"
-        //  All points made are stored in dictionary, and ARE snapped to the grid
-        //  params:
-        //      p_pointOnLine - Tri vert 1
-        //      p_pointC - Tri vert 2
-        //      p_pointOnLineUV - UV of point A
-        //      p_pointCUV - UV of point B
-        //--------------------
+        /// <summary>
+        /// Build line of voxels
+        /// Using Bresenham's line algorithum draw a line of voxels
+        /// Example found here "https://www.mathworks.com/matlabcentral/fileexchange/21057-3d-bresenham-s-line-generation", ":https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling"
+        /// All points made are stored in dictionary, and ARE snapped to the grid
+        /// </summary>
+        /// <param name="p_pointOnLine">Tri vert on Line</param>
+        /// <param name="p_pointC">Tri vert C</param>
+        /// <param name="p_pointOnLineUV">UV of point on Line</param>
+        /// <param name="p_pointCUV">UV of point C</param>
         private void BresenhamDrawEachPoint(float4 p_pointOnLine, float4 p_pointC, float2 p_pointOnLineUV, float2 p_pointCUV)
         {
             //Basic Values
@@ -299,13 +296,12 @@ public class ECS_Voxeliser : MonoBehaviour
         }
 
         #region Supporting Fuctions
-        //--------------------
-        //  Snap to postion grid
-        //  params:
-        //      p_position - World position
-        //  return:
-        //      Vector3 - Postioned "Snapped" to a world grid with increments of p_gridSize 
-        //--------------------
+
+        /// <summary>
+        ///  Snap to postion grid
+        /// </summary>
+        /// <param name="p_position">World position</param>
+        /// <returns>Postioned "Snapped" to a world grid with increments of p_gridSize </returns>
         float4 SnapToGrid(float4 p_position)
         {
             p_position.x -= p_position.x % m_voxelSize;
@@ -315,28 +311,25 @@ public class ECS_Voxeliser : MonoBehaviour
             return p_position;
         }
 
-        //--------------------
-        //  Merge 2 colors, rather than average get percent based merge
-        //  params:
-        //      p_colorA - First color
-        //      p_colorB - Second color
-        //  return:
-        //      float - new merged color
-        //--------------------
-        private float2 MergeUVs(float2 p_colorA, float2 p_colorB, float p_percent)
+        /// <summary>
+        /// Lerp between two UVs
+        /// </summary>
+        /// <param name="p_UVA">First UV</param>
+        /// <param name="p_UVB">Second UV</param>
+        /// <param name="p_percent">How far from UV1 to UV2</param>
+        /// <returns>new merged UV</returns>
+        private float2 MergeUVs(float2 p_UVA, float2 p_UVB, float p_percent)
         {
-            return p_colorA * p_percent + p_colorB * (1 - p_percent);
+            return p_UVA * p_percent + p_UVB * (1 - p_percent);
         }
 
-        //--------------------
-        //  Get highest of 3 values
-        //  params:
-        //      p_val1 - First to compare with
-        //      p_val2 - Second to compare with
-        //      p_val3 - Third to compare with
-        //  return:
-        //      float - Highest of the three values
-        //--------------------
+        /// <summary>
+        /// Get highest of 3 values
+        /// </summary>
+        /// <param name="p_val1">First to compare with</param>
+        /// <param name="p_val2">Second to compare with</param>
+        /// <param name="p_val3">Third to compare with</param>
+        /// <returns>Highest of the three values</returns>
         private float GetHighest(float p_val1, float p_val2, float p_val3)
         {
             //current highest = p_val2 > p_val3 ? p_val2 : p_val3
@@ -462,11 +455,12 @@ public class ECS_Voxeliser : MonoBehaviour
     #endregion
 
     #region Initial Setup
-    //--------------------
-    //  Setup of the Voxeliser
-    //      Ensure object has all required components atached
-    //      Setup required varibles
-    //--------------------
+
+    /// <summary>
+    /// Setup of the Voxeliser
+    /// Ensure object has all required components atached
+    /// Setup required varibles
+    /// </summary>
     protected virtual void Start()
     {
         //Grabbing varibles
@@ -502,6 +496,7 @@ public class ECS_Voxeliser : MonoBehaviour
         //Natives Constrution/ Assigning
         m_orginalVerts = new NativeArray<Vector3>(m_modelMesh.vertexCount, Allocator.Persistent);
         m_originalUVs = new NativeArray<float2>(m_modelMesh.vertexCount, Allocator.Persistent);
+
         for (int i = 0; i < m_modelMesh.uv.Length; i++)
         {
             m_originalUVs[i] = m_modelMesh.uv[i];
@@ -516,11 +511,11 @@ public class ECS_Voxeliser : MonoBehaviour
         m_convertedTris = new NativeList<int>(Allocator.Persistent);
 
         //New object that holds the mesh
-        GameObject holderObject = new GameObject(m_modelMesh.name + " Voxel Mesh Holder");
-        MeshFilter voxelMeshFilter = holderObject.AddComponent<MeshFilter>();
+        m_voxelObject = new GameObject(name + " Voxel Mesh Holder");
+        MeshFilter voxelMeshFilter = m_voxelObject.AddComponent<MeshFilter>();
         m_voxelMesh = voxelMeshFilter.mesh;
 
-        MeshRenderer voxelMeshRenderer = holderObject.AddComponent<MeshRenderer>();
+        MeshRenderer voxelMeshRenderer = m_voxelObject.AddComponent<MeshRenderer>();
         voxelMeshRenderer.material = CustomMeshHandeling.GetMaterial(m_objectWithMesh);
 
         CustomMeshHandeling.DisableMaterial(m_objectWithMesh);
@@ -530,10 +525,12 @@ public class ECS_Voxeliser : MonoBehaviour
 
     #endregion
 
-    //--------------------
-    //  Rather than using Update Voxeliser is Enumerator driven.
-    //  Run logic every run every second frame
-    //--------------------
+    /// <summary>
+    /// Rather than using Update Voxeliser is Enumerator driven.
+    /// Update mesh used
+    /// Run voxeliser
+    /// </summary>
+    /// <returns>null, wait for next frame</returns>
     protected virtual IEnumerator VoxeliserUpdate()
     {
         yield return null;
@@ -544,22 +541,22 @@ public class ECS_Voxeliser : MonoBehaviour
         StartCoroutine(VoxeliserUpdate());
     }
 
-    //--------------------
-    //  Update the mesh used in determining vertex position
-    //  Overriden by skinned renderer/ mesh renderer derrived classes
-    //--------------------
+    /// <summary>
+    /// Update the mesh used in determining vertex position
+    /// Overriden by skinned renderer/ mesh renderer derrived classes
+    /// </summary>
     protected virtual void UpdateMesh()
     {
        
     }
 
 
-    //--------------------
-    //  Get frame voxel positions
-    //      Get transform matrix without the postion assigned
-    //      Get Voxel positions
-    //      Pass data to voxel handler
-    //--------------------
+    /// <summary>
+    /// Get frame voxel positions
+    ///     Get transform matrix without the postion assigned
+    ///     Get voxel positions
+    ///     Get mesh varibles(verts, tris, UVs) 
+    /// </summary>
     protected void ConvertToVoxels()
     {
         Matrix4x4 localToWorld = transform.localToWorldMatrix;
@@ -661,6 +658,7 @@ public class ECS_Voxeliser : MonoBehaviour
 
     /// <summary>
     /// Cleanup of all natives
+    /// Ensure voxelised object is removed too
     /// </summary>
     private void OnDestroy()
     {
@@ -680,5 +678,8 @@ public class ECS_Voxeliser : MonoBehaviour
             m_convertedUVs.Dispose();
         if (m_convertedTris.IsCreated)
             m_convertedTris.Dispose();
+
+        if (m_voxelObject != null)
+            DestroyImmediate(m_voxelObject);
     }
 }

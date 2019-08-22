@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ECS_Voxeliser_SkinnedMesh : ECS_Voxeliser
+public class Voxelsier_SkinnedMesh : Voxeliser
 {
     private SkinnedMeshRenderer m_skinnedMeshRenderer = null;
 
