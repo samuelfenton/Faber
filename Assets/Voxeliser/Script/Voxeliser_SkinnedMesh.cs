@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Voxelsier_SkinnedMesh : Voxeliser
+public class Voxeliser_SkinnedMesh : Voxeliser
 {
     private SkinnedMeshRenderer m_skinnedMeshRenderer = null;
 
@@ -17,7 +17,12 @@ public class Voxelsier_SkinnedMesh : Voxeliser
         m_skinnedMeshRenderer = m_objectWithMesh.GetComponent<SkinnedMeshRenderer>();
 
         if (m_skinnedMeshRenderer == null)
+        {
             Destroy(this);
+#if UNITY_EDITOR
+            Debug.Log(name + " Object doesnt have an attached skinned renderer, maybe use static or normal was intended?");
+#endif
+        }
     }
 
     /// <summary>

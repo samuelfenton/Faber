@@ -17,7 +17,12 @@ public class ECS_Voxeliser_SkinnedMesh : ECS_Voxeliser
         m_skinnedMeshRenderer = m_objectWithMesh.GetComponent<SkinnedMeshRenderer>();
 
         if (m_skinnedMeshRenderer == null)
+        {
             Destroy(this);
+#if UNITY_EDITOR
+            Debug.Log(name + " Object doesnt have an attached skinned renderer, maybe use static or normal was intended?");
+#endif
+        }
     }
 
     /// <summary>

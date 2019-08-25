@@ -13,11 +13,13 @@ public class ECS_Voxeliser_StaticObject : ECS_Voxeliser
     /// <returns>null, wait for next frame</returns>
     protected override IEnumerator VoxeliserUpdate()
     {
-        yield return null;
+        Transform orginalParent = transform.parent;
+        transform.SetParent(null, true);
 
         Vector3 orginalPos = m_objectWithMesh.transform.position;
         Quaternion orginalRot = m_objectWithMesh.transform.rotation;
         Vector3 orginalScale = m_objectWithMesh.transform.localScale;
+
 
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
@@ -59,6 +61,8 @@ public class ECS_Voxeliser_StaticObject : ECS_Voxeliser
         transform.position = orginalPos;
         transform.rotation = orginalRot;
         transform.localScale = orginalScale;
+
+        transform.SetParent(orginalParent, true);
 
         Destroy(m_voxelObject);
         Destroy(this);
