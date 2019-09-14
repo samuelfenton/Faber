@@ -17,7 +17,7 @@ public class CustomMeshHandeling : MonoBehaviour
         MeshFilter meshFilter = p_object.GetComponent<MeshFilter>();
         if (meshFilter != null)
         {
-            return meshFilter.mesh;
+            return meshFilter.sharedMesh;
         }
         else
         {

@@ -12,7 +12,14 @@ public class Navigation_Spline : MonoBehaviour
 
     public virtual void Start()
     {
-
+        if(m_splineStart == null || m_splineEnd == null)
+        {
+            gameObject.SetActive(false);
+#if UNITY_EDITOR
+            Debug.Log(name + " has no start or end spline assinged");
+#endif
+            return;
+        }
     }
 
     public virtual Vector3 GetSplinePosition(float p_splinePercent)

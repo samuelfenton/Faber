@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3379986879623146152}
   - component: {fileID: 4924624426338426190}
   - component: {fileID: 7904838441637146975}
+  - component: {fileID: -2786493818216597632}
   m_Layer: 0
   m_Name: Weapon_Dagger
   m_TagString: Untagged
@@ -96,6 +97,23 @@ MonoBehaviour:
   m_weaponLightDamage: 1
   m_weaponHeavyDamage: 2
   m_parentCharacter: {fileID: 0}
+--- !u!114 &-2786493818216597632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6325115673862731029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbd2599f90cc28c4d933597285127558, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  VOXEL_SIZE: 0.05
+  m_objectWithMesh: {fileID: 8167435443399377322}
+  m_stepModifier: 5
+  m_maxVoxelCount: 10000
+  m_modelMesh: {fileID: 0}
 --- !u!1 &8167435443399377322
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,8 +125,6 @@ GameObject:
   - component: {fileID: 3107491980764934171}
   - component: {fileID: 1714654756315100631}
   - component: {fileID: 3117254606616720890}
-  - component: {fileID: 6522584332564072936}
-  - component: {fileID: 2298408370362593693}
   m_Layer: 0
   m_Name: Model_Dagger
   m_TagString: Untagged
@@ -175,41 +191,3 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &6522584332564072936
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8167435443399377322}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 644ab212a30f8cc46a235789abe4b31d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  VOXEL_COUNT: 500
-  PERFORM_OVER_FRAMES: 0
-  UPDATE_N_FRAMES: 1
-  DISABLE_MATERIAL: 0
-  m_objectWithMesh: {fileID: 8167435443399377322}
-  m_modelMesh: {fileID: 0}
---- !u!114 &2298408370362593693
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8167435443399377322}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 039c728536b724bee8e72258e9f937cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_voxel: {fileID: 904737219738579102, guid: d9f8bf52f4bc4544eb934552238c5c51, type: 3}
-  m_voxelSize: 0.02
-  m_chanceOfExplode: 5
-  m_explosionFactor: 5
-  m_shrinkTime: 2
-  m_voxelParent: {fileID: 0}
-  m_disassemble: 0
-  m_saveMeshOnPlay: 0

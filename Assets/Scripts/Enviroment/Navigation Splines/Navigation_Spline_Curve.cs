@@ -13,7 +13,7 @@ public class Navigation_Spline_Curve : Navigation_Spline
     private Vector3 m_startingOffset = Vector3.zero;
 
     #if UNITY_EDITOR
-    public bool SetupEndNode = false;
+    public bool m_setupEndNode = false;
     #endif
 
     public override void Start()
@@ -76,18 +76,23 @@ public class Navigation_Spline_Curve : Navigation_Spline
 
     private void Update()
     {
-        if(SetupEndNode)
+        if(m_setupEndNode)
         {
-            Vector3 startPosition = m_splineStart.transform.position - transform.position;
-            Vector3 endPosition = m_splineEnd.transform.position;
-
-            Vector3 endOffset = Quaternion.AngleAxis(m_totalDegrees * (int)m_rotationDirection, Vector3.up) * startPosition;
-
-            endPosition.x = transform.position.x + endOffset.x;
-            endPosition.z = transform.position.z + endOffset.z;
-            m_splineEnd.transform.position = endPosition;
-            SetupEndNode = false;
+            SetupEndNode();
+            m_setupEndNode = false;
         }
+    }
+
+    public void SetupEndNode()
+    {
+        Vector3 startPosition = m_splineStart.transform.position - transform.position;
+        Vector3 endPosition = m_splineEnd.transform.position;
+
+        Vector3 endOffset = Quaternion.AngleAxis(m_totalDegrees * (int)m_rotationDirection, Vector3.up) * startPosition;
+
+        endPosition.x = transform.position.x + endOffset.x;
+        endPosition.z = transform.position.z + endOffset.z;
+        m_splineEnd.transform.position = endPosition;
     }
 #endif
 }

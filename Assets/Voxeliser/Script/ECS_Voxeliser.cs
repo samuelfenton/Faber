@@ -559,7 +559,7 @@ public class ECS_Voxeliser : MonoBehaviour
     /// </summary>
     protected void ConvertToVoxels()
     {
-        Matrix4x4 localToWorld = transform.localToWorldMatrix;
+        Matrix4x4 localToWorld = m_objectWithMesh.transform.localToWorldMatrix;
         float4x4 localToWorldConverted = localToWorld;
 
         //Reset Details

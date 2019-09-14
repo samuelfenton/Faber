@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1937899495649051671}
   - component: {fileID: 8525016914758119051}
   m_Layer: 0
-  m_Name: SplineNodeJunction
+  m_Name: TriggerJunction
   m_TagString: Untagged
   m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ BoxCollider:
   m_GameObject: {fileID: 1468631223264824}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 5, z: 0}
   m_Center: {x: 0, y: 2.5, z: 0}
@@ -83,6 +83,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d55b66981ab934fa4804318f9b0914d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_spawnSplineType: 0
+  m_spawnDir: 0
+  m_one2OneSplineDir: {x: 0, y: 0, z: 0}
+  m_curveType: 0
+  m_curveRadius: 2
+  m_curveAngle: 90
+  m_junctionType: 0
+  m_tSectionStart: 1
+  m_junctionRadius: 2
+  m_spawn: 0
+  m_merge: 0
   m_one2OneTriggerPrefab: {fileID: 1468631223264824, guid: def59efea0a0e8f45900e6cff6b3bb2f,
     type: 3}
   m_junctionTriggerPrefab: {fileID: 1468631223264824}
@@ -90,11 +101,3 @@ MonoBehaviour:
     type: 3}
   m_curvedSplinePrefab: {fileID: 1415743779864064, guid: b5b15061f71582b4991063296a33ba93,
     type: 3}
-  m_triggerType: 1
-  m_navigationTrigger: {fileID: 1937899495649051671}
-  m_spawnDir: 0
-  m_one2OneSplineDir: {x: 0, y: 0, z: 0}
-  m_junctionType: 0
-  m_tSectionStart: 1
-  m_junctionRadius: 2
-  m_spawn: 0

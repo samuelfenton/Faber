@@ -32,6 +32,9 @@ public class Navigation_Spline_Line : Navigation_Spline
 
     private void OnDrawGizmos()
     {
+        if(m_splineStart== null || m_splineEnd == null)
+            return;
+
         //Draw line
         Gizmos.color = Color.blue;
         Gizmos.DrawLine(m_splineStart.transform.position, m_splineEnd.transform.position);

@@ -16,8 +16,11 @@ public class Navigation_Trigger_Junction : Navigation_Trigger
         if ((m_forwardSplineInfo.m_spline == null && m_forwardRightSplineInfo.m_spline == null && m_forwardLeftSplineInfo.m_spline == null) || m_backwardSplineInfo.m_spline == null)
         {
             #if UNITY_EDITOR
-            Debug.Log("Junction trigger is missing exit spline or at least one entering spline");
-            #endif
+            Debug.Log("Junction trigger one " + name + " is missing exit spline or at least one entering spline");
+#endif
+            BoxCollider boxCollider = GetComponent<BoxCollider>();
+            if (boxCollider != null)
+                boxCollider.enabled = false;
         }
         else //Connected splines exist, so set up percentages of connected splines for when exiting
         {
@@ -41,7 +44,13 @@ public class Navigation_Trigger_Junction : Navigation_Trigger
                 m_forwardLeftSplineInfo.m_splinePercent = m_forwardLeftSplineInfo.m_spline.GetPositionOfSplineTransform(this);
                 m_adjacentSplines.Add(m_forwardLeftSplineInfo.m_spline);
             }
+
+            BoxCollider boxCollider = GetComponent<BoxCollider>();
+            if (boxCollider != null)
+                boxCollider.enabled = true;
         }
+
+        UpdateCollidier();
     }
 
     protected override void HandleTrigger(Character p_character, TRIGGER_DIRECTION p_direction)
@@ -86,6 +95,13 @@ public class Navigation_Trigger_Junction : Navigation_Trigger
         if (m_forwardRightSplineInfo.m_spline != null)
             return m_forwardRightSplineInfo;
         return m_forwardLeftSplineInfo;
+    }
+
+    public override void UpdateCollidier()
+    {
+        BoxCollider boxCollider = GetComponent<BoxCollider>();
+        if (boxCollider != null)
+            boxCollider.enabled = ((m_forwardSplineInfo.m_spline != null || m_forwardRightSplineInfo.m_spline != null || m_forwardLeftSplineInfo.m_spline != null) && m_backwardSplineInfo.m_spline != null);
     }
 
     public override bool ContainsSpine(Navigation_Spline p_spline)

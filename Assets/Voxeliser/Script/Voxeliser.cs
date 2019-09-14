@@ -164,9 +164,9 @@ public class Voxeliser : MonoBehaviour
         for (int triIndex = 0; triIndex < triCount; triIndex++)
         {
             //Float 4 varients due to matrix math
-            Vector3 vertA = transform.TransformPoint(m_orginalVerts[m_originalTris[triIndex * 3]]);
-            Vector3 vertB = transform.TransformPoint(m_orginalVerts[m_originalTris[triIndex * 3 + 1]]);
-            Vector3 vertC = transform.TransformPoint(m_orginalVerts[m_originalTris[triIndex * 3 + 2]]);
+            Vector3 vertA = m_objectWithMesh.transform.TransformPoint(m_orginalVerts[m_originalTris[triIndex * 3]]);
+            Vector3 vertB = m_objectWithMesh.transform.TransformPoint(m_orginalVerts[m_originalTris[triIndex * 3 + 1]]);
+            Vector3 vertC = m_objectWithMesh.transform.TransformPoint(m_orginalVerts[m_originalTris[triIndex * 3 + 2]]);
 
             Vector2 vertAUV = m_originalUVs[m_originalTris[triIndex * 3]];
             Vector2 vertBUV = m_originalUVs[m_originalTris[triIndex * 3 + 1]];

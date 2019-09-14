@@ -67,7 +67,6 @@ public class Navigation_Trigger : MonoBehaviour
     {
         if (m_activeColliders.ContainsKey(p_other))
             m_activeColliders.Remove(p_other);
-
     }
 
 
@@ -81,6 +80,10 @@ public class Navigation_Trigger : MonoBehaviour
     protected virtual void HandleTrigger(Character p_character, TRIGGER_DIRECTION p_direction)
     {
 
+    }
+
+    public virtual void UpdateCollidier()
+    {
     }
 
     public virtual bool ContainsSpine(Navigation_Spline p_spline)
