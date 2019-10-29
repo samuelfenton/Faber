@@ -2,40 +2,56 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
-public class CharacterCustomPhysics : MonoBehaviour
+public class SplinePhysics : MonoBehaviour
 {
-    private const float GROUND_DETECTION = 0.5f; 
+    protected const float GROUND_DETECTION = 0.5f;
+    protected const float GRAVITY = -9.8f;
+    [Header("Physic settings")]
+    public bool m_gravity = false;
 
-    private Character m_parentCharacter = null;
-
+    [Header("Spline settings")]
+    [Range(0, 1)]
     public Navigation_Spline m_currentSpline = null;
-
-    [Range(0,1)]
     public float m_currentSplinePercent = 0.0f;
 
-    [Header("Collision Details")]
+    [HideInInspector]
     public bool m_upCollision = false;
+    [HideInInspector]
     public bool m_downCollision = false;
+    [HideInInspector]
     public bool m_forwardCollision = false;
+    [HideInInspector]
     public bool m_backCollision = false;
 
-    [Header("Character Collision")]
     protected Vector3 m_colliderExtents = Vector3.zero;
     protected float m_collisionDetection = 0.1f;
 
-    //-------------------
-    //Initilise character physics
-    //  Setup collider extents for future use
-    //-------------------
-    private void Start()
+    protected Entity m_parentEntity = null;
+
+    /// <summary>
+    /// Initilise entity physics
+    /// </summary>
+    protected virtual void Start()
     {
-        m_parentCharacter = GetComponent<Character>();
+        m_parentEntity = GetComponent<Entity>();
 
-        CapsuleCollider capculeCollider = GetComponent<CapsuleCollider>();
+        if(m_parentEntity==null)
+        {
+#if UNITY_EDITOR
+            Debug.Log(name + " has no entity attached, considering removing the spline physcis, or add one");
+#endif
+            Destroy(this);
+            return;
+        }
 
-        m_colliderExtents.x = m_colliderExtents.z = capculeCollider.radius;
-        m_colliderExtents.y = capculeCollider.height / 2.0f;
+        if (m_currentSpline == null)//Safety breakout
+        {
+#if UNITY_EDITOR
+            Debug.Log(name + " does not have a spline set in spline physics");
+#endif
+            Destroy(this);
+            return;
+        }
     }
 
 #if UNITY_EDITOR
@@ -45,7 +61,7 @@ public class CharacterCustomPhysics : MonoBehaviour
     private void OnValidate()
     {
         //Update position in scene 
-        if(m_currentSpline!=null)
+        if (m_currentSpline != null)
         {
             m_currentSpline.Start();
 
@@ -62,14 +78,8 @@ public class CharacterCustomPhysics : MonoBehaviour
     //-------------------
     public void UpdatePhysics()
     {
-        if (m_currentSpline == null)//Safety breakout
-        {
-#if UNITY_EDITOR
-            Debug.Log(this + " Does not have a spline set in custom physics");
-#endif
-            m_parentCharacter.OnDeath();
-            return;
-        }
+        //Gravity
+        m_parentEntity.m_localVelocity.y += GRAVITY * Time.deltaTime;
 
         UpdateCollisions();
 
@@ -79,12 +89,12 @@ public class CharacterCustomPhysics : MonoBehaviour
         if (relativeDot > 0)
         {
             transform.rotation = Quaternion.LookRotation(desiredForwards, Vector3.up);
-            m_currentSplinePercent += m_currentSpline.GetSplinePercent(m_parentCharacter.m_localVelocity.x * Time.deltaTime);
+            m_currentSplinePercent += m_currentSpline.GetSplinePercent(m_parentEntity.m_localVelocity.x * Time.deltaTime);
         }
         else
         {
             transform.rotation = Quaternion.LookRotation(-desiredForwards, Vector3.up);
-            m_currentSplinePercent += m_currentSpline.GetSplinePercent(-m_parentCharacter.m_localVelocity.x * Time.deltaTime);
+            m_currentSplinePercent += m_currentSpline.GetSplinePercent(-m_parentEntity.m_localVelocity.x * Time.deltaTime);
         }
 
         //Lock spline percent between close enough to 0 - 1
@@ -97,20 +107,20 @@ public class CharacterCustomPhysics : MonoBehaviour
 
         position.x = splinePosition.x;
         position.z = splinePosition.z;
-        position.y += m_parentCharacter.m_localVelocity.y * Time.deltaTime;
+        position.y += m_parentEntity.m_localVelocity.y * Time.deltaTime;
 
         float distanceToGround = transform.position.y - splinePosition.y;
 
         //Override down collision dependant on spline collision
         m_downCollision = distanceToGround < GROUND_DETECTION;
 
-        if (m_parentCharacter.m_localVelocity.y <= 0 && distanceToGround < 0)
+        if (m_parentEntity.m_localVelocity.y <= 0 && distanceToGround < 0)
         {
             //Set y-pos
             position.y = splinePosition.y;
 
             //Grounded change y-component of velocity
-            m_parentCharacter.m_localVelocity.y = 0.0f;
+            m_parentEntity.m_localVelocity.y = 0.0f;
         }
 
         transform.position = position;
@@ -138,21 +148,21 @@ public class CharacterCustomPhysics : MonoBehaviour
     //-------------------
     public void UpdateCollisionVelocity()
     {
-        if (m_upCollision && m_parentCharacter.m_localVelocity.y > 0)//Check Upwards
+        if (m_upCollision && m_parentEntity.m_localVelocity.y > 0)//Check Upwards
         {
-            m_parentCharacter.m_localVelocity.y = 0;
+            m_parentEntity.m_localVelocity.y = 0;
         }
-        else if (m_downCollision &&  m_parentCharacter.m_localVelocity.y < 0)//Downwards
+        else if (m_downCollision && m_parentEntity.m_localVelocity.y < 0)//Downwards
         {
-            m_parentCharacter.m_localVelocity.y = 0;
+            m_parentEntity.m_localVelocity.y = 0;
         }
-        if (m_forwardCollision && m_parentCharacter.m_localVelocity.x > 0)//Forwards
+        if (m_forwardCollision && m_parentEntity.m_localVelocity.x > 0)//Forwards
         {
-            m_parentCharacter.m_localVelocity.x = 0;
+            m_parentEntity.m_localVelocity.x = 0;
         }
-        else if (m_backCollision && m_parentCharacter.m_localVelocity.x < 0)//Backwards
+        else if (m_backCollision && m_parentEntity.m_localVelocity.x < 0)//Backwards
         {
-            m_parentCharacter.m_localVelocity.x = 0;
+            m_parentEntity.m_localVelocity.x = 0;
         }
     }
 
@@ -172,7 +182,7 @@ public class CharacterCustomPhysics : MonoBehaviour
             return true; //Early breakout
 
         //Back raycast
-        if (Physics.Raycast(p_centerPos* m_colliderExtents.x, p_direction, m_colliderExtents.y + m_collisionDetection, LayerController.m_walkable))
+        if (Physics.Raycast(p_centerPos * m_colliderExtents.x, p_direction, m_colliderExtents.y + m_collisionDetection, LayerController.m_walkable))
             return true; //Early breakout
 
         //Center raycast

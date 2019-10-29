@@ -47,6 +47,6 @@ public class CharacterState_Idle : CharacterState
     //-------------------
     public override bool IsValid()
     {
-        return m_parentCharacter.m_localVelocity.x == 0.0f && m_parentCharacter.m_characterCustomPhysics.m_downCollision;
+        return m_parentCharacter.m_localVelocity.x == 0.0f && m_parentCharacter.m_splinePhysics.m_downCollision;
     }
 }

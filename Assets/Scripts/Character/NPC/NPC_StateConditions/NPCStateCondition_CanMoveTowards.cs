@@ -13,8 +13,8 @@ public class NPCStateCondition_CanMoveTowards : NPC_StateCondition
     {
         int pathCount = p_character.m_path.Count;
 
-        if (p_character.m_characterCustomPhysics.m_currentSpline == p_character.m_targetCharacter.m_characterCustomPhysics.m_currentSpline ||
-           (pathCount > 0 && p_character.m_path[pathCount - 1] == p_character.m_targetCharacter.m_characterCustomPhysics.m_currentSpline)) //True when on same path or final destination is the current target spline
+        if (p_character.m_characterSplinePhysics.m_currentSpline == p_character.m_targetCharacter.m_characterSplinePhysics.m_currentSpline ||
+           (pathCount > 0 && p_character.m_path[pathCount - 1] == p_character.m_targetCharacter.m_characterSplinePhysics.m_currentSpline)) //True when on same path or final destination is the current target spline
             return true;
 
         return false;

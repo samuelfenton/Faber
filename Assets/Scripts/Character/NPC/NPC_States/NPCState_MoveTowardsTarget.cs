@@ -9,7 +9,7 @@ public class NPCState_MoveTowardsTarget : NPC_State
     //-------------------
     public override void StateStart()
     {
-        m_parentNPC.m_path = PathfindingController.GetPath(m_parentNPC, m_parentNPC.m_targetCharacter.m_characterCustomPhysics.m_currentSpline);
+        m_parentNPC.m_path = PathfindingController.GetPath(m_parentNPC, m_parentNPC.m_targetCharacter.m_characterSplinePhysics.m_currentSpline);
     }
 
     //-------------------
@@ -19,7 +19,7 @@ public class NPCState_MoveTowardsTarget : NPC_State
     //-------------------
     public override bool UpdateState()
     {
-        Navigation_Spline currentSpline = m_parentNPC.m_characterCustomPhysics.m_currentSpline;
+        Navigation_Spline currentSpline = m_parentNPC.m_characterSplinePhysics.m_currentSpline;
         float desiredPecent = 0.0f;
 
         //Check if at end of path
@@ -30,7 +30,7 @@ public class NPCState_MoveTowardsTarget : NPC_State
 
         if (m_parentNPC.m_path.Count == 0)//On same spline as target
         {
-            desiredPecent = m_parentNPC.m_targetCharacter.m_characterCustomPhysics.m_currentSplinePercent;
+            desiredPecent = m_parentNPC.m_targetCharacter.m_characterSplinePhysics.m_currentSplinePercent;
         }
         else// Move along path
         {
@@ -41,7 +41,7 @@ public class NPCState_MoveTowardsTarget : NPC_State
         }
 
         //Move based off direction to percent
-        float directionDir = desiredPecent - m_parentNPC.m_characterCustomPhysics.m_currentSplinePercent;
+        float directionDir = desiredPecent - m_parentNPC.m_characterSplinePhysics.m_currentSplinePercent;
 
         Vector3 splineForward = currentSpline.GetForwardsDir(transform.position).normalized;
 

@@ -76,6 +76,6 @@ public class CharacterState_GroundMovement : CharacterState
     //-------------------
     public override bool IsValid()
     {
-        return m_parentCharacter.m_characterCustomPhysics.m_downCollision && (m_parentCharacter.m_localVelocity.x != 0.0f || m_parentCharacter.m_currentCharacterInput.m_horizontal != 0.0f) ;
+        return m_parentCharacter.m_characterSplinePhysics.m_downCollision && (m_parentCharacter.m_localVelocity.x != 0.0f || m_parentCharacter.m_currentCharacterInput.m_horizontal != 0.0f) ;
     }
 }

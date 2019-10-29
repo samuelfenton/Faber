@@ -17,7 +17,7 @@ public class Navigation_Trigger_Junction : Navigation_Trigger
         {
             #if UNITY_EDITOR
             Debug.Log("Junction trigger one " + name + " is missing exit spline or at least one entering spline");
-#endif
+            #endif
             BoxCollider boxCollider = GetComponent<BoxCollider>();
             if (boxCollider != null)
                 boxCollider.enabled = false;
@@ -53,35 +53,35 @@ public class Navigation_Trigger_Junction : Navigation_Trigger
         UpdateCollidier();
     }
 
-    protected override void HandleTrigger(Character p_character, TRIGGER_DIRECTION p_direction)
+    protected override void HandleTrigger(Entity p_entity, TRIGGER_DIRECTION p_direction)
     {
         if (p_direction == TRIGGER_DIRECTION.ENTERING)
         {
-            SplineInfo selectedSpline = GetEnteringSpline(p_character);
-            SwapSplines(p_character, selectedSpline.m_spline, selectedSpline.m_splinePercent);
+            SplineInfo selectedSpline = GetEnteringSpline(p_entity);
+            SwapSplines(p_entity, selectedSpline.m_spline, selectedSpline.m_splinePercent);
         }
         else
         {
-            SwapSplines(p_character, m_backwardSplineInfo.m_spline, m_backwardSplineInfo.m_splinePercent);
+            SwapSplines(p_entity, m_backwardSplineInfo.m_spline, m_backwardSplineInfo.m_splinePercent);
         }
     }
 
-    private SplineInfo GetEnteringSpline(Character p_character)
+    private SplineInfo GetEnteringSpline(Entity p_entity)
     {
-        Character.TURNING_DIR turningDir = p_character.GetDesiredTurning(this);
+        Entity.TURNING_DIR turningDir = p_entity.GetDesiredTurning(this);
 
         //Get desired turning dir
         switch (turningDir)
         {
-            case Character.TURNING_DIR.CENTER:
+            case Entity.TURNING_DIR.CENTER:
                 if (m_forwardSplineInfo.m_spline != null)
                     return m_forwardSplineInfo;
                 break;
-            case Character.TURNING_DIR.RIGHT:
+            case Entity.TURNING_DIR.RIGHT:
                 if (m_forwardRightSplineInfo.m_spline != null)
                     return m_forwardRightSplineInfo;
                 break;
-            case Character.TURNING_DIR.LEFT:
+            case Entity.TURNING_DIR.LEFT:
                 if (m_forwardLeftSplineInfo.m_spline != null)
                     return m_forwardLeftSplineInfo;
                 break;

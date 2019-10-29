@@ -23,7 +23,7 @@ public class PathfindingController : MonoBehaviour
     {
         List<Navigation_Spline> path = new List<Navigation_Spline>();
 
-        Navigation_Spline currentSpline = p_character.m_characterCustomPhysics.m_currentSpline;
+        Navigation_Spline currentSpline = p_character.m_characterSplinePhysics.m_currentSpline;
 
         //Valid inputs
         if (currentSpline == null || p_goalSpline == null || currentSpline == p_goalSpline)

@@ -55,6 +55,6 @@ public class CharacterState_Jump : CharacterState
     public override bool IsValid()
     {
         //Able to jump while jump key is pressed, grounded, and no collision above
-        return m_parentCharacter.m_currentCharacterInput.m_jump && m_parentCharacter.m_characterCustomPhysics.m_downCollision && !m_parentCharacter.m_characterCustomPhysics.m_upCollision;
+        return m_parentCharacter.m_currentCharacterInput.m_jump && m_parentCharacter.m_splinePhysics.m_downCollision && !m_parentCharacter.m_splinePhysics.m_upCollision;
     }
 }

@@ -33,12 +33,12 @@ public class CharacterState_WallJump : CharacterState
         //Movement
         Vector3 newVelocity = m_parentCharacter.m_localVelocity;
 
-        if (m_parentCharacter.m_characterCustomPhysics.m_forwardCollision)
+        if (m_parentCharacter.m_splinePhysics.m_forwardCollision)
         {
             newVelocity.y = m_wallJumpVerticalSpeed;
             newVelocity.x = -m_wallJumpHorizontalSpeed;
         }
-        else if (m_parentCharacter.m_characterCustomPhysics.m_backCollision)
+        else if (m_parentCharacter.m_splinePhysics.m_backCollision)
         {
             newVelocity.y = m_wallJumpVerticalSpeed;
             newVelocity.x = m_wallJumpHorizontalSpeed;
@@ -78,7 +78,7 @@ public class CharacterState_WallJump : CharacterState
     {
         return
         m_parentCharacter.m_currentCharacterInput.m_jump &&
-        (m_parentCharacter.m_characterCustomPhysics.m_forwardCollision || m_parentCharacter.m_characterCustomPhysics.m_backCollision) &&
-        !m_parentCharacter.m_characterCustomPhysics.m_downCollision;
+        (m_parentCharacter.m_splinePhysics.m_forwardCollision || m_parentCharacter.m_splinePhysics.m_backCollision) &&
+        !m_parentCharacter.m_splinePhysics.m_downCollision;
     }
 }

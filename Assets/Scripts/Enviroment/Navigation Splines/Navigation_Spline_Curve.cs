@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class Navigation_Spline_Curve : Navigation_Spline
 {
-    private const float DEBUG_STEPS = 18;
-    public float m_totalDegrees = 90;
+    private const int DEBUG_STEPS = 18;
+    public float m_totalDegrees = 90.0f;
 
     public MOAREnums.ROT_DIRECTION m_rotationDirection = MOAREnums.ROT_DIRECTION.CLOCKWISE;
+    public float m_height = 0.0f;
 
     private Vector3 m_startingOffset = Vector3.zero;
 
@@ -29,7 +29,7 @@ public class Navigation_Spline_Curve : Navigation_Spline
     public override Vector3 GetSplinePosition(float p_splinePercent)
     {
         Quaternion rotAngle = Quaternion.AngleAxis(m_totalDegrees * p_splinePercent * (int)m_rotationDirection, Vector3.up);
-        float heightStep = (m_splineEnd.transform.position.y - m_splineStart.transform.position.y) * p_splinePercent;
+        float heightStep = m_height * p_splinePercent;
 
         Vector3 splinePosition = transform.position + rotAngle * m_startingOffset;
         splinePosition.y = transform.position.y + heightStep;
@@ -57,7 +57,8 @@ public class Navigation_Spline_Curve : Navigation_Spline
 
         Quaternion rotAngle = Quaternion.AngleAxis(m_totalDegrees / DEBUG_STEPS * (int)m_rotationDirection, Vector3.up);
 
-        float heightStep = (m_splineEnd.transform.position.y - m_splineStart.transform.position.y) / DEBUG_STEPS;
+        float heightStep = m_height / DEBUG_STEPS;
+
         //Loop through approximating circle, every (m_totalDegrees / DEBUG_STEPS) degrees
         for (int i = 0; i < DEBUG_STEPS; i++)
         {
@@ -74,24 +75,25 @@ public class Navigation_Spline_Curve : Navigation_Spline
         Gizmos.DrawSphere(startDisplayPos, 0.2f);
     }
 
-    private void Update()
+    private void OnValidate()
     {
-        if(m_setupEndNode)
-        {
-            SetupEndNode();
-            m_setupEndNode = false;
-        }
+        SetupEndNode();
     }
 
     public void SetupEndNode()
     {
+        if (m_splineStart == null || m_splineEnd == null)//Valid setup
+            return;
+
         Vector3 startPosition = m_splineStart.transform.position - transform.position;
-        Vector3 endPosition = m_splineEnd.transform.position;
+        Vector3 endPosition = startPosition;
 
         Vector3 endOffset = Quaternion.AngleAxis(m_totalDegrees * (int)m_rotationDirection, Vector3.up) * startPosition;
 
         endPosition.x = transform.position.x + endOffset.x;
         endPosition.z = transform.position.z + endOffset.z;
+        endPosition.y = m_height;
+
         m_splineEnd.transform.position = endPosition;
     }
 #endif

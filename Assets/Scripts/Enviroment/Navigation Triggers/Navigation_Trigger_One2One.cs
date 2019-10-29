@@ -11,7 +11,7 @@ public class Navigation_Trigger_One2One : Navigation_Trigger
     {
         base.Start();
 
-        if(m_forwardSplineInfo.m_spline == null || m_backwardSplineInfo.m_spline == null)
+        if(m_forwardSplineInfo.m_spline == null && m_backwardSplineInfo.m_spline == null)
         {
             //Debug message, remove collider
             #if UNITY_EDITOR
@@ -36,15 +36,15 @@ public class Navigation_Trigger_One2One : Navigation_Trigger
         UpdateCollidier();
     }
 
-    protected override void HandleTrigger(Character p_character, TRIGGER_DIRECTION p_direction)
+    protected override void HandleTrigger(Entity p_entity, TRIGGER_DIRECTION p_direction)
     {
         if (p_direction == TRIGGER_DIRECTION.ENTERING)
         {
-            SwapSplines(p_character, m_forwardSplineInfo.m_spline, m_forwardSplineInfo.m_splinePercent);
+            SwapSplines(p_entity, m_forwardSplineInfo.m_spline, m_forwardSplineInfo.m_splinePercent);
         }
         else
         {
-            SwapSplines(p_character, m_backwardSplineInfo.m_spline, m_backwardSplineInfo.m_splinePercent);
+            SwapSplines(p_entity, m_backwardSplineInfo.m_spline, m_backwardSplineInfo.m_splinePercent);
         }
     }
 

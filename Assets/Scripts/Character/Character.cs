@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterCustomPhysics))]
-[RequireComponent(typeof(CharacterStateMachine))]
-public class Character : MonoBehaviour
+public class Character : Entity
 {
-    public enum TURNING_DIR {CENTER, LEFT, RIGHT }
-
     [HideInInspector]
-    public CharacterCustomPhysics m_characterCustomPhysics = null;
+    public Character_SplinePhysics m_characterSplinePhysics = null;
     [HideInInspector]
     public CharacterStateMachine m_characterStateMachine = null;
     [HideInInspector]
@@ -52,26 +48,23 @@ public class Character : MonoBehaviour
     [SerializeField]
     private float m_currentHealth = 10.0f;
 
-    public Vector3 m_localVelocity = Vector3.zero;
-
     protected CharacterInput m_characterInput = null;
     public CharacterInput.InputState m_currentCharacterInput;
 
     protected CharacterInventory m_characterInventory = null;
 
-    [SerializeField]
-    private float m_destructionTime = 1.0f;
-
     //-------------------
     //Character setup
     //  Ensure all need componets are attached, and get initilised if needed
     //-------------------
-    protected virtual void Start()
+    protected override void Start()
     {
+        base.Start();
+
         //Get references
         m_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 
-        m_characterCustomPhysics = GetComponent<CharacterCustomPhysics>();
+        m_characterSplinePhysics = (Character_SplinePhysics)m_splinePhysics;
         m_characterStateMachine = GetComponent<CharacterStateMachine>();
         m_characterAnimationController = GetComponentInChildren<CharacterAnimationController>();
         m_characterInventory = GetComponent<CharacterInventory>();
@@ -113,7 +106,7 @@ public class Character : MonoBehaviour
         m_localVelocity.y += PhysicsController.m_gravity * Time.deltaTime;
 
         //Stop colliding with objects
-        m_characterCustomPhysics.UpdatePhysics();
+        m_characterSplinePhysics.UpdatePhysics();
 
         //Setup rotation on game model, completly aesthetic based
         if (m_localVelocity.x > 0.1f)
@@ -143,18 +136,12 @@ public class Character : MonoBehaviour
     //-------------------
     public void OnDeath()
     {
-        m_weapon.DropWeapon();
-
-        StartCoroutine(DestroyObject());
+        DestroyEntity();
     }
 
-    //-------------------
-    //Apply delay for character destruction to allow after death effects
-    //-------------------
-    private IEnumerator DestroyObject()
+    protected override void EntityDestroyed()
     {
-        yield return new WaitForSeconds(m_destructionTime);
-        Destroy(gameObject);
+        m_weapon.DropWeapon();
     }
 
     //-------------------
@@ -168,18 +155,6 @@ public class Character : MonoBehaviour
 
         if (!IsAlive())
             OnDeath();
-    }
-
-    //-------------------
-    //Get turning direction for junction navigation, based off current input
-    //
-    //Param p_trigger: junction character will pass through
-    //
-    //Return TURNING_DIR: Path character will desire to take
-    //-------------------
-    public virtual TURNING_DIR GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
-    {
-        return TURNING_DIR.CENTER;
     }
 
     //-------------------

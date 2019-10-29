@@ -918,7 +918,6 @@ GameObject:
   - component: {fileID: 136501002249295764}
   - component: {fileID: 54483170737885112}
   - component: {fileID: 114488052499838860}
-  - component: {fileID: 1229247551941344078}
   - component: {fileID: 5052371464371711436}
   - component: {fileID: 5562677752453028297}
   - component: {fileID: 114222748025272242}
@@ -988,7 +987,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5ce36fdb713a75478da7c3624fccb43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_characterCustomPhysics: {fileID: 114222748025272242}
+  m_localVelocity: {x: 0, y: 0, z: 0}
+  m_splinePhysics: {fileID: 0}
+  m_characterSplinePhysics: {fileID: 0}
   m_characterStateMachine: {fileID: 0}
   m_characterAnimationController: {fileID: 0}
   m_gameController: {fileID: 0}
@@ -1006,20 +1007,6 @@ MonoBehaviour:
   m_currentAttackType: 0
   m_maxHealth: 10
   m_currentHealth: 10
-  m_localVelocity: {x: 0, y: 0, z: 0}
-  m_destructionTime: 1
---- !u!114 &1229247551941344078
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1812822953487848}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e548c6cd64c9da41b93a60df31f821c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &5052371464371711436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1058,8 +1045,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc4e21cd721a2bb43ac1e201def8c337, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_gravity: 0
   m_currentSpline: {fileID: 0}
-  m_currentSplinePercent: 0.341
+  m_currentSplinePercent: 0.644
   m_upCollision: 0
   m_downCollision: 0
   m_forwardCollision: 0

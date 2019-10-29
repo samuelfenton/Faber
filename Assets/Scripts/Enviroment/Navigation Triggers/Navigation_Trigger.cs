@@ -22,6 +22,9 @@ public class Navigation_Trigger : MonoBehaviour
     [HideInInspector]
     public Dictionary<Collider, TRIGGER_DIRECTION> m_activeColliders = new Dictionary<Collider, TRIGGER_DIRECTION>();
 
+    /// <summary>
+    /// Setup colision plane
+    /// </summary>
     protected virtual void Start()
     {
         m_globalEntranceVector = transform.forward;
@@ -34,15 +37,22 @@ public class Navigation_Trigger : MonoBehaviour
         m_adjacentSplines = new List<Navigation_Spline>(); //Clear due to running in editor
     }
 
+    /// <summary>
+    /// Character is moving through the collider itself
+    /// Determine exact moment of moving through using plane formula
+    /// ax + by + cz + d where a,b,c,d are determiened from the plane equation
+    /// 
+    /// Change behaviour based on entering/exiting
+    /// </summary>
+    /// <param name="p_other">Collider of character</param>
     protected void OnTriggerStay(Collider p_other)
     {
         //Compare dot products of character and entrance vector to see if character is entering or leaving
-        Character collidingCharacter = p_other.GetComponent<Character>();
-        if (collidingCharacter != null)
+        Entity collidingEntity = p_other.GetComponent<Entity>();
+        if (collidingEntity != null)
         {
             //Determine what side of the plane the character is
-            // Using the equation ax + by + cz + d where a,b,c,d are determiened from the plane equation
-            Vector3 characterPosition = collidingCharacter.transform.position;
+            Vector3 characterPosition = collidingEntity.transform.position;
             float expandedDot = m_planeEquation.x * characterPosition.x + m_planeEquation.y * characterPosition.y + m_planeEquation.z * characterPosition.z + m_planeEquation.w;
 
             TRIGGER_DIRECTION triggerDirection = expandedDot >= 0.0f ? TRIGGER_DIRECTION.ENTERING : TRIGGER_DIRECTION.EXITING;
@@ -52,17 +62,21 @@ public class Navigation_Trigger : MonoBehaviour
                 if(m_activeColliders[p_other] != triggerDirection) //Updating dir
                 {
                     m_activeColliders[p_other] = triggerDirection;
-                    HandleTrigger(collidingCharacter, triggerDirection);
+                    HandleTrigger(collidingEntity, triggerDirection);
                 }
             }
             else//New entry
             {
                 m_activeColliders.Add(p_other, triggerDirection);
-                HandleTrigger(collidingCharacter, triggerDirection);
+                HandleTrigger(collidingEntity, triggerDirection);
             }
         }
     }
 
+    /// <summary>
+    /// Chaarcter has left collider, dont worry about it any more
+    /// </summary>
+    /// <param name="p_other">Collider of character</param>
     protected void OnTriggerExit(Collider p_other)
     {
         if (m_activeColliders.ContainsKey(p_other))
@@ -70,14 +84,14 @@ public class Navigation_Trigger : MonoBehaviour
     }
 
 
-    protected void SwapSplines(Character p_character, Navigation_Spline p_newSpline, float p_newSplinePercent)
+    protected void SwapSplines(Entity p_entity, Navigation_Spline p_newSpline, float p_newSplinePercent)
     {
-        p_character.m_characterCustomPhysics.m_currentSpline = p_newSpline;
-        p_character.m_characterCustomPhysics.m_currentSplinePercent = p_newSplinePercent;
+        p_entity.m_splinePhysics.m_currentSpline = p_newSpline;
+        p_entity.m_splinePhysics.m_currentSplinePercent = p_newSplinePercent;
     }
 
     public enum TRIGGER_DIRECTION {ENTERING, EXITING }
-    protected virtual void HandleTrigger(Character p_character, TRIGGER_DIRECTION p_direction)
+    protected virtual void HandleTrigger(Entity p_entity, TRIGGER_DIRECTION p_direction)
     {
 
     }
