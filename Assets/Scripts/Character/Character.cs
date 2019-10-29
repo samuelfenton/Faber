@@ -5,14 +5,9 @@ using UnityEngine;
 public class Character : Entity
 {
     [HideInInspector]
-    public Character_SplinePhysics m_characterSplinePhysics = null;
-    [HideInInspector]
-    public CharacterStateMachine m_characterStateMachine = null;
-    [HideInInspector]
     public CharacterAnimationController m_characterAnimationController = null;
 
     [Header("Basic Character Varibles")]
-    [Tooltip("Set in inspector")]
     public GameController m_gameController = null;
 
     public GameObject m_characterModel = null;
@@ -48,9 +43,6 @@ public class Character : Entity
     [SerializeField]
     private float m_currentHealth = 10.0f;
 
-    protected CharacterInput m_characterInput = null;
-    public CharacterInput.InputState m_currentCharacterInput;
-
     protected CharacterInventory m_characterInventory = null;
 
     //-------------------
@@ -64,30 +56,20 @@ public class Character : Entity
         //Get references
         m_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 
-        m_characterSplinePhysics = (Character_SplinePhysics)m_splinePhysics;
-        m_characterStateMachine = GetComponent<CharacterStateMachine>();
         m_characterAnimationController = GetComponentInChildren<CharacterAnimationController>();
         m_characterInventory = GetComponent<CharacterInventory>();
-        m_characterInput = GetComponent<CharacterInput>();
 
-        m_currentCharacterInput = new CharacterInput.InputState();
-
-        //Init
-        if (m_characterStateMachine != null)
-            m_characterStateMachine.InitStateMachine();//Run first as animation depends on states being created
         if(m_characterAnimationController!=null)
             m_characterAnimationController.InitAnimationController();
         if (m_characterInventory != null)
             m_characterInventory.InitInventory();//Least importance as has no dependances
 
-        if (m_characterStateMachine != null)
-            m_characterStateMachine.StartStateMachine();//Run intial state
         //Secondary references
         m_weapon = GetComponentInChildren<Weapon>();
 
         if(m_weapon != null)
         {
-            m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.WEAPON_SLOT, (float)m_weapon.m_animationIndex);
+            m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.WEAPON_SLOT, m_weapon.m_animationIndex);
             m_weapon.m_parentCharacter = this;
         }
 
@@ -98,15 +80,9 @@ public class Character : Entity
     //Character update
     //  Get input, apply physics, update character state machine
     //-------------------
-    protected virtual void Update()
+    protected override void Update()
     {
-        m_currentCharacterInput = m_characterInput.GetInputState();
-
-        //Apply Velocity
-        m_localVelocity.y += PhysicsController.m_gravity * Time.deltaTime;
-
-        //Stop colliding with objects
-        m_characterSplinePhysics.UpdatePhysics();
+        base.Update();
 
         //Setup rotation on game model, completly aesthetic based
         if (m_localVelocity.x > 0.1f)
@@ -117,8 +93,6 @@ public class Character : Entity
         {
             m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
         }
-
-        m_characterStateMachine.UpdateStateMachine();
     }
 
     //-------------------
@@ -168,5 +142,23 @@ public class Character : Entity
             m_weapon.EnableWeaponCollisions();
         else
             m_weapon.DisableWeaponCollisions();
+    }
+
+    /// <summary>
+    /// Apply friction to a charcter till it stops
+    /// </summary>
+    public void ApplyFriction()
+    {
+        Vector3 newVelocity = m_localVelocity;
+
+        float deltaSpeed = m_groundedHorizontalDeacceleration * Time.deltaTime;
+        if (deltaSpeed > Mathf.Abs(newVelocity.x))//Close enough to stopping this frame
+            newVelocity.x = 0.0f;
+        else
+            newVelocity.x += newVelocity.x < 0 ? deltaSpeed : -deltaSpeed;//Still have high velocity, just slow down
+
+        m_localVelocity = newVelocity;
+
+        m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.MOVEMENT_SPEED, Mathf.Abs(newVelocity.x / m_groundedHorizontalSpeedMax));
     }
 }

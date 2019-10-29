@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPCState_SingleAttack : NPC_State
+public class PlayerState_Jump : Player_State
 {
+    private float m_jumpSpeed = 10.0f;
+
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     public override void StateInit()
     {
-
+        base.StateInit();
+        m_jumpSpeed = m_parentCharacter.m_jumpSpeed;
     }
 
     /// <summary>
@@ -17,7 +20,11 @@ public class NPCState_SingleAttack : NPC_State
     /// </summary>
     public override void StateStart()
     {
-        m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, true);
+        Vector3 newVelocity = m_parentCharacter.m_localVelocity;
+        newVelocity.y = m_jumpSpeed;
+        m_parentCharacter.m_localVelocity = newVelocity;
+
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.JUMP, true);
     }
 
     /// <summary>
@@ -26,14 +33,7 @@ public class NPCState_SingleAttack : NPC_State
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
     public override bool UpdateState()
     {
-        m_parentCharacter.ApplyFriction();
-
-        if (m_parentNPC.m_characterAnimationController.m_canCombo || m_parentNPC.m_characterAnimationController.EndOfAnimation())
-        {
-            return true;
-        }
-
-        return false;
+        return !m_characterAnimationController.EndOfAnimation();
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public class NPCState_SingleAttack : NPC_State
     /// </summary>
     public override void StateEnd()
     {
-        m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, false);
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.JUMP, false);
     }
 
     /// <summary>
@@ -50,6 +50,9 @@ public class NPCState_SingleAttack : NPC_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return CloseEnough();
+        //Able to jump while jump key is pressed, grounded, and no collision above
+        return m_parentPlayer.m_input.GetKeyBool(Input.INPUT_KEY.JUMP)
+            && m_parentCharacter.m_splinePhysics.m_downCollision && 
+            !m_parentCharacter.m_splinePhysics.m_upCollision;
     }
 }

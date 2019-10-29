@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character_NPC : Character
+public class NPC_Character : Character
 {
     [Header("NPC Logic")]
     public List<Navigation_Spline> m_path = new List<Navigation_Spline>();
@@ -23,8 +23,7 @@ public class Character_NPC : Character
 
         m_NPCStateMachine = GetComponent<NPC_StateMachine>();
 
-        m_NPCStateMachine.InitStateMachine(this);
-        m_NPCStateMachine.InitStates();
+        m_NPCStateMachine.InitStateMachine();
         m_NPCStateMachine.StartStateMachine();
     }
 
@@ -74,7 +73,7 @@ public class Character_NPC : Character
 
         if(Vector3.Dot(Vector3.Normalize(m_targetCharacter.transform.position - transform.position), transform.forward) < 0)//Should I turn to face?
         {
-            Vector3 desiredForwards = m_characterSplinePhysics.m_currentSpline.GetForwardsDir(transform.position);
+            Vector3 desiredForwards = m_splinePhysics.m_currentSpline.GetForwardsDir(transform.position);
             float relativeDot = Vector3.Dot(desiredForwards, transform.forward);
             if (relativeDot > 0)
             {

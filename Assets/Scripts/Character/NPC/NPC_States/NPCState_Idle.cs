@@ -4,29 +4,45 @@ using UnityEngine;
 
 public class NPCState_Idle : NPC_State
 {
-    //-------------------
-    //When swapping to this state, this is called.
-    //-------------------
+    /// <summary>
+    /// Initilse the state, runs only once at start
+    /// </summary>
+    public override void StateInit()
+    {
+
+    }
+
+    /// <summary>
+    /// When swapping to this state, this is called.
+    /// </summary>
     public override void StateStart()
     {
 
     }
 
-    //-------------------
-    //State update, perform any actions for the given state
-    //
-    //Return bool: Has this state been completed, e.g. Attack has completed, idle would always return true 
-    //-------------------
+    /// <summary>
+    /// State update, perform any actions for the given state
+    /// </summary>
+    /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
     public override bool UpdateState()
     {
         return true;
     }
 
-    //-------------------
-    //When swapping to a new state, this is called.
-    //-------------------
+    /// <summary>
+    /// When state has completed, this is called
+    /// </summary>
     public override void StateEnd()
     {
 
+    }
+
+    /// <summary>
+    /// Is this currently a valid state
+    /// </summary>
+    /// <returns>True when valid, e.g. Death requires players to have no health</returns>
+    public override bool IsValid()
+    {
+        return false;
     }
 }

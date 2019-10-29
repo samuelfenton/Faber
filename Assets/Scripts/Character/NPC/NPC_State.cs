@@ -2,91 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPC_State : MonoBehaviour
+public class NPC_State : State
 {
-    public List<NPC_State> m_nextStates = new List<NPC_State>();
+    protected NPC_StateMachine m_NPCStateMachine = null;
+    protected NPC_Character m_parentNPC = null;
 
-    public List<NPC_StateCondition> m_NPCStateConditions = new List<NPC_StateCondition>();
-
-    protected NPC_StateMachine m_parentStateMachine = null;
-    protected Character_NPC m_parentNPC = null;
-    protected CharacterInput_NPC m_NPCInput = null;
-
-    protected CharacterAnimationController m_characterAnimationController = null;
-
-    //-------------------
-    //Initilse the state, runs only once at start
-    //-------------------
-    public virtual void StateInit(Character_NPC p_parentNPC)
+    /// <summary>
+    /// Initilse the state, runs only once at start
+    /// </summary>
+    public override void StateInit()
     {
-        m_parentStateMachine = GetComponent<NPC_StateMachine>();
-        m_parentNPC = p_parentNPC;
+        base.StateInit();
 
-        m_NPCInput = GetComponent<CharacterInput_NPC>();
-
-        m_characterAnimationController = GetComponentInChildren<CharacterAnimationController>();
+        m_NPCStateMachine = (NPC_StateMachine)m_parentStateMachine;
+        m_parentNPC = (NPC_Character)m_parentCharacter;
     }
 
-    //-------------------
-    //When swapping to this state, this is called.
-    //-------------------
-    public virtual void StateStart()
+    /// <summary>
+    /// Is the character close enough based off current speed and slowdown rate
+    ///     Kinematic equation
+    ///     Vf^2 = Vi^2 + 2ad
+    ///     d = -Vi^2 / 2a
+    ///     As a is negitive -> d = Vi^2 / 2a
+    /// </summary>
+    /// <returns></returns>
+    protected bool CloseEnough()
     {
+        float stoppingDistance = m_parentCharacter.m_localVelocity.x == 0.0f ? 0 : Mathf.Pow(m_parentCharacter.m_localVelocity.x, 2) / (2 * m_parentCharacter.m_groundedHorizontalDeacceleration); //Close enough based off time to slow down
 
-    }
-
-    //-------------------
-    //State update, perform any actions for the given state
-    //
-    //Return bool: Has this state been completed, e.g. Attack has completed, idle would always return true 
-    //-------------------
-    public virtual bool UpdateState()
-    {
-        return true;
-    }
-
-    //-------------------
-    //When swapping to a new state, this is called.
-    //-------------------
-    public virtual void StateEnd()
-    {
-
-    }
-
-    //-------------------
-    //Do all of this states preconditions return true
-    //
-    //Return bool: Is this valid, e.g. Death requires players to have no health
-    //-------------------
-    public virtual bool IsValid()
-    {
-        foreach (NPC_StateCondition NPCStateCondition in m_NPCStateConditions)
-        {
-            if (!NPCStateCondition.Execute(m_parentNPC))
-                return false;
-        }
-        return true;
-    }
-
-    //-------------------
-    //Adding nexrt states to move to
-    //
-    //param 
-    //      p_NPCState: next possible state
-    //-------------------
-    public void AddNextState(NPC_State p_NPCState)
-    {
-        m_nextStates.Add(p_NPCState);
-    }
-
-    //-------------------
-    //Adding additional conditions to a given state
-    //
-    //param 
-    //      p_NPCStateCondition: Condition to add to check against
-    //-------------------
-    public void AddCondition(NPC_StateCondition p_NPCStateCondition)
-    {
-        m_NPCStateConditions.Add(p_NPCStateCondition);
+        return (m_parentNPC.m_targetCharacter != null && MOARMaths.SqrDistance(m_parentCharacter.transform.position, m_parentNPC.m_targetCharacter.transform.position) <= Mathf.Pow(m_parentNPC.m_attackingDistance + stoppingDistance, 2));
     }
 }

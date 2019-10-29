@@ -2,54 +2,55 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPCState_SingleAttack : NPC_State
+public class State : MonoBehaviour
 {
+    protected StateMachine m_parentStateMachine = null;
+    protected Character m_parentCharacter = null;
+
+    protected CharacterAnimationController m_characterAnimationController = null;
+
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
-    public override void StateInit()
+    public virtual void StateInit()
     {
+        m_parentStateMachine = GetComponent<StateMachine>();
+        m_parentCharacter = GetComponent<Character>();
 
+        m_characterAnimationController = GetComponentInChildren<CharacterAnimationController>();
     }
 
     /// <summary>
     /// When swapping to this state, this is called.
     /// </summary>
-    public override void StateStart()
+    public virtual void StateStart()
     {
-        m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, true);
+
     }
 
     /// <summary>
     /// State update, perform any actions for the given state
     /// </summary>
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
-    public override bool UpdateState()
+    public virtual bool UpdateState()
     {
-        m_parentCharacter.ApplyFriction();
-
-        if (m_parentNPC.m_characterAnimationController.m_canCombo || m_parentNPC.m_characterAnimationController.EndOfAnimation())
-        {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /// <summary>
     /// When state has completed, this is called
     /// </summary>
-    public override void StateEnd()
+    public virtual void StateEnd()
     {
-        m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, false);
+
     }
 
     /// <summary>
     /// Is this currently a valid state
     /// </summary>
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
-    public override bool IsValid()
+    public virtual bool IsValid()
     {
-        return CloseEnough();
+        return false;
     }
 }

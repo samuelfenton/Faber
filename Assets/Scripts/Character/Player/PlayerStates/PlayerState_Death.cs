@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPCState_SingleAttack : NPC_State
+public class PlayerState_Death : Player_State
 {
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     public override void StateInit()
     {
-
+        base.StateInit();
     }
 
     /// <summary>
@@ -17,7 +17,7 @@ public class NPCState_SingleAttack : NPC_State
     /// </summary>
     public override void StateStart()
     {
-        m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, true);
+
     }
 
     /// <summary>
@@ -26,14 +26,7 @@ public class NPCState_SingleAttack : NPC_State
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
     public override bool UpdateState()
     {
-        m_parentCharacter.ApplyFriction();
-
-        if (m_parentNPC.m_characterAnimationController.m_canCombo || m_parentNPC.m_characterAnimationController.EndOfAnimation())
-        {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /// <summary>
@@ -41,7 +34,7 @@ public class NPCState_SingleAttack : NPC_State
     /// </summary>
     public override void StateEnd()
     {
-        m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, false);
+
     }
 
     /// <summary>
@@ -50,6 +43,6 @@ public class NPCState_SingleAttack : NPC_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return CloseEnough();
+        return !m_parentCharacter.IsAlive();
     }
 }

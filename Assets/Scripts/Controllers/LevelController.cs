@@ -10,7 +10,7 @@ public class LevelController : MonoBehaviour
     //-------------------
     void Update ()
     {
-		if(Input.GetKeyDown(KeyCode.L))
+		if(UnityEngine.Input.GetKeyDown(KeyCode.L))
         {
             if (SceneManager.GetActiveScene().buildIndex == SceneManager.sceneCount)
                 SceneManager.LoadScene(0);

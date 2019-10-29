@@ -10,8 +10,8 @@ public class SplinePhysics : MonoBehaviour
     public bool m_gravity = false;
 
     [Header("Spline settings")]
-    [Range(0, 1)]
     public Navigation_Spline m_currentSpline = null;
+    [Range(0, 1)]
     public float m_currentSplinePercent = 0.0f;
 
     [HideInInspector]
@@ -40,7 +40,6 @@ public class SplinePhysics : MonoBehaviour
 #if UNITY_EDITOR
             Debug.Log(name + " has no entity attached, considering removing the spline physcis, or add one");
 #endif
-            Destroy(this);
             return;
         }
 
@@ -49,7 +48,6 @@ public class SplinePhysics : MonoBehaviour
 #if UNITY_EDITOR
             Debug.Log(name + " does not have a spline set in spline physics");
 #endif
-            Destroy(this);
             return;
         }
     }

@@ -7,6 +7,7 @@ public class Entity : MonoBehaviour
     public enum TURNING_DIR { CENTER, LEFT, RIGHT }
 
     public Vector3 m_localVelocity = Vector3.zero;
+    public bool m_gravity = false;
 
     [SerializeField]
     private const float DESTRUCTION_TIME = 1.0f;
@@ -27,6 +28,17 @@ public class Entity : MonoBehaviour
             return;
         }
     }
+
+    protected virtual void Update()
+    {
+        //Apply Velocity
+        if(m_gravity)
+            m_localVelocity.y += PhysicsController.m_gravity * Time.deltaTime;
+
+        //Stop colliding with objects
+        m_splinePhysics.UpdatePhysics();
+    }
+
     /// <summary>
     /// Get turning direction for junction navigation, based off current input
     /// </summary>
