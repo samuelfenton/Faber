@@ -50,8 +50,10 @@ public class PlayerState_Jump : Player_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
+        Debug.Log((m_parentPlayer.m_input.GetKey(Input.INPUT_KEY.JUMP) == Input.INPUT_STATE.DOWNED) + " " + m_parentCharacter.m_splinePhysics.m_downCollision + " " + !m_parentCharacter.m_splinePhysics.m_upCollision);
+
         //Able to jump while jump key is pressed, grounded, and no collision above
-        return m_parentPlayer.m_input.GetKeyBool(Input.INPUT_KEY.JUMP)
+        return m_parentPlayer.m_input.GetKey(Input.INPUT_KEY.JUMP) == Input.INPUT_STATE.DOWNED
             && m_parentCharacter.m_splinePhysics.m_downCollision && 
             !m_parentCharacter.m_splinePhysics.m_upCollision;
     }

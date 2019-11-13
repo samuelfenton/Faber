@@ -76,9 +76,6 @@ public class SplinePhysics : MonoBehaviour
     //-------------------
     public void UpdatePhysics()
     {
-        //Gravity
-        m_parentEntity.m_localVelocity.y += GRAVITY * Time.deltaTime;
-
         UpdateCollisions();
 
         //Setup forwards direction
@@ -94,35 +91,28 @@ public class SplinePhysics : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(-desiredForwards, Vector3.up);
             m_currentSplinePercent += m_currentSpline.GetSplinePercent(-m_parentEntity.m_localVelocity.x * Time.deltaTime);
         }
-
         //Lock spline percent between close enough to 0 - 1
         m_currentSplinePercent = Mathf.Clamp(m_currentSplinePercent, -0.01f, 1.01f);
 
-        Vector3 splinePosition = m_currentSpline.GetSplinePosition(m_currentSplinePercent);
+        //Setup transform
+        Vector3 newPosition = m_currentSpline.GetSplinePosition(m_currentSplinePercent); //Spline position with no y considered
+        newPosition.y = transform.position.y + m_parentEntity.m_localVelocity.y * Time.deltaTime; //Adding in y value
 
-        //Check for ground collisions when falling
-        Vector3 position = transform.position;
-
-        position.x = splinePosition.x;
-        position.z = splinePosition.z;
-        position.y += m_parentEntity.m_localVelocity.y * Time.deltaTime;
-
-        float distanceToGround = transform.position.y - splinePosition.y;
+        float distanceToGround = GetSplineDistance();
 
         //Override down collision dependant on spline collision
-        m_downCollision = distanceToGround < GROUND_DETECTION;
+        m_downCollision = m_downCollision || distanceToGround < GROUND_DETECTION;
 
-        if (m_parentEntity.m_localVelocity.y <= 0 && distanceToGround < 0)
+        if (m_parentEntity.m_localVelocity.y <= 0 && distanceToGround <= 0)
         {
             //Set y-pos
-            position.y = splinePosition.y;
+            newPosition.y = transform.position.y - distanceToGround;
 
             //Grounded change y-component of velocity
             m_parentEntity.m_localVelocity.y = 0.0f;
         }
 
-        transform.position = position;
-
+        transform.position = newPosition;
     }
 
     //-------------------
@@ -214,5 +204,16 @@ public class SplinePhysics : MonoBehaviour
             return true; //Early breakout
 
         return false;
+    }
+
+    /// <summary>
+    /// Get the distance between an entity and the spline its currently on
+    /// </summary>
+    /// <returns>Distance to spline, negative means is below the spline</returns>
+    public float GetSplineDistance()
+    {
+        Vector3 splinePosition = m_currentSpline.GetSplinePosition(m_currentSplinePercent);
+
+        return transform.position.y - splinePosition.y;
     }
 }

@@ -12,9 +12,9 @@ public class Input : MonoBehaviour
     private string[] m_keyStrings = new string[(int)INPUT_KEY.KEY_COUNT];
     private string[] m_axisStrings = new string[(int)INPUT_AXIS.AXIS_COUNT];
 
-    [HideInInspector]
+    //[HideInInspector]
     public INPUT_STATE[] m_keyVal = new INPUT_STATE[(int)INPUT_KEY.KEY_COUNT];
-    [HideInInspector]
+    //[HideInInspector]
     public float[] m_axisVal = new float[(int)INPUT_AXIS.AXIS_COUNT];
 
     private void Start()

@@ -4,16 +4,5 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    //Going to just leave this here for future use
-   
-    //-------------------
-    //Function Definition
-    //
-    //Param float:
-    //      int:
-    //
-    //Return bool:
-    //-------------------
     public LevelController m_levelController = null;
-    public PlayerInputController m_inputController = null;
 }

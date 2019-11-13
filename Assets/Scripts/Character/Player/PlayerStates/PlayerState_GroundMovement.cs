@@ -37,17 +37,16 @@ public class PlayerState_GroundMovement : Player_State
         //Movement
         Vector3 newVelocity = m_parentCharacter.m_localVelocity;
 
-        if(m_parentPlayer.m_input.GetAxisBool(Input.INPUT_AXIS.HORIZONTAL)) //No input, slowdown
-        {
-            m_parentCharacter.ApplyFriction();
-        }
-        else//Input so normal movemnt
+        if(m_parentPlayer.m_input.GetAxisBool(Input.INPUT_AXIS.HORIZONTAL))//Input so normal movemnt
         {
             newVelocity.x += m_horizontalAcceleration * m_parentPlayer.m_input.GetAxis(Input.INPUT_AXIS.HORIZONTAL) * Time.deltaTime;
             newVelocity.x = Mathf.Clamp(newVelocity.x, -m_horizontalSpeedMax, m_horizontalSpeedMax);
+            m_parentCharacter.m_localVelocity = newVelocity;
         }
-
-        m_parentCharacter.m_localVelocity = newVelocity;
+        else //No input, slowdown
+        {
+            m_parentCharacter.ApplyFriction();
+        }
 
         m_parentCharacter.m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.MOVEMENT_SPEED, Mathf.Abs(newVelocity.x/ m_horizontalSpeedMax));
 

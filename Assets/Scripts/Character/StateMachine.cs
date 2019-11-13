@@ -67,7 +67,7 @@ public class StateMachine : MonoBehaviour
             //Find next valid state
             foreach (State characterState in m_states)
             {
-                if(characterState.IsValid())
+                if(characterState != m_currentState && characterState.IsValid())//Dont reuse state if another is valid
                 {
                     SwapState(characterState);
                     return; //Early break out

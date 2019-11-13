@@ -22,6 +22,7 @@ public class Character : Entity
 
     [Header("Jumping Stats")]
     public float m_jumpSpeed = 10.0f;
+    public float m_landingDistance = 1.0f;
 
     [Header("In Air Stats")]
     public float m_inAirHorizontalAcceleration = 0.5f;

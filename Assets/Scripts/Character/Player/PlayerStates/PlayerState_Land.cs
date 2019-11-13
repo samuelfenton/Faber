@@ -43,6 +43,8 @@ public class PlayerState_Land : Player_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_parentCharacter.m_splinePhysics.m_downCollision && m_parentCharacter.m_localVelocity.y < 0.0f;
+        return m_parentCharacter.m_splinePhysics.GetSplineDistance() < m_parentCharacter.m_landingDistance && !
+            m_parentCharacter.m_splinePhysics.m_downCollision && 
+            m_parentCharacter.m_localVelocity.y <= 0.0f;
     }
 }
