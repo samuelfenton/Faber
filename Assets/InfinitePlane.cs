@@ -5,7 +5,7 @@ using UnityEngine;
 public class InfinitePlane : MonoBehaviour
 {
     public Material m_material = null;
-    private const float LARGE_NUMBER = 10000;
+    private const float LARGE_NUMBER = 100;
 
     private void Start()
     {

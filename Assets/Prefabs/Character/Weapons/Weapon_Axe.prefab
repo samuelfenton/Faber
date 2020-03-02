@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8528659520920165523}
   - component: {fileID: 2081794835676998517}
   - component: {fileID: 3819160387068774244}
-  - component: {fileID: 3929924254932484526}
+  - component: {fileID: 802336853161761207}
   m_Layer: 0
   m_Name: Weapon_Axe
   m_TagString: Untagged
@@ -97,7 +97,7 @@ MonoBehaviour:
   m_weaponLightDamage: 1
   m_weaponHeavyDamage: 2
   m_parentCharacter: {fileID: 0}
---- !u!114 &3929924254932484526
+--- !u!114 &802336853161761207
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -106,14 +106,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1113675248736125742}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbd2599f90cc28c4d933597285127558, type: 3}
+  m_Script: {fileID: 11500000, guid: 5bc5db65b5ff22f42b5b86ca95839008, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VOXEL_SIZE: 0.1
+  m_voxelSize: 0.06
+  m_voxeliserType: 2
+  m_performOverFrames: 0
   m_objectWithMesh: {fileID: 3020593523081181073}
-  m_stepModifier: 5
-  m_maxVoxelCount: 10000
-  m_modelMesh: {fileID: 0}
+  m_triStepModifier: 5
+  m_delayedInitialisation: 0
+  m_saveStaticMesh: 0
 --- !u!1 &3020593523081181073
 GameObject:
   m_ObjectHideFlags: 0
@@ -179,6 +181,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0

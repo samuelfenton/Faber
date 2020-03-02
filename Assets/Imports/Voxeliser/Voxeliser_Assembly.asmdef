@@ -1,0 +1,32 @@
+{
+    "name": "Voxeliser_Assembly",
+    "references": [
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:2665a8d13d1b3f18800f46e256720795",
+        "GUID:e0cd26848372d4e5c891c569017e11f1"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.mathematics",
+            "expression": "1.1.0",
+            "define": "VOXELISER_MATHEMATICS_ENABLED"
+        },
+        {
+            "name": "com.unity.burst",
+            "expression": "1.1.2",
+            "define": "VOXELISER_BURST_ENABLED"
+        },
+        {
+            "name": "com.unity.collections",
+            "expression": "0.1.0",
+            "define": "VOXELISER_COLLECTIONS_ENABLED"
+        }
+    ]
+}
