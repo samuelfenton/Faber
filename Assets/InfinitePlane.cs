@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class InfinitePlane : MonoBehaviour
 {
+    public Color m_planeColor = Color.grey;
     public Material m_material = null;
     private const float LARGE_NUMBER = 100;
 
@@ -36,7 +37,9 @@ public class InfinitePlane : MonoBehaviour
 
         filter.sharedMesh = infiniteMesh;
 
-        renderer.material = m_material;
+        Material material = Instantiate(m_material);
+        material.color = m_planeColor;
+        renderer.material = material;
     }
 
 }
