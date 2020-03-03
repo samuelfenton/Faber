@@ -20,11 +20,20 @@ public class Pathing_Node : MonoBehaviour
     [HideInInspector]
     public Dictionary<Entity, TRIGGER_DIRECTION> m_activeColliders = new Dictionary<Entity, TRIGGER_DIRECTION>();
 
+    private BoxCollider m_boxColdier = null;
+
     /// <summary>
     /// Setup colision plane
     /// </summary>
     private void Start()
     {
+        m_boxColdier = GetComponent<BoxCollider>();
+
+        //Ensure at least one spline for forwards and backwards
+        if (m_forwardSpline == null && m_forwardRightSpline == null && m_forwardLeftSpline == null)
+            m_boxColdier.enabled = false;
+        if (m_backwardSpline == null && m_backwardRightSpline == null && m_backwardLeftSpline == null)
+            m_boxColdier.enabled = false;
     }
 
     private void Update()

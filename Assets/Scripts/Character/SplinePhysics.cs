@@ -28,9 +28,6 @@ public class SplinePhysics : MonoBehaviour
 
     protected Entity m_parentEntity = null;
 
-    /// <summary>
-    /// Initilise entity physics
-    /// </summary>
     protected virtual void Start()
     {
         m_parentEntity = GetComponent<Entity>();
@@ -56,6 +53,7 @@ public class SplinePhysics : MonoBehaviour
     /// <summary>
     /// DEV_MODE, places character on current spline based on its spline percent
     /// </summary>
+    ///
     private void OnValidate()
     {
         //Update position in scene 
@@ -77,7 +75,7 @@ public class SplinePhysics : MonoBehaviour
         UpdateCollisions();
 
         //Setup forwards direction
-        Vector3 desiredForwards = Vector3.zero;// m_currentSpline.GetForwardsDir(transform.position);
+        Vector3 desiredForwards = m_currentSpline.GetForwardDir(m_currentSplinePercent);
         float relativeDot = Vector3.Dot(desiredForwards, transform.forward);
         if (relativeDot > 0)
         {

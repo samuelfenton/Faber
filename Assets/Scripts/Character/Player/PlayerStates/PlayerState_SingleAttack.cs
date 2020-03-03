@@ -47,6 +47,6 @@ public class PlayerState_SingleAttack : Player_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_parentPlayer.m_input.GetKeyBool(Input.INPUT_KEY.ATTACK) || m_parentPlayer.m_input.GetKeyBool(Input.INPUT_KEY.ATTACK_ALT);
+        return m_parentPlayer.m_input.GetKeyBool(CustomInput.INPUT_KEY.ATTACK) || m_parentPlayer.m_input.GetKeyBool(CustomInput.INPUT_KEY.ATTACK_SECONDARY);
     }
 }

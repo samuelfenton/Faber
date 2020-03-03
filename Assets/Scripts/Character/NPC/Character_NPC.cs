@@ -5,7 +5,7 @@ using UnityEngine;
 public class NPC_Character : Character
 {
     [Header("NPC Logic")]
-    public List<Navigation_Spline> m_path = new List<Navigation_Spline>();
+    public List<Pathing_Spline> m_path = new List<Pathing_Spline>();
     public Character m_targetCharacter = null;
     public float m_attackingDistance = 0.0f;
     public float m_detectionDistance = 0.0f;
@@ -38,7 +38,7 @@ public class NPC_Character : Character
     {
         if(m_path.Count > 0)
         {
-            Navigation_Spline desiredSpline = m_path[0];
+            Pathing_Spline desiredSpline = m_path[0];
 
             if (p_node.m_forwardLeftSpline == desiredSpline)
                 return TURNING_DIR.LEFT;
@@ -57,16 +57,16 @@ public class NPC_Character : Character
 
         if(Vector3.Dot(Vector3.Normalize(m_targetCharacter.transform.position - transform.position), transform.forward) < 0)//Should I turn to face?
         {
-            //Vector3 desiredForwards = m_splinePhysics.m_currentSpline.GetForwardsDir(transform.position);
-            //float relativeDot = Vector3.Dot(desiredForwards, transform.forward);
-            //if (relativeDot > 0)
-            //{
-            //    m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-            //}
-            //else
-            //{
-            //    m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
-            //}
+            Vector3 desiredForwards = m_splinePhysics.m_currentSpline.GetForwardDir(m_splinePhysics.m_currentSplinePercent);
+            float relativeDot = Vector3.Dot(desiredForwards, transform.forward);
+            if (relativeDot > 0)
+            {
+                m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+            }
+            else
+            {
+                m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+            }
         }
     }
 }

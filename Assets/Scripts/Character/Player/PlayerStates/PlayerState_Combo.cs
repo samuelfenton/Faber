@@ -56,6 +56,6 @@ public class PlayerState_Combo : Player_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return (m_parentPlayer.m_input.GetKeyBool(Input.INPUT_KEY.ATTACK) || m_parentPlayer.m_input.GetKeyBool(Input.INPUT_KEY.ATTACK_ALT)) && m_characterAnimationController.m_canCombo;
+        return (m_parentPlayer.m_input.GetKeyBool(CustomInput.INPUT_KEY.ATTACK) || m_parentPlayer.m_input.GetKeyBool(CustomInput.INPUT_KEY.ATTACK_SECONDARY)) && m_characterAnimationController.m_canCombo;
     }
 }

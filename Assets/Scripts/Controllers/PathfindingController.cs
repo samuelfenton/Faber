@@ -19,7 +19,7 @@ public class PathfindingController : MonoBehaviour
     }
 
 
-    public static List<Pathing_Spline> GetPath(Character p_character, Navigation_Spline p_goalSpline)
+    public static List<Pathing_Spline> GetPath(Character p_character, Pathing_Spline p_goalSpline)
     {
         List<Pathing_Spline> path = new List<Pathing_Spline>();
 
@@ -60,11 +60,11 @@ public class PathfindingController : MonoBehaviour
         return path;
     }
 
-    private static Navigation_Trigger GetStartingTrigger(Navigation_Spline p_currentSpline, float p_currentPercent)
+    private static Pathing_Node GetStartingTrigger(Pathing_Spline p_currentSpline, float p_currentPercent)
     {
         if (p_currentPercent <= 0.5f)
-            return p_currentSpline.m_splineStart;
-        return p_currentSpline.m_splineEnd;
+            return p_currentSpline.m_nodeA;
+        return p_currentSpline.m_nodeB;
     }
 
     private static void AddToOpenList(PathfindingNode p_currentNode, List<PathfindingNode> p_openList, List<PathfindingNode> p_closedList)

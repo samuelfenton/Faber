@@ -7,19 +7,15 @@ public class Player_Character : Character
     [HideInInspector]
     public Player_StateMachine m_playerStateMachine = null;
 
-    public Input m_input = null;
+    public CustomInput m_input = null;
 
-    //-------------------
-    //Character setup
-    //  Ensure all need componets are attached, and get initilised if needed
-    //-------------------
     protected override void Start()
     {
         base.Start();
 
         m_playerStateMachine = GetComponent<Player_StateMachine>();
 
-        m_input = GetComponent<Input>();
+        m_input = GetComponent<CustomInput>();
 
         //Init
         if (m_playerStateMachine != null)
@@ -47,7 +43,7 @@ public class Player_Character : Character
     {
         float relativeDot = Vector3.Dot(transform.forward, p_node.transform.forward);
 
-        float verticalInput = m_input.GetAxis(Input.INPUT_AXIS.HORIZONTAL);
+        float verticalInput = m_input.GetAxis(CustomInput.INPUT_AXIS.VERTICAL);
 
         if(relativeDot >= 0)//Right is positive on vertical, left is negative
         {

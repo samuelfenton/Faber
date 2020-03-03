@@ -82,14 +82,27 @@ public class Pathing_Spline : MonoBehaviour
     }
 
     /// <summary>
-    /// Determine what percent a node is on the spline
+    /// Get the forward direction of the spline based off percent
     /// </summary>
-    /// <param name="p_node">Node to check against</param>
-    /// <returns>Will return 1 for node B or default to 0 for A or not found</returns>
-    public float GetPercentForNode(Pathing_Node p_node)
+    /// <param name="p_percent">What percent along the spline</param>
+    /// <returns>Forward Dir based off spline type and settings</returns>
+    public Vector3 GetForwardDir(float p_percent)
     {
-        return p_node == m_nodeB ? 1.0f : 0.0f;
+        p_percent = Mathf.Clamp(p_percent, 0.0f, 1.0f);
+
+        switch (m_splineType)
+        {
+            case SPLINE_TYPE.STRAIGHT:
+                return GetStraightForward(p_percent);
+            case SPLINE_TYPE.BEZIER:
+                return GetBezierForward(p_percent);
+            case SPLINE_TYPE.CIRCLE:
+                return GetCircleForward(p_percent);
+        }
+
+        return Vector3.forward;
     }
+
 
     #region Inits
 
@@ -144,44 +157,27 @@ public class Pathing_Spline : MonoBehaviour
     }
     #endregion
 
+    /// <summary>
+    /// Determine what percent a node is on the spline
+    /// </summary>
+    /// <param name="p_node">Node to check against</param>
+    /// <returns>Will return 1 for node B or default to 0 for A or not found</returns>
+    public float GetPercentForNode(Pathing_Node p_node)
+    {
+        return p_node == m_nodeB ? 1.0f : 0.0f;
+    }
+
+    /// <summary>
+    /// Given a distance calculate how far traveled percent wise
+    /// </summary>
+    /// <param name="p_distanceTravelled">Distance</param>
+    /// <returns>What percent</returns>
     public float ChangeinPercent(float p_distanceTravelled)
     {
         return p_distanceTravelled / m_splineLength;
     }
 
-#if UNITY_EDITOR
-    /// <summary>
-    /// Draw the correct line for the given spline
-    /// </summary>
-    private void OnDrawGizmos()
-    {
-        //Draw the line from A to B
-        if (m_nodeA == null || m_nodeB == null)
-            return;
-
-        //ensure data is up to date
-        InitSpline();
-
-        Gizmos.color = Color.blue;
-
-        float percentStep = 1.0f / STEPS;
-        float currentPercent = percentStep;
-
-        Vector3 previous = m_nodeA.transform.position;
-        //Loop through approximating circle, every (m_totalDegrees / DEBUG_STEPS) degrees
-        for (int i = 1; i <= STEPS; i++)
-        {
-            Vector3 next = GetPosition(currentPercent);
-
-            Gizmos.DrawLine(previous, next);
-
-            previous = next;
-            currentPercent += percentStep;
-        }
-    }
-#endif
-
-    #region Geting positions
+    #region Getting positions
     /// <summary>
     /// Get a position based off the spline and what percent
     /// </summary>
@@ -225,6 +221,44 @@ public class Pathing_Spline : MonoBehaviour
     }
     #endregion
 
+    #region Getting Forward
+    /// <summary>
+    /// Get a forward based off the spline and what percent
+    /// </summary>
+    /// <param name="p_percent">How far along spline are we?</param>
+    /// <returns>Forward based off spline calcualtions for straight line</returns>
+    private Vector3 GetStraightForward(float p_percent)
+    {
+        return m_straightDir.normalized;
+    }
+
+    /// <summary>
+    /// Get a forward based off the spline and what percent
+    /// </summary>
+    /// <param name="p_percent">How far along spline are we?</param>
+    /// <returns>Forward based off spline calcualtions for bezier curve</returns>
+    private Vector3 GetBezierForward(float p_percent)
+    {
+        Vector3 currentPos = GetCirclePosition(p_percent);
+        Vector3 offsetPos = GetCirclePosition(p_percent + 0.01f);
+        return (offsetPos - currentPos).normalized;
+    }
+
+    /// <summary>
+    /// Get a forward based off the spline and what percent
+    /// </summary>
+    /// <param name="p_percent">How far along spline are we?</param>
+    /// <returns>Forward based off spline calcualtions for circle</returns>
+    private Vector3 GetCircleForward(float p_percent)
+    {
+        Vector3 percentPos = GetCirclePosition(p_percent);
+        Vector3 desiredDir = m_circleCenter - percentPos;
+        desiredDir = new Vector3(desiredDir.z, 0.0f, -desiredDir.x);
+        return desiredDir.normalized * (m_circleDir == CIRCLE_DIR.CLOCKWISE ? 1:-1);
+    }
+    #endregion
+
+    #region Editor Specific
 #if UNITY_EDITOR
 
     /// <summary>
@@ -239,5 +273,36 @@ public class Pathing_Spline : MonoBehaviour
         //For visiblility dont be right in middle
         transform.position = GetPosition(0.3f); 
     }
+
+    /// <summary>
+    /// Draw the correct line for the given spline
+    /// </summary>
+    private void OnDrawGizmos()
+    {
+        //Draw the line from A to B
+        if (m_nodeA == null || m_nodeB == null)
+            return;
+
+        //ensure data is up to date
+        InitSpline();
+
+        Gizmos.color = Color.blue;
+
+        float percentStep = 1.0f / STEPS;
+        float currentPercent = percentStep;
+
+        Vector3 previous = m_nodeA.transform.position;
+        //Loop through approximating circle, every (m_totalDegrees / DEBUG_STEPS) degrees
+        for (int i = 1; i <= STEPS; i++)
+        {
+            Vector3 next = GetPosition(currentPercent);
+
+            Gizmos.DrawLine(previous, next);
+
+            previous = next;
+            currentPercent += percentStep;
+        }
+    }
 #endif
+    #endregion
 }

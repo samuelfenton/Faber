@@ -37,9 +37,9 @@ public class PlayerState_GroundMovement : Player_State
         //Movement
         Vector3 newVelocity = m_parentCharacter.m_localVelocity;
 
-        if(m_parentPlayer.m_input.GetAxisBool(Input.INPUT_AXIS.HORIZONTAL))//Input so normal movemnt
+        if(m_parentPlayer.m_input.GetAxisBool(CustomInput.INPUT_AXIS.HORIZONTAL))//Input so normal movemnt
         {
-            newVelocity.x += m_horizontalAcceleration * m_parentPlayer.m_input.GetAxis(Input.INPUT_AXIS.HORIZONTAL) * Time.deltaTime;
+            newVelocity.x += m_horizontalAcceleration * m_parentPlayer.m_input.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL) * Time.deltaTime;
             newVelocity.x = Mathf.Clamp(newVelocity.x, -m_horizontalSpeedMax, m_horizontalSpeedMax);
             m_parentCharacter.m_localVelocity = newVelocity;
         }
@@ -67,6 +67,6 @@ public class PlayerState_GroundMovement : Player_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_parentCharacter.m_splinePhysics.m_downCollision && (m_parentCharacter.m_localVelocity.x != 0.0f || m_parentPlayer.m_input.GetAxisBool(Input.INPUT_AXIS.HORIZONTAL));
+        return m_parentCharacter.m_splinePhysics.m_downCollision && (m_parentCharacter.m_localVelocity.x != 0.0f || m_parentPlayer.m_input.GetAxisBool(CustomInput.INPUT_AXIS.HORIZONTAL));
     }
 }

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3879580058755396583}
   - component: {fileID: 5625241742665454165}
+  - component: {fileID: 4580953749446779342}
   m_Layer: 0
   m_Name: Node
   m_TagString: Untagged
@@ -44,6 +45,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_forwardSpline: {fileID: 0}
+  m_forwardRightSpline: {fileID: 0}
+  m_forwardLeftSpline: {fileID: 0}
   m_backwardSpline: {fileID: 0}
-  m_rightSpline: {fileID: 0}
-  m_leftSpline: {fileID: 0}
+  m_backwardRightSpline: {fileID: 0}
+  m_backwardLeftSpline: {fileID: 0}
+  m_adjacentSplines: []
+--- !u!65 &4580953749446779342
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4905744926297580387}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 4, z: 0}
+  m_Center: {x: 0, y: 2, z: 0}

@@ -41,11 +41,11 @@ public class PlayerState_InAir : Player_State
         //Movement
         Vector3 newVelocity = m_parentCharacter.m_localVelocity;
 
-        newVelocity.x += m_horizontalAcceleration * m_parentPlayer.m_input.GetAxis(Input.INPUT_AXIS.HORIZONTAL) * Time.deltaTime;
+        newVelocity.x += m_horizontalAcceleration * m_parentPlayer.m_input.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL) * Time.deltaTime;
         newVelocity.x = Mathf.Clamp(newVelocity.x, -m_horizontalSpeedMax, m_horizontalSpeedMax);
 
         //Double Jump
-        if (m_doubleJump && m_parentPlayer.m_input.GetKey(Input.INPUT_KEY.JUMP) == Input.INPUT_STATE.DOWNED)
+        if (m_doubleJump && m_parentPlayer.m_input.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
         {
             m_doubleJump = false;
             newVelocity.y = m_doubleJumpSpeed;

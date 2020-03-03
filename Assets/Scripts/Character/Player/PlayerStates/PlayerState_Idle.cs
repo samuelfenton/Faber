@@ -44,6 +44,6 @@ public class PlayerState_Idle : Player_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_parentCharacter.m_localVelocity.x == 0.0f && m_parentCharacter.m_splinePhysics.m_downCollision && !m_parentPlayer.m_input.GetAxisBool(Input.INPUT_AXIS.HORIZONTAL);
+        return m_parentCharacter.m_localVelocity.x == 0.0f && m_parentCharacter.m_splinePhysics.m_downCollision && !m_parentPlayer.m_input.GetAxisBool(CustomInput.INPUT_AXIS.HORIZONTAL);
     }
 }
