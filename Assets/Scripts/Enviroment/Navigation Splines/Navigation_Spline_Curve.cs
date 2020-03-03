@@ -20,8 +20,6 @@ public class Navigation_Spline_Curve : Navigation_Spline
     {
         base.Start();
 
-
-
         float radius = (m_splineStart.transform.position - transform.position).magnitude;
 
         m_splineLength = 2 * Mathf.PI * radius * (m_totalDegrees/360); //Total = PI*r    90 degrees = total/4
@@ -96,6 +94,7 @@ public class Navigation_Spline_Curve : Navigation_Spline
         endPosition.z = transform.position.z + endOffset.z;
         endPosition.y = m_height;
 
+        Quaternion rot = Quaternion.identity;
         m_splineEnd.transform.position = endPosition;
     }
 #endif

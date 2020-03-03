@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
-    public enum TURNING_DIR { CENTER, LEFT, RIGHT }
+    public enum TURNING_DIR { CENTER, RIGHT, LEFT }
 
     public Vector3 m_localVelocity = Vector3.zero;
     public bool m_gravity = false;
@@ -39,12 +39,17 @@ public class Entity : MonoBehaviour
         m_splinePhysics.UpdatePhysics();
     }
 
+    public void SwapSplines(Pathing_Spline p_newSpline)
+    {
+        m_splinePhysics.m_currentSpline = p_newSpline;
+    }
+
     /// <summary>
     /// Get turning direction for junction navigation, based off current input
     /// </summary>
-    /// <param name="p_trigger">junction entity will pass through</param>
+    /// <param name="p_node">junction entity will pass through</param>
     /// <returns>Path entity will desire to take</returns>
-    public virtual TURNING_DIR GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
+    public virtual TURNING_DIR GetDesiredTurning(Pathing_Node p_node)
     {
         return TURNING_DIR.CENTER;
     }

@@ -29,11 +29,6 @@ public class Player_Character : Character
             m_playerStateMachine.StartStateMachine();//Run intial state
     }
 
-    //-------------------
-    //Character update
-    //  Get input, apply physics, update character state machine
-    //  Update voxel trails
-    //-------------------
     protected override void Update()
     {
         base.Update();
@@ -43,16 +38,14 @@ public class Player_Character : Character
         m_playerStateMachine.UpdateStateMachine();
     }
 
-    //-------------------
-    //Get turning direction for junction navigation, based off current input
-    //
-    //Param p_trigger: junction character will pass through
-    //
-    //Return NavigationController.TURNING: Path character will desire to take
-    //-------------------
-    public override TURNING_DIR GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
+    /// <summary>
+    /// Get turning direction for junction navigation, based off current input
+    /// </summary>
+    /// <param name="p_node">junction entity will pass through</param>
+    /// <returns>Path entity will desire to take</returns>
+    public override TURNING_DIR GetDesiredTurning(Pathing_Node p_node)
     {
-        float relativeDot = Vector3.Dot(transform.forward, p_trigger.transform.forward);
+        float relativeDot = Vector3.Dot(transform.forward, p_node.transform.forward);
 
         float verticalInput = m_input.GetAxis(Input.INPUT_AXIS.HORIZONTAL);
 

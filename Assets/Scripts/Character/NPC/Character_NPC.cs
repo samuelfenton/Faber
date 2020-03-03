@@ -12,11 +12,6 @@ public class NPC_Character : Character
 
     private NPC_StateMachine m_NPCStateMachine = null;
 
-    //-------------------
-    //Character setup
-    //  Ensure all need componets are attached, and get initilised if needed
-    //  Setup NPC state machine for input control
-    //-------------------
     protected override void Start()
     {
         base.Start();
@@ -27,11 +22,6 @@ public class NPC_Character : Character
         m_NPCStateMachine.StartStateMachine();
     }
 
-    //-------------------
-    //Character update
-    //  Get input, apply physics, update character state machine
-    //  Update NPC state machine for inputs
-    //-------------------
     protected override void Update()
     {
         base.Update();
@@ -39,33 +29,27 @@ public class NPC_Character : Character
         m_NPCStateMachine.UpdateStateMachine();
     }
 
-    //-------------------
-    //Get turning direction for junction navigation, based off current input
-    //  Rather than using input, desired path will be based off generated path to player
-    //
-    //Param p_trigger: junction character will pass through
-    //
-    //Return NavigationController.TURNING: Path character will desire to take
-    //-------------------
-    public override TURNING_DIR GetDesiredTurning(Navigation_Trigger_Junction p_trigger)
+    /// <summary>
+    /// Get turning direction for junction navigation, based off current input
+    /// </summary>
+    /// <param name="p_node">junction entity will pass through</param>
+    /// <returns>Path entity will desire to take</returns>
+    public override TURNING_DIR GetDesiredTurning(Pathing_Node p_node)
     {
         if(m_path.Count > 0)
         {
             Navigation_Spline desiredSpline = m_path[0];
 
-            if (p_trigger.m_forwardLeftSplineInfo.m_spline == desiredSpline)
+            if (p_node.m_forwardLeftSpline == desiredSpline)
                 return TURNING_DIR.LEFT;
 
-            if (p_trigger.m_forwardRightSplineInfo.m_spline == desiredSpline)
+            if (p_node.m_forwardRightSpline == desiredSpline)
                 return TURNING_DIR.RIGHT;
         }
 
         return TURNING_DIR.CENTER;
     }
 
-    //-------------------
-    //Face NPC to look towards target when movement isnt needed
-    //-------------------
     public void FaceTowardsTarget()
     {
         if (m_targetCharacter == null)//Check has target
@@ -73,16 +57,16 @@ public class NPC_Character : Character
 
         if(Vector3.Dot(Vector3.Normalize(m_targetCharacter.transform.position - transform.position), transform.forward) < 0)//Should I turn to face?
         {
-            Vector3 desiredForwards = m_splinePhysics.m_currentSpline.GetForwardsDir(transform.position);
-            float relativeDot = Vector3.Dot(desiredForwards, transform.forward);
-            if (relativeDot > 0)
-            {
-                m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-            }
-            else
-            {
-                m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
-            }
+            //Vector3 desiredForwards = m_splinePhysics.m_currentSpline.GetForwardsDir(transform.position);
+            //float relativeDot = Vector3.Dot(desiredForwards, transform.forward);
+            //if (relativeDot > 0)
+            //{
+            //    m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+            //}
+            //else
+            //{
+            //    m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+            //}
         }
     }
 }

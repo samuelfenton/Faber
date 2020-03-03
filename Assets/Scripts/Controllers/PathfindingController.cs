@@ -7,10 +7,10 @@ public class PathfindingController : MonoBehaviour
     public class PathfindingNode
     {
         public float m_cost;
-        public Navigation_Spline m_nodeSpline;
+        public Pathing_Spline m_nodeSpline;
         public PathfindingNode m_previousNode;
 
-        public PathfindingNode(float p_cost, Navigation_Spline p_nodeSpline, PathfindingNode p_previousNode)
+        public PathfindingNode(float p_cost, Pathing_Spline p_nodeSpline, PathfindingNode p_previousNode)
         {
             m_cost = p_cost;
             m_nodeSpline = p_nodeSpline;
@@ -19,11 +19,11 @@ public class PathfindingController : MonoBehaviour
     }
 
 
-    public static List<Navigation_Spline> GetPath(Character p_character, Navigation_Spline p_goalSpline)
+    public static List<Pathing_Spline> GetPath(Character p_character, Navigation_Spline p_goalSpline)
     {
-        List<Navigation_Spline> path = new List<Navigation_Spline>();
+        List<Pathing_Spline> path = new List<Pathing_Spline>();
 
-        Navigation_Spline currentSpline = p_character.m_splinePhysics.m_currentSpline;
+        Pathing_Spline currentSpline = p_character.m_splinePhysics.m_currentSpline;
 
         //Valid inputs
         if (currentSpline == null || p_goalSpline == null || currentSpline == p_goalSpline)
@@ -69,24 +69,21 @@ public class PathfindingController : MonoBehaviour
 
     private static void AddToOpenList(PathfindingNode p_currentNode, List<PathfindingNode> p_openList, List<PathfindingNode> p_closedList)
     {
-        HashSet<Navigation_Spline> adjacentSplines = new HashSet<Navigation_Spline>();//Unique list
+        HashSet<Pathing_Spline> adjacentSplines = new HashSet<Pathing_Spline>();//Unique list
 
-        if (p_currentNode.m_nodeSpline.m_splineStart != null)//add start of spline adjacent splines if start exists
+        if (p_currentNode.m_nodeSpline.m_nodeA != null)//add start of spline adjacent splines if start exists
         { 
-            foreach (Navigation_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_splineStart.m_adjacentSplines) 
+            foreach (Pathing_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_nodeA.m_adjacentSplines) 
             {
                 adjacentSplines.Add(adjacentSpline);
             }
-        }
-        if (p_currentNode.m_nodeSpline.m_splineStart != null)//add end of spline adjacent splines if end exists
-        {
-            foreach (Navigation_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_splineEnd.m_adjacentSplines)
+            foreach (Pathing_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_nodeA.m_adjacentSplines)
             {
                 adjacentSplines.Add(adjacentSpline);
             }
         }
 
-        foreach (Navigation_Spline adjacentSpline in adjacentSplines)
+        foreach (Pathing_Spline adjacentSpline in adjacentSplines)
         {
             if(!(ListContainsSpline(p_openList, adjacentSpline) || ListContainsSpline(p_closedList, adjacentSpline)))//Is spline already in the list
             {
@@ -96,7 +93,7 @@ public class PathfindingController : MonoBehaviour
         }
     }
 
-    private static bool ListContainsSpline(List<PathfindingNode> p_searchList, Navigation_Spline p_spline)
+    private static bool ListContainsSpline(List<PathfindingNode> p_searchList, Pathing_Spline p_spline)
     {
         foreach (PathfindingNode pathfindingNode in p_searchList)
         {

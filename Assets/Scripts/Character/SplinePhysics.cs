@@ -10,7 +10,7 @@ public class SplinePhysics : MonoBehaviour
     public bool m_gravity = false;
 
     [Header("Spline settings")]
-    public Navigation_Spline m_currentSpline = null;
+    public Pathing_Spline m_currentSpline = null;
     [Range(0, 1)]
     public float m_currentSplinePercent = 0.0f;
 
@@ -53,49 +53,47 @@ public class SplinePhysics : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    //-------------------
-    //DEV_MODE, places character on current spline based on its spline percent
-    //-------------------
+    /// <summary>
+    /// DEV_MODE, places character on current spline based on its spline percent
+    /// </summary>
     private void OnValidate()
     {
         //Update position in scene 
         if (m_currentSpline != null)
         {
-            m_currentSpline.Start();
-
-            transform.position = m_currentSpline.GetSplinePosition(m_currentSplinePercent);
+            transform.position = m_currentSpline.GetPosition(m_currentSplinePercent);
         }
     }
 #endif
 
-    //-------------------
-    //Updates characters physics
-    //  Set rotation to be based off spline position
-    //  Clamp on spline
-    //  Check for ground collisions
-    //-------------------
+    /// <summary>
+    /// Updates characters physics
+    /// Set rotation to be based off spline position
+    /// Clamp on spline
+    /// Check for ground collisions
+    /// </summary>
     public void UpdatePhysics()
     {
         UpdateCollisions();
 
         //Setup forwards direction
-        Vector3 desiredForwards = m_currentSpline.GetForwardsDir(transform.position);
+        Vector3 desiredForwards = Vector3.zero;// m_currentSpline.GetForwardsDir(transform.position);
         float relativeDot = Vector3.Dot(desiredForwards, transform.forward);
         if (relativeDot > 0)
         {
             transform.rotation = Quaternion.LookRotation(desiredForwards, Vector3.up);
-            m_currentSplinePercent += m_currentSpline.GetSplinePercent(m_parentEntity.m_localVelocity.x * Time.deltaTime);
+            m_currentSplinePercent += m_currentSpline.ChangeinPercent(m_parentEntity.m_localVelocity.x * Time.deltaTime);
         }
         else
         {
             transform.rotation = Quaternion.LookRotation(-desiredForwards, Vector3.up);
-            m_currentSplinePercent += m_currentSpline.GetSplinePercent(-m_parentEntity.m_localVelocity.x * Time.deltaTime);
+            m_currentSplinePercent += m_currentSpline.ChangeinPercent(-m_parentEntity.m_localVelocity.x * Time.deltaTime);
         }
         //Lock spline percent between close enough to 0 - 1
         m_currentSplinePercent = Mathf.Clamp(m_currentSplinePercent, -0.01f, 1.01f);
 
         //Setup transform
-        Vector3 newPosition = m_currentSpline.GetSplinePosition(m_currentSplinePercent); //Spline position with no y considered
+        Vector3 newPosition = m_currentSpline.GetPosition(m_currentSplinePercent); //Spline position with no y considered
         newPosition.y = transform.position.y + m_parentEntity.m_localVelocity.y * Time.deltaTime; //Adding in y value
 
         float distanceToGround = GetSplineDistance();
@@ -115,9 +113,9 @@ public class SplinePhysics : MonoBehaviour
         transform.position = newPosition;
     }
 
-    //-------------------
-    //Check for collisions in horizontal and vertical axis
-    //-------------------
+    /// <summary>
+    /// Check for collisions in horizontal and vertical axis
+    /// </summary>
     public void UpdateCollisions()
     {
         Vector3 centerPos = transform.position + Vector3.up * m_colliderExtents.y;
@@ -131,9 +129,9 @@ public class SplinePhysics : MonoBehaviour
         UpdateCollisionVelocity();
     }
 
-    //-------------------
-    //Update local velocity based off collisions
-    //-------------------
+    /// <summary>
+    /// Update local velocity based off collisions
+    /// </summary>
     public void UpdateCollisionVelocity()
     {
         if (m_upCollision && m_parentEntity.m_localVelocity.y > 0)//Check Upwards
@@ -154,15 +152,13 @@ public class SplinePhysics : MonoBehaviour
         }
     }
 
-    //-------------------
-    //Check for collisions vertically
-    //  Creates three raycasts, front center and back
-    //
-    //Param p_direction: Casting up or down
-    //      p_centerPos: What is current center position of charater
-    //
-    //Return bool: if any collisions occur return true
-    //-------------------
+    /// <summary>
+    /// Check for collisions vertically
+    /// Creates three raycasts, front center and back
+    /// </summary>
+    /// <param name="p_direction">Casting up or down</param>
+    /// <param name="p_centerPos">What is current center position of charater</param>
+    /// <returns>True when any collisions occur</returns>
     public bool CollidingVertical(Vector3 p_direction, Vector3 p_centerPos)
     {
         //Forward raycast
@@ -180,15 +176,13 @@ public class SplinePhysics : MonoBehaviour
         return false;
     }
 
-    //-------------------
-    //Check for collisions horizontally
-    //  Creates three raycasts, top center and bottom
-    //
-    //Param p_direction: Casting forward or backwards
-    //      p_centerPos: What is current center position of charater
-    //
-    //Return bool: if any collisions occur return true
-    //-------------------
+    /// <summary>
+    /// Check for collisions horizontally
+    /// Creates three raycasts, top center and bottom
+    /// </summary>
+    /// <param name="p_direction">Casting forward or backwards</param>
+    /// <param name="p_centerPos">What is current center position of charater</param>
+    /// <returns>True when any collisions occur</returns>
     public bool CollidingHorizontal(Vector3 p_direction, Vector3 p_centerPos)
     {
         //Top raycast
@@ -212,7 +206,7 @@ public class SplinePhysics : MonoBehaviour
     /// <returns>Distance to spline, negative means is below the spline</returns>
     public float GetSplineDistance()
     {
-        Vector3 splinePosition = m_currentSpline.GetSplinePosition(m_currentSplinePercent);
+        Vector3 splinePosition = m_currentSpline.GetPosition(m_currentSplinePercent);
 
         return transform.position.y - splinePosition.y;
     }
