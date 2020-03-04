@@ -99,6 +99,25 @@ public class Pathing_Spline : MonoBehaviour
         return Vector3.forward;
     }
 
+    /// <summary>
+    /// Determine what percent a node is on the spline
+    /// </summary>
+    /// <param name="p_node">Node to check against</param>
+    /// <returns>Will return 1 for node B or default to 0 for A or not found</returns>
+    public float GetPercentForNode(Pathing_Node p_node)
+    {
+        return p_node == m_nodeB ? 0.999f : 0.001f;
+    }
+
+    /// <summary>
+    /// Given a distance calculate how far traveled percent wise
+    /// </summary>
+    /// <param name="p_distanceTravelled">Distance</param>
+    /// <returns>What percent</returns>
+    public float ChangeinPercent(float p_distanceTravelled)
+    {
+        return p_distanceTravelled / m_splineLength;
+    }
 
     #region Inits
 
@@ -152,26 +171,6 @@ public class Pathing_Spline : MonoBehaviour
         m_splineLength = 2.0f * Mathf.PI * m_centerADir.magnitude * m_circleAngle/360.0f;
     }
     #endregion
-
-    /// <summary>
-    /// Determine what percent a node is on the spline
-    /// </summary>
-    /// <param name="p_node">Node to check against</param>
-    /// <returns>Will return 1 for node B or default to 0 for A or not found</returns>
-    public float GetPercentForNode(Pathing_Node p_node)
-    {
-        return p_node == m_nodeB ? 0.999f : 0.001f;
-    }
-
-    /// <summary>
-    /// Given a distance calculate how far traveled percent wise
-    /// </summary>
-    /// <param name="p_distanceTravelled">Distance</param>
-    /// <returns>What percent</returns>
-    public float ChangeinPercent(float p_distanceTravelled)
-    {
-        return p_distanceTravelled / m_splineLength;
-    }
 
     #region Getting positions
     /// <summary>

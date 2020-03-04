@@ -39,12 +39,6 @@ public class Pathing_Node : MonoBehaviour
         m_planeEquation = new Vector4(m_globalEntranceVector.x, m_globalEntranceVector.y, m_globalEntranceVector.z, planeZ);
 
         m_boxColdier = GetComponent<BoxCollider>();
-
-        //Ensure at least one spline for forwards and backwards
-        if (m_forwardSpline == null && m_forwardRightSpline == null && m_forwardLeftSpline == null)
-            m_boxColdier.enabled = false;
-        if (m_backwardSpline == null && m_backwardRightSpline == null && m_backwardLeftSpline == null)
-            m_boxColdier.enabled = false;
     }
 
     /// <summary>
@@ -75,26 +69,47 @@ public class Pathing_Node : MonoBehaviour
         for (int entityIndex = 0; entityIndex < transferingEntities.Length; entityIndex++)
         {
             Entity entity = transferingEntities[entityIndex];
+
             TRIGGER_DIRECTION previousDirection = m_activeColliders[entity];
-            TRIGGER_DIRECTION currentDirection = GetTriggerDir(entity.transform.position);
-
-            Debug.Log(previousDirection + " " + currentDirection);
-               
-
-            if (previousDirection != currentDirection) //Updating dir
+            if (ValidNode()) //Valid node
             {
-                Entity.TURNING_DIR desiredTurnignDir = entity.GetDesiredTurning(this);
+                TRIGGER_DIRECTION currentDirection = GetTriggerDir(entity.transform.position);
 
-                if (currentDirection == TRIGGER_DIRECTION.FORWARDS) //Previously on backside side, entering forwards splines
+                if (previousDirection != currentDirection) //Updating dir
                 {
-                    entity.SwapSplines(this, GetTransferSpline(desiredTurnignDir, m_forwardSpline, m_forwardRightSpline, m_forwardLeftSpline));
-                }
-                else //Previously on forward side, entering backwards splines
-                {
-                    entity.SwapSplines(this, GetTransferSpline(desiredTurnignDir, m_backwardSpline, m_backwardRightSpline, m_backwardLeftSpline));
-                }
+                    Entity.TURNING_DIR desiredTurnignDir = entity.GetDesiredTurning(this);
 
-                m_activeColliders[entity] = currentDirection;
+                    if (currentDirection == TRIGGER_DIRECTION.FORWARDS) //Previously on backside side, entering forwards splines
+                    {
+                        entity.SwapSplines(this, GetTransferSpline(desiredTurnignDir, m_forwardSpline, m_forwardRightSpline, m_forwardLeftSpline));
+                    }
+                    else //Previously on forward side, entering backwards splines
+                    {
+                        entity.SwapSplines(this, GetTransferSpline(desiredTurnignDir, m_backwardSpline, m_backwardRightSpline, m_backwardLeftSpline));
+                    }
+
+                    m_activeColliders[entity] = currentDirection;
+                }
+            }
+            else //Not a valid node, so stop movemnt
+            {
+                float relativeVelocity = Vector3.Dot(transform.forward, entity.transform.forward);
+
+                if (relativeVelocity >= 0.0f) //Moving is same relative space, so positive x velocity is forwards
+                {
+                    if (previousDirection == TRIGGER_DIRECTION.BACKWARDS) //Was moving from forwards, stop any negitive velocity
+                        entity.m_localVelocity.x = Mathf.Min(0.0f, entity.m_localVelocity.x);
+                    else
+                        entity.m_localVelocity.x = Mathf.Max(0.0f, entity.m_localVelocity.x);
+                }
+                else //Same as before but flip logic
+                {
+                    if (previousDirection == TRIGGER_DIRECTION.BACKWARDS)
+                        entity.m_localVelocity.x = Mathf.Max(0.0f, entity.m_localVelocity.x);
+                    else
+                        entity.m_localVelocity.x = Mathf.Min(0.0f, entity.m_localVelocity.x);
+
+                }
             }
         }
     }
@@ -167,5 +182,14 @@ public class Pathing_Node : MonoBehaviour
         if (p_right != null)
             return p_right;
         return p_left;
+    }
+
+    /// <summary>
+    /// Valid node when theres at least one forward spline and one backwards spline
+    /// </summary>
+    /// <returns>true when above is valid</returns>
+    public bool ValidNode()
+    {
+        return (m_forwardSpline != null || m_forwardRightSpline != null || m_forwardLeftSpline != null) && (m_backwardSpline != null || m_backwardRightSpline != null || m_backwardLeftSpline != null);
     }
 }
