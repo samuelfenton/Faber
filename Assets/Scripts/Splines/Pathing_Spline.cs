@@ -66,8 +66,6 @@ public class Pathing_Spline : MonoBehaviour
     /// <returns>Postions based off spline type and settings</returns>
     public Vector3 GetPosition(float p_percent)
     {
-        p_percent = Mathf.Clamp(p_percent, 0.0f, 1.0f);
-
         switch (m_splineType)
         {
             case SPLINE_TYPE.STRAIGHT:
@@ -88,8 +86,6 @@ public class Pathing_Spline : MonoBehaviour
     /// <returns>Forward Dir based off spline type and settings</returns>
     public Vector3 GetForwardDir(float p_percent)
     {
-        p_percent = Mathf.Clamp(p_percent, 0.0f, 1.0f);
-
         switch (m_splineType)
         {
             case SPLINE_TYPE.STRAIGHT:
@@ -164,7 +160,7 @@ public class Pathing_Spline : MonoBehaviour
     /// <returns>Will return 1 for node B or default to 0 for A or not found</returns>
     public float GetPercentForNode(Pathing_Node p_node)
     {
-        return p_node == m_nodeB ? 1.0f : 0.0f;
+        return p_node == m_nodeB ? 0.999f : 0.001f;
     }
 
     /// <summary>
@@ -239,8 +235,8 @@ public class Pathing_Spline : MonoBehaviour
     /// <returns>Forward based off spline calcualtions for bezier curve</returns>
     private Vector3 GetBezierForward(float p_percent)
     {
-        Vector3 currentPos = GetCirclePosition(p_percent);
-        Vector3 offsetPos = GetCirclePosition(p_percent + 0.01f);
+        Vector3 currentPos = GetBezierPosition(p_percent);
+        Vector3 offsetPos = GetBezierPosition(p_percent + 0.01f);
         return (offsetPos - currentPos).normalized;
     }
 
@@ -254,7 +250,7 @@ public class Pathing_Spline : MonoBehaviour
         Vector3 percentPos = GetCirclePosition(p_percent);
         Vector3 desiredDir = m_circleCenter - percentPos;
         desiredDir = new Vector3(desiredDir.z, 0.0f, -desiredDir.x);
-        return desiredDir.normalized * (m_circleDir == CIRCLE_DIR.CLOCKWISE ? 1:-1);
+        return desiredDir.normalized * (m_circleDir == CIRCLE_DIR.CLOCKWISE ? -1:1);
     }
     #endregion
 

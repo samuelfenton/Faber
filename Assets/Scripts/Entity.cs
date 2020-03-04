@@ -39,8 +39,16 @@ public class Entity : MonoBehaviour
         m_splinePhysics.UpdatePhysics();
     }
 
-    public void SwapSplines(Pathing_Spline p_newSpline)
+    /// <summary>
+    /// Swap entity to new spline
+    /// </summary>
+    /// <param name="p_transferNode">Node that is transfering entity</param>
+    /// <param name="p_newSpline">The new spline to be on</param>
+    public void SwapSplines(Pathing_Node p_transferNode, Pathing_Spline p_newSpline)
     {
+        //Setup percent
+        m_splinePhysics.m_currentSplinePercent = p_newSpline.GetPercentForNode(p_transferNode);
+
         m_splinePhysics.m_currentSpline = p_newSpline;
     }
 

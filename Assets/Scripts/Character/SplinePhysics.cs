@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class SplinePhysics : MonoBehaviour
 {
+    public const float MIN_SPLINE_PERCENT = -0.001f;
+    public const float MAX_SPLINE_PERCENT = 1.001f;
+
     protected const float GROUND_DETECTION = 0.5f;
     protected const float GRAVITY = -9.8f;
     [Header("Physic settings")]
@@ -47,6 +50,11 @@ public class SplinePhysics : MonoBehaviour
 #endif
             return;
         }
+
+        if (m_currentSpline != null)
+        {
+            transform.position = m_currentSpline.GetPosition(m_currentSplinePercent);
+        }
     }
 
 #if UNITY_EDITOR
@@ -76,6 +84,8 @@ public class SplinePhysics : MonoBehaviour
 
         //Setup forwards direction
         Vector3 desiredForwards = m_currentSpline.GetForwardDir(m_currentSplinePercent);
+
+        Debug.Log(desiredForwards);
         float relativeDot = Vector3.Dot(desiredForwards, transform.forward);
         if (relativeDot > 0)
         {
@@ -88,7 +98,7 @@ public class SplinePhysics : MonoBehaviour
             m_currentSplinePercent += m_currentSpline.ChangeinPercent(-m_parentEntity.m_localVelocity.x * Time.deltaTime);
         }
         //Lock spline percent between close enough to 0 - 1
-        m_currentSplinePercent = Mathf.Clamp(m_currentSplinePercent, -0.01f, 1.01f);
+        m_currentSplinePercent = Mathf.Clamp(m_currentSplinePercent, MIN_SPLINE_PERCENT, MAX_SPLINE_PERCENT);
 
         //Setup transform
         Vector3 newPosition = m_currentSpline.GetPosition(m_currentSplinePercent); //Spline position with no y considered

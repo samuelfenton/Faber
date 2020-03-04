@@ -22,11 +22,22 @@ public class Pathing_Node : MonoBehaviour
 
     private BoxCollider m_boxColdier = null;
 
+    //Plane Equations
+    private Vector3 m_globalEntranceVector = Vector3.zero;
+    private Vector4 m_planeEquation = Vector4.zero;
+
     /// <summary>
     /// Setup colision plane
     /// </summary>
     private void Start()
     {
+        m_globalEntranceVector = transform.forward;
+
+        Vector3 triggerPos = transform.position;
+        float planeZ = (-triggerPos.x * m_globalEntranceVector.x) + (-triggerPos.y * m_globalEntranceVector.y) + (-triggerPos.z * m_globalEntranceVector.z);
+
+        m_planeEquation = new Vector4(m_globalEntranceVector.x, m_globalEntranceVector.y, m_globalEntranceVector.z, planeZ);
+
         m_boxColdier = GetComponent<BoxCollider>();
 
         //Ensure at least one spline for forwards and backwards
@@ -36,6 +47,11 @@ public class Pathing_Node : MonoBehaviour
             m_boxColdier.enabled = false;
     }
 
+    /// <summary>
+    /// Character is moving through the collider itself
+    /// Determine exact moment of moving through using plane formula
+    /// ax + by + cz + d where a,b,c,d are determiened from the plane equation
+    /// </summary>
     private void Update()
     {
 #if UNITY_EDITOR
@@ -52,26 +68,33 @@ public class Pathing_Node : MonoBehaviour
         if (m_backwardLeftSpline != null)
             m_backwardLeftSpline.UpdatePosition();
 #endif
+        //Get all keys
+        Entity[] transferingEntities = new Entity[m_activeColliders.Count];
+        m_activeColliders.Keys.CopyTo(transferingEntities, 0);
 
-        //Manage transfering entities
-        foreach (KeyValuePair<Entity, TRIGGER_DIRECTION> entityPair in m_activeColliders)
+        for (int entityIndex = 0; entityIndex < transferingEntities.Length; entityIndex++)
         {
-            Entity entity = entityPair.Key;
+            Entity entity = transferingEntities[entityIndex];
+            TRIGGER_DIRECTION previousDirection = m_activeColliders[entity];
+            TRIGGER_DIRECTION currentDirection = GetTriggerDir(entity.transform.position);
 
-            TRIGGER_DIRECTION previousDirection = entityPair.Value;
-            TRIGGER_DIRECTION currentDir = GetTriggerDir(entity);
+            Debug.Log(previousDirection + " " + currentDirection);
+               
 
-            if(currentDir != previousDirection)//Moved to other side
+            if (previousDirection != currentDirection) //Updating dir
             {
                 Entity.TURNING_DIR desiredTurnignDir = entity.GetDesiredTurning(this);
-                if (currentDir == TRIGGER_DIRECTION.FORWARDS) //Deal with forward splines
+
+                if (currentDirection == TRIGGER_DIRECTION.FORWARDS) //Previously on backside side, entering forwards splines
                 {
-                    entity.SwapSplines(GetTransferSpline(desiredTurnignDir, m_forwardSpline, m_forwardRightSpline, m_forwardLeftSpline));
+                    entity.SwapSplines(this, GetTransferSpline(desiredTurnignDir, m_forwardSpline, m_forwardRightSpline, m_forwardLeftSpline));
                 }
-                else //Exiting, deal with backward splines
+                else //Previously on forward side, entering backwards splines
                 {
-                    entity.SwapSplines(GetTransferSpline(desiredTurnignDir, m_backwardSpline, m_backwardRightSpline, m_backwardLeftSpline));
+                    entity.SwapSplines(this, GetTransferSpline(desiredTurnignDir, m_backwardSpline, m_backwardRightSpline, m_backwardLeftSpline));
                 }
+
+                m_activeColliders[entity] = currentDirection;
             }
         }
     }
@@ -92,7 +115,7 @@ public class Pathing_Node : MonoBehaviour
             }
 
             //Add in
-            m_activeColliders.Add(collidingEntity, GetTriggerDir(collidingEntity));
+            m_activeColliders.Add(collidingEntity, GetTriggerDir(collidingEntity.transform.position));
         }
     }
 
@@ -111,14 +134,13 @@ public class Pathing_Node : MonoBehaviour
     /// <summary>
     /// Based off location of entity determing if entering or exiting
     /// </summary>
-    /// <param name="p_entity">Entity to compare with</param>
+    /// <param name="p_position">Position of entity</param>
     /// <returns>Entering when moving close to trigger forward</returns>
-    private TRIGGER_DIRECTION GetTriggerDir(Entity p_entity)
+    private TRIGGER_DIRECTION GetTriggerDir(Vector3 p_position)
     {
-        Vector3 entityTriggerDir = transform.position - p_entity.transform.position;
+        float expandedDot = m_planeEquation.x * p_position.x + m_planeEquation.y * p_position.y + m_planeEquation.z * p_position.z + m_planeEquation.w;
 
-        //if direction is the sames, that is dot is positive, means entity is on back side
-        return Vector3.Dot(entityTriggerDir.normalized, transform.forward) >= 0.0f ? TRIGGER_DIRECTION.BACKWARDS : TRIGGER_DIRECTION.FORWARDS;
+        return expandedDot >= 0.0f ? TRIGGER_DIRECTION.FORWARDS : TRIGGER_DIRECTION.BACKWARDS;
     }
 
     /// <summary>
