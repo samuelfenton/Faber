@@ -172,9 +172,9 @@ public class Pathing_Node : MonoBehaviour
         if(p_desireDirection == Entity.TURNING_DIR.CENTER && p_center!=null)
             return p_center;
         if (p_desireDirection == Entity.TURNING_DIR.RIGHT && p_right != null)
-            return p_center;
+            return p_right;
         if (p_desireDirection == Entity.TURNING_DIR.LEFT && p_left != null)
-            return p_center;
+            return p_left;
 
         //Get defaults
         if (p_center != null)

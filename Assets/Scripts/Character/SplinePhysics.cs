@@ -85,7 +85,6 @@ public class SplinePhysics : MonoBehaviour
         //Setup forwards direction
         Vector3 desiredForwards = m_currentSpline.GetForwardDir(m_currentSplinePercent);
 
-        Debug.Log(desiredForwards);
         float relativeDot = Vector3.Dot(desiredForwards, transform.forward);
         if (relativeDot > 0)
         {

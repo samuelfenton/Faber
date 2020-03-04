@@ -38,6 +38,11 @@ public class Pathing_Spline : MonoBehaviour
     private Vector3 m_circleCenter = Vector3.zero;
     private Vector3 m_centerADir = Vector3.zero;
 
+    private void Start()
+    {
+        InitSpline();
+    }
+
     /// <summary>
     /// Initilasie the spline for settings 
     /// </summary>
@@ -224,7 +229,9 @@ public class Pathing_Spline : MonoBehaviour
     /// <returns>Forward based off spline calcualtions for straight line</returns>
     private Vector3 GetStraightForward(float p_percent)
     {
-        return m_straightDir.normalized;
+        Vector3 forward = m_straightDir;
+        forward.y = 0.0f;
+        return forward.normalized;
     }
 
     /// <summary>
@@ -236,7 +243,9 @@ public class Pathing_Spline : MonoBehaviour
     {
         Vector3 currentPos = GetBezierPosition(p_percent);
         Vector3 offsetPos = GetBezierPosition(p_percent + 0.01f);
-        return (offsetPos - currentPos).normalized;
+        Vector3 forward = (offsetPos - currentPos);
+        forward.y = 0.0f;
+        return forward.normalized;
     }
 
     /// <summary>
@@ -249,7 +258,9 @@ public class Pathing_Spline : MonoBehaviour
         Vector3 percentPos = GetCirclePosition(p_percent);
         Vector3 desiredDir = m_circleCenter - percentPos;
         desiredDir = new Vector3(desiredDir.z, 0.0f, -desiredDir.x);
-        return desiredDir.normalized * (m_circleDir == CIRCLE_DIR.CLOCKWISE ? -1:1);
+        Vector3 forward = desiredDir * (m_circleDir == CIRCLE_DIR.CLOCKWISE ? -1:1);
+        forward.y = 0.0f;
+        return forward.normalized;
     }
     #endregion
 
