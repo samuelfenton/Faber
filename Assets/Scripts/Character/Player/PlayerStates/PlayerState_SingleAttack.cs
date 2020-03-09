@@ -30,7 +30,7 @@ public class PlayerState_SingleAttack : Player_State
         //Slowdown movement
         base.UpdateState();
 
-        return m_characterAnimationController.EndOfAnimation() || m_characterAnimationController.m_canCombo;
+        return m_characterAnimationController.EndOfAnimation();
     }
 
     /// <summary>

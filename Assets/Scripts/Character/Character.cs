@@ -50,9 +50,9 @@ public class Character : Entity
     //Character setup
     //  Ensure all need componets are attached, and get initilised if needed
     //-------------------
-    protected override void Start()
+    public override void InitEntity()
     {
-        base.Start();
+        base.InitEntity();
 
         //Get references
         m_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -70,7 +70,6 @@ public class Character : Entity
 
         if(m_weapon != null)
         {
-            m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.WEAPON_SLOT, m_weapon.m_animationIndex);
             m_weapon.m_parentCharacter = this;
         }
 
@@ -160,6 +159,6 @@ public class Character : Entity
 
         m_localVelocity = newVelocity;
 
-        m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.MOVEMENT_SPEED, Mathf.Abs(newVelocity.x / m_groundedHorizontalSpeedMax));
+        m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.CURRENT_VELOCITY, Mathf.Abs(newVelocity.x / m_groundedHorizontalSpeedMax));
     }
 }

@@ -8,14 +8,13 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Material_PolyPrototype_Glass
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: dc6565a02ba63c849a21ea82cdde1b48, type: 3}
   m_ShaderKeywords: _ALPHAPREMULTIPLY_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
-  stringTagMap:
-    RenderType: Transparent
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -76,3 +75,4 @@ Material:
     m_Colors:
     - _Color: {r: 0.525519, g: 0.7163167, b: 0.7941176, a: 0.316}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _PlayerWorldPostion: {r: 0, g: 1000, b: 0, a: 1}

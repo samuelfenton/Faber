@@ -12,6 +12,7 @@ Voxeliser and Voxelier_Burst are copyright (c) 2019 Samuel Fenton
 		-Animated: Works on models that use a skinned mesh renderer, typically for animated models. Will snap voxels onto a world grid regardless of transformation.
 		-Static: Creates a static mesh intended to remain in a static position or simply as a conversion. At initialisation will make the correct model mesh, but after, any transformations wont cause voxels to snap to grid. However this leads to little or no overhead.  
 	- Perform Over Frames: In assisting with optimisation, calculations can occur over several frames as needed. This can lead to smoother gameplay but add more stutter to any animation.  
+	-Separated Voxels: Voxels can be made up of completely unique verts or share verts with their neighbours. This will cause the texture to have a hard edge between or a smooth soft transition between them. Secondary effects is the increase in possible mesh size as less vertices are needed.
 	- Object With Mesh: This is the object that contains the model mesh. If not assigned it is assumed to be on the same object as the script.
 	- Delayed Initialisation: For any particular reason a delay of a single frame is needed before initialisation. Typically used when other meshes are generated at runtime and order of execution is unknown.
 	- Save Static Mesh: When building a static mesh, the mesh can be saved for later use rather than using the voxeliser every time. This variable when toggled in the inspector will create a save prompt, save the mesh. This only occurs when using the unity editor.

@@ -29,7 +29,7 @@ public class Pathing_Node : MonoBehaviour
     /// <summary>
     /// Setup colision plane
     /// </summary>
-    private void Start()
+    public void InitNode()
     {
         m_globalEntranceVector = transform.forward;
 

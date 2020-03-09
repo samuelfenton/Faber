@@ -9,8 +9,6 @@ public class SplinePhysics : MonoBehaviour
 
     protected const float GROUND_DETECTION = 0.5f;
     protected const float GRAVITY = -9.8f;
-    [Header("Physic settings")]
-    public bool m_gravity = false;
 
     [Header("Spline settings")]
     public Pathing_Spline m_currentSpline = null;

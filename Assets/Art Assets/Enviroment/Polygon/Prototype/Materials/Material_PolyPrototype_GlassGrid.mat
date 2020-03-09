@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Material_PolyPrototype_GlassGrid
-  m_Shader: {fileID: 4800000, guid: 707df7bca3440314f99cee94d4f6a202, type: 3}
+  m_Shader: {fileID: 4800000, guid: dc6565a02ba63c849a21ea82cdde1b48, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -23,6 +23,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 1432e62c10501d147a873c128326f711, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Falloff: 50
     - _GridScale: 5
@@ -33,3 +37,4 @@ Material:
     m_Colors:
     - _BaseColor: {r: 0.06228374, g: 0.8320726, b: 0.9411765, a: 0}
     - _Opacity: {r: 0.41911763, g: 0.41911763, b: 0.41911763, a: 0}
+    - _PlayerWorldPostion: {r: 0, g: 1000, b: 0, a: 1}

@@ -29,7 +29,6 @@ public class PlayerState_InAir : Player_State
     public override void StateStart()
     {
         m_doubleJump = true;
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.IN_AIR, true);
     }
 
     /// <summary>
@@ -53,7 +52,7 @@ public class PlayerState_InAir : Player_State
 
         m_parentCharacter.m_localVelocity = newVelocity;
 
-        m_parentCharacter.m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.MOVEMENT_SPEED, Mathf.Abs(newVelocity.x / m_horizontalSpeedMax));
+        m_parentCharacter.m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.CURRENT_VELOCITY, Mathf.Abs(newVelocity.x / m_horizontalSpeedMax));
 
         return true;
     }
@@ -63,7 +62,6 @@ public class PlayerState_InAir : Player_State
     /// </summary>
     public override void StateEnd()
     {
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.IN_AIR, false);
     }
 
     /// <summary>

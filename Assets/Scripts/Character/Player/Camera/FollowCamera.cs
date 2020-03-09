@@ -7,7 +7,7 @@ public class FollowCamera : MonoBehaviour
     public GameObject m_followTarget = null;
 
     public Vector3 m_cameraOffset = Vector3.zero;
-
+    public Vector3 m_lookAtOffset = Vector3.zero;
     public float m_cameraSpeed = 1.0f;
 
     //-------------------
@@ -28,7 +28,7 @@ public class FollowCamera : MonoBehaviour
         if(desiredVelocity.magnitude > 0.0f)
             transform.position += desiredVelocity * ((desiredVelocity.magnitude * m_cameraSpeed) / desiredVelocity.magnitude) * Time.deltaTime;
 
-        Quaternion desiredRotation = Quaternion.LookRotation(m_followTarget.transform.position - transform.position);
+        Quaternion desiredRotation = Quaternion.LookRotation(m_followTarget.transform.position + m_lookAtOffset - transform.position);
 
         transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, 0.5f);
 	}

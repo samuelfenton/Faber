@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Material_PolyScifi_NeonSigns
-  m_Shader: {fileID: 4800000, guid: 0835602ed30128f4a88a652bf920fcaa, type: 3}
-  m_ShaderKeywords: _EMISSION
+  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: _EMISSION _GLOSSYREFLECTIONS_OFF _SPECULARHIGHLIGHTS_OFF
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -82,14 +82,14 @@ Material:
     - _DstBlend: 0
     - _FallOff: 8.19
     - _GlossMapScale: 1
-    - _Glossiness: 0.2
-    - _GlossyReflections: 1
+    - _Glossiness: 0
+    - _GlossyReflections: 0
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
-    - _SpecularHighlights: 1
+    - _SpecularHighlights: 0
     - _SrcBlend: 1
     - _Tiling: 0.1
     - _UVScrollSpeed: 0.2
@@ -99,3 +99,4 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 4, g: 4, b: 4, a: 0}
+    - _PlayerWorldPostion: {r: 0, g: 1000, b: 0, a: 1}

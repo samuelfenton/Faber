@@ -12,9 +12,9 @@ public class NPC_Character : Character
 
     private NPC_StateMachine m_NPCStateMachine = null;
 
-    protected override void Start()
+    public override void InitEntity()
     {
-        base.Start();
+        base.InitEntity();
 
         m_NPCStateMachine = GetComponent<NPC_StateMachine>();
 

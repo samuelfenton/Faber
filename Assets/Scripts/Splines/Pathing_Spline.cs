@@ -38,11 +38,6 @@ public class Pathing_Spline : MonoBehaviour
     private Vector3 m_circleCenter = Vector3.zero;
     private Vector3 m_centerADir = Vector3.zero;
 
-    private void Start()
-    {
-        InitSpline();
-    }
-
     /// <summary>
     /// Initilasie the spline for settings 
     /// </summary>

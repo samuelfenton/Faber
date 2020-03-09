@@ -22,6 +22,8 @@ public class Voxeliser : MonoBehaviour
 
     //Advanced Settings
     [Header("Advanced Settings")]
+    [Tooltip("Should each voxel be its own 'Object' allowing for hard textures, vs more of a blend")]
+    public bool m_separatedVoxels = true;
     [Tooltip("Gameobject which holds the mesh for the voxeliser, with none assigned, assumption is mesh is on script gameobject")]
     public GameObject m_objectWithMesh = null;
     [Tooltip("Should this wait until end of frame")]
@@ -567,107 +569,220 @@ public class Voxeliser : MonoBehaviour
     /// <param name="p_voxelSize">Actual VoxelSize</param>
     private IEnumerator GetConvertedMesh(float p_voxelSize)
     {
-        float halfVoxel = m_voxelSize / 2.0f;
-
-        int voxelCount = m_voxelIntDetails.Count;
         m_convertedVerts.Clear();//8 verts per voxel
         m_convertedUVs.Clear();//one per vert
         m_convertedTris.Clear();// 3 per tri, 12  tris per voxel
 
-        Vector3 right = new Vector3(halfVoxel, 0.0f, 0.0f); // r = right l = left
-        Vector3 up = new Vector3(0.0f, halfVoxel, 0.0f); // u = up, d = down
-        Vector3 forward = new Vector3(0.0f, 0.0f, halfVoxel); // f = forward b = backward
-
         int[] indexArray = new int[8];
 
-        foreach (KeyValuePair<Vector3Int, Vector2> voxel in m_voxelIntDetails)
+        if (m_separatedVoxels)
         {
-            //Vert indexes, if positon doesnt exiosts, new index, otherwise old index
-            int indexStart = m_convertedVerts.Count;
-            indexArray[0] = indexStart;
-            indexArray[1] = indexStart + 1;
-            indexArray[2] = indexStart + 2;
-            indexArray[3] = indexStart + 3;
-            indexArray[4] = indexStart + 4;
-            indexArray[5] = indexStart + 5;
-            indexArray[6] = indexStart + 6;
-            indexArray[7] = indexStart + 7;
-
-            Vector3 voxelPos = new Vector3(voxel.Key.x * p_voxelSize, voxel.Key.y * p_voxelSize, voxel.Key.z * p_voxelSize);
-
-            //Verts
-            m_convertedVerts.Add(voxelPos - right - up - forward);
-            m_convertedVerts.Add(voxelPos + right - up - forward);
-            m_convertedVerts.Add(voxelPos + right + up - forward);
-            m_convertedVerts.Add(voxelPos - right + up - forward);
-            m_convertedVerts.Add(voxelPos - right + up + forward);
-            m_convertedVerts.Add(voxelPos + right + up + forward);
-            m_convertedVerts.Add(voxelPos + right - up + forward);
-            m_convertedVerts.Add(voxelPos - right - up + forward);
-
-            //UVs
-            for (int i = 0; i < 8; i++)
+            foreach (KeyValuePair<Vector3Int, Vector2> voxel in m_voxelIntDetails)
             {
-                m_convertedUVs.Add(voxel.Value);
+                float halfVoxel = m_voxelSize / 2.0f;
+
+                Vector3 right = new Vector3(halfVoxel, 0.0f, 0.0f); // r = right l = left
+                Vector3 up = new Vector3(0.0f, halfVoxel, 0.0f); // u = up, d = down
+                Vector3 forward = new Vector3(0.0f, 0.0f, halfVoxel); // f = forward b = backward
+
+                //Vert indexes, if positon doesnt exiosts, new index, otherwise old index
+                int indexStart = m_convertedVerts.Count;
+
+                indexArray[0] = indexStart;
+                indexArray[1] = indexStart + 1;
+                indexArray[2] = indexStart + 2;
+                indexArray[3] = indexStart + 3;
+                indexArray[4] = indexStart + 4;
+                indexArray[5] = indexStart + 5;
+                indexArray[6] = indexStart + 6;
+                indexArray[7] = indexStart + 7;
+
+                Vector3 voxelPos = new Vector3(voxel.Key.x * p_voxelSize, voxel.Key.y * p_voxelSize, voxel.Key.z * p_voxelSize);
+                //Verts
+                m_convertedVerts.Add(voxelPos - right - up - forward);
+                m_convertedVerts.Add(voxelPos + right - up - forward);
+                m_convertedVerts.Add(voxelPos + right + up - forward);
+                m_convertedVerts.Add(voxelPos - right + up - forward);
+                m_convertedVerts.Add(voxelPos - right + up + forward);
+                m_convertedVerts.Add(voxelPos + right + up + forward);
+                m_convertedVerts.Add(voxelPos + right - up + forward);
+                m_convertedVerts.Add(voxelPos - right - up + forward);
+
+                //UVs
+                for (int i = 0; i < 8; i++)
+                {
+                    m_convertedUVs.Add(voxel.Value);
+                }
+
+                //Build tris
+                //Front Face
+                m_convertedTris.Add(indexArray[0]);
+                m_convertedTris.Add(indexArray[2]);
+                m_convertedTris.Add(indexArray[1]);
+
+                m_convertedTris.Add(indexArray[0]);
+                m_convertedTris.Add(indexArray[3]);
+                m_convertedTris.Add(indexArray[2]);
+
+                //Top Face  
+                m_convertedTris.Add(indexArray[2]);
+                m_convertedTris.Add(indexArray[3]);
+                m_convertedTris.Add(indexArray[4]);
+
+                m_convertedTris.Add(indexArray[2]);
+                m_convertedTris.Add(indexArray[4]);
+                m_convertedTris.Add(indexArray[5]);
+
+                //Right Face       
+                m_convertedTris.Add(indexArray[1]);
+                m_convertedTris.Add(indexArray[2]);
+                m_convertedTris.Add(indexArray[5]);
+
+                m_convertedTris.Add(indexArray[1]);
+                m_convertedTris.Add(indexArray[5]);
+                m_convertedTris.Add(indexArray[6]);
+
+                //Left Face           
+                m_convertedTris.Add(indexArray[0]);
+                m_convertedTris.Add(indexArray[7]);
+                m_convertedTris.Add(indexArray[4]);
+
+                m_convertedTris.Add(indexArray[0]);
+                m_convertedTris.Add(indexArray[4]);
+                m_convertedTris.Add(indexArray[3]);
+
+                //Back Face         
+                m_convertedTris.Add(indexArray[5]);
+                m_convertedTris.Add(indexArray[4]);
+                m_convertedTris.Add(indexArray[7]);
+
+                m_convertedTris.Add(indexArray[5]);
+                m_convertedTris.Add(indexArray[7]);
+                m_convertedTris.Add(indexArray[6]);
+
+                //Down Face          
+                m_convertedTris.Add(indexArray[0]);
+                m_convertedTris.Add(indexArray[6]);
+                m_convertedTris.Add(indexArray[7]);
+
+                m_convertedTris.Add(indexArray[0]);
+                m_convertedTris.Add(indexArray[1]);
+                m_convertedTris.Add(indexArray[6]);
+
+            }
+        }
+        else
+        {
+            Dictionary<Vector3Int, int> addedVerts = new Dictionary<Vector3Int, int>();
+            int currentIndex = 0;
+
+            foreach (KeyValuePair<Vector3Int, Vector2> voxel in m_voxelIntDetails)
+            {
+                Vector3Int voxelPos = voxel.Key;
+
+                Vector3Int right = new Vector3Int(1, 0, 0); // r = right l = left
+                Vector3Int up = new Vector3Int(0, 1, 0); // u = up, d = down
+                Vector3Int forward = new Vector3Int(0, 0, 1); // f = forward b = backward
+
+                indexArray[0] = AddJointVert(ref addedVerts, voxelPos, ref currentIndex, voxel.Value);
+                indexArray[1] = AddJointVert(ref addedVerts, voxelPos + right, ref currentIndex, voxel.Value);
+                indexArray[2] = AddJointVert(ref addedVerts, voxelPos + right + up, ref currentIndex, voxel.Value);
+                indexArray[3] = AddJointVert(ref addedVerts, voxelPos + up, ref currentIndex, voxel.Value);
+                indexArray[4] = AddJointVert(ref addedVerts, voxelPos + up + forward, ref currentIndex, voxel.Value);
+                indexArray[5] = AddJointVert(ref addedVerts, voxelPos + right + up + forward, ref currentIndex, voxel.Value);
+                indexArray[6] = AddJointVert(ref addedVerts, voxelPos + right + forward, ref currentIndex, voxel.Value);
+                indexArray[7] = AddJointVert(ref addedVerts, voxelPos + forward, ref currentIndex, voxel.Value);
+
+                //Build tris
+                //Front Face
+                m_convertedTris.Add(indexArray[0]);
+                m_convertedTris.Add(indexArray[2]);
+                m_convertedTris.Add(indexArray[1]);
+
+                m_convertedTris.Add(indexArray[0]);
+                m_convertedTris.Add(indexArray[3]);
+                m_convertedTris.Add(indexArray[2]);
+
+                //Top Face  
+                m_convertedTris.Add(indexArray[2]);
+                m_convertedTris.Add(indexArray[3]);
+                m_convertedTris.Add(indexArray[4]);
+
+                m_convertedTris.Add(indexArray[2]);
+                m_convertedTris.Add(indexArray[4]);
+                m_convertedTris.Add(indexArray[5]);
+
+                //Right Face       
+                m_convertedTris.Add(indexArray[1]);
+                m_convertedTris.Add(indexArray[2]);
+                m_convertedTris.Add(indexArray[5]);
+
+                m_convertedTris.Add(indexArray[1]);
+                m_convertedTris.Add(indexArray[5]);
+                m_convertedTris.Add(indexArray[6]);
+
+                //Left Face           
+                m_convertedTris.Add(indexArray[0]);
+                m_convertedTris.Add(indexArray[7]);
+                m_convertedTris.Add(indexArray[4]);
+
+                m_convertedTris.Add(indexArray[0]);
+                m_convertedTris.Add(indexArray[4]);
+                m_convertedTris.Add(indexArray[3]);
+
+                //Back Face         
+                m_convertedTris.Add(indexArray[5]);
+                m_convertedTris.Add(indexArray[4]);
+                m_convertedTris.Add(indexArray[7]);
+
+                m_convertedTris.Add(indexArray[5]);
+                m_convertedTris.Add(indexArray[7]);
+                m_convertedTris.Add(indexArray[6]);
+
+                //Down Face          
+                m_convertedTris.Add(indexArray[0]);
+                m_convertedTris.Add(indexArray[6]);
+                m_convertedTris.Add(indexArray[7]);
+
+                m_convertedTris.Add(indexArray[0]);
+                m_convertedTris.Add(indexArray[1]);
+                m_convertedTris.Add(indexArray[6]);
+
             }
 
-            //Build tris
-            //Front Face
-            m_convertedTris.Add(indexArray[0]);
-            m_convertedTris.Add(indexArray[2]);
-            m_convertedTris.Add(indexArray[1]);
+            Vector3[] verts = new Vector3[addedVerts.Count];
 
-            m_convertedTris.Add(indexArray[0]);
-            m_convertedTris.Add(indexArray[3]);
-            m_convertedTris.Add(indexArray[2]);
+            foreach (KeyValuePair<Vector3Int, int> vertPair in addedVerts)
+            {
+                verts[vertPair.Value] = new Vector3(vertPair.Key.x * p_voxelSize, vertPair.Key.y * p_voxelSize, vertPair.Key.z * p_voxelSize);
+            }
 
-            //Top Face  
-            m_convertedTris.Add(indexArray[2]);
-            m_convertedTris.Add(indexArray[3]);
-            m_convertedTris.Add(indexArray[4]);
-
-            m_convertedTris.Add(indexArray[2]);
-            m_convertedTris.Add(indexArray[4]);
-            m_convertedTris.Add(indexArray[5]);
-
-            //Right Face       
-            m_convertedTris.Add(indexArray[1]);
-            m_convertedTris.Add(indexArray[2]);
-            m_convertedTris.Add(indexArray[5]);
-
-            m_convertedTris.Add(indexArray[1]);
-            m_convertedTris.Add(indexArray[5]);
-            m_convertedTris.Add(indexArray[6]);
-
-            //Left Face           
-            m_convertedTris.Add(indexArray[0]);
-            m_convertedTris.Add(indexArray[7]);
-            m_convertedTris.Add(indexArray[4]);
-
-            m_convertedTris.Add(indexArray[0]);
-            m_convertedTris.Add(indexArray[4]);
-            m_convertedTris.Add(indexArray[3]);
-
-            //Back Face         
-            m_convertedTris.Add(indexArray[5]);
-            m_convertedTris.Add(indexArray[4]);
-            m_convertedTris.Add(indexArray[7]);
-
-            m_convertedTris.Add(indexArray[5]);
-            m_convertedTris.Add(indexArray[7]);
-            m_convertedTris.Add(indexArray[6]);
-
-            //Down Face          
-            m_convertedTris.Add(indexArray[0]);
-            m_convertedTris.Add(indexArray[6]);
-            m_convertedTris.Add(indexArray[7]);
-
-            m_convertedTris.Add(indexArray[0]);
-            m_convertedTris.Add(indexArray[1]);
-            m_convertedTris.Add(indexArray[6]);
+            m_convertedVerts.AddRange(verts);
         }
-
         yield break;
+    }
+
+    /// <summary>
+    /// Add in a joint vert to the dictionary
+    /// </summary>
+    /// <param name="p_addedVerts">Dictionary of already added in verts</param>
+    /// <param name="p_position">current vert postion</param>
+    /// <param name="p_index">current index</param>
+    /// <param name="p_UV">The UV of the given voxel</param>
+    /// <returns>What index is the vert found or been made</returns>
+    private int AddJointVert(ref Dictionary<Vector3Int, int> p_addedVerts, Vector3Int p_position, ref  int p_index, Vector2 p_UV)
+    {
+        if(p_addedVerts.TryGetValue(p_position, out int index)) //Already added
+        {
+            return index;
+        }
+        else
+        {
+            p_addedVerts.Add(p_position, p_index);
+            m_convertedUVs.Add(p_UV);
+            p_index++;
+            return p_index - 1;
+        }
     }
 
 

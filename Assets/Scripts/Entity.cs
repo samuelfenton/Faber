@@ -15,7 +15,7 @@ public class Entity : MonoBehaviour
     [HideInInspector]
     public SplinePhysics m_splinePhysics = null;
 
-    protected virtual void Start()
+    public virtual void InitEntity()
     {
         m_splinePhysics = GetComponent<SplinePhysics>();
 

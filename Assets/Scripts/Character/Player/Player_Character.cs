@@ -4,25 +4,22 @@ using UnityEngine;
 
 public class Player_Character : Character
 {
+    protected Player_StateMachine m_playerStateMachine = null;
     [HideInInspector]
-    public Player_StateMachine m_playerStateMachine = null;
-
     public CustomInput m_input = null;
 
-    protected override void Start()
+    public override void InitEntity()
     {
-        base.Start();
+        base.InitEntity();
 
-        m_playerStateMachine = GetComponent<Player_StateMachine>();
+        m_playerStateMachine = gameObject.AddComponent<Player_StateMachine>();
 
-        m_input = GetComponent<CustomInput>();
+        m_input = gameObject.AddComponent<CustomInput>();
 
         //Init
-        if (m_playerStateMachine != null)
-            m_playerStateMachine.InitStateMachine();//Run first as animation depends on states being created
+        m_playerStateMachine.InitStateMachine();//Run first as animation depends on states being created
 
-        if (m_playerStateMachine != null)
-            m_playerStateMachine.StartStateMachine();//Run intial state
+        m_playerStateMachine.StartStateMachine();//Run intial state
     }
 
     protected override void Update()

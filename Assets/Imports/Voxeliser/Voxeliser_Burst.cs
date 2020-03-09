@@ -17,13 +17,13 @@ public class Voxeliser_Burst : MonoBehaviour
     #if VOXELISER_MATHEMATICS_ENABLED && VOXELISER_BURST_ENABLED && VOXELISER_COLLECTIONS_ENABLED
     public struct VoxelDetails
     {
-        public VoxelDetails(float4 p_pos, float2 p_UV)
+        public VoxelDetails(int3 p_pos, float2 p_UV)
         {
             m_pos = p_pos;
             m_UV = p_UV;
         }
 
-        public float4 m_pos;
+        public int3 m_pos;
         public float2 m_UV;
     }
 
@@ -43,6 +43,8 @@ public class Voxeliser_Burst : MonoBehaviour
 
     //Advanced Settings
     [Header("Advanced Settings")]
+    [Tooltip("Should each voxel be its own 'Object' allowing for hard textures, vs more of a blend")]
+    public bool m_separatedVoxels = true;
     [Tooltip("Gameobject which holds the mesh for the voxeliser, with none assigned, assumption is mesh is on script gameobject")]
     public GameObject m_objectWithMesh = null;
     [Tooltip("Should this wait until end of frame")]
@@ -250,12 +252,12 @@ public class Voxeliser_Burst : MonoBehaviour
 
         if (m_performOverFrames)
         {
-            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
+            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, m_performOverFrames));
             yield return convertion;
         }
         else
         {
-            StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
+            StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, m_performOverFrames));
         }
 
         yield return null;
@@ -278,12 +280,12 @@ public class Voxeliser_Burst : MonoBehaviour
 
         if (m_performOverFrames)
         {
-            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
+            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, m_performOverFrames));
             yield return convertion;
         }
         else
         {
-            StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
+            StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, m_performOverFrames));
         }
 
         yield return null;
@@ -306,12 +308,12 @@ public class Voxeliser_Burst : MonoBehaviour
 
         if (m_performOverFrames)
         {
-            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
+            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, m_performOverFrames));
             yield return convertion;
         }
         else
         {
-            StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
+            StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, m_performOverFrames));
         }
 
         yield return null;
@@ -330,7 +332,7 @@ public class Voxeliser_Burst : MonoBehaviour
         if (!VerifyVaribles())
             yield break;
 
-        Coroutine convert = StartCoroutine(ConvertToVoxels(m_voxelSize, false));
+        Coroutine convert = StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, false));
         yield return convert;
 
         m_voxelMesh.Optimize();
@@ -345,8 +347,9 @@ public class Voxeliser_Burst : MonoBehaviour
     ///     Get mesh varibles(verts, tris, UVs) 
     /// </summary>
     /// <param name="p_voxelSize">stored value of voxel size</param>
+    /// <param name="p_seperatedVoxels">stored value of if the voxels will have shared verts</param>
     /// <param name="p_performOverFrames">stored value of if this operation should occur over several frames</param>
-    private IEnumerator ConvertToVoxels(float p_voxelSize, bool p_performOverFrames)
+    private IEnumerator ConvertToVoxels(float p_voxelSize, bool p_seperatedVoxels, bool p_performOverFrames)
     {
         Matrix4x4 localToWorld = m_objectWithMesh.transform.localToWorldMatrix;
         float4x4 localToWorldConverted = localToWorld;
@@ -382,7 +385,8 @@ public class Voxeliser_Burst : MonoBehaviour
             m_convertedVerts = m_convertedVerts,
             m_convertedUVs = m_convertedUVs,
             m_convertedTris = m_convertedTris,
-            m_voxelSize = p_voxelSize
+            m_voxelSize = p_voxelSize,
+            m_seperatedVoxels = p_seperatedVoxels
         };
 
         m_convertedMeshJobHandle = convertJob.Schedule(m_buildTriJobHandle);
@@ -436,13 +440,8 @@ public class Voxeliser_Burst : MonoBehaviour
         //UVs
         for (int i = 0; i < UVsCount; i++)
         {
-            int startingIndex = i * 8;
             Vector2 UV = new Vector2(tempUVs[i].x, tempUVs[i].y);
-            //UV shared by 8
-            for (int vertIndex = 0; vertIndex < 8; vertIndex++)
-            {
-                convertedUVs[startingIndex + vertIndex] = UV;
-            }
+            convertedUVs[i] = UV;
         }
 
         int[] tempTris = m_convertedTris.ToArray();
@@ -541,9 +540,13 @@ public class Voxeliser_Burst : MonoBehaviour
         public void Execute(int index)
         {
             //Float 4 varients due to matrix math
-            int3 vertA = GetSnappedInt3(math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[index * 3]], 1.0f)) * m_voxelSizeRatio);
-            int3 vertB = GetSnappedInt3(math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[index * 3 + 1]], 1.0f)) * m_voxelSizeRatio);
-            int3 vertC = GetSnappedInt3(math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[index * 3 + 2]], 1.0f)) * m_voxelSizeRatio);
+            float4 localVertA = math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[index * 3]], 1.0f)) * m_voxelSizeRatio;
+            float4 localVertB = math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[index * 3 +1]], 1.0f)) * m_voxelSizeRatio;
+            float4 localVertC = math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[index * 3 +2]], 1.0f)) * m_voxelSizeRatio;
+
+            int3 vertA = GetSnappedInt3(new float3(localVertA.x, localVertA.y, localVertA.z));
+            int3 vertB = GetSnappedInt3(new float3(localVertB.x, localVertB.y, localVertB.z));
+            int3 vertC = GetSnappedInt3(new float3(localVertC.x, localVertC.y, localVertC.z));
 
             //Has UV's been set?
             float2 vertAUV = new float2(0,0);
@@ -564,7 +567,7 @@ public class Voxeliser_Burst : MonoBehaviour
 
             for (int ABIndex = 0; ABIndex < ABDetails.Length; ABIndex++)
             {
-                BresenhamDrawEachPoint(Float4ToInt3(ABDetails[ABIndex].m_pos), vertC, ABDetails[ABIndex].m_UV, vertCUV, false, ABDetails);
+                BresenhamDrawEachPoint(ABDetails[ABIndex].m_pos, vertC, ABDetails[ABIndex].m_UV, vertCUV, false, ABDetails);
             }
         }
 
@@ -651,15 +654,13 @@ public class Voxeliser_Burst : MonoBehaviour
 
             float2 UV = MergeUVs(p_startUV, p_endUV, a2bPercent);
 
-            float3 snappedPoint = GetSnappedFloat3(p_currentPoint);
-
             if(p_shouldTempStore)
             {
-                p_tempStorage.Add(new VoxelDetails(new float4(snappedPoint, 1.0f), UV));
+                p_tempStorage.Add(new VoxelDetails(GetSnappedInt3(p_currentPoint), UV));
             }
             else
             {
-                m_voxelDetails.Enqueue(new VoxelDetails(new float4(snappedPoint, 1.0f), UV));
+                m_voxelDetails.Enqueue(new VoxelDetails(GetSnappedInt3(p_currentPoint), UV));
             }
         }
 
@@ -691,7 +692,7 @@ public class Voxeliser_Burst : MonoBehaviour
         /// </summary>
         /// <param name="p_vector">Vector to round to Vector3Int</param>
         /// <returns>final Vector3Int</returns>
-        private int3 GetSnappedInt3(float4 p_vector)
+        private int3 GetSnappedInt3(float3 p_vector)
         {
             return new int3((int)math.round(p_vector.x), (int)math.round(p_vector.y), (int)math.round(p_vector.z));
         }
@@ -763,6 +764,7 @@ public class Voxeliser_Burst : MonoBehaviour
     {
         [ReadOnly]
         public float m_voxelSize;
+        public bool m_seperatedVoxels;
         public NativeQueue<VoxelDetails> m_voxelDetails;
 
         [WriteOnly]
@@ -778,12 +780,8 @@ public class Voxeliser_Burst : MonoBehaviour
         /// </summary>
         public void Execute()
         {
-            float4 right = new float4(m_voxelSize / 2.0f, 0.0f, 0.0f, 0.0f) ; // r = right l = left
-            float4 up = new float4(0.0f, m_voxelSize / 2.0f, 0.0f, 0.0f); // u = up, d = down
-            float4 forward = new float4(0.0f, 0.0f, m_voxelSize / 2.0f, 0.0f); // f = forward b = backward
-
             //Get all unique
-            NativeList<float4> uniquePositions = new NativeList<float4>(Allocator.Temp);
+            NativeList<int3> uniquePositions = new NativeList<int3>(Allocator.Temp);
             NativeList<float2> uniqueUVs = new NativeList<float2>(Allocator.Temp);
 
             while (m_voxelDetails.Count > 0)
@@ -799,89 +797,216 @@ public class Voxeliser_Burst : MonoBehaviour
 
 
             NativeArray<int> indexArray = new NativeArray<int>(8, Allocator.Temp);
-
-            for (int i = 0; i < uniquePositions.Length; i++)
+            if (m_seperatedVoxels)
             {
-                float4 voxelPos = new float4(uniquePositions[i].x * m_voxelSize, uniquePositions[i].y * m_voxelSize, uniquePositions[i].z * m_voxelSize, uniquePositions[i].w);
+                for (int i = 0; i < uniquePositions.Length; i++)
+                {
+                    float4 voxelPos = new float4(uniquePositions[i].x * m_voxelSize, uniquePositions[i].y * m_voxelSize, uniquePositions[i].z * m_voxelSize, 1.0f);
 
-                //Verts
-                m_convertedVerts.Add(voxelPos - right - up - forward);
-                m_convertedVerts.Add(voxelPos + right - up - forward);
-                m_convertedVerts.Add(voxelPos + right + up - forward);
-                m_convertedVerts.Add(voxelPos - right + up - forward);
-                m_convertedVerts.Add(voxelPos - right + up + forward);
-                m_convertedVerts.Add(voxelPos + right + up + forward);
-                m_convertedVerts.Add(voxelPos + right - up + forward);
-                m_convertedVerts.Add(voxelPos - right - up + forward);
+                    float4 right = new float4(m_voxelSize / 2.0f, 0.0f, 0.0f, 0.0f); // r = right l = left
+                    float4 up = new float4(0.0f, m_voxelSize / 2.0f, 0.0f, 0.0f); // u = up, d = down
+                    float4 forward = new float4(0.0f, 0.0f, m_voxelSize / 2.0f, 0.0f); // f = forward b = backward
 
-                //UVs
-                m_convertedUVs.Add(uniqueUVs[i]);
+                    //Verts
+                    m_convertedVerts.Add(voxelPos - right - up - forward);
+                    m_convertedVerts.Add(voxelPos + right - up - forward);
+                    m_convertedVerts.Add(voxelPos + right + up - forward);
+                    m_convertedVerts.Add(voxelPos - right + up - forward);
+                    m_convertedVerts.Add(voxelPos - right + up + forward);
+                    m_convertedVerts.Add(voxelPos + right + up + forward);
+                    m_convertedVerts.Add(voxelPos + right - up + forward);
+                    m_convertedVerts.Add(voxelPos - right - up + forward);
 
-                //Vert indexes, if positon doesnt exiosts, new index, otherwise old index
-                int indexStart = i * 8;
-                indexArray[0] = indexStart;
-                indexArray[1] = indexStart + 1;
-                indexArray[2] = indexStart + 2;
-                indexArray[3] = indexStart + 3;
-                indexArray[4] = indexStart + 4;
-                indexArray[5] = indexStart + 5;
-                indexArray[6] = indexStart + 6;
-                indexArray[7] = indexStart + 7;
+                    //UVs Add in 8 for each vert added
+                    float2 UV = uniqueUVs[i];
+                    for (int UVIndex = 0; UVIndex < 8; UVIndex++)
+                    {
+                        m_convertedUVs.Add(UV);
+                    }
 
-                //Build tris
-                //Front Face
-                m_convertedTris.Add(indexArray[0]);
-                m_convertedTris.Add(indexArray[2]);
-                m_convertedTris.Add(indexArray[1]);
+                    //Vert indexes, if positon doesnt exiosts, new index, otherwise old index
+                    int indexStart = i * 8;
+                    indexArray[0] = indexStart;
+                    indexArray[1] = indexStart + 1;
+                    indexArray[2] = indexStart + 2;
+                    indexArray[3] = indexStart + 3;
+                    indexArray[4] = indexStart + 4;
+                    indexArray[5] = indexStart + 5;
+                    indexArray[6] = indexStart + 6;
+                    indexArray[7] = indexStart + 7;
 
-                m_convertedTris.Add(indexArray[0]);
-                m_convertedTris.Add(indexArray[3]);
-                m_convertedTris.Add(indexArray[2]);
+                    //Build tris
+                    //Front Face
+                    m_convertedTris.Add(indexArray[0]);
+                    m_convertedTris.Add(indexArray[2]);
+                    m_convertedTris.Add(indexArray[1]);
 
-                //Top Face  
-                m_convertedTris.Add(indexArray[2]);
-                m_convertedTris.Add(indexArray[3]);
-                m_convertedTris.Add(indexArray[4]);
+                    m_convertedTris.Add(indexArray[0]);
+                    m_convertedTris.Add(indexArray[3]);
+                    m_convertedTris.Add(indexArray[2]);
 
-                m_convertedTris.Add(indexArray[2]);
-                m_convertedTris.Add(indexArray[4]);
-                m_convertedTris.Add(indexArray[5]);
+                    //Top Face  
+                    m_convertedTris.Add(indexArray[2]);
+                    m_convertedTris.Add(indexArray[3]);
+                    m_convertedTris.Add(indexArray[4]);
 
-                //Right Face       
-                m_convertedTris.Add(indexArray[1]);
-                m_convertedTris.Add(indexArray[2]);
-                m_convertedTris.Add(indexArray[5]);
+                    m_convertedTris.Add(indexArray[2]);
+                    m_convertedTris.Add(indexArray[4]);
+                    m_convertedTris.Add(indexArray[5]);
 
-                m_convertedTris.Add(indexArray[1]);
-                m_convertedTris.Add(indexArray[5]);
-                m_convertedTris.Add(indexArray[6]);
+                    //Right Face       
+                    m_convertedTris.Add(indexArray[1]);
+                    m_convertedTris.Add(indexArray[2]);
+                    m_convertedTris.Add(indexArray[5]);
 
-                //Left Face           
-                m_convertedTris.Add(indexArray[0]);
-                m_convertedTris.Add(indexArray[7]);
-                m_convertedTris.Add(indexArray[4]);
+                    m_convertedTris.Add(indexArray[1]);
+                    m_convertedTris.Add(indexArray[5]);
+                    m_convertedTris.Add(indexArray[6]);
 
-                m_convertedTris.Add(indexArray[0]);
-                m_convertedTris.Add(indexArray[4]);
-                m_convertedTris.Add(indexArray[3]);
+                    //Left Face           
+                    m_convertedTris.Add(indexArray[0]);
+                    m_convertedTris.Add(indexArray[7]);
+                    m_convertedTris.Add(indexArray[4]);
 
-                //Back Face         
-                m_convertedTris.Add(indexArray[5]);
-                m_convertedTris.Add(indexArray[4]);
-                m_convertedTris.Add(indexArray[7]);
+                    m_convertedTris.Add(indexArray[0]);
+                    m_convertedTris.Add(indexArray[4]);
+                    m_convertedTris.Add(indexArray[3]);
 
-                m_convertedTris.Add(indexArray[5]);
-                m_convertedTris.Add(indexArray[7]);
-                m_convertedTris.Add(indexArray[6]);
+                    //Back Face         
+                    m_convertedTris.Add(indexArray[5]);
+                    m_convertedTris.Add(indexArray[4]);
+                    m_convertedTris.Add(indexArray[7]);
 
-                //Down Face          
-                m_convertedTris.Add(indexArray[0]);
-                m_convertedTris.Add(indexArray[6]);
-                m_convertedTris.Add(indexArray[7]);
+                    m_convertedTris.Add(indexArray[5]);
+                    m_convertedTris.Add(indexArray[7]);
+                    m_convertedTris.Add(indexArray[6]);
 
-                m_convertedTris.Add(indexArray[0]);
-                m_convertedTris.Add(indexArray[1]);
-                m_convertedTris.Add(indexArray[6]);
+                    //Down Face          
+                    m_convertedTris.Add(indexArray[0]);
+                    m_convertedTris.Add(indexArray[6]);
+                    m_convertedTris.Add(indexArray[7]);
+
+                    m_convertedTris.Add(indexArray[0]);
+                    m_convertedTris.Add(indexArray[1]);
+                    m_convertedTris.Add(indexArray[6]);
+                }
+            }
+            else
+            {
+                NativeHashMap<int3, int> addedVerts = new NativeHashMap<int3, int>(MAX_MESH_COUNT, Allocator.Temp);
+                int currentIndex = 0;
+
+                for (int i = 0; i < uniquePositions.Length; i++)
+                {
+                    if (addedVerts.Length + 8 >= MAX_MESH_COUNT)
+                        break;
+
+                    int3 voxelPos = uniquePositions[i];
+                    float2 UV = uniqueUVs[i];
+                    int3 right = new int3(1, 0, 0); // r = right l = left
+                    int3 up = new int3(0, 1, 0); // u = up, d = down
+                    int3 forward = new int3(0, 0, 1); // f = forward b = backward
+
+                    indexArray[0] = AddJointVert(ref addedVerts, voxelPos, ref currentIndex, UV);
+                    indexArray[1] = AddJointVert(ref addedVerts, voxelPos + right, ref currentIndex, UV);
+                    indexArray[2] = AddJointVert(ref addedVerts, voxelPos + right + up, ref currentIndex, UV);
+                    indexArray[3] = AddJointVert(ref addedVerts, voxelPos + up, ref currentIndex, UV);
+                    indexArray[4] = AddJointVert(ref addedVerts, voxelPos + up + forward, ref currentIndex, UV);
+                    indexArray[5] = AddJointVert(ref addedVerts, voxelPos + right + up + forward, ref currentIndex, UV);
+                    indexArray[6] = AddJointVert(ref addedVerts, voxelPos + right + forward, ref currentIndex, UV);
+                    indexArray[7] = AddJointVert(ref addedVerts, voxelPos + forward, ref currentIndex, UV);
+
+                    //Build tris
+                    //Front Face
+                    m_convertedTris.Add(indexArray[0]);
+                    m_convertedTris.Add(indexArray[2]);
+                    m_convertedTris.Add(indexArray[1]);
+
+                    m_convertedTris.Add(indexArray[0]);
+                    m_convertedTris.Add(indexArray[3]);
+                    m_convertedTris.Add(indexArray[2]);
+
+                    //Top Face  
+                    m_convertedTris.Add(indexArray[2]);
+                    m_convertedTris.Add(indexArray[3]);
+                    m_convertedTris.Add(indexArray[4]);
+
+                    m_convertedTris.Add(indexArray[2]);
+                    m_convertedTris.Add(indexArray[4]);
+                    m_convertedTris.Add(indexArray[5]);
+
+                    //Right Face       
+                    m_convertedTris.Add(indexArray[1]);
+                    m_convertedTris.Add(indexArray[2]);
+                    m_convertedTris.Add(indexArray[5]);
+
+                    m_convertedTris.Add(indexArray[1]);
+                    m_convertedTris.Add(indexArray[5]);
+                    m_convertedTris.Add(indexArray[6]);
+
+                    //Left Face           
+                    m_convertedTris.Add(indexArray[0]);
+                    m_convertedTris.Add(indexArray[7]);
+                    m_convertedTris.Add(indexArray[4]);
+
+                    m_convertedTris.Add(indexArray[0]);
+                    m_convertedTris.Add(indexArray[4]);
+                    m_convertedTris.Add(indexArray[3]);
+
+                    //Back Face         
+                    m_convertedTris.Add(indexArray[5]);
+                    m_convertedTris.Add(indexArray[4]);
+                    m_convertedTris.Add(indexArray[7]);
+
+                    m_convertedTris.Add(indexArray[5]);
+                    m_convertedTris.Add(indexArray[7]);
+                    m_convertedTris.Add(indexArray[6]);
+
+                    //Down Face          
+                    m_convertedTris.Add(indexArray[0]);
+                    m_convertedTris.Add(indexArray[6]);
+                    m_convertedTris.Add(indexArray[7]);
+
+                    m_convertedTris.Add(indexArray[0]);
+                    m_convertedTris.Add(indexArray[1]);
+                    m_convertedTris.Add(indexArray[6]);
+
+                }
+
+                NativeArray<float4> verts = new NativeArray<float4>(addedVerts.Length, Allocator.Temp);
+
+                NativeArray<int3> vertPos = addedVerts.GetKeyArray(Allocator.Temp);
+                NativeArray<int> vertindex = addedVerts.GetValueArray(Allocator.Temp);
+
+                for(int i = 0; i < vertPos.Length; i++)
+                {
+                    verts[vertindex[i]] = new float4(vertPos[i].x * m_voxelSize, vertPos[i].y * m_voxelSize, vertPos[i].z * m_voxelSize, 1.0f);
+                }
+
+                m_convertedVerts.AddRange(verts);
+            }
+        }
+
+            /// <summary>
+    /// Add in a joint vert to the dictionary
+    /// </summary>
+    /// <param name="p_addedVerts">Dictionary of already added in verts</param>
+    /// <param name="p_position">current vert postion</param>
+    /// <param name="p_index">current index</param>
+    /// <param name="p_UV">The UV of the given voxel</param>
+    /// <returns>What index is the vert found or been made</returns>
+    private int AddJointVert(ref NativeHashMap<int3, int> p_addedVerts, int3 p_position, ref int p_index, float2 p_UV)
+        {
+            if (p_addedVerts.TryGetValue(p_position, out int index)) //Already added
+            {
+                return index;
+            }
+            else
+            {
+                p_addedVerts.TryAdd(p_position, p_index);
+                m_convertedUVs.Add(p_UV);
+                p_index++;
+                return p_index - 1;
             }
         }
     }
