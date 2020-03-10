@@ -7,7 +7,8 @@ using System.Collections.Generic;
 public class Voxeliser : MonoBehaviour
 {
     private const int MAX_MESH_COUNT = 65535; //Mesh can have 65535 verts
-    private bool m_running = false;
+    private bool m_runFlag = false;
+    private bool m_processingFlag = false;
 
     [Header("Settings")]
     [Tooltip("Size of each voxel")]
@@ -32,7 +33,8 @@ public class Voxeliser : MonoBehaviour
     [Header("Specific Settings")]
     [Tooltip("Allow user to save static mesh at runtime in editor")]
     public bool m_saveStaticMesh = false;
-
+    [Tooltip("Should the rotation be reset when saving?")]
+    public bool m_resetRotation = false;
     //Passing Data
     private Dictionary<Vector3Int, Vector2> m_voxelIntDetails = new Dictionary<Vector3Int, Vector2>();
 
@@ -53,6 +55,7 @@ public class Voxeliser : MonoBehaviour
 
     //Animated
     private SkinnedMeshRenderer m_skinnedRenderer = null;
+    private Material[] m_orginalMats = new Material[0];
 
     private void Start()
     {
@@ -67,7 +70,7 @@ public class Voxeliser : MonoBehaviour
     {
         if (Application.IsPlaying(gameObject))
         {
-            if (m_running)
+            if (m_runFlag)
             {
                 if (m_voxelObject != null)
                     m_voxelObject.SetActive(true);
@@ -105,9 +108,10 @@ public class Voxeliser : MonoBehaviour
 #if UNITY_EDITOR
     private void Update()
     {
-        if (m_saveStaticMesh)
+        if (m_saveStaticMesh && !m_processingFlag)
         {
             m_saveStaticMesh = false;
+            m_processingFlag = true;
             StartCoroutine(SaveMesh());
         }
     }
@@ -144,6 +148,21 @@ public class Voxeliser : MonoBehaviour
         m_originalTris.AddRange(m_originalMesh.triangles);
         m_originalUVs.AddRange(m_originalMesh.uv);
 
+        MeshRenderer meshRenderer = m_objectWithMesh.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            m_orginalMats = meshRenderer.sharedMaterials;
+
+        }
+        else
+        {
+            SkinnedMeshRenderer skinnedMeshRenderer = m_objectWithMesh.GetComponent<SkinnedMeshRenderer>();
+            if (skinnedMeshRenderer != null)
+            {
+                m_orginalMats = skinnedMeshRenderer.sharedMaterials;
+            }
+        }
+
         //Running of voxeliser
         switch (m_voxeliserType)
         {
@@ -169,9 +188,9 @@ public class Voxeliser : MonoBehaviour
     /// </summary>
     public void InitVoxeliserSolid()
     {
-        DisableMaterial(m_objectWithMesh);
+        ToggleMaterial(m_objectWithMesh, false);
 
-        m_running = true;
+        m_runFlag = true;
 
         StartCoroutine(VoxeliserSolid());
     }
@@ -181,9 +200,9 @@ public class Voxeliser : MonoBehaviour
     /// </summary>
     public void InitVoxeliserDynamicSolid()
     {
-        DisableMaterial(m_objectWithMesh);
+        ToggleMaterial(m_objectWithMesh, false);
 
-        m_running = true;
+        m_runFlag = true;
 
         StartCoroutine(VoxeliserDynamicSolid());
     }
@@ -193,7 +212,7 @@ public class Voxeliser : MonoBehaviour
     /// </summary>
     public void InitVoxeliserAnimated()
     {
-        DisableMaterial(m_objectWithMesh);
+        ToggleMaterial(m_objectWithMesh, false);
 
         m_skinnedRenderer = m_objectWithMesh.GetComponent<SkinnedMeshRenderer>();
 
@@ -206,7 +225,7 @@ public class Voxeliser : MonoBehaviour
             return;
         }
 
-        m_running = true;
+        m_runFlag = true;
 
         StartCoroutine(VoxeliserAnimated());
     }
@@ -216,7 +235,7 @@ public class Voxeliser : MonoBehaviour
     /// </summary>
     public void InitVoxeliserStatic()
     {
-        DisableMaterial(m_objectWithMesh);
+        ToggleMaterial(m_objectWithMesh, false);
 
         StartCoroutine(VoxeliserStatic());
     }
@@ -232,12 +251,12 @@ public class Voxeliser : MonoBehaviour
 
         if (m_performOverFrames)
         {
-            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
+            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, m_performOverFrames));
             yield return convertion;
         }
         else
         {
-            StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
+            StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, m_performOverFrames));
         }
 
         yield return null;
@@ -262,12 +281,12 @@ public class Voxeliser : MonoBehaviour
 
         if (m_performOverFrames)
         {
-            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
+            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, m_performOverFrames));
             yield return convertion;
         }
         else
         {
-            StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
+            StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, m_performOverFrames));
         }
 
         yield return null;
@@ -292,12 +311,12 @@ public class Voxeliser : MonoBehaviour
 
         if (m_performOverFrames)
         {
-            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
+            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, m_performOverFrames));
             yield return convertion;
         }
         else
         {
-            StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
+            StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, m_performOverFrames));
         }
 
         yield return null;
@@ -314,18 +333,12 @@ public class Voxeliser : MonoBehaviour
         if (!VerifyVaribles())
             yield break;
 
-        Coroutine convert = StartCoroutine(ConvertToVoxels(m_voxelSize, false));
+        Coroutine convert = StartCoroutine(ConvertToVoxels(m_voxelSize, m_separatedVoxels, false));
         
         yield return convert;
 
         m_voxelMesh.Optimize();
 
-#if UNITY_EDITOR
-        if (m_saveStaticMesh)
-        {
-            SaveMesh();
-        }
-#endif
         yield break;
     }
 
@@ -336,8 +349,9 @@ public class Voxeliser : MonoBehaviour
     ///     Get mesh varibles(verts, tris, UVs) 
     /// </summary>
     /// <param name="p_voxelSize">stored value of voxel size</param>
+    /// <param name="p_seperatedVoxels">stored value of if the voxels will have shared verts</param>
     /// <param name="p_performOverFrames">stored value of if this operation should occur over several frames</param>
-    private IEnumerator ConvertToVoxels(float p_voxelSize, bool p_performOverFrames)
+    private IEnumerator ConvertToVoxels(float p_voxelSize, bool p_seperatedVoxels, bool p_performOverFrames)
     {
         //Reset Details
         m_voxelIntDetails.Clear();
@@ -349,13 +363,13 @@ public class Voxeliser : MonoBehaviour
         {
             Coroutine buildTris = StartCoroutine(BuildTriVoxels(voxelSizeRatio));
             yield return buildTris;
-            Coroutine getConverted = StartCoroutine(GetConvertedMesh(p_voxelSize));
+            Coroutine getConverted = StartCoroutine(GetConvertedMesh(p_voxelSize, p_seperatedVoxels));
             yield return getConverted;
         }
         else
         {
             StartCoroutine(BuildTriVoxels(voxelSizeRatio));
-            StartCoroutine(GetConvertedMesh(p_voxelSize));
+            StartCoroutine(GetConvertedMesh(p_voxelSize, p_seperatedVoxels));
         }
 
         //Build new mesh
@@ -567,7 +581,8 @@ public class Voxeliser : MonoBehaviour
     /// Vertices will overlap, this is ensure each "Voxel" has its own flat colour
     /// </summary>
     /// <param name="p_voxelSize">Actual VoxelSize</param>
-    private IEnumerator GetConvertedMesh(float p_voxelSize)
+    /// <param name="p_seperatedVoxels">Will voxels have own unique verts</param>
+    private IEnumerator GetConvertedMesh(float p_voxelSize, bool p_seperatedVoxels)
     {
         m_convertedVerts.Clear();//8 verts per voxel
         m_convertedUVs.Clear();//one per vert
@@ -575,7 +590,7 @@ public class Voxeliser : MonoBehaviour
 
         int[] indexArray = new int[8];
 
-        if (m_separatedVoxels)
+        if (p_seperatedVoxels)
         {
             foreach (KeyValuePair<Vector3Int, Vector2> voxel in m_voxelIntDetails)
             {
@@ -811,7 +826,7 @@ public class Voxeliser : MonoBehaviour
             #if UNITY_EDITOR
                 Debug.Log(name + " orginal object is missing");
 #endif
-                m_running = false;
+                m_runFlag = false;
 
                 return false;
             }
@@ -825,7 +840,7 @@ public class Voxeliser : MonoBehaviour
 #if UNITY_EDITOR
                 Debug.Log(name + " orginal mesh is missing or mesh has no vertices");
 #endif
-                m_running = false;
+                m_runFlag = false;
 
                 return false;
             }
@@ -837,7 +852,7 @@ public class Voxeliser : MonoBehaviour
 #if UNITY_EDITOR
             Debug.Log(name + " voxel object is missing");
 #endif
-            m_running = false;
+            m_runFlag = false;
 
             return false;
         }
@@ -852,7 +867,7 @@ public class Voxeliser : MonoBehaviour
 #if UNITY_EDITOR
                     Debug.Log(name + " skinned mesh renderer is missing, maybe its intended to be solid or static?");
 #endif
-                    m_running = false;
+                    m_runFlag = false;
 
                     return false;
                 }
@@ -871,10 +886,28 @@ public class Voxeliser : MonoBehaviour
         //Saving of static mesh
         if (m_voxeliserType == VOXELISER_TYPE.STATIC)
         {
-            //Verify as static
-            Coroutine convert = StartCoroutine(InitVoxeliser());
-            yield return convert;
+            if (m_objectWithMesh == null)
+                m_objectWithMesh = gameObject;
 
+            //Store transform
+            Vector3 orginalPos = m_objectWithMesh.transform.position;
+            Quaternion orginalRot = m_objectWithMesh.transform.rotation;
+
+            m_objectWithMesh.transform.position = Vector3.zero;
+            if (m_resetRotation)
+                m_objectWithMesh.transform.rotation = Quaternion.identity;
+
+            Coroutine saveConvert = StartCoroutine(InitVoxeliser());
+
+            yield return saveConvert;
+
+            m_voxelMesh.Optimize();
+
+            m_objectWithMesh.transform.position = orginalPos;
+            if (m_resetRotation)
+                m_objectWithMesh.transform.rotation = orginalRot;
+
+            //Verify as static
             MeshFilter meshFilter = m_voxelObject.GetComponent<MeshFilter>();
 
             if (meshFilter != null)
@@ -882,7 +915,7 @@ public class Voxeliser : MonoBehaviour
                 //Get mesh
                 Mesh savingMesh = meshFilter.sharedMesh;
                 savingMesh.name = "Voxelised_" + savingMesh.name;
-                string path = EditorUtility.SaveFilePanel("Save Voxel Mesh: " + name, "Assets/", "Voxelised-" + name, "asset");
+                string path = EditorUtility.SaveFilePanel("Save Voxel Mesh: " + name, "Assets/", "Voxelised-" + name + ".mesh", "mesh");
                 if (!string.IsNullOrEmpty(path))
                 {
                     path = FileUtil.GetProjectRelativePath(path);
@@ -893,14 +926,18 @@ public class Voxeliser : MonoBehaviour
                     AssetDatabase.SaveAssets();
                 }
             }
+
             m_saveStaticMesh = false;
+
+            DestroyImmediate(m_voxelObject);
+            ToggleMaterial(m_objectWithMesh, true);
         }
         else
         {
             Debug.Log("Can only save when set to static");
         }
 
-        enabled = false;
+        m_processingFlag = false;
 
         yield break;
     }
@@ -911,7 +948,7 @@ public class Voxeliser : MonoBehaviour
     /// </summary>
     /// <param name="p_object">object to get mesh for</param>
     /// <returns>correct mesh based off avalibilty of renderers in children</returns>
-    private static Mesh GetMesh(GameObject p_object)
+    private Mesh GetMesh(GameObject p_object)
     {
         if (p_object == null) //Early breakout
             return null;
@@ -943,7 +980,8 @@ public class Voxeliser : MonoBehaviour
     /// Remove all materials attached to an object
     /// </summary>
     /// <param name="p_object">object to remove material from</param>
-    private static void DisableMaterial(GameObject p_object)
+    /// <param name="p_val">Value to give material</param>
+    private void ToggleMaterial(GameObject p_object, bool p_val)
     {
         if (p_object == null)
             return;
@@ -951,13 +989,29 @@ public class Voxeliser : MonoBehaviour
         MeshRenderer meshRenderer = p_object.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
         {
-            meshRenderer.materials = new Material[0];
+            if (p_val)
+            {
+                meshRenderer.materials = m_orginalMats;
+            }
+            else
+            {
+                meshRenderer.materials = new Material[0];
+            }
         }
         else
         {
             SkinnedMeshRenderer skinnedMeshRenderer = p_object.GetComponent<SkinnedMeshRenderer>();
             if (skinnedMeshRenderer != null)
-                skinnedMeshRenderer.materials = new Material[0];
+            {
+                if (p_val)
+                {
+                    skinnedMeshRenderer.materials = m_orginalMats;
+                }
+                else
+                {
+                    skinnedMeshRenderer.materials = new Material[0];
+                }
+            }
         }
     }
 
@@ -966,7 +1020,7 @@ public class Voxeliser : MonoBehaviour
     /// </summary>
     /// <param name="p_object">object to remove material from</param>
     /// <returns></returns>
-    private static Material GetMaterial(GameObject p_object)
+    private Material GetMaterial(GameObject p_object)
     {
         MeshRenderer meshRenderer = p_object.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
@@ -989,7 +1043,7 @@ public class Voxeliser : MonoBehaviour
     /// <param name="p_skinnedMeshRenderer">Renderer to bake</param>
     /// <param name="p_object">Object which contains the transforms</param>
     /// <returns>A baked mesh without any transforms applied</returns>
-    private static Mesh GetBakedVerts(SkinnedMeshRenderer p_skinnedMeshRenderer, GameObject p_object)
+    private Mesh GetBakedVerts(SkinnedMeshRenderer p_skinnedMeshRenderer, GameObject p_object)
     {
         Mesh bakedMesh = new Mesh();
 

@@ -28,7 +28,8 @@ public class Voxeliser_Burst : MonoBehaviour
     }
 
     private const int MAX_MESH_COUNT = 65535; //Mesh can have 65535 verts
-    private bool m_running = false;
+    private bool m_runFlag = false;
+    private bool m_processingFlag = false;
 
     [Header("Settings")]
     [Tooltip("Size of each voxel")]
@@ -53,6 +54,8 @@ public class Voxeliser_Burst : MonoBehaviour
     [Header("Specific Settings")]
     [Tooltip("Allow user to save static mesh at runtime in editor")]
     public bool m_saveStaticMesh = false;
+    [Tooltip("Should the rotation be reset when saving?")]
+    public bool m_resetRotation = false;
 
     private GameObject m_voxelObject = null;
     private Mesh m_originalMesh = null;
@@ -60,6 +63,7 @@ public class Voxeliser_Burst : MonoBehaviour
 
     //Animated
     private SkinnedMeshRenderer m_skinnedRenderer = null;
+    private Material[] m_orginalMats = new Material[0];
 
     private void Start()
     {
@@ -74,7 +78,7 @@ public class Voxeliser_Burst : MonoBehaviour
     {
         if (Application.IsPlaying(gameObject))
         {
-            if(m_running)
+            if(m_runFlag)
             {
                 if (m_voxelObject != null)
                     m_voxelObject.SetActive(true);
@@ -115,9 +119,10 @@ public class Voxeliser_Burst : MonoBehaviour
 #if UNITY_EDITOR
     private void Update()
     {
-        if (m_saveStaticMesh)
+        if (m_saveStaticMesh && !m_processingFlag)
         {
             m_saveStaticMesh = false;
+            m_processingFlag = true;
             StartCoroutine(SaveMesh());
         }
     }
@@ -166,6 +171,22 @@ public class Voxeliser_Burst : MonoBehaviour
         m_convertedUVs = new NativeList<float2>(Allocator.Persistent);
         m_convertedTris = new NativeList<int>(Allocator.Persistent);
 
+        MeshRenderer meshRenderer = m_objectWithMesh.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            m_orginalMats = meshRenderer.sharedMaterials;
+
+        }
+        else
+        {
+            SkinnedMeshRenderer skinnedMeshRenderer = m_objectWithMesh.GetComponent<SkinnedMeshRenderer>();
+            if (skinnedMeshRenderer != null)
+            {
+                m_orginalMats = skinnedMeshRenderer.sharedMaterials;
+
+            }
+        }
+
         //Running of voxeliser
         switch (m_voxeliserType)
         {
@@ -191,9 +212,9 @@ public class Voxeliser_Burst : MonoBehaviour
     /// </summary>
     public void InitVoxeliserSolid()
     {
-        DisableMaterial(m_objectWithMesh);
+        ToggleMaterial(m_objectWithMesh, false);
 
-        m_running = true;
+        m_runFlag = true;
 
         StartCoroutine(VoxeliserSolid());
     }
@@ -203,9 +224,9 @@ public class Voxeliser_Burst : MonoBehaviour
     /// </summary>
     public void InitVoxeliserDynamicSolid()
     {
-        DisableMaterial(m_objectWithMesh);
+        ToggleMaterial(m_objectWithMesh, false);
 
-        m_running = true;
+        m_runFlag = true;
 
         StartCoroutine(VoxeliserDynamicSolid());
     }
@@ -215,7 +236,7 @@ public class Voxeliser_Burst : MonoBehaviour
     /// </summary>
     public void InitVoxeliserAnimated()
     {
-        DisableMaterial(m_objectWithMesh);
+        ToggleMaterial(m_objectWithMesh, false);
 
         m_skinnedRenderer = m_objectWithMesh.GetComponent<SkinnedMeshRenderer>();
 
@@ -227,7 +248,7 @@ public class Voxeliser_Burst : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        m_running = true;
+        m_runFlag = true;
         StartCoroutine(VoxeliserAnimated());
     }
 
@@ -236,7 +257,7 @@ public class Voxeliser_Burst : MonoBehaviour
     /// </summary>
     public void InitVoxeliserStatic()
     {
-        DisableMaterial(m_objectWithMesh);
+        ToggleMaterial(m_objectWithMesh, false);
 
         StartCoroutine(VoxeliserStatic());
     }
@@ -744,17 +765,6 @@ public class Voxeliser_Burst : MonoBehaviour
         {
             return math.sqrt(p_val.x * p_val.x + p_val.y * p_val.y + p_val.z * p_val.z);
         }
-
-        /// <summary>
-        /// Convert float3 to int3
-        /// </summary>
-        /// <param name="p_val">Float 3 to convert</param>
-        /// <returns>int3</returns>
-        private int3 Float4ToInt3(float4 p_val)
-        {
-            return new int3((int)p_val.x, (int)p_val.y, (int)p_val.z);
-        }
-
         #endregion
     }
 
@@ -1039,7 +1049,7 @@ public class Voxeliser_Burst : MonoBehaviour
 #if UNITY_EDITOR
                 Debug.Log(name + " orginal object is missing");
 #endif
-                m_running = false;
+                m_runFlag = false;
 
                 return false;
             }
@@ -1053,7 +1063,7 @@ public class Voxeliser_Burst : MonoBehaviour
 #if UNITY_EDITOR
                 Debug.Log(name + " orginal mesh is missing or mesh has no vertices");
 #endif
-                m_running = false;
+                m_runFlag = false;
 
                 return false;
             }
@@ -1065,7 +1075,7 @@ public class Voxeliser_Burst : MonoBehaviour
 #if UNITY_EDITOR
             Debug.Log(name + " voxel object is missing");
 #endif
-            m_running = false;
+            m_runFlag = false;
 
             return false;
         }
@@ -1080,7 +1090,7 @@ public class Voxeliser_Burst : MonoBehaviour
 #if UNITY_EDITOR
                     Debug.Log(name + " skinned mesh renderer is missing, maybe its intended to be solid or static?");
 #endif
-                    m_running = false;
+                    m_runFlag = false;
 
                     return false;
                 }
@@ -1099,10 +1109,28 @@ public class Voxeliser_Burst : MonoBehaviour
         //Saving of static mesh
         if (m_voxeliserType == VOXELISER_TYPE.STATIC)
         {
-            //Verify as static
-            Coroutine convert = StartCoroutine(InitVoxeliser());
-            yield return convert;
+            if (m_objectWithMesh == null)
+                m_objectWithMesh = gameObject;
 
+            //Store transform
+            Vector3 orginalPos = m_objectWithMesh.transform.position;
+            Quaternion orginalRot = m_objectWithMesh.transform.rotation;
+
+            m_objectWithMesh.transform.position = Vector3.zero;
+            if (m_resetRotation)
+                m_objectWithMesh.transform.rotation = Quaternion.identity;
+
+            Coroutine saveConvert = StartCoroutine(InitVoxeliser());
+
+            yield return saveConvert;
+
+            m_voxelMesh.Optimize();
+
+            m_objectWithMesh.transform.position = orginalPos;
+            if (m_resetRotation)
+                m_objectWithMesh.transform.rotation = orginalRot;
+
+            //Verify as static
             MeshFilter meshFilter = m_voxelObject.GetComponent<MeshFilter>();
 
             if (meshFilter != null)
@@ -1110,8 +1138,7 @@ public class Voxeliser_Burst : MonoBehaviour
                 //Get mesh
                 Mesh savingMesh = meshFilter.sharedMesh;
                 savingMesh.name = "Voxelised_" + savingMesh.name;
-
-                string path = EditorUtility.SaveFilePanel("Save Voxel Mesh: " + name, "Assets/", "Voxelised-" + name, "asset");
+                string path = EditorUtility.SaveFilePanel("Save Voxel Mesh: " + name, "Assets/", "Voxelised-" + name + ".mesh", "mesh");
                 if (!string.IsNullOrEmpty(path))
                 {
                     path = FileUtil.GetProjectRelativePath(path);
@@ -1122,13 +1149,18 @@ public class Voxeliser_Burst : MonoBehaviour
                     AssetDatabase.SaveAssets();
                 }
             }
+
+            m_saveStaticMesh = false;
+
+            DestroyImmediate(m_voxelObject);
+            ToggleMaterial(m_objectWithMesh, true);
         }
         else
         {
             Debug.Log("Can only save when set to static");
         }
 
-        enabled = false;
+        m_processingFlag = false;
 
         yield break;
     }
@@ -1140,7 +1172,7 @@ public class Voxeliser_Burst : MonoBehaviour
     /// </summary>
     /// <param name="p_object">object to get mesh for</param>
     /// <returns>correct mesh based off avalibilty of renderers in children</returns>
-    private static Mesh GetMesh(GameObject p_object)
+    private Mesh GetMesh(GameObject p_object)
     {
         if (p_object == null) //Early breakout
             return null;
@@ -1172,7 +1204,8 @@ public class Voxeliser_Burst : MonoBehaviour
     /// Remove all materials attached to an object
     /// </summary>
     /// <param name="p_object">object to remove material from</param>
-    private static void DisableMaterial(GameObject p_object)
+    /// <param name="p_val">Value to give material</param>
+    private void ToggleMaterial(GameObject p_object, bool p_val)
     {
         if (p_object == null)
             return;
@@ -1180,13 +1213,29 @@ public class Voxeliser_Burst : MonoBehaviour
         MeshRenderer meshRenderer = p_object.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
         {
-            meshRenderer.materials = new Material[0];
+            if (p_val)
+            {
+                meshRenderer.materials = m_orginalMats;
+            }
+            else
+            {
+                meshRenderer.materials = new Material[0];
+            }
         }
         else
         {
             SkinnedMeshRenderer skinnedMeshRenderer = p_object.GetComponent<SkinnedMeshRenderer>();
             if (skinnedMeshRenderer != null)
-                skinnedMeshRenderer.materials = new Material[0];
+            {
+                if (p_val)
+                {
+                    skinnedMeshRenderer.materials = m_orginalMats;
+                }
+                else
+                {
+                    skinnedMeshRenderer.materials = new Material[0];
+                }
+            }
         }
     }
 
@@ -1195,7 +1244,7 @@ public class Voxeliser_Burst : MonoBehaviour
     /// </summary>
     /// <param name="p_object">object to remove material from</param>
     /// <returns></returns>
-    private static Material GetMaterial(GameObject p_object)
+    private Material GetMaterial(GameObject p_object)
     {
         MeshRenderer meshRenderer = p_object.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
@@ -1218,7 +1267,7 @@ public class Voxeliser_Burst : MonoBehaviour
     /// <param name="p_skinnedMeshRenderer">Renderer to bake</param>
     /// <param name="p_object">Object which contains the transforms</param>
     /// <returns>A baked mesh without any transforms applied</returns>
-    private static Mesh GetBakedVerts(SkinnedMeshRenderer p_skinnedMeshRenderer, GameObject p_object)
+    private Mesh GetBakedVerts(SkinnedMeshRenderer p_skinnedMeshRenderer, GameObject p_object)
     {
         Mesh bakedMesh = new Mesh();
 

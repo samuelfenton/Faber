@@ -674,6 +674,81 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: abac956f2d866ac418316991653ea190, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0cf3e7267b237a14792425f8c049c655, type: 3}
+--- !u!21 &1507694009
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: VoxelCharacter_Material (Instance)
+  m_Shader: {fileID: 10752, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: d06257f2988b93e44aefeb58d185007f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BumpScale: 1
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _Metallic: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _UVSec: 0
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &1522907444 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100054, guid: 0cf3e7267b237a14792425f8c049c655,
@@ -695,9 +770,11 @@ MonoBehaviour:
   m_voxelSize: 0.05
   m_voxeliserType: 2
   m_performOverFrames: 1
+  m_separatedVoxels: 1
   m_objectWithMesh: {fileID: 28114743}
   m_delayedInitialisation: 0
   m_saveStaticMesh: 0
+  m_resetRotation: 0
 --- !u!1001 &1708222711
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -802,9 +879,29 @@ PrefabInstance:
       propertyPath: m_Name
       value: VoxelCharacter(Voxeliser)
       objectReference: {fileID: 0}
+    - target: {fileID: 400032, guid: 0cf3e7267b237a14792425f8c049c655, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.07961077
+      objectReference: {fileID: 0}
+    - target: {fileID: 400032, guid: 0cf3e7267b237a14792425f8c049c655, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.060515527
+      objectReference: {fileID: 0}
+    - target: {fileID: 400032, guid: 0cf3e7267b237a14792425f8c049c655, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400032, guid: 0cf3e7267b237a14792425f8c049c655, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400032, guid: 0cf3e7267b237a14792425f8c049c655, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 400054, guid: 0cf3e7267b237a14792425f8c049c655, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 400054, guid: 0cf3e7267b237a14792425f8c049c655, type: 3}
       propertyPath: m_LocalPosition.y
@@ -850,6 +947,18 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: abac956f2d866ac418316991653ea190, type: 2}
+    - target: {fileID: 13700000, guid: 0cf3e7267b237a14792425f8c049c655, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 13700000, guid: 0cf3e7267b237a14792425f8c049c655, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 13700000, guid: 0cf3e7267b237a14792425f8c049c655, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 1507694009}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0cf3e7267b237a14792425f8c049c655, type: 3}
 --- !u!1 &2096887195 stripped
@@ -873,6 +982,8 @@ MonoBehaviour:
   m_voxelSize: 0.05
   m_voxeliserType: 2
   m_performOverFrames: 1
+  m_separatedVoxels: 1
   m_objectWithMesh: {fileID: 46803909}
   m_delayedInitialisation: 0
   m_saveStaticMesh: 0
+  m_resetRotation: 0
