@@ -15,19 +15,9 @@ using Unity.Mathematics;
 public class Voxeliser_Burst : MonoBehaviour
 {
     #if VOXELISER_MATHEMATICS_ENABLED && VOXELISER_BURST_ENABLED && VOXELISER_COLLECTIONS_ENABLED
-    public struct VoxelDetails
-    {
-        public VoxelDetails(int3 p_pos, float2 p_UV)
-        {
-            m_pos = p_pos;
-            m_UV = p_UV;
-        }
-
-        public int3 m_pos;
-        public float2 m_UV;
-    }
 
     private const int MAX_MESH_COUNT = 65535; //Mesh can have 65535 verts
+    private const int MAX_VOXEL_COUNT = 8191; //Mesh can have 65535 verts
     private bool m_runFlag = false;
     private bool m_processingFlag = false;
 
@@ -119,11 +109,14 @@ public class Voxeliser_Burst : MonoBehaviour
 #if UNITY_EDITOR
     private void Update()
     {
-        if (m_saveStaticMesh && !m_processingFlag)
+        if (!Application.IsPlaying(gameObject))
         {
-            m_saveStaticMesh = false;
-            m_processingFlag = true;
-            StartCoroutine(SaveMesh());
+            if (m_saveStaticMesh && !m_processingFlag)
+            {
+                m_saveStaticMesh = false;
+                m_processingFlag = true;
+                StartCoroutine(SaveMesh());
+            }
         }
     }
 #endif
@@ -163,9 +156,14 @@ public class Voxeliser_Burst : MonoBehaviour
         {
             m_originalUVs[i] = m_originalMesh.uv[i];
         }
+       
         m_originalTris = new NativeArray<int>(m_originalMesh.triangles, Allocator.Persistent);
+        
+        m_orginalVerts.CopyFrom(m_originalMesh.vertices);
 
-        m_voxelDetails = new NativeQueue<VoxelDetails>(Allocator.Persistent);
+        m_voxelDetails = new NativeHashMap<int3, float2>(MAX_VOXEL_COUNT, Allocator.Persistent);
+        m_ABPoints = new NativeQueue<int3>(Allocator.Persistent);
+        m_ABUVs = new NativeQueue<float2>(Allocator.Persistent);
 
         m_convertedVerts = new NativeList<float4>(Allocator.Persistent);
         m_convertedUVs = new NativeList<float2>(Allocator.Persistent);
@@ -377,9 +375,6 @@ public class Voxeliser_Burst : MonoBehaviour
 
         float voxelSizeRatio = 1.0f / p_voxelSize;
 
-        //Reset Details
-        m_orginalVerts.CopyFrom(m_originalMesh.vertices);
-
         m_voxelDetails.Clear();
 
         m_convertedVerts.Clear();
@@ -394,11 +389,13 @@ public class Voxeliser_Burst : MonoBehaviour
             m_tris = m_originalTris,
             m_verts = m_orginalVerts,
             m_uvs = m_originalUVs,
-            m_voxelDetails = m_voxelDetails.AsParallelWriter(),
-            m_voxelSizeRatio = voxelSizeRatio
+            m_voxelSizeRatio = voxelSizeRatio,
+            m_voxelDetails = m_voxelDetails,
+            m_ABPoints = m_ABPoints,
+            m_ABUVs = m_ABUVs
         };
 
-        m_buildTriJobHandle = triJob.Schedule(m_originalTris.Length / 3, 16);
+        m_buildTriJobHandle = triJob.Schedule();
 
         GetConvertedMesh convertJob = new GetConvertedMesh()
         {
@@ -503,6 +500,10 @@ public class Voxeliser_Burst : MonoBehaviour
 
         if (m_voxelDetails.IsCreated)
             m_voxelDetails.Dispose();
+        if (m_ABPoints.IsCreated)
+            m_ABPoints.Dispose(); 
+        if (m_ABUVs.IsCreated)
+            m_ABUVs.Dispose();
 
         if (m_convertedVerts.IsCreated)
             m_convertedVerts.Dispose();
@@ -522,8 +523,9 @@ public class Voxeliser_Burst : MonoBehaviour
     private NativeArray<float2> m_originalUVs;
 
     //Passing Data
-    private NativeQueue<VoxelDetails> m_voxelDetails;
-
+    private NativeHashMap<int3, float2> m_voxelDetails;
+    private NativeQueue<int3> m_ABPoints;
+    private NativeQueue<float2> m_ABUVs;
     //Outputs
     private NativeList<float4> m_convertedVerts; // unknown size
     private NativeList<float2> m_convertedUVs; //size of verts
@@ -533,7 +535,7 @@ public class Voxeliser_Burst : MonoBehaviour
     private JobHandle m_convertedMeshJobHandle;
 
     [BurstCompile]
-    private struct BuildTriVoxels : IJobParallelFor
+    private struct BuildTriVoxels : IJob
     {
         [ReadOnly]
         public float m_voxelSize;
@@ -550,45 +552,53 @@ public class Voxeliser_Burst : MonoBehaviour
         [ReadOnly]
         public float m_voxelSizeRatio;
 
-        public NativeQueue<VoxelDetails>.ParallelWriter m_voxelDetails;
+        public NativeHashMap<int3, float2> m_voxelDetails;
+        public NativeQueue<int3> m_ABPoints;
+        public NativeQueue<float2> m_ABUVs;
 
         /// <summary>
         /// Build the voxel plavcment based off 3 tris
         /// Uses the Bresenham's line algorithum to find points from vert A to vert B
         /// Using the same approach points are calculated from thje previously found points to vert C
         /// </summary>
-        /// <param name="index">Triangle index</param>
-        public void Execute(int index)
+        public void Execute()
         {
-            //Float 4 varients due to matrix math
-            float4 localVertA = math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[index * 3]], 1.0f)) * m_voxelSizeRatio;
-            float4 localVertB = math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[index * 3 +1]], 1.0f)) * m_voxelSizeRatio;
-            float4 localVertC = math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[index * 3 +2]], 1.0f)) * m_voxelSizeRatio;
-
-            int3 vertA = GetSnappedInt3(new float3(localVertA.x, localVertA.y, localVertA.z));
-            int3 vertB = GetSnappedInt3(new float3(localVertB.x, localVertB.y, localVertB.z));
-            int3 vertC = GetSnappedInt3(new float3(localVertC.x, localVertC.y, localVertC.z));
-
-            //Has UV's been set?
-            float2 vertAUV = new float2(0,0);
-            float2 vertBUV = vertAUV;
-            float2 vertCUV = vertAUV;
-
-            if (m_uvs.Length != 0)
+            for (int triIndex = 0; triIndex < m_tris.Length/3; triIndex++)
             {
-                vertAUV = m_uvs[m_tris[index * 3]];
-                vertBUV = m_uvs[m_tris[index * 3 + 1]];
-                vertCUV = m_uvs[m_tris[index * 3 + 2]];
-            }
+                if(m_voxelDetails.Length >= m_voxelDetails.Capacity - 1)
+                    return;
 
-            NativeList<VoxelDetails> ABDetails = new NativeList<VoxelDetails>(Allocator.Temp);
+                //Float 4 varients due to matrix math
+                float4 localVertA = math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[triIndex * 3]], 1.0f)) * m_voxelSizeRatio;
+                float4 localVertB = math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[triIndex * 3 + 1]], 1.0f)) * m_voxelSizeRatio;
+                float4 localVertC = math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[triIndex * 3 + 2]], 1.0f)) * m_voxelSizeRatio;
 
-            //Initial line
-            BresenhamDrawEachPoint(vertA, vertB, vertAUV, vertBUV, true, ABDetails);
+                int3 vertA = GetSnappedInt3(new float3(localVertA.x, localVertA.y, localVertA.z));
+                int3 vertB = GetSnappedInt3(new float3(localVertB.x, localVertB.y, localVertB.z));
+                int3 vertC = GetSnappedInt3(new float3(localVertC.x, localVertC.y, localVertC.z));
 
-            for (int ABIndex = 0; ABIndex < ABDetails.Length; ABIndex++)
-            {
-                BresenhamDrawEachPoint(ABDetails[ABIndex].m_pos, vertC, ABDetails[ABIndex].m_UV, vertCUV, false, ABDetails);
+                //Has UV's been set?
+                float2 vertAUV = new float2(0, 0);
+                float2 vertBUV = vertAUV;
+                float2 vertCUV = vertAUV;
+
+                if (m_uvs.Length != 0)
+                {
+                    vertAUV = m_uvs[m_tris[triIndex * 3]];
+                    vertBUV = m_uvs[m_tris[triIndex * 3 + 1]];
+                    vertCUV = m_uvs[m_tris[triIndex * 3 + 2]];
+                }
+
+                //Initial line
+                BresenhamDrawEachPoint(vertA, vertB, vertAUV, vertBUV, true);
+
+                while(m_ABPoints.Count > 0)
+                {
+                    int3 ABPos = m_ABPoints.Dequeue();
+                    float2 ABUV = m_ABUVs.Dequeue();
+                    
+                    BresenhamDrawEachPoint(ABPos, vertC, ABUV, vertCUV, false);
+                }
             }
         }
 
@@ -602,8 +612,7 @@ public class Voxeliser_Burst : MonoBehaviour
         /// <param name="p_startingUV">UV of point A</param>
         /// <param name="p_finalUV">UV of point B</param>
         /// <param name="p_shouldTempStore">Is this line for temp calc or final</param>
-        /// <param name="p_tempStorage">Queue to store verts in.</param>
-        private void BresenhamDrawEachPoint(int3 p_startingPoint, int3 p_finalPoint, float2 p_startingUV, float2 p_finalUV, bool p_shouldTempStore, NativeList<VoxelDetails> p_tempStorage)
+        private void BresenhamDrawEachPoint(int3 p_startingPoint, int3 p_finalPoint, float2 p_startingUV, float2 p_finalUV, bool p_shouldTempStore)
         {
             float3 vector = p_finalPoint - p_startingPoint;
             float3 vectorAbs = new float3(math.abs(vector.x), math.abs(vector.y), math.abs(vector.z));
@@ -629,7 +638,7 @@ public class Voxeliser_Burst : MonoBehaviour
                     break;
                 }
 
-                AddPoint(p_startingPoint, vector, currentPoint, p_startingUV, p_finalUV, p_shouldTempStore, p_tempStorage);
+                AddPoint(p_startingPoint, vector, currentPoint, p_startingUV, p_finalUV, p_shouldTempStore);
 
                 float movementMagnitude = 0.0f;
                 float dominateAbs = GetLowest(x_diffAbs, y_diffAbs, z_diffAbs);
@@ -667,9 +676,7 @@ public class Voxeliser_Burst : MonoBehaviour
         /// <param name="p_currentPoint">Current position on line</param>
         /// <param name="p_startUV">Starting UV</param>
         /// <param name="p_endUV">Ending UV</param>
-        /// <param name="p_shouldTempStore">Is this line for temp calc or final</param>
-        /// <param name="p_tempStorage">Queue to store verts in.</param>
-        private void AddPoint(float3 p_startPoint, float3 p_vector, float3 p_currentPoint, float2 p_startUV, float2 p_endUV, bool p_shouldTempStore, NativeList<VoxelDetails> p_tempStorage)
+        private void AddPoint(float3 p_startPoint, float3 p_vector, float3 p_currentPoint, float2 p_startUV, float2 p_endUV, bool p_shouldTempStore)
         {
             float a2bPercent = GetPercent(p_startPoint, p_vector, p_currentPoint);
 
@@ -677,11 +684,12 @@ public class Voxeliser_Burst : MonoBehaviour
 
             if(p_shouldTempStore)
             {
-                p_tempStorage.Add(new VoxelDetails(GetSnappedInt3(p_currentPoint), UV));
+                m_ABPoints.Enqueue(GetSnappedInt3(p_currentPoint));
+                m_ABUVs.Enqueue(UV);
             }
             else
             {
-                m_voxelDetails.Enqueue(new VoxelDetails(GetSnappedInt3(p_currentPoint), UV));
+                m_voxelDetails.TryAdd(GetSnappedInt3(p_currentPoint), UV);
             }
         }
 
@@ -775,7 +783,7 @@ public class Voxeliser_Burst : MonoBehaviour
         [ReadOnly]
         public float m_voxelSize;
         public bool m_seperatedVoxels;
-        public NativeQueue<VoxelDetails> m_voxelDetails;
+        public NativeHashMap<int3, float2> m_voxelDetails;
 
         [WriteOnly]
         public NativeList<float4> m_convertedVerts; // unknown size
@@ -791,20 +799,8 @@ public class Voxeliser_Burst : MonoBehaviour
         public void Execute()
         {
             //Get all unique
-            NativeList<int3> uniquePositions = new NativeList<int3>(Allocator.Temp);
-            NativeList<float2> uniqueUVs = new NativeList<float2>(Allocator.Temp);
-
-            while (m_voxelDetails.Count > 0)
-            {
-                VoxelDetails details = m_voxelDetails.Dequeue();
-
-                if (!uniquePositions.Contains(details.m_pos))
-                {
-                    uniquePositions.Add(details.m_pos);
-                    uniqueUVs.Add(details.m_UV);
-                }
-            }
-
+            NativeArray<int3> uniquePositions = m_voxelDetails.GetKeyArray(Allocator.Temp);
+            NativeArray<float2> uniqueUVs = m_voxelDetails.GetValueArray(Allocator.Temp);
 
             NativeArray<int> indexArray = new NativeArray<int>(8, Allocator.Temp);
             if (m_seperatedVoxels)

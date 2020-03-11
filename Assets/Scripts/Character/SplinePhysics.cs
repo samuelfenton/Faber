@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class SplinePhysics : MonoBehaviour
 {
-    public const float MIN_SPLINE_PERCENT = -0.001f;
-    public const float MAX_SPLINE_PERCENT = 1.001f;
+    public const float MIN_SPLINE_PERCENT = -0.01f;
+    public const float MAX_SPLINE_PERCENT = 1.01f;
 
     protected const float GROUND_DETECTION = 0.5f;
     protected const float GRAVITY = -9.8f;

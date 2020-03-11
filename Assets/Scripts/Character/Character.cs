@@ -7,9 +7,7 @@ public class Character : Entity
     [HideInInspector]
     public CharacterAnimationController m_characterAnimationController = null;
 
-    [Header("Basic Character Varibles")]
-    public GameController m_gameController = null;
-
+    [Header("Assigned Character Varibles")]
     public GameObject m_characterModel = null;
 
     public enum TEAM { PLAYER, NPC, GAIA }
@@ -55,8 +53,6 @@ public class Character : Entity
         base.InitEntity();
 
         //Get references
-        m_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
-
         m_characterAnimationController = GetComponentInChildren<CharacterAnimationController>();
         m_characterInventory = GetComponent<CharacterInventory>();
 

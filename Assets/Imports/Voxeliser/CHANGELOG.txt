@@ -5,3 +5,5 @@ V1.1.1
 V1.1.2
 	-Fixed static saves meshs having an offset based off the saved location
 	-Allowed for reseting of rotation when saving
+	-Fixed possible memory leak when animating in burst mode
+	-Optimised burst by using native hashmap in ginle job rather than parellel native queue
