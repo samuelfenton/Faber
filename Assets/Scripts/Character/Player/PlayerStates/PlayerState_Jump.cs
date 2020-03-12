@@ -25,6 +25,7 @@ public class PlayerState_Jump : Player_State
         m_parentCharacter.m_localVelocity = newVelocity;
 
         m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.JUMP, true);
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.IN_AIR, true);
     }
 
     /// <summary>
@@ -33,7 +34,7 @@ public class PlayerState_Jump : Player_State
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
     public override bool UpdateState()
     {
-        return !m_characterAnimationController.EndOfAnimation();
+        return m_characterAnimationController.EndOfAnimation();
     }
 
     /// <summary>

@@ -303,7 +303,7 @@ public class Voxeliser : MonoBehaviour
         if (!VerifyVaribles())
             yield break;
 
-        m_originalMesh = GetBakedVerts(m_skinnedRenderer, m_objectWithMesh);
+        GetBakedVerts();
 
         //Reset verts
         m_orginalVerts.Clear();
@@ -953,26 +953,26 @@ public class Voxeliser : MonoBehaviour
         if (p_object == null) //Early breakout
             return null;
 
-        Mesh orignal = new Mesh();
         Mesh instanceMesh = new Mesh();
 
         MeshFilter meshFilter = p_object.GetComponent<MeshFilter>();
         if (meshFilter != null)
         {
-            orignal = meshFilter.sharedMesh;
+            m_originalMesh = meshFilter.sharedMesh;
         }
         else
         {
-            SkinnedMeshRenderer skinnedMeshRenderer = p_object.GetComponent<SkinnedMeshRenderer>();
-            if (skinnedMeshRenderer != null)
+            if (m_skinnedRenderer == null)
+                m_skinnedRenderer = p_object.GetComponent<SkinnedMeshRenderer>();
+            if (m_skinnedRenderer != null)
             {
-                orignal = GetBakedVerts(skinnedMeshRenderer, p_object);
+                GetBakedVerts();
             }
         }
 
-        instanceMesh.vertices = orignal.vertices;
-        instanceMesh.uv = orignal.uv;
-        instanceMesh.triangles = orignal.triangles;
+        instanceMesh.vertices = m_originalMesh.vertices;
+        instanceMesh.uv = m_originalMesh.uv;
+        instanceMesh.triangles = m_originalMesh.triangles;
         return instanceMesh;
     }
 
@@ -1040,18 +1040,18 @@ public class Voxeliser : MonoBehaviour
     /// <summary>
     /// Due to how baking works, we want to remove all scale transforms, as future functions assume this is the case
     /// </summary>
-    /// <param name="p_skinnedMeshRenderer">Renderer to bake</param>
-    /// <param name="p_object">Object which contains the transforms</param>
-    /// <returns>A baked mesh without any transforms applied</returns>
-    private Mesh GetBakedVerts(SkinnedMeshRenderer p_skinnedMeshRenderer, GameObject p_object)
+    private void GetBakedVerts()
     {
-        Mesh bakedMesh = new Mesh();
+        if (m_originalMesh == null)
+            m_originalMesh = new Mesh();
+        m_originalMesh.Clear();
 
-        p_skinnedMeshRenderer.BakeMesh(bakedMesh);
+        m_skinnedRenderer.BakeMesh(m_originalMesh);
 
-        Vector3[] verts = bakedMesh.vertices;
+        Vector3[] verts = m_originalMesh.vertices;
 
-        Vector3 lossyScale = p_object.transform.lossyScale;
+        Vector3 lossyScale = m_objectWithMesh.transform.lossyScale;
+
         //Invert
         lossyScale.x = 1.0f / lossyScale.x;
         lossyScale.y = 1.0f / lossyScale.y;
@@ -1063,9 +1063,7 @@ public class Voxeliser : MonoBehaviour
         {
             verts[vertIndex] = scaleMatrix * verts[vertIndex];
         }
-        bakedMesh.vertices = verts;
-
-        return bakedMesh;
+        m_originalMesh.vertices = verts;
     }
 
     #endregion

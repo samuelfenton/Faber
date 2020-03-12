@@ -32,7 +32,7 @@ public class Entity : MonoBehaviour
     protected virtual void Update()
     {
         //Apply Velocity
-        if(m_gravity)
+        if(m_gravity) 
             m_localVelocity.y += PhysicsController.m_gravity * Time.deltaTime;
 
         //Stop colliding with objects

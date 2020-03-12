@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CharacterAnimationController : MonoBehaviour
 {
-    public enum ANIMATIONS {LIGHT_ATTACK, HEAVY_ATTACK, ALT_ATTACK, DODGE, JUMP, LAND}
+    public enum ANIMATIONS {LIGHT_ATTACK, HEAVY_ATTACK, ALT_ATTACK, DODGE, JUMP, IN_AIR}
     public Dictionary<ANIMATIONS, string> m_boolDictionary = new Dictionary<ANIMATIONS, string>();
 
     public enum VARIBLES {CURRENT_VELOCITY, ABSOLUTE_VELOCTIY, DESIRED_VELOCITY, RANDOM_IDLE}
@@ -23,7 +23,7 @@ public class CharacterAnimationController : MonoBehaviour
 
         m_boolDictionary.Add(ANIMATIONS.DODGE, "Dodge");
         m_boolDictionary.Add(ANIMATIONS.JUMP, "Jump");
-        m_boolDictionary.Add(ANIMATIONS.LAND, "Land");
+        m_boolDictionary.Add(ANIMATIONS.IN_AIR, "InAir");
 
         m_floatDicitonary.Add(VARIBLES.CURRENT_VELOCITY, "CurrentVelocity");
         m_floatDicitonary.Add(VARIBLES.ABSOLUTE_VELOCTIY, "AbsoluteVelocity");
