@@ -11,6 +11,7 @@ public class PlayerState_InAir : Player_State
 
     private float m_doubleJumpSpeed = 6.0f;
 
+    private enum IN_AIR_STATE {IN_AIR, LANDING }
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
@@ -56,7 +57,7 @@ public class PlayerState_InAir : Player_State
 
         m_parentCharacter.m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.CURRENT_VELOCITY, Mathf.Abs(newVelocity.x / m_horizontalSpeedMax));
 
-        return true;
+        return (m_parentCharacter.m_splinePhysics.GetSplineDistance() < m_parentCharacter.m_landingDistance && m_parentCharacter.m_localVelocity.y <= 0.0f) || m_parentCharacter.m_splinePhysics.m_downCollision;
     }
 
     /// <summary>

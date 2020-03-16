@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_SingleAttack : Player_State
+public class PlayerState_GroundAttack : Player_State
 {
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -17,8 +17,14 @@ public class PlayerState_SingleAttack : Player_State
     /// </summary>
     public override void StateStart()
     {
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, true);
-        m_parentCharacter.m_currentAttackType = Character.ATTACK_TYPE.LIGHT;
+        if(m_parentPlayer.m_input.GetKey(CustomInput.INPUT_KEY.ATTACK) == CustomInput.INPUT_STATE.DOWNED)//Base attack
+        {
+            m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, true);
+        }
+        else if (m_parentPlayer.m_input.GetKey(CustomInput.INPUT_KEY.ATTACK_SECONDARY) == CustomInput.INPUT_STATE.DOWNED)//Heavy attack
+        {
+            m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.HEAVY_ATTACK, true);
+        }
     }
 
     /// <summary>
@@ -27,9 +33,6 @@ public class PlayerState_SingleAttack : Player_State
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
     public override bool UpdateState()
     {
-        //Slowdown movement
-        base.UpdateState();
-
         return m_characterAnimationController.EndOfAnimation();
     }
 
@@ -39,6 +42,7 @@ public class PlayerState_SingleAttack : Player_State
     public override void StateEnd()
     {
         m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.LIGHT_ATTACK, false);
+        m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.HEAVY_ATTACK, false);
     }
 
     /// <summary>
@@ -47,6 +51,8 @@ public class PlayerState_SingleAttack : Player_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_parentPlayer.m_input.GetKeyBool(CustomInput.INPUT_KEY.ATTACK) || m_parentPlayer.m_input.GetKeyBool(CustomInput.INPUT_KEY.ATTACK_SECONDARY);
+        return m_parentCharacter.m_splinePhysics.m_downCollision && 
+            (m_parentPlayer.m_input.GetKey(CustomInput.INPUT_KEY.ATTACK) == CustomInput.INPUT_STATE.DOWNED ||
+            m_parentPlayer.m_input.GetKey(CustomInput.INPUT_KEY.ATTACK_SECONDARY) == CustomInput.INPUT_STATE.DOWNED);
     }
 }

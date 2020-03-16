@@ -27,19 +27,17 @@ public class Player_StateMachine : StateMachine
         PlayerState_Locomotion groundMovement = gameObject.AddComponent<PlayerState_Locomotion>();
         PlayerState_Jump jump = gameObject.AddComponent<PlayerState_Jump>();
         PlayerState_InAir inAir = gameObject.AddComponent<PlayerState_InAir>();
-        PlayerState_Land land = gameObject.AddComponent<PlayerState_Land>();
         PlayerState_WallJump wallJump = gameObject.AddComponent<PlayerState_WallJump>();
         
-        PlayerState_SingleAttack singleAttack = gameObject.AddComponent<PlayerState_SingleAttack>();
+        PlayerState_GroundAttack groundAttack = gameObject.AddComponent<PlayerState_GroundAttack>();
 
         m_interuptStates.Add(death);
 
         m_states.Add(groundMovement);
         m_states.Add(jump);
         m_states.Add(inAir);
-        m_states.Add(land);
         m_states.Add(wallJump);
-        m_states.Add(singleAttack);
+        m_states.Add(groundAttack);
 
         m_currentState = groundMovement;
 
