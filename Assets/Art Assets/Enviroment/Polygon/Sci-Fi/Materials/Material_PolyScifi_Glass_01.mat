@@ -8,7 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Material_PolyScifi_Glass_01
-  m_Shader: {fileID: 4800000, guid: 707df7bca3440314f99cee94d4f6a202, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 61c881f0797677642a03e74e4c56b4cf,
+    type: 3}
   m_ShaderKeywords: _ALPHAPREMULTIPLY_ON _EMISSION _GLOSSYREFLECTIONS_OFF _NORMALMAP
     _SPECULARHIGHLIGHTS_OFF
   m_LightmapFlags: 1
@@ -20,6 +21,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - Texture2D_396272E5:
+        m_Texture: {fileID: 2800000, guid: db556d465e9f4ab4caffaf339cf5b656, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 2800000, guid: fff3796fd3630f64890b09296fcb8f85, type: 3}
         m_Scale: {x: 1, y: 1}

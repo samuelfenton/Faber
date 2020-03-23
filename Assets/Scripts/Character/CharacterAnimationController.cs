@@ -60,4 +60,13 @@ public class CharacterAnimationController : MonoBehaviour
     {
         return m_animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !m_animator.IsInTransition(0);
     }
+
+    /// <summary>
+    /// Get the normalzed time for the animation
+    /// </summary>
+    /// <returns>Normalized time, 0-1</returns>
+    public float GetNormalizedTime()
+    {
+        return m_animator.GetCurrentAnimatorStateInfo(0).normalizedTime % 1.0f;
+    }
 }

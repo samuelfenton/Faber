@@ -9,6 +9,15 @@ public class Character : Entity
 
     [Header("Assigned Character Varibles")]
     public GameObject m_characterModel = null;
+    public GameObject m_rightHand = null;
+    public GameObject m_leftHand = null;
+
+    public GameObject m_fireFXPrefab = null;
+
+    [HideInInspector]
+    public GameObject m_rightHandFire = null;
+    [HideInInspector]
+    public GameObject m_leftHandFire = null;
 
     public enum TEAM { PLAYER, NPC, GAIA }
     public TEAM m_characterTeam = TEAM.GAIA;
@@ -70,6 +79,13 @@ public class Character : Entity
         }
 
         m_currentHealth = m_maxHealth;
+
+        m_rightHandFire = Instantiate(m_fireFXPrefab, m_rightHand.transform, false);
+        m_leftHandFire = Instantiate(m_fireFXPrefab, m_leftHand.transform, false);
+
+        m_rightHandFire.SetActive(false);
+        m_leftHandFire.SetActive(false);
+
     }
 
     //-------------------

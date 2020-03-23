@@ -22,8 +22,6 @@ public class PlayerState_InAir : Player_State
         m_horizontalSpeedMax = m_parentCharacter.m_groundedHorizontalSpeedMax; //Always use grounded as max speed
         m_horizontalAcceleration = m_parentCharacter.m_inAirHorizontalAcceleration;
         m_doubleJumpSpeed = m_parentCharacter.m_doubleJumpSpeed;
-
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.IN_AIR, true);
     }
 
     /// <summary>
@@ -31,6 +29,7 @@ public class PlayerState_InAir : Player_State
     /// </summary>
     public override void StateStart()
     {
+        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.IN_AIR, true);
         m_doubleJump = true;
     }
 
