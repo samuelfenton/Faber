@@ -17,7 +17,13 @@ public class Voxeliser_Burst : MonoBehaviour
     #if VOXELISER_MATHEMATICS_ENABLED && VOXELISER_BURST_ENABLED && VOXELISER_COLLECTIONS_ENABLED
 
     private const int MAX_MESH_COUNT = 65535; //Mesh can have 65535 verts
-    private const int MAX_MESH_VOXEL_COUNT = 2730; //Mesh can have 65535 verts, 24 verts per voxel = 2730
+
+    private const int HARDEDGE_VERTS_PER_VOXEL = 24; //How many verts on a single voxel for a hard edge
+    private const int SOFTEDGE_VERTS_PER_VOXEL = 8; //How many verts on a single voxel for a soft edge
+
+    private const int MAX_MESH_VOXEL_HARDEDGE = MAX_MESH_COUNT/ HARDEDGE_VERTS_PER_VOXEL;
+    private const int MAX_MESH_VOXEL_SOFTEDGE = MAX_MESH_COUNT/ SOFTEDGE_VERTS_PER_VOXEL;
+
     private bool m_runFlag = false;
     private bool m_processingFlag = false;
 
@@ -40,6 +46,17 @@ public class Voxeliser_Burst : MonoBehaviour
     public bool m_delayedInitialisation = false;
     [Tooltip("How many meshes should exist, used for large meshes")]
     public int m_totalMeshCount = 1;
+    public enum VERT_TYPE{HARD_EDGE, SOFT_EDGE}
+    [Tooltip("What kind of verts will be used?")]
+    public VERT_TYPE m_vertType = VERT_TYPE.HARD_EDGE;
+
+    //Stored variblesdue to this neededing to be intialised at start.
+    private bool m_storedIsHardEdge = true;
+    private int m_storedTotalMeshCount = 0; 
+    private int m_storedMeshVoxelCount = 0; 
+    private int m_storedVertPerVoxel = 0;
+    
+    private int m_storedMaxVoxels = 0;
 
     [Header("Specific Settings")]
     [Tooltip("Allow user to save static mesh at runtime in editor")]
@@ -59,7 +76,9 @@ public class Voxeliser_Burst : MonoBehaviour
     private void Start()
     {
         if (Application.IsPlaying(gameObject))
+        {
             StartCoroutine(InitVoxeliser());
+        }
     }
 
     /// <summary>
@@ -71,11 +90,8 @@ public class Voxeliser_Burst : MonoBehaviour
         {
             if(m_runFlag)
             {
-                for (int voxelObjIndex = 0; voxelObjIndex < m_voxelObjects.Length; voxelObjIndex++)
-                {
-                    if (m_voxelObjects[voxelObjIndex] != null)
-                        m_voxelObjects[voxelObjIndex].SetActive(true);
-                }
+                if(m_parentVoxelObject!=null)
+                    m_parentVoxelObject.SetActive(true);
 
                 switch (m_voxeliserType)
                 {
@@ -106,15 +122,12 @@ public class Voxeliser_Burst : MonoBehaviour
         m_buildTriJobHandle.Complete();
         m_convertedMeshJobHandle.Complete();
 
-        for (int voxelObjIndex = 0; voxelObjIndex < m_voxelObjects.Length; voxelObjIndex++)
-        {
-            if (m_voxelObjects[voxelObjIndex] != null)
-                m_voxelObjects[voxelObjIndex].SetActive(true);
-        }
+        if (m_parentVoxelObject != null)
+            m_parentVoxelObject.SetActive(false);
     }
 
 #if UNITY_EDITOR
-    private void Update()
+    private void OnValidate()
     {
         if (!Application.IsPlaying(gameObject))
         {
@@ -128,7 +141,6 @@ public class Voxeliser_Burst : MonoBehaviour
     }
 #endif
 
-
     /// <summary>
     /// Setup of the Voxeliser
     /// Ensure object has all required components atached
@@ -141,17 +153,24 @@ public class Voxeliser_Burst : MonoBehaviour
             yield return null;
         }
 
+        m_storedIsHardEdge = m_vertType == VERT_TYPE.HARD_EDGE;
+        m_storedTotalMeshCount = Mathf.Max(1, m_totalMeshCount);
+        m_storedMeshVoxelCount = m_vertType == VERT_TYPE.HARD_EDGE ? MAX_MESH_VOXEL_HARDEDGE : MAX_MESH_VOXEL_SOFTEDGE;
+        m_storedVertPerVoxel = m_vertType == VERT_TYPE.HARD_EDGE ? HARDEDGE_VERTS_PER_VOXEL : SOFTEDGE_VERTS_PER_VOXEL;
+
+        m_storedMaxVoxels = m_storedMeshVoxelCount * m_storedTotalMeshCount;
+
         //Setup voxel mesh object
         //Original Object
         if (m_objectWithMesh == null)
             m_objectWithMesh = gameObject;
 
-        m_voxelObjects = new GameObject[m_totalMeshCount];
-        m_voxelMeshs = new Mesh[m_totalMeshCount];
+        m_voxelObjects = new GameObject[m_storedTotalMeshCount];
+        m_voxelMeshs = new Mesh[m_storedTotalMeshCount];
 
         m_parentVoxelObject = new GameObject(name + " Voxel Mesh Holder");
 
-        for (int meshIndex = 0; meshIndex < m_totalMeshCount; meshIndex++)
+        for (int meshIndex = 0; meshIndex < m_storedTotalMeshCount; meshIndex++)
         {
             m_voxelObjects[meshIndex] = new GameObject("Mesh Section: " + meshIndex);
             m_voxelObjects[meshIndex].transform.SetParent(m_parentVoxelObject.transform);
@@ -180,15 +199,15 @@ public class Voxeliser_Burst : MonoBehaviour
         
         m_orginalVerts.CopyFrom(m_originalMesh.vertices);
 
-        m_voxelDetails = new NativeHashMap<int3, float2>(MAX_MESH_VOXEL_COUNT * m_totalMeshCount, Allocator.Persistent);
+        m_voxelDetails = new NativeHashMap<int3, float2>(m_storedTotalMeshCount * m_storedMeshVoxelCount, Allocator.Persistent);
         m_ABPoints = new NativeQueue<int3>(Allocator.Persistent);
         m_ABUVs = new NativeQueue<float2>(Allocator.Persistent);
 
-        m_meshVoxelCount = new NativeArray<int>(m_totalMeshCount, Allocator.Persistent);
+        m_meshVoxelCount = new NativeArray<int>(1, Allocator.Persistent);
 
-        m_convertedVerts = new NativeArray<float4>(m_totalMeshCount * MAX_MESH_VOXEL_COUNT * 24, Allocator.Persistent);
-        m_convertedUVs = new NativeArray<float2>(m_totalMeshCount * MAX_MESH_VOXEL_COUNT * 24, Allocator.Persistent);
-        m_convertedTris = new NativeArray<int>(m_totalMeshCount * MAX_MESH_VOXEL_COUNT * 36, Allocator.Persistent);
+        m_convertedVerts = new NativeArray<float4>(m_storedTotalMeshCount * m_storedMeshVoxelCount * m_storedVertPerVoxel, Allocator.Persistent);
+        m_convertedUVs = new NativeArray<float2>(m_storedTotalMeshCount * m_storedMeshVoxelCount * m_storedVertPerVoxel, Allocator.Persistent);
+        m_convertedTris = new NativeArray<int>(m_storedTotalMeshCount * m_storedMeshVoxelCount * 36, Allocator.Persistent);
 
         MeshRenderer meshRenderer = m_objectWithMesh.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
@@ -394,12 +413,16 @@ public class Voxeliser_Burst : MonoBehaviour
     /// <param name="p_performOverFrames">stored value of if this operation should occur over several frames</param>
     private IEnumerator ConvertToVoxels(float p_voxelSize, bool p_performOverFrames)
     {
-        Matrix4x4 localToWorld = m_objectWithMesh.transform.localToWorldMatrix;
-        float4x4 localToWorldConverted = localToWorld;
-
-        float voxelSizeRatio = 1.0f / p_voxelSize;
-
+        //Reset old details
         m_voxelDetails.Clear();
+
+        //Varible setup
+        Vector3 currentPosition = m_objectWithMesh.transform.position;
+
+        Matrix4x4 localToWorld = m_objectWithMesh.transform.localToWorldMatrix;
+        localToWorld.SetColumn(3, Vector4.zero); //Remove position component
+        float4x4 localToWorldConverted = localToWorld;
+        float voxelSizeRatio = 1.0f / p_voxelSize;
 
         //Build hashmap of all voxel details
         BuildTriVoxels triJob = new BuildTriVoxels()
@@ -410,6 +433,7 @@ public class Voxeliser_Burst : MonoBehaviour
             m_verts = m_orginalVerts,
             m_uvs = m_originalUVs,
             m_voxelSizeRatio = voxelSizeRatio,
+            m_maxVoxels = m_storedMaxVoxels,
             m_voxelDetails = m_voxelDetails,
             m_ABPoints = m_ABPoints,
             m_ABUVs = m_ABUVs
@@ -424,11 +448,12 @@ public class Voxeliser_Burst : MonoBehaviour
             m_convertedUVs = m_convertedUVs,
             m_convertedTris = m_convertedTris,
             m_voxelSize = p_voxelSize,
+            m_totalMeshCount = m_storedTotalMeshCount,
+            m_isHardEdge = m_storedIsHardEdge,
             m_meshVoxelCount = m_meshVoxelCount
         };
 
         m_convertedMeshJobHandle = convertJob.Schedule(m_buildTriJobHandle);
-
         if (p_performOverFrames)
         {
             //Hard limit of not perfomring over 4 frame
@@ -454,21 +479,27 @@ public class Voxeliser_Burst : MonoBehaviour
             m_convertedMeshJobHandle.Complete();
         }
 
+        int voxelPerMeshCount = m_meshVoxelCount[0];
+
         //Build new mesh
-        for (int meshIndex = 0; meshIndex < m_totalMeshCount; meshIndex++)
+        for (int meshIndex = 0; meshIndex < m_storedTotalMeshCount; meshIndex++)
         {
-            int vertsCount = m_meshVoxelCount[meshIndex] * 24; //24 verts per voxel
-            int triCount = m_meshVoxelCount[meshIndex] * 36; // 36 tris per voxel
+            int vertsCount = voxelPerMeshCount * m_storedVertPerVoxel; //24 verts per voxel
+            int triCount = voxelPerMeshCount * 36; // 36 tris per voxel
 
             Vector3[] convertedVerts = new Vector3[vertsCount];
             Vector2[] convertedUVs = new Vector2[vertsCount];
             int[] convertedTris = new int[triCount];
 
             //Verts/UVs
+            int initialVoxelIndex = meshIndex * voxelPerMeshCount;
+            int initialVertIndex = initialVoxelIndex * m_storedVertPerVoxel;
+            int initialTriIndex = initialVoxelIndex * 36;
+
             for (int vertIndex = 0; vertIndex < vertsCount; vertIndex++)
             {
-                float4 vert = m_convertedVerts[meshIndex * MAX_MESH_VOXEL_COUNT * 24 + vertIndex];
-                float2 UV = m_convertedUVs[meshIndex * MAX_MESH_VOXEL_COUNT * 24 + vertIndex];
+                float4 vert = m_convertedVerts[initialVertIndex + vertIndex];
+                float2 UV = m_convertedUVs[initialVertIndex + vertIndex];
                 convertedVerts[vertIndex] = new Vector3(vert.x, vert.y, vert.z);
                 convertedUVs[vertIndex] = new Vector2(UV.x, UV.y);
             }
@@ -476,7 +507,7 @@ public class Voxeliser_Burst : MonoBehaviour
             //Tris
             for (int triIndex = 0; triIndex < triCount; triIndex++)
             {
-                convertedTris[triIndex] = m_convertedTris[meshIndex * MAX_MESH_VOXEL_COUNT * 36 + triIndex];
+                convertedTris[triIndex] = m_convertedTris[initialTriIndex + triIndex]; //Use the minus due to "reseting" on new mesh
             }
 
             m_voxelMeshs[meshIndex].Clear(false);
@@ -487,6 +518,9 @@ public class Voxeliser_Burst : MonoBehaviour
 
             m_voxelMeshs[meshIndex].Optimize();
             m_voxelMeshs[meshIndex].RecalculateNormals();
+
+            //Move obejct to position
+            m_voxelObjects[meshIndex].transform.position = currentPosition;
         }
 
         yield break;
@@ -497,6 +531,14 @@ public class Voxeliser_Burst : MonoBehaviour
     /// Ensure voxelised object is removed too
     /// </summary>
     private void OnDestroy()
+    {
+        CleanUpNatives();
+    }
+
+    /// <summary>
+    /// Used to ensure all natives are disposed of and jobs are finished
+    /// </summary>
+    private void CleanUpNatives()
     {
         m_buildTriJobHandle.Complete();
         m_convertedMeshJobHandle.Complete();
@@ -511,7 +553,7 @@ public class Voxeliser_Burst : MonoBehaviour
         if (m_voxelDetails.IsCreated)
             m_voxelDetails.Dispose();
         if (m_ABPoints.IsCreated)
-            m_ABPoints.Dispose(); 
+            m_ABPoints.Dispose();
         if (m_ABUVs.IsCreated)
             m_ABUVs.Dispose();
 
@@ -561,9 +603,10 @@ public class Voxeliser_Burst : MonoBehaviour
         [ReadOnly]
         public NativeArray<float2> m_uvs;
 
-        //Advanced
         [ReadOnly]
         public float m_voxelSizeRatio;
+        [ReadOnly]
+        public int m_maxVoxels;
 
         public NativeHashMap<int3, float2> m_voxelDetails;
         public NativeQueue<int3> m_ABPoints;
@@ -578,7 +621,7 @@ public class Voxeliser_Burst : MonoBehaviour
         {
             for (int triIndex = 0; triIndex < m_tris.Length/3; triIndex++)
             {
-                if(m_voxelDetails.Length >= m_voxelDetails.Capacity - 1)
+                if(m_voxelDetails.Length >= m_maxVoxels)
                     return;
 
                 //Float 4 varients due to matrix math
@@ -691,6 +734,9 @@ public class Voxeliser_Burst : MonoBehaviour
         /// <param name="p_endUV">Ending UV</param>
         private void AddPoint(float3 p_startPoint, float3 p_vector, float3 p_currentPoint, float2 p_startUV, float2 p_endUV, bool p_shouldTempStore)
         {
+            if (m_voxelDetails.Length >= m_maxVoxels)
+                return;
+
             float a2bPercent = GetPercent(p_startPoint, p_vector, p_currentPoint);
 
             float2 UV = MergeUVs(p_startUV, p_endUV, a2bPercent);
@@ -795,6 +841,10 @@ public class Voxeliser_Burst : MonoBehaviour
     {
         [ReadOnly]
         public float m_voxelSize;
+        [ReadOnly]
+        public int m_totalMeshCount;
+        [ReadOnly]
+        public bool m_isHardEdge;
 
         public NativeHashMap<int3, float2> m_voxelDetails;
 
@@ -804,7 +854,7 @@ public class Voxeliser_Burst : MonoBehaviour
         public NativeArray<float2> m_convertedUVs; //size of verts
         [WriteOnly]
         public NativeArray<int> m_convertedTris; //3 x 12 x the size of positions
-
+        [WriteOnly]
         public NativeArray<int> m_meshVoxelCount;
         /// <summary>
         /// Converting of a single point where the voxel is, into the 8 points of a cube
@@ -816,77 +866,193 @@ public class Voxeliser_Burst : MonoBehaviour
             NativeArray<int3> uniquePositions = m_voxelDetails.GetKeyArray(Allocator.Temp);
             NativeArray<float2> uniqueUVs = m_voxelDetails.GetValueArray(Allocator.Temp);
 
-            //Example 10/6 = 1, hence +1 on end
-            int requriedMeshes = uniquePositions.Length / MAX_MESH_VOXEL_COUNT + 1;
-            for (int meshIndex = 0; meshIndex < requriedMeshes; meshIndex++)
+            int voxelPerMeshCount = uniquePositions.Length / m_totalMeshCount;
+            m_meshVoxelCount[0] = voxelPerMeshCount;
+
+            for (int meshIndex = 0; meshIndex < m_totalMeshCount; meshIndex++)
             {
-                int voxelStart = meshIndex * MAX_MESH_VOXEL_COUNT;
-                int endVoxel = Mathf.Min(uniquePositions.Length, voxelStart + MAX_MESH_VOXEL_COUNT);
+                int firstVoxelIndex = meshIndex * voxelPerMeshCount;
 
-                m_meshVoxelCount[meshIndex] = endVoxel - voxelStart;
-
-                for (int voxelIndex = voxelStart; voxelIndex < endVoxel; voxelIndex++)
+                for (int voxelIndex = 0; voxelIndex < voxelPerMeshCount; voxelIndex++)
                 {
-                    float4 voxelPos = new float4(uniquePositions[voxelIndex].x * m_voxelSize, uniquePositions[voxelIndex].y * m_voxelSize, uniquePositions[voxelIndex].z * m_voxelSize, 1.0f);
+                    float4 voxelPos = new float4(uniquePositions[firstVoxelIndex + voxelIndex].x * m_voxelSize, uniquePositions[firstVoxelIndex + voxelIndex].y * m_voxelSize, uniquePositions[firstVoxelIndex + voxelIndex].z * m_voxelSize, 1.0f);
 
                     float4 right = new float4(m_voxelSize / 2.0f, 0.0f, 0.0f, 0.0f); // r = right l = left
                     float4 up = new float4(0.0f, m_voxelSize / 2.0f, 0.0f, 0.0f); // u = up, d = down
                     float4 forward = new float4(0.0f, 0.0f, m_voxelSize / 2.0f, 0.0f); // f = forward b = backward
 
-                    int startVertIndex = voxelIndex * 24; //24 verts per Voxel
-
-                    //Take each face, and face towards, up being up, or backwards
-                    //start bottom left corner
-                    //Front face
-                    m_convertedVerts[startVertIndex + 0] = voxelPos + right - up + forward;
-                    m_convertedVerts[startVertIndex + 1] = voxelPos + right + up + forward;
-                    m_convertedVerts[startVertIndex + 2] = voxelPos - right + up + forward;
-                    m_convertedVerts[startVertIndex + 3] = voxelPos - right - up + forward;
-                    //BackFace - Flip above order
-                    m_convertedVerts[startVertIndex + 4] = voxelPos - right - up - forward;
-                    m_convertedVerts[startVertIndex + 5] = voxelPos - right + up - forward;
-                    m_convertedVerts[startVertIndex + 6] = voxelPos + right + up - forward;
-                    m_convertedVerts[startVertIndex + 7] = voxelPos + right - up - forward;
-                    //Left face
-                    m_convertedVerts[startVertIndex + 8] = voxelPos + right - up - forward;
-                    m_convertedVerts[startVertIndex + 9] = voxelPos + right + up - forward;
-                    m_convertedVerts[startVertIndex + 10] = voxelPos + right + up + forward;
-                    m_convertedVerts[startVertIndex + 11] = voxelPos + right - up + forward;
-                    //Right face        
-                    m_convertedVerts[startVertIndex + 12] = voxelPos - right - up + forward;
-                    m_convertedVerts[startVertIndex + 13] = voxelPos - right + up + forward;
-                    m_convertedVerts[startVertIndex + 14] = voxelPos - right + up - forward;
-                    m_convertedVerts[startVertIndex + 15] = voxelPos - right - up - forward;
-                    //Bottom face    
-                    m_convertedVerts[startVertIndex + 16] = voxelPos + right - up - forward;
-                    m_convertedVerts[startVertIndex + 17] = voxelPos + right - up + forward;
-                    m_convertedVerts[startVertIndex + 18] = voxelPos - right - up + forward;
-                    m_convertedVerts[startVertIndex + 19] = voxelPos - right - up - forward;
-                    //Top face      
-                    m_convertedVerts[startVertIndex + 20] = voxelPos - right + up - forward;
-                    m_convertedVerts[startVertIndex + 21] = voxelPos - right + up + forward;
-                    m_convertedVerts[startVertIndex + 22] = voxelPos + right + up + forward;
-                    m_convertedVerts[startVertIndex + 23] = voxelPos + right + up - forward;
-
-                    //UVs Add in 8 for each vert added
-                    float2 UV = uniqueUVs[voxelIndex];
-                    for (int UVIndex = 0; UVIndex < 24; UVIndex++)
+                    if(m_isHardEdge) //Soft edge, 24 verts in total
                     {
-                        m_convertedUVs[startVertIndex + UVIndex] = UV;
+                        int currentVertIndex = firstVoxelIndex * 24 + voxelIndex * 24; //24 verts per Voxel
+
+                        //Take each face, and face towards, up being up, or backwards
+                        //start bottom left corner
+                        //Back face
+                        m_convertedVerts[currentVertIndex + 0] = voxelPos + right - up + forward;
+                        m_convertedVerts[currentVertIndex + 1] = voxelPos + right + up + forward;
+                        m_convertedVerts[currentVertIndex + 2] = voxelPos - right + up + forward;
+                        m_convertedVerts[currentVertIndex + 3] = voxelPos - right - up + forward;
+                        //Front - Flip above order
+                        m_convertedVerts[currentVertIndex + 4] = voxelPos - right - up - forward;
+                        m_convertedVerts[currentVertIndex + 5] = voxelPos - right + up - forward;
+                        m_convertedVerts[currentVertIndex + 6] = voxelPos + right + up - forward;
+                        m_convertedVerts[currentVertIndex + 7] = voxelPos + right - up - forward;
+                        //Right face
+                        m_convertedVerts[currentVertIndex + 8] = voxelPos + right - up - forward;
+                        m_convertedVerts[currentVertIndex + 9] = voxelPos + right + up - forward;
+                        m_convertedVerts[currentVertIndex + 10] = voxelPos + right + up + forward;
+                        m_convertedVerts[currentVertIndex + 11] = voxelPos + right - up + forward;
+                        //Left face        
+                        m_convertedVerts[currentVertIndex + 12] = voxelPos - right - up + forward;
+                        m_convertedVerts[currentVertIndex + 13] = voxelPos - right + up + forward;
+                        m_convertedVerts[currentVertIndex + 14] = voxelPos - right + up - forward;
+                        m_convertedVerts[currentVertIndex + 15] = voxelPos - right - up - forward;
+                        //Top face    
+                        m_convertedVerts[currentVertIndex + 16] = voxelPos - right + up - forward;
+                        m_convertedVerts[currentVertIndex + 17] = voxelPos - right + up + forward;
+                        m_convertedVerts[currentVertIndex + 18] = voxelPos + right + up + forward;
+                        m_convertedVerts[currentVertIndex + 19] = voxelPos + right + up - forward;
+                        //Bottom face      
+                        m_convertedVerts[currentVertIndex + 20] = voxelPos + right - up - forward;
+                        m_convertedVerts[currentVertIndex + 21] = voxelPos + right - up + forward;
+                        m_convertedVerts[currentVertIndex + 22] = voxelPos - right - up + forward;
+                        m_convertedVerts[currentVertIndex + 23] = voxelPos - right - up - forward;
+
+                        //UVs Add in 24 for each vert added
+                        float2 UV = uniqueUVs[firstVoxelIndex + voxelIndex];
+                        for (int UVIndex = 0; UVIndex < 24; UVIndex++)
+                        {
+                            m_convertedUVs[currentVertIndex + UVIndex] = UV;
+                        }
+
+                        int startTriIndex = firstVoxelIndex * 36 + voxelIndex * 36; //36 tris per Voxel
+                        int startPreaddedVertIndex = voxelIndex * 24; // Preaddeded as later on it will be split up
+                        //Tris
+                        //Back
+                        m_convertedTris[startTriIndex + 0] = startPreaddedVertIndex + 0;
+                        m_convertedTris[startTriIndex + 1] = startPreaddedVertIndex + 1;
+                        m_convertedTris[startTriIndex + 2] = startPreaddedVertIndex + 2;
+                                                         
+                        m_convertedTris[startTriIndex + 3] = startPreaddedVertIndex + 0;
+                        m_convertedTris[startTriIndex + 4] = startPreaddedVertIndex + 2;
+                        m_convertedTris[startTriIndex + 5] = startPreaddedVertIndex + 3;
+                        //Front                              
+                        m_convertedTris[startTriIndex + 6] = startPreaddedVertIndex + 4;
+                        m_convertedTris[startTriIndex + 7] = startPreaddedVertIndex + 5;
+                        m_convertedTris[startTriIndex + 8] = startPreaddedVertIndex + 6;
+
+                        m_convertedTris[startTriIndex + 9] = startPreaddedVertIndex + 4;
+                        m_convertedTris[startTriIndex + 10] = startPreaddedVertIndex + 6;
+                        m_convertedTris[startTriIndex + 11] = startPreaddedVertIndex + 7;
+                        //Right                               
+                        m_convertedTris[startTriIndex + 12] = startPreaddedVertIndex + 8;
+                        m_convertedTris[startTriIndex + 13] = startPreaddedVertIndex + 9;
+                        m_convertedTris[startTriIndex + 14] = startPreaddedVertIndex + 10;
+                                                          
+                        m_convertedTris[startTriIndex + 15] = startPreaddedVertIndex + 8;
+                        m_convertedTris[startTriIndex + 16] = startPreaddedVertIndex + 10;
+                        m_convertedTris[startTriIndex + 17] = startPreaddedVertIndex + 11;
+                        //Left                                
+                        m_convertedTris[startTriIndex + 18] = startPreaddedVertIndex + 12;
+                        m_convertedTris[startTriIndex + 19] = startPreaddedVertIndex + 13;
+                        m_convertedTris[startTriIndex + 20] = startPreaddedVertIndex + 14;
+                                                          
+                        m_convertedTris[startTriIndex + 21] = startPreaddedVertIndex + 12;
+                        m_convertedTris[startTriIndex + 22] = startPreaddedVertIndex + 14;
+                        m_convertedTris[startTriIndex + 23] = startPreaddedVertIndex + 15;
+                        //Top                                 
+                        m_convertedTris[startTriIndex + 24] = startPreaddedVertIndex + 16;
+                        m_convertedTris[startTriIndex + 25] = startPreaddedVertIndex + 17;
+                        m_convertedTris[startTriIndex + 26] = startPreaddedVertIndex + 18;
+                                                          
+                        m_convertedTris[startTriIndex + 27] = startPreaddedVertIndex + 16;
+                        m_convertedTris[startTriIndex + 28] = startPreaddedVertIndex + 18;
+                        m_convertedTris[startTriIndex + 29] = startPreaddedVertIndex + 19;
+                        //Bottom                              
+                        m_convertedTris[startTriIndex + 30] = startPreaddedVertIndex + 20;
+                        m_convertedTris[startTriIndex + 31] = startPreaddedVertIndex + 21;
+                        m_convertedTris[startTriIndex + 32] = startPreaddedVertIndex + 22;
+                                                          
+                        m_convertedTris[startTriIndex + 33] = startPreaddedVertIndex + 20;
+                        m_convertedTris[startTriIndex + 34] = startPreaddedVertIndex + 22;
+                        m_convertedTris[startTriIndex + 35] = startPreaddedVertIndex + 23;
+                    }
+                    else //Soft edge, 8 verts in total
+                    {
+                        int currentVertIndex = firstVoxelIndex * 8 + voxelIndex * 8; //24 verts per Voxel
+
+                        //Take each face, and face towards, start bottom left corner
+                        //Back face
+                        m_convertedVerts[currentVertIndex + 0] = voxelPos + right - up + forward;
+                        m_convertedVerts[currentVertIndex + 1] = voxelPos + right + up + forward;
+                        m_convertedVerts[currentVertIndex + 2] = voxelPos - right + up + forward;
+                        m_convertedVerts[currentVertIndex + 3] = voxelPos - right - up + forward;
+                        //Front - Flip above order
+                        m_convertedVerts[currentVertIndex + 4] = voxelPos - right - up - forward;
+                        m_convertedVerts[currentVertIndex + 5] = voxelPos - right + up - forward;
+                        m_convertedVerts[currentVertIndex + 6] = voxelPos + right + up - forward;
+                        m_convertedVerts[currentVertIndex + 7] = voxelPos + right - up - forward;
+
+                        //UVs Add in 8 for each vert added
+                        float2 UV = uniqueUVs[firstVoxelIndex + voxelIndex];
+                        for (int UVIndex = 0; UVIndex < 8; UVIndex++)
+                        {
+                            m_convertedUVs[currentVertIndex + UVIndex] = UV;
+                        }
+
+                        int startTriIndex = firstVoxelIndex * 36 + voxelIndex * 36; //36 tris per Voxel
+                        int startPreaddedVertIndex = voxelIndex * 8; // Preaddeded as later on it will be split up
+                        //Tris
+                        //Back
+                        m_convertedTris[startTriIndex + 0] = startPreaddedVertIndex + 0;
+                        m_convertedTris[startTriIndex + 1] = startPreaddedVertIndex + 1;
+                        m_convertedTris[startTriIndex + 2] = startPreaddedVertIndex + 2;
+
+                        m_convertedTris[startTriIndex + 3] = startPreaddedVertIndex + 0;
+                        m_convertedTris[startTriIndex + 4] = startPreaddedVertIndex + 2;
+                        m_convertedTris[startTriIndex + 5] = startPreaddedVertIndex + 3;
+                        //Front                              
+                        m_convertedTris[startTriIndex + 6] = startPreaddedVertIndex + 4;
+                        m_convertedTris[startTriIndex + 7] = startPreaddedVertIndex + 5;
+                        m_convertedTris[startTriIndex + 8] = startPreaddedVertIndex + 6;
+
+                        m_convertedTris[startTriIndex + 9] = startPreaddedVertIndex + 4;
+                        m_convertedTris[startTriIndex + 10] = startPreaddedVertIndex + 6;
+                        m_convertedTris[startTriIndex + 11] = startPreaddedVertIndex + 7;
+                        //Right                               
+                        m_convertedTris[startTriIndex + 12] = startPreaddedVertIndex + 7;
+                        m_convertedTris[startTriIndex + 13] = startPreaddedVertIndex + 6;
+                        m_convertedTris[startTriIndex + 14] = startPreaddedVertIndex + 1;
+
+                        m_convertedTris[startTriIndex + 15] = startPreaddedVertIndex + 7;
+                        m_convertedTris[startTriIndex + 16] = startPreaddedVertIndex + 1;
+                        m_convertedTris[startTriIndex + 17] = startPreaddedVertIndex + 0;
+                        //Left                                
+                        m_convertedTris[startTriIndex + 18] = startPreaddedVertIndex + 3;
+                        m_convertedTris[startTriIndex + 19] = startPreaddedVertIndex + 2;
+                        m_convertedTris[startTriIndex + 20] = startPreaddedVertIndex + 5;
+
+                        m_convertedTris[startTriIndex + 21] = startPreaddedVertIndex + 3;
+                        m_convertedTris[startTriIndex + 22] = startPreaddedVertIndex + 5;
+                        m_convertedTris[startTriIndex + 23] = startPreaddedVertIndex + 4;
+                        //Top                                 
+                        m_convertedTris[startTriIndex + 24] = startPreaddedVertIndex + 5;
+                        m_convertedTris[startTriIndex + 25] = startPreaddedVertIndex + 2;
+                        m_convertedTris[startTriIndex + 26] = startPreaddedVertIndex + 1;
+
+                        m_convertedTris[startTriIndex + 27] = startPreaddedVertIndex + 5;
+                        m_convertedTris[startTriIndex + 28] = startPreaddedVertIndex + 1;
+                        m_convertedTris[startTriIndex + 29] = startPreaddedVertIndex + 3;
+                        //Bottom                              
+                        m_convertedTris[startTriIndex + 30] = startPreaddedVertIndex + 7;
+                        m_convertedTris[startTriIndex + 31] = startPreaddedVertIndex + 0;
+                        m_convertedTris[startTriIndex + 32] = startPreaddedVertIndex + 3;
+
+                        m_convertedTris[startTriIndex + 33] = startPreaddedVertIndex + 7;
+                        m_convertedTris[startTriIndex + 34] = startPreaddedVertIndex + 3;
+                        m_convertedTris[startTriIndex + 35] = startPreaddedVertIndex + 4;
                     }
 
-                    int startTriIndex = voxelIndex * 36; //24 verts per Voxel
-                    //Tris
-                    for (int triIndex = 0; triIndex < 6; triIndex++)
-                    {
-                        m_convertedTris[startTriIndex + triIndex * 6 + 0] = startVertIndex + triIndex * 4 + 0;
-                        m_convertedTris[startTriIndex + triIndex * 6 + 1] = startVertIndex + triIndex * 4 + 1;
-                        m_convertedTris[startTriIndex + triIndex * 6 + 2] = startVertIndex + triIndex * 4 + 2;
-                                                                 
-                        m_convertedTris[startTriIndex + triIndex * 6 + 3] = startVertIndex + triIndex * 4 + 0;
-                        m_convertedTris[startTriIndex + triIndex * 6 + 4] = startVertIndex + triIndex * 4 + 2;
-                        m_convertedTris[startTriIndex + triIndex * 6 + 5] = startVertIndex + triIndex * 4 + 3;
-                    }
                 }
             }
         }
@@ -988,10 +1154,8 @@ public class Voxeliser_Burst : MonoBehaviour
                 m_objectWithMesh = gameObject;
 
             //Store transform
-            Vector3 orginalPos = m_objectWithMesh.transform.position;
             Quaternion orginalRot = m_objectWithMesh.transform.rotation;
 
-            m_objectWithMesh.transform.position = Vector3.zero;
             if (m_resetRotation)
                 m_objectWithMesh.transform.rotation = Quaternion.identity;
 
@@ -999,38 +1163,77 @@ public class Voxeliser_Burst : MonoBehaviour
 
             yield return saveConvert;
 
-            m_objectWithMesh.transform.position = orginalPos;
             if (m_resetRotation)
                 m_objectWithMesh.transform.rotation = orginalRot;
 
             //Get mesh
-            string path = EditorUtility.SaveFilePanel("Save Voxel Mesh: " + name, "Assets/", "Voxelised-" + name + ".mesh", "mesh");
-            if (!string.IsNullOrEmpty(path))
+            string fileName = "Voxelised - " + name;
+            string meshPath = "Assets/" + fileName + ".mesh";
+
+            Mesh topMesh = m_voxelMeshs[0];
+
+            AssetDatabase.CreateAsset(topMesh, meshPath);
+            AssetDatabase.SetMainObject(topMesh, meshPath);
+               
+            //Add in any additional meshes
+            for (int meshIndex = 1; meshIndex < m_voxelMeshs.Length; meshIndex++)
             {
-                GameObject parentObject = new GameObject();
-
-                path = FileUtil.GetProjectRelativePath(path);
-
-                foreach (Mesh voxelMesh in m_voxelMeshs)
-                {
-                    MeshUtility.Optimize(voxelMesh);
-                }
-
-                AssetDatabase.CreateAsset(m_parentVoxelObject, path);
-                AssetDatabase.SaveAssets();
+                Mesh additionalMesh = m_voxelMeshs[meshIndex];
+                additionalMesh.name = "Additional mesh:" + meshIndex;
+                AssetDatabase.AddObjectToAsset(additionalMesh, topMesh);
             }
 
-            m_saveStaticMesh = false;
+            AssetDatabase.SaveAssets();
+            AssetDatabase.ImportAsset(meshPath);
 
-            DestroyImmediate(m_parentVoxelObject);
-            ToggleMaterial(m_objectWithMesh, true);
+            //Create prefab
+            string prefabPath = "Assets/" + fileName + ".prefab";
+            GameObject parentObject = new GameObject();
+            parentObject.name = fileName;
+            //Main asset first
+            Object meshObject = AssetDatabase.LoadMainAssetAtPath(meshPath);
+            Mesh meshSection = (Mesh)meshObject;
+            if (meshSection != null)
+            {
+                GameObject meshSectionObject = new GameObject("Mesh Section: " + 0);
+                MeshFilter meshFilter = meshSectionObject.AddComponent<MeshFilter>();
+                MeshRenderer meshRenderer = meshSectionObject.AddComponent<MeshRenderer>();
+                meshFilter.sharedMesh = meshSection;
+                meshRenderer.materials = m_orginalMats;
+                meshSectionObject.transform.parent = parentObject.transform;
+            }
+
+            //Each sub asset
+            Object[] meshObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(meshPath);
+            for (int meshIndex = 0; meshIndex < meshObjects.Length; meshIndex++)
+            {
+                meshSection = (Mesh)meshObjects[meshIndex];
+
+                if(meshSection!=null)
+                {
+                    GameObject meshSectionObject = new GameObject("Mesh Section: " + meshIndex + 1); //Increment as main is 0
+                    MeshFilter meshFilter = meshSectionObject.AddComponent<MeshFilter>();
+                    MeshRenderer meshRenderer = meshSectionObject.AddComponent<MeshRenderer>();
+                    meshFilter.sharedMesh = meshSection;
+                    meshRenderer.materials = m_orginalMats;
+                    meshSectionObject.transform.parent = parentObject.transform;
+                }
+            }
+
+            PrefabUtility.SaveAsPrefabAssetAndConnect(parentObject, prefabPath, InteractionMode.UserAction);
+            
+            DestroyImmediate(parentObject);
         }
         else
         {
             Debug.Log("Can only save when set to static");
         }
 
+        ToggleMaterial(m_objectWithMesh, true);
+        DestroyImmediate(m_parentVoxelObject);
         m_processingFlag = false;
+
+        CleanUpNatives();
 
         yield break;
     }
@@ -1116,6 +1319,9 @@ public class Voxeliser_Burst : MonoBehaviour
     /// <returns></returns>
     private Material GetMaterial(GameObject p_object)
     {
+        if (p_object == null)
+            return null;
+
         MeshRenderer meshRenderer = p_object.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
         {

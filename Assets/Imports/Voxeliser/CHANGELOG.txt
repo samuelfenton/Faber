@@ -1,9 +1,12 @@
 V1.1.0
 	-Fixed static object creation bug, where original transform would be reset
 V1.1.1
-	-Added in ability to conjoin verts used in mesh, allowing for a differentiation betwee, hard texture edges and more smooth transition between all voxels
+	-Added in ability to conjoin verts used in mesh, allowing for a differentiation between, hard texture edges and more smooth transition between all voxels
 V1.1.2
 	-Fixed static saves meshs having an offset based off the saved location
 	-Allowed for reseting of rotation when saving
 	-Fixed possible memory leak when animating in burst mode
-	-Optimised burst by using native hashmap in ginle job rather than parellel native queue
+	-Optimised burst by using native hashmap in singluar job rather than parellel native queue
+V1.1.3
+	-Removed ability to conjoin verts, and opted into using hard vs soft vert technique
+	-Added in varible to use multiple meshes to create object. Allowing for larger and more complex models to be used and overcome the 65,000 vert limit for a single mesh.

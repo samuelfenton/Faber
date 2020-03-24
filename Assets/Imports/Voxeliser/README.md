@@ -12,12 +12,15 @@ Voxeliser and Voxelier_Burst are copyright (c) 2019 Samuel Fenton
 		-Animated: Works on models that use a skinned mesh renderer, typically for animated models. Will snap voxels onto a world grid regardless of transformation.
 		-Static: Creates a static mesh intended to remain in a static position or simply as a conversion. At initialisation will make the correct model mesh, but after, any transformations wont cause voxels to snap to grid. However this leads to little or no overhead.  
 	- Perform Over Frames: In assisting with optimisation, calculations can occur over several frames as needed. This can lead to smoother gameplay but add more stutter to any animation.  
-	-Separated Voxels: Voxels can be made up of completely unique verts or share verts with their neighbours. This will cause the texture to have a hard edge between or a smooth soft transition between them. Secondary effects is the increase in possible mesh size as less vertices are needed.
 	- Object With Mesh: This is the object that contains the model mesh. If not assigned it is assumed to be on the same object as the script.
 	- Delayed Initialisation: For any particular reason a delay of a single frame is needed before initialisation. Typically used when other meshes are generated at runtime and order of execution is unknown.
+	- Total Mesh Count: Due to the limitaiton of max vertices per mesh, several meshes can be used at once to get extra large or complex models
+	- Vert type: Change the behaviour of how the verts are created
+		-Soft Edge: Voxels are made like a normal cube, 8 verts that are shared on each side. This can lead to some minor lighing artifacts due to the corner normal not being alligned with the face normal, but the the average of the three connected faces.
+		-Hard Edge: This increases the count of verts from 8 => 24, 4 for every face. This removes the lighting artifacts as each verts normal now follows the faces normal.
 	- Save Static Mesh: When building a static mesh, the mesh can be saved for later use rather than using the voxeliser every time. This variable when toggled in the inspector will create a save prompt, save the mesh. This only occurs when using the unity editor.
+	- Reset Save rotaion: When saving a static mesh, should the rotation be ignored?
 
 // Known Issues //
-Due to a limitation in unity meshes, there can be no more than 65535 vertices in a single mesh. As each voxel is 8 vertices, this leads to a hard limit of 8191 voxels per object. In the case of needing more, suggested that models are separated into several parts with each being voxelised.
 Jobs inherently cannot run for longer than 4 frames, given Voxeliser Burst includes two jobs to complete, when performing over multiple frames it will still be limited to a max of 8 frames, whereas Voxeliser can perform indefinitely.
-It currently does not work when using multiple submeshes, it can convert the mesh but will use only the first material.
+It currently works when using multiple submeshes, however will use only the first material on each individual submesh.
