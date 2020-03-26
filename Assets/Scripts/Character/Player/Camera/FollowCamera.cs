@@ -24,9 +24,9 @@ public class FollowCamera : MonoBehaviour
 
         //Based off desired postion move towards it. Based off distance magnitude move faster/slower
 
-        Vector3 desiredVelocity = cameraDesiredPos - transform.position;
-        if(desiredVelocity.magnitude > 0.0f)
-            transform.position += desiredVelocity * ((desiredVelocity.magnitude * m_cameraSpeed) / desiredVelocity.magnitude) * Time.deltaTime;
+        Vector3 desiredVector = cameraDesiredPos - transform.position;
+        if(desiredVector.magnitude > 0.0f)
+            transform.position += desiredVector * ((desiredVector.magnitude * m_cameraSpeed) / desiredVector.magnitude) * Time.deltaTime;
 
         Quaternion desiredRotation = Quaternion.LookRotation(m_followTarget.transform.position + m_lookAtOffset - transform.position);
 
