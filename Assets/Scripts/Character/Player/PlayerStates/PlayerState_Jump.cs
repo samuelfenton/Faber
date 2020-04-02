@@ -5,14 +5,19 @@ using UnityEngine;
 public class PlayerState_Jump : Player_State
 {
     private float m_jumpSpeed = 10.0f;
+    private string m_animJump = "";
 
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
-    public override void StateInit()
+    /// <param name="p_loopedState">Will this state be looping?</param>
+    /// <param name="p_parentCharacter">Parent character reference</param>
+    public override void StateInit(bool p_loopedState, Character p_parentCharacter)
     {
-        base.StateInit();
+        base.StateInit(p_loopedState, p_parentCharacter);
         m_jumpSpeed = m_parentCharacter.m_jumpSpeed;
+
+        m_animJump = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.JUMP);
     }
 
     /// <summary>
@@ -24,8 +29,7 @@ public class PlayerState_Jump : Player_State
         newVelocity.y = m_jumpSpeed;
         m_parentCharacter.m_localVelocity = newVelocity;
 
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.JUMP, true);
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.IN_AIR, true);
+        m_animator.Play(m_animJump);
     }
 
     /// <summary>
@@ -34,7 +38,7 @@ public class PlayerState_Jump : Player_State
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
     public override bool UpdateState()
     {
-        return m_characterAnimationController.EndOfAnimation();
+        return AnimController.IsAnimationDone(m_animator) || m_parentCharacter.m_localVelocity.y <= 0.0f;
     }
 
     /// <summary>
@@ -42,7 +46,6 @@ public class PlayerState_Jump : Player_State
     /// </summary>
     public override void StateEnd()
     {
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.JUMP, false);
     }
 
     /// <summary>

@@ -71,9 +71,9 @@ GameObject:
   - component: {fileID: 5576363102575628370}
   - component: {fileID: 2114424625788487289}
   - component: {fileID: 7681844626118014086}
-  - component: {fileID: 1061965628368404110}
-  - component: {fileID: 3775519670443091626}
+  - component: {fileID: 7247850228471671510}
   - component: {fileID: 4795170144421986615}
+  - component: {fileID: 3775519670443091626}
   - component: {fileID: 1149895070}
   m_Layer: 0
   m_Name: Prefab_Player_Kachujin
@@ -127,7 +127,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1061965628368404110
+--- !u!114 &7247850228471671510
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -136,10 +136,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 5576363102575397938}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a9a9c723b0b1f84e88e7ecbe93f2e79, type: 3}
+  m_Script: {fileID: 11500000, guid: bd4f6501f8172394089bb6240cb43757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_animator: {fileID: 0}
+  m_weaponPrefabs:
+  - {fileID: 6406856099921073660, guid: 1ebad3dd0ad363f4ca61c7f43943edd3, type: 3}
+--- !u!114 &4795170144421986615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5576363102575397938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc4e21cd721a2bb43ac1e201def8c337, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_currentSpline: {fileID: 0}
+  m_currentSplinePercent: 0.767
+  m_upCollision: 0
+  m_downCollision: 0
+  m_forwardCollision: 0
+  m_backCollision: 0
 --- !u!114 &3775519670443091626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,47 +174,23 @@ MonoBehaviour:
   m_localVelocity: {x: 0, y: 0, z: 0}
   m_gravity: 1
   m_splinePhysics: {fileID: 0}
-  m_characterAnimationController: {fileID: 0}
   m_characterModel: {fileID: 928651568539397070}
   m_rightHand: {fileID: 226488045}
   m_leftHand: {fileID: 979993348}
-  m_fireFXPrefab: {fileID: 192728321193097105, guid: 18c6cb15f989bed4ab98db52e3fb7cbd,
-    type: 3}
-  m_rightHandFire: {fileID: 0}
-  m_leftHandFire: {fileID: 0}
   m_characterTeam: 0
   m_groundedHorizontalSpeedMax: 10
   m_groundedHorizontalAcceleration: 12
   m_groundedHorizontalDeacceleration: 14
-  m_jumpSpeed: 10
+  m_jumpSpeed: 6
   m_landingDistance: 1
   m_inAirHorizontalAcceleration: 0.5
   m_doubleJumpSpeed: 6
   m_wallJumpVerticalSpeed: 5
   m_wallJumpHorizontalSpeed: 2
   m_wallJumpInputDelay: 0.1
-  m_currentAttackType: 0
   m_maxHealth: 10
   m_currentHealth: 10
   m_input: {fileID: 0}
---- !u!114 &4795170144421986615
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5576363102575397938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc4e21cd721a2bb43ac1e201def8c337, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_currentSpline: {fileID: 0}
-  m_currentSplinePercent: 0.418
-  m_upCollision: 0
-  m_downCollision: 0
-  m_forwardCollision: 0
-  m_backCollision: 0
 --- !u!114 &1149895070
 MonoBehaviour:
   m_ObjectHideFlags: 0

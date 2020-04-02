@@ -4,48 +4,39 @@ using UnityEngine;
 
 public class StateMachine : MonoBehaviour
 {
+    [HideInInspector]
     public State m_currentState = null;
     protected Character m_parentCharacter = null;
-    protected List<State> m_states = new List<State>();
-    protected List<State> m_interuptStates = new List<State>();
 
-    /// <summary>
-    /// Store varibles for future usage
-    /// </summary>
-    protected virtual void Start()
-    {
-        m_parentCharacter = GetComponent<Character>();
-    }
+    [HideInInspector]
+    public List<State> m_childStates = new List<State>();
+
+    [HideInInspector]
+    public List<State> m_childInterruptStates = new List<State>();
 
     /// <summary>
     /// Initilise the state machine
     /// Run derived class first, add in states needed. 
     /// </summary>
-    public virtual void InitStateMachine()
+    /// <param name="p_parentCharacter">Parent character this state machine is attached to</param>
+    public virtual void InitStateMachine(Character p_parentCharacter)
     {
-        //Setup inturrupts
-        for (int i = 0; i < m_interuptStates.Count; i++)
+        m_parentCharacter = p_parentCharacter;
+
+        if(m_currentState==null && m_childStates.Count > 0)//Default to first
+            m_currentState = m_childStates[0];
+
+        if(m_currentState == null)//Still null, state machine isnt working
         {
-            m_interuptStates[i].StateInit();
+#if UNITY_EDITOR
+            Debug.Log(name + "'s state machine has no assinged states");
+#endif
+            enabled = false;
         }
-
-        //Setup all states
-        for (int i = 0; i < m_states.Count; i++)
+        else
         {
-            m_states[i].StateInit();
+            m_currentState.StateStart();
         }
-
-        if(m_currentState==null)//Default to first
-            m_currentState = m_states[0];
-    }
-
-    /// <summary>
-    /// Run first time, similar to InitStateMachine, but intended to run after
-    /// </summary>
-    public void StartStateMachine()
-    {
-        //Run first state
-        m_currentState.StateStart();
     }
 
     /// <summary>
@@ -53,23 +44,25 @@ public class StateMachine : MonoBehaviour
     /// </summary>
     public void UpdateStateMachine()
     {
-        foreach (State interuptSate in m_interuptStates)
+        foreach (State interruptSate in m_childInterruptStates)
         {
-            if(interuptSate.IsValid())
+            if(interruptSate.IsValid())
             {
-                SwapState(interuptSate);
+                SwapState(interruptSate);
                 return;
             }
         }
 
-        if (m_currentState.UpdateState())
+        bool finishedState = m_currentState.UpdateState();
+
+        if (finishedState || m_currentState.m_loopedState)
         {
             //Find next valid state
-            foreach (State characterState in m_states)
+            foreach (State nextState in m_currentState.m_nextStates)
             {
-                if(characterState != m_currentState && characterState.IsValid())//Dont reuse state if another is valid
+                if(nextState.IsValid())//Dont reuse state if another is valid
                 {
-                    SwapState(characterState);
+                    SwapState(nextState);
                     return; //Early break out
                 }
             }
@@ -88,4 +81,36 @@ public class StateMachine : MonoBehaviour
 
         m_currentState.StateStart();
     }
+
+    /// <summary>
+    /// Create a new state component and get it initilised for next list
+    /// </summary>
+    /// <typeparam name="T">What type of component is it?</typeparam>
+    /// <returns>Ref to created object</returns>
+    protected T NewNextState<T>() where T : State
+    {
+        T newState = gameObject.AddComponent<T>();
+        
+        m_childStates.Add(newState);
+        
+        return newState;
+    }
+
+    /// <summary>
+    /// Create a new state component and get it initilised for interrupt list
+    /// </summary>
+    /// <typeparam name="T">What type of component is it?</typeparam>
+    /// <param name="p_loopedState">Will this state be looping?</param>
+    /// <param name="p_parentCharacter">Parent character reference</param>
+    /// <returns>Ref to created object</returns>
+    protected T NewNInterruptState<T>(bool p_loopedState, Character p_parentCharacter) where T : State
+    {
+        T newState = gameObject.AddComponent<T>();
+        newState.StateInit(p_loopedState, p_parentCharacter);
+
+        m_childInterruptStates.Add(newState);
+
+        return newState;
+    }
+
 }

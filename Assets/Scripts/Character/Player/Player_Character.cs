@@ -8,18 +8,20 @@ public class Player_Character : Character
     [HideInInspector]
     public CustomInput m_input = null;
 
+    /// <summary>
+    /// Initiliase the entity
+    /// setup varible/physics
+    /// </summary>
     public override void InitEntity()
     {
         base.InitEntity();
 
-        m_playerStateMachine = gameObject.AddComponent<Player_StateMachine>();
-
         m_input = gameObject.AddComponent<CustomInput>();
 
         //Init
-        m_playerStateMachine.InitStateMachine();//Run first as animation depends on states being created
+        m_playerStateMachine = gameObject.AddComponent<Player_StateMachine>();
 
-        m_playerStateMachine.StartStateMachine();//Run intial state
+        m_playerStateMachine.InitStateMachine(this);//Run first as animation depends on states being created
     }
 
     protected override void Update()

@@ -2,64 +2,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class State : MonoBehaviour
+public class PlayerState_Land : Player_State
 {
-    public List<State> m_nextStates = new List<State>();
-
-    [HideInInspector]
-    public bool m_loopedState = false;
-
-    protected Character m_parentCharacter = null;
-    protected Animator m_animator = null;
+    private string m_animLand = "";
 
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
     /// <param name="p_parentCharacter">Parent character reference</param>
-    public virtual void StateInit(bool p_loopedState, Character p_parentCharacter)
+    public override void StateInit(bool p_loopedState, Character p_parentCharacter)
     {
-        m_loopedState = p_loopedState;
-        m_parentCharacter = p_parentCharacter;
-        m_animator = m_parentCharacter.GetComponentInChildren<Animator>();
+        base.StateInit(p_loopedState, p_parentCharacter);
+        m_animLand = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.LAND);
     }
 
     /// <summary>
     /// When swapping to this state, this is called.
     /// </summary>
-    public virtual void StateStart()
+    public override void StateStart()
     {
-
+        m_animator.Play(m_animLand);
     }
 
     /// <summary>
     /// State update, perform any actions for the given state
     /// </summary>
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
-    public virtual bool UpdateState()
+    public override bool UpdateState()
     {
-        return true;
+        return AnimController.IsAnimationDone(m_animator);
     }
 
     /// <summary>
     /// When state has completed, this is called
     /// </summary>
-    public virtual void StateEnd()
+    public override void StateEnd()
     {
-
     }
 
     /// <summary>
     /// Is this currently a valid state
     /// </summary>
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
-    public virtual bool IsValid()
+    public override bool IsValid()
     {
-        return false;
-    }
-
-    public void AddNextState(State p_nextState)
-    {
-        m_nextStates.Add(p_nextState);
+        return m_parentCharacter.m_splinePhysics.m_downCollision;
     }
 }

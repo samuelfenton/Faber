@@ -6,21 +6,15 @@ public class NPC_StateMachine : StateMachine
 {
     public NPC_Character m_parentNPC = null;
 
-    /// <summary>
-    /// Store varibles for future usage
-    /// </summary>
-    protected override void Start()
-    {
-        base.Start();
-        m_parentNPC = (NPC_Character)m_parentCharacter;
-    }
 
     /// <summary>
     /// Initilise the state machine
     /// Run derived class first, add in states needed. 
     /// </summary>
-    public override void InitStateMachine()
+    /// <param name="p_parentCharacter">Parent character this state machine is attached to</param>
+    public override void InitStateMachine(Character p_parentCharacter)
     {
-        base.InitStateMachine();
+        base.InitStateMachine(p_parentCharacter);
+        m_parentNPC = (NPC_Character)m_parentCharacter;
     }
 }

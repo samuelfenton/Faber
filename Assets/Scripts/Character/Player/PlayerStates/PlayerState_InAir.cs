@@ -4,24 +4,31 @@ using UnityEngine;
 
 public class PlayerState_InAir : Player_State
 {
-    private bool m_doubleJump = true;
-
     private float m_horizontalSpeedMax = 1.0f;
     private float m_horizontalAcceleration = 0.5f;
 
     private float m_doubleJumpSpeed = 6.0f;
 
-    private enum IN_AIR_STATE {IN_AIR, LANDING }
+    private enum IN_AIR_STATE {INITIAL, SECOND_JUMP, FINAL }
+    private IN_AIR_STATE m_inAirState = IN_AIR_STATE.INITIAL;
+    private string m_animInAir = "";
+    private string m_animDoubleJump = "";
+
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
-    public override void StateInit()
+    /// <param name="p_loopedState">Will this state be looping?</param>
+    /// <param name="p_parentCharacter">Parent character reference</param>
+    public override void StateInit(bool p_loopedState, Character p_parentCharacter)
     {
-        base.StateInit();
+        base.StateInit(p_loopedState, p_parentCharacter);
 
         m_horizontalSpeedMax = m_parentCharacter.m_groundedHorizontalSpeedMax; //Always use grounded as max speed
         m_horizontalAcceleration = m_parentCharacter.m_inAirHorizontalAcceleration;
         m_doubleJumpSpeed = m_parentCharacter.m_doubleJumpSpeed;
+
+        m_animInAir = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.IN_AIR);
+        m_animDoubleJump = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.DOUBLE_JUMP);
     }
 
     /// <summary>
@@ -29,8 +36,9 @@ public class PlayerState_InAir : Player_State
     /// </summary>
     public override void StateStart()
     {
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.IN_AIR, true);
-        m_doubleJump = true;
+        m_inAirState = IN_AIR_STATE.INITIAL;
+
+        m_animator.Play(m_animInAir);
     }
 
     /// <summary>
@@ -45,18 +53,33 @@ public class PlayerState_InAir : Player_State
         newVelocity.x += m_horizontalAcceleration * m_parentPlayer.m_input.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL) * Time.deltaTime;
         newVelocity.x = Mathf.Clamp(newVelocity.x, -m_horizontalSpeedMax, m_horizontalSpeedMax);
 
-        //Double Jump
-        if (m_doubleJump && m_parentPlayer.m_input.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
+        switch (m_inAirState)
         {
-            m_doubleJump = false;
-            newVelocity.y = m_doubleJumpSpeed;
+            case IN_AIR_STATE.INITIAL:
+                //Double Jump
+                if (m_parentPlayer.m_input.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
+                {
+                    m_animator.Play(m_animDoubleJump);
+                    newVelocity.y = m_doubleJumpSpeed;
+                    m_inAirState = IN_AIR_STATE.SECOND_JUMP;
+                }
+                break;
+            case IN_AIR_STATE.SECOND_JUMP:
+                if(AnimController.IsAnimationDone(m_animator))
+                {
+                    m_inAirState = IN_AIR_STATE.FINAL;
+                    m_animator.Play(m_animInAir);
+                }
+                break;
+            case IN_AIR_STATE.FINAL:
+                break;
+            default:
+                break;
         }
 
         m_parentCharacter.m_localVelocity = newVelocity;
 
-        m_parentCharacter.m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.CURRENT_VELOCITY, Mathf.Abs(newVelocity.x / m_horizontalSpeedMax));
-
-        return (m_parentCharacter.m_splinePhysics.GetSplineDistance() < m_parentCharacter.m_landingDistance && m_parentCharacter.m_localVelocity.y <= 0.0f) || m_parentCharacter.m_splinePhysics.m_downCollision;
+        return m_parentCharacter.m_splinePhysics.m_downCollision;
     }
 
     /// <summary>
@@ -64,7 +87,6 @@ public class PlayerState_InAir : Player_State
     /// </summary>
     public override void StateEnd()
     {
-        m_parentCharacter.m_characterAnimationController.SetBool(CharacterAnimationController.ANIMATIONS.IN_AIR, false);
     }
 
     /// <summary>

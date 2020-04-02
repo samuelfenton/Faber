@@ -1149,7 +1149,7 @@ Light:
   serializedVersion: 9
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.025
+  m_Intensity: 0.36
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -15660,16 +15660,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1234162522}
     m_Modifications:
+    - target: {fileID: 3775519670443091626, guid: 1defb83b4c531454c8a47e1f92bf4882,
+        type: 3}
+      propertyPath: m_jumpSpeed
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4795170144421986615, guid: 1defb83b4c531454c8a47e1f92bf4882,
         type: 3}
       propertyPath: m_currentSpline
       value: 
       objectReference: {fileID: 743040940}
-    - target: {fileID: 4795170144421986615, guid: 1defb83b4c531454c8a47e1f92bf4882,
-        type: 3}
-      propertyPath: m_currentSplinePercent
-      value: 0.767
-      objectReference: {fileID: 0}
     - target: {fileID: 5576363102575397938, guid: 1defb83b4c531454c8a47e1f92bf4882,
         type: 3}
       propertyPath: m_Name
@@ -15678,7 +15678,7 @@ PrefabInstance:
     - target: {fileID: 5576363102575628370, guid: 1defb83b4c531454c8a47e1f92bf4882,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -13.303712
+      value: -24.041712
       objectReference: {fileID: 0}
     - target: {fileID: 5576363102575628370, guid: 1defb83b4c531454c8a47e1f92bf4882,
         type: 3}
@@ -15729,21 +15729,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5576363102575628370, guid: 1defb83b4c531454c8a47e1f92bf4882,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5576363102575628370, guid: 1defb83b4c531454c8a47e1f92bf4882,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5576363102575628370, guid: 1defb83b4c531454c8a47e1f92bf4882,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1defb83b4c531454c8a47e1f92bf4882, type: 3}
@@ -28933,6 +28918,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Camera_ScreenShot
+      objectReference: {fileID: 0}
+    - target: {fileID: 6394411268233709744, guid: 55bc937791abe5840bd31b7ff404ea80,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7374850461903936393, guid: 55bc937791abe5840bd31b7ff404ea80,
         type: 3}

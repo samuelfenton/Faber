@@ -4,43 +4,46 @@ using UnityEngine;
 
 public class Player_StateMachine : StateMachine
 {
-    public Player_Character m_parentPlayer = null;
-
-    /// <summary>
-    /// Store varibles for future usage
-    /// </summary>
-    protected override void Start()
-    {
-        base.Start();
-        m_parentPlayer = (Player_Character)m_parentCharacter;
-    }
-
     /// <summary>
     /// Initilise the state machine
     /// Run derived class first, add in states needed. 
     /// </summary>
-    public override void InitStateMachine()
+    /// <param name="p_parentCharacter">Parent character this state machine is attached to</param>
+    public override void InitStateMachine(Character p_parentCharacter)
     {
-        //Add all components to state machine
-        PlayerState_Death death = gameObject.AddComponent<PlayerState_Death>();
-        
-        PlayerState_Locomotion groundMovement = gameObject.AddComponent<PlayerState_Locomotion>();
-        PlayerState_Jump jump = gameObject.AddComponent<PlayerState_Jump>();
-        PlayerState_InAir inAir = gameObject.AddComponent<PlayerState_InAir>();
-        PlayerState_WallJump wallJump = gameObject.AddComponent<PlayerState_WallJump>();
-        
-        PlayerState_GroundAttack groundAttack = gameObject.AddComponent<PlayerState_GroundAttack>();
+        //Add components
+        PlayerState_Locomotion loco = NewNextState<PlayerState_Locomotion>();
+        PlayerState_Jump jump = NewNextState<PlayerState_Jump>();
+        PlayerState_InAir inAir = NewNextState<PlayerState_InAir>();
+        PlayerState_Land land = NewNextState<PlayerState_Land>();
 
-        m_interuptStates.Add(death);
+        PlayerState_Attack attack = NewNextState<PlayerState_Attack>();
 
-        m_states.Add(groundMovement);
-        m_states.Add(jump);
-        m_states.Add(inAir);
-        m_states.Add(wallJump);
-        m_states.Add(groundAttack);
+        //Init all 
+        loco.StateInit(true, p_parentCharacter);
+        jump.StateInit(false, p_parentCharacter);
+        inAir.StateInit(true, p_parentCharacter);
+        land.StateInit(false, p_parentCharacter);
 
-        m_currentState = groundMovement;
+        attack.StateInit(false, p_parentCharacter);
 
-        base.InitStateMachine();
+        //Add in next states
+        loco.AddNextState(jump);
+        loco.AddNextState(inAir);
+        loco.AddNextState(attack);
+
+        jump.AddNextState(inAir);
+        jump.AddNextState(land);
+        jump.AddNextState(loco);
+
+        inAir.AddNextState(land);
+        inAir.AddNextState(attack);
+
+        land.AddNextState(loco);
+
+        attack.AddNextState(inAir);
+        attack.AddNextState(loco);
+
+        base.InitStateMachine(p_parentCharacter);
     }
 }

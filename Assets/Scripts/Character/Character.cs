@@ -4,20 +4,10 @@ using UnityEngine;
 
 public class Character : Entity
 {
-    [HideInInspector]
-    public CharacterAnimationController m_characterAnimationController = null;
-
     [Header("Assigned Character Varibles")]
     public GameObject m_characterModel = null;
     public GameObject m_rightHand = null;
     public GameObject m_leftHand = null;
-
-    public GameObject m_fireFXPrefab = null;
-
-    [HideInInspector]
-    public GameObject m_rightHandFire = null;
-    [HideInInspector]
-    public GameObject m_leftHandFire = null;
 
     public enum TEAM { PLAYER, NPC, GAIA }
     public TEAM m_characterTeam = TEAM.GAIA;
@@ -40,12 +30,6 @@ public class Character : Entity
     public float m_wallJumpHorizontalSpeed = 2.0f;
     public float m_wallJumpInputDelay = 0.1f;
 
-    public enum ATTACK_TYPE { NONE, LIGHT, HEAVY }
-
-    [Header("Attack Stats")]
-    public ATTACK_TYPE m_currentAttackType = ATTACK_TYPE.NONE;
-    protected Weapon m_weapon = null;
-
     [Header("Character Stats")]
     public float m_maxHealth = 10.0f;
     [SerializeField]
@@ -53,45 +37,23 @@ public class Character : Entity
 
     protected CharacterInventory m_characterInventory = null;
 
-    //-------------------
-    //Character setup
-    //  Ensure all need componets are attached, and get initilised if needed
-    //-------------------
+    /// <summary>
+    /// Initiliase the entity
+    /// setup varible/physics
+    /// </summary>
     public override void InitEntity()
     {
         base.InitEntity();
 
         //Get references
-        m_characterAnimationController = GetComponentInChildren<CharacterAnimationController>();
         m_characterInventory = GetComponent<CharacterInventory>();
 
-        if(m_characterAnimationController!=null)
-            m_characterAnimationController.InitAnimationController();
         if (m_characterInventory != null)
-            m_characterInventory.InitInventory();//Least importance as has no dependances
-
-        //Secondary references
-        m_weapon = GetComponentInChildren<Weapon>();
-
-        if(m_weapon != null)
-        {
-            m_weapon.m_parentCharacter = this;
-        }
+            m_characterInventory.InitInventory(this);//Least importance as has no dependances
 
         m_currentHealth = m_maxHealth;
-
-        m_rightHandFire = Instantiate(m_fireFXPrefab, m_rightHand.transform, false);
-        m_leftHandFire = Instantiate(m_fireFXPrefab, m_leftHand.transform, false);
-
-        m_rightHandFire.SetActive(false);
-        m_leftHandFire.SetActive(false);
-
     }
 
-    //-------------------
-    //Character update
-    //  Get input, apply physics, update character state machine
-    //-------------------
     protected override void Update()
     {
         base.Update();
@@ -107,53 +69,38 @@ public class Character : Entity
         }
     }
 
-    //-------------------
-    //Is current character alive
-    //
-    //Return bool: Is health greater than 0
-    //-------------------
+    public WeaponManager GetCurrentWeapon()
+    {
+        return m_characterInventory.GetCurrentWeapon();
+    }
+
+    /// <summary>
+    /// Is the given Character alive?
+    /// </summary>
+    /// <returns>true when health is greater than 0</returns>
     public bool IsAlive()
     {
         return m_currentHealth > 0.0f;
     }
 
-    //-------------------
-    //Character death function call
-    //-------------------
+    /// <summary>
+    /// Character has been killed
+    /// </summary>
     public void OnDeath()
     {
-        DestroyEntity();
+        StartCoroutine(DestroyEntity());
     }
 
-    protected override void EntityDestroyed()
-    {
-        m_weapon.DropWeapon();
-    }
-
-    //-------------------
-    //Change characters health and check for death after health change
-    //
-    //Param p_value: how much to change health by
-    //-------------------
+    /// <summary>
+    /// Change characters health and check for death after health change
+    /// </summary>
+    /// <param name="p_value">how much to change health by</param>
     public void ModifyHealth(float p_value)
     {
         m_currentHealth += p_value;
 
         if (!IsAlive())
             OnDeath();
-    }
-
-    //-------------------
-    //Enable to disable weapon damage
-    //
-    //Param p_val: true = Enabled, false = disabled
-    //-------------------
-    public void ToggleWeapon(bool p_val)
-    {
-        if(p_val)
-            m_weapon.EnableWeaponCollisions();
-        else
-            m_weapon.DisableWeaponCollisions();
     }
 
     /// <summary>
@@ -170,7 +117,5 @@ public class Character : Entity
             newVelocity.x += newVelocity.x < 0 ? deltaSpeed : -deltaSpeed;//Still have high velocity, just slow down
 
         m_localVelocity = newVelocity;
-
-        m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.CURRENT_VELOCITY, Mathf.Abs(newVelocity.x / m_groundedHorizontalSpeedMax));
     }
 }

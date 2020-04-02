@@ -4,31 +4,56 @@ using UnityEngine;
 
 public class CharacterInventory : MonoBehaviour
 {
-    public GameObject m_equipedWeapon = null;
-    private WeaponSocket m_weaponSocket = null;
+    public List<GameObject> m_weaponPrefabs = new List<GameObject>();
+    private List<WeaponManager> m_weapons = new List<WeaponManager>();
 
-    //-------------------
-    //Initiliase characters inventory
-    //  Equip weapon
-    //-------------------
-    public void InitInventory()
+    private int m_currentWeapon = 0;
+
+    /// <summary>
+    /// Init inventory, equip first weapon
+    /// </summary>
+    /// <param name="p_character">Parent character</param>
+    public void InitInventory(Character p_character)
     {
-        m_weaponSocket = GetComponentInChildren<WeaponSocket>();
+        for (int weaponIndex = 0; weaponIndex < m_weaponPrefabs.Count; weaponIndex++)
+        {
+            GameObject newWeapon = Instantiate(m_weaponPrefabs[weaponIndex]);
 
-        EquipWeapon(m_equipedWeapon);
+            WeaponManager weaponManager = newWeapon.GetComponent<WeaponManager>();
+
+            if(weaponManager == null)
+            {
+#if UNITY_EDITOR
+                Debug.Log(m_weaponPrefabs[weaponIndex].name + " is an invalid prefab for weapon as it does not contrain the weapon manager");
+#endif
+            }
+            else
+            {
+                m_weapons.Add(weaponManager);
+                weaponManager.Init(p_character);
+                newWeapon.gameObject.SetActive(false);
+            }
+        }
+
+        EquipWeapon(m_currentWeapon);
     }
 
-    //-------------------
-    //Equiping of weapon, weapon is instatiated.
-    //  TODO crete all weapons at start and object pool
-    //
-    //Param GameObject: weapon to create and equip
-    //-------------------
-    public void EquipWeapon(GameObject p_weaponPrefab)
+    /// <summary>
+    /// Equip weapon
+    /// </summary>
+    /// <param name="p_weaponIndex">Index of weapon to equip</param>
+    public void EquipWeapon(int p_weaponIndex)
     {
-        if (m_weaponSocket != null && p_weaponPrefab != null)
-        {
-            Instantiate(p_weaponPrefab, m_weaponSocket.transform);
-        }
+        if (p_weaponIndex < 0 || p_weaponIndex >= m_weapons.Count)
+            return;
+
+        m_weapons[m_currentWeapon].gameObject.SetActive(false);
+        m_currentWeapon = p_weaponIndex;
+        m_weapons[m_currentWeapon].gameObject.SetActive(true);
+    }
+
+    public WeaponManager GetCurrentWeapon()
+    {
+        return m_weapons[m_currentWeapon];
     }
 }

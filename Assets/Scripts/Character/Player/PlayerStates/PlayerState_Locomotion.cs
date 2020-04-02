@@ -8,16 +8,26 @@ public class PlayerState_Locomotion : Player_State
     private float m_horizontalAcceleration = 1.0f;
     private float m_horizontalDeacceleration = 1.0f;
 
+    private string m_animLoco = "";
+    private string m_paramVelocity = "";
+    private string m_paramRandomIdle = "";
+
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
-    public override void StateInit()
-    {
-        base.StateInit();
+    /// <param name="p_loopedState">Will this state be looping?</param>
+    /// <param name="p_parentCharacter">Parent character reference</param>
+    public override void StateInit(bool p_loopedState, Character p_parentCharacter)
+    { 
+        base.StateInit(p_loopedState, p_parentCharacter);
 
         m_horizontalSpeedMax = m_parentCharacter.m_groundedHorizontalSpeedMax;
         m_horizontalAcceleration = m_parentCharacter.m_groundedHorizontalAcceleration;
         m_horizontalDeacceleration = m_parentCharacter.m_groundedHorizontalDeacceleration;
+
+        m_animLoco = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.LOCOMOTION);
+        m_paramVelocity = AnimController.GetVarible(AnimController.VARIBLE_ANIM.CURRENT_VELOCITY);
+        m_paramRandomIdle = AnimController.GetVarible(AnimController.VARIBLE_ANIM.RANDOM_IDLE);
     }
 
     /// <summary>
@@ -25,6 +35,7 @@ public class PlayerState_Locomotion : Player_State
     /// </summary>
     public override void StateStart()
     {
+        m_animator.Play(m_animLoco);
     }
 
     /// <summary>
@@ -48,11 +59,9 @@ public class PlayerState_Locomotion : Player_State
             m_parentCharacter.ApplyFriction();
         }
 
-        m_parentCharacter.m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.CURRENT_VELOCITY, newVelocity.x/ m_horizontalSpeedMax);
-        m_parentCharacter.m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.ABSOLUTE_VELOCTIY, Mathf.Abs(newVelocity.x / m_horizontalSpeedMax));
-        m_parentCharacter.m_characterAnimationController.SetVarible(CharacterAnimationController.VARIBLES.DESIRED_VELOCITY, horizontal);
+        m_animator.SetFloat(m_paramVelocity, Mathf.Abs(newVelocity.x)/m_horizontalSpeedMax);
 
-        return true;
+        return false;
     }
 
     /// <summary>

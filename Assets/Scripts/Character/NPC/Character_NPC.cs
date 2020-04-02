@@ -12,14 +12,17 @@ public class NPC_Character : Character
 
     private NPC_StateMachine m_NPCStateMachine = null;
 
+    /// <summary>
+    /// Initiliase the entity
+    /// setup varible/physics
+    /// </summary>
     public override void InitEntity()
     {
         base.InitEntity();
 
         m_NPCStateMachine = GetComponent<NPC_StateMachine>();
 
-        m_NPCStateMachine.InitStateMachine();
-        m_NPCStateMachine.StartStateMachine();
+        m_NPCStateMachine.InitStateMachine(this);
     }
 
     protected override void Update()
@@ -50,6 +53,9 @@ public class NPC_Character : Character
         return TURNING_DIR.CENTER;
     }
 
+    /// <summary>
+    /// Face towards target character ignoring the y axis
+    /// </summary>
     public void FaceTowardsTarget()
     {
         if (m_targetCharacter == null)//Check has target

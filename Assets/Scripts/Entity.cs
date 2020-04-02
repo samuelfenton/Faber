@@ -15,6 +15,10 @@ public class Entity : MonoBehaviour
     [HideInInspector]
     public SplinePhysics m_splinePhysics = null;
 
+    /// <summary>
+    /// Initiliase the entity
+    /// setup varible/physics
+    /// </summary>
     public virtual void InitEntity()
     {
         m_splinePhysics = GetComponent<SplinePhysics>();
@@ -62,26 +66,26 @@ public class Entity : MonoBehaviour
         return TURNING_DIR.CENTER;
     }
 
-    public void DestroyEntity(float p_time = DESTRUCTION_TIME)
+    public IEnumerator DestroyEntity()
     {
-        StartCoroutine(EntityDestroy(p_time));
+        EntityImmediateDestory();
+        yield return new WaitForSeconds(DESTRUCTION_TIME); 
+        EntityDelayedDestroy();
+        Destroy(gameObject);
     }
 
     /// <summary>
     /// Apply delay for entity destruction to allow any effects
     /// </summary>
-    /// <returns>m_destructionTime seconds</returns>
-    private IEnumerator EntityDestroy(float p_time)
+    protected virtual void EntityDelayedDestroy()
     {
-        EntityDestroyed();
-        yield return new WaitForSeconds(p_time);
-        Destroy(gameObject);
+
     }
 
     /// <summary>
     /// Called as an entity is destroyed intialy
     /// </summary>
-    protected virtual void EntityDestroyed()
+    protected virtual void EntityImmediateDestory()
     {
 
     }

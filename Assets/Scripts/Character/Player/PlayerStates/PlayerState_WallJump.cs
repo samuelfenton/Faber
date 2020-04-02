@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class PlayerState_WallJump : Player_State
 {
@@ -13,9 +14,11 @@ public class PlayerState_WallJump : Player_State
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
-    public override void StateInit()
+    /// <param name="p_loopedState">Will this state be looping?</param>
+    /// <param name="p_parentCharacter">Parent character reference</param>
+    public override void StateInit(bool p_loopedState, Character p_parentCharacter)
     {
-        base.StateInit();
+        base.StateInit(p_loopedState, p_parentCharacter);
 
         m_wallJumpVerticalSpeed = m_parentCharacter.m_wallJumpVerticalSpeed;
         m_wallJumpHorizontalSpeed = m_parentCharacter.m_wallJumpHorizontalSpeed;
