@@ -10,10 +10,10 @@ public class PlayerState_Attack : Player_State
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_parentCharacter">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_parentCharacter)
+    /// <param name="p_character">Parent character reference</param>
+    public override void StateInit(bool p_loopedState, Character p_character)
     {
-        base.StateInit(p_loopedState, p_parentCharacter);
+        base.StateInit(p_loopedState, p_character);
 
     }
 
@@ -22,7 +22,7 @@ public class PlayerState_Attack : Player_State
     /// </summary>
     public override void StateStart()
     {
-        m_weaponManager = m_parentCharacter.GetCurrentWeapon();
+        m_weaponManager = m_character.GetCurrentWeapon();
         m_weaponManager.StartAttackSequence();
     }
 
@@ -32,6 +32,7 @@ public class PlayerState_Attack : Player_State
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
     public override bool UpdateState()
     {
+        m_character.ApplyFriction();
         return m_weaponManager.UpdateAttackSequence();
     }
 
@@ -48,6 +49,6 @@ public class PlayerState_Attack : Player_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_parentPlayer.m_input.GetKey(CustomInput.INPUT_KEY.ATTACK) == CustomInput.INPUT_STATE.DOWNED || m_parentPlayer.m_input.GetKey(CustomInput.INPUT_KEY.ATTACK_SECONDARY) == CustomInput.INPUT_STATE.DOWNED;
+        return m_playerCharacter.m_input.GetKey(CustomInput.INPUT_KEY.ATTACK) == CustomInput.INPUT_STATE.DOWNED || m_playerCharacter.m_input.GetKey(CustomInput.INPUT_KEY.ATTACK_SECONDARY) == CustomInput.INPUT_STATE.DOWNED;
     }
 }

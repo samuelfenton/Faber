@@ -2,17 +2,55 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPCState_Knockback : MonoBehaviour
+public class NPCState_Knockback : NPC_State
 {
-    // Start is called before the first frame update
-    void Start()
+    private string m_animKnockback = "";
+
+    /// <summary>
+    /// Initilse the state, runs only once at start
+    /// </summary>
+    /// <param name="p_loopedState">Will this state be looping?</param>
+    /// <param name="p_character">Parent character reference</param>
+    public override void StateInit(bool p_loopedState, Character p_character)
     {
-        
+        base.StateInit(p_loopedState, p_character);
+
+        m_animKnockback = AnimController.GetInterrupt(AnimController.INTERRUPT_ANIM.KNOCKBACK);
     }
 
-    // Update is called once per frame
-    void Update()
+    /// <summary>
+    /// When swapping to this state, this is called.
+    /// </summary>
+    public override void StateStart()
     {
-        
+        m_character.m_damagedFlag = false; //Reset flag
+
+        m_animator.Play(m_animKnockback);
+    }
+
+    /// <summary>
+    /// State update, perform any actions for the given state
+    /// </summary>
+    /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
+    public override bool UpdateState()
+    {
+        return AnimController.IsAnimationDone(m_animator);
+    }
+
+    /// <summary>
+    /// When state has completed, this is called
+    /// </summary>
+    public override void StateEnd()
+    {
+
+    }
+
+    /// <summary>
+    /// Is this currently a valid state
+    /// </summary>
+    /// <returns>True when valid, e.g. Death requires players to have no health</returns>
+    public override bool IsValid()
+    {
+        return m_character.m_damagedFlag;
     }
 }

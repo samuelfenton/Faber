@@ -7,8 +7,8 @@ public class NPC_Character : Character
     [Header("NPC Logic")]
     public List<Pathing_Spline> m_path = new List<Pathing_Spline>();
     public Character m_targetCharacter = null;
-    public float m_attackingDistance = 0.0f;
-    public float m_detectionDistance = 0.0f;
+    public float m_attackingDistance = 1.0f;
+    public float m_detectionDistance = 10.0f;
 
     private NPC_StateMachine m_NPCStateMachine = null;
 

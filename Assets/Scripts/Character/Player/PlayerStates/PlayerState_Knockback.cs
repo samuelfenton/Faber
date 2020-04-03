@@ -10,10 +10,10 @@ public class PlayerState_Knockback : Player_State
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_parentCharacter">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_parentCharacter)
+    /// <param name="p_character">Parent character reference</param>
+    public override void StateInit(bool p_loopedState, Character p_character)
     {
-        base.StateInit(p_loopedState, p_parentCharacter);
+        base.StateInit(p_loopedState, p_character);
 
         m_animKnockback = AnimController.GetInterrupt(AnimController.INTERRUPT_ANIM.KNOCKBACK);
     }
@@ -23,7 +23,7 @@ public class PlayerState_Knockback : Player_State
     /// </summary>
     public override void StateStart()
     {
-        m_parentPlayer.m_damagedFlag = false; //Reset flag
+        m_playerCharacter.m_damagedFlag = false; //Reset flag
 
         m_animator.Play(m_animKnockback);
     }
@@ -51,6 +51,6 @@ public class PlayerState_Knockback : Player_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_parentPlayer.m_damagedFlag;
+        return m_playerCharacter.m_damagedFlag;
     }
 }

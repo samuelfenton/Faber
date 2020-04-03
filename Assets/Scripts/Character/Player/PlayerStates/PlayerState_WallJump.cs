@@ -15,15 +15,15 @@ public class PlayerState_WallJump : Player_State
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_parentCharacter">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_parentCharacter)
+    /// <param name="p_character">Parent character reference</param>
+    public override void StateInit(bool p_loopedState, Character p_character)
     {
-        base.StateInit(p_loopedState, p_parentCharacter);
+        base.StateInit(p_loopedState, p_character);
 
-        m_wallJumpVerticalSpeed = m_parentCharacter.m_wallJumpVerticalSpeed;
-        m_wallJumpHorizontalSpeed = m_parentCharacter.m_wallJumpHorizontalSpeed;
+        m_wallJumpVerticalSpeed = m_character.m_wallJumpVerticalSpeed;
+        m_wallJumpHorizontalSpeed = m_character.m_wallJumpHorizontalSpeed;
 
-        m_inputDelay = m_parentCharacter.m_wallJumpInputDelay;
+        m_inputDelay = m_character.m_wallJumpInputDelay;
     }
 
     /// <summary>
@@ -32,20 +32,20 @@ public class PlayerState_WallJump : Player_State
     public override void StateStart()
     {
         //Movement
-        Vector3 newVelocity = m_parentCharacter.m_localVelocity;
+        Vector3 newVelocity = m_character.m_localVelocity;
 
-        if (m_parentCharacter.m_splinePhysics.m_forwardCollision)
+        if (m_character.m_splinePhysics.m_forwardCollision)
         {
             newVelocity.y = m_wallJumpVerticalSpeed;
             newVelocity.x = -m_wallJumpHorizontalSpeed;
         }
-        else if (m_parentCharacter.m_splinePhysics.m_backCollision)
+        else if (m_character.m_splinePhysics.m_backCollision)
         {
             newVelocity.y = m_wallJumpVerticalSpeed;
             newVelocity.x = m_wallJumpHorizontalSpeed;
         }
 
-        m_parentCharacter.m_localVelocity = newVelocity;
+        m_character.m_localVelocity = newVelocity;
 
         //Setup timer
         m_inputDelayTimer = m_inputDelay;
@@ -75,8 +75,8 @@ public class PlayerState_WallJump : Player_State
     public override bool IsValid()
     {
         return
-        m_parentPlayer.m_input.GetKeyBool(CustomInput.INPUT_KEY.JUMP) &&
-        (m_parentCharacter.m_splinePhysics.m_forwardCollision || m_parentCharacter.m_splinePhysics.m_backCollision) &&
-        !m_parentCharacter.m_splinePhysics.m_downCollision;
+        m_playerCharacter.m_input.GetKeyBool(CustomInput.INPUT_KEY.JUMP) &&
+        (m_character.m_splinePhysics.m_forwardCollision || m_character.m_splinePhysics.m_backCollision) &&
+        !m_character.m_splinePhysics.m_downCollision;
     }
 }

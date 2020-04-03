@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player_WeaponManager : WeaponManager
+public class NPC_WeaponManager : WeaponManager
 {
     //Stored varibles
-    private Player_Character m_playerCharacter = null;
-
+    private NPC_Character m_NPCCharacter = null;
+    private NPCState_Attack m_attackState = null;
     /// <summary>
     /// Init manager
     /// </summary>
@@ -14,7 +14,8 @@ public class Player_WeaponManager : WeaponManager
     public override void Init(Character p_character)
     {
         base.Init(p_character);
-        m_playerCharacter = p_character.GetComponent<Player_Character>();
+        m_NPCCharacter = p_character.GetComponent<NPC_Character>();
+        m_attackState = p_character.GetComponent<NPCState_Attack>();
     }
 
     #region OVERRIDE FUNCTIONS
@@ -26,7 +27,7 @@ public class Player_WeaponManager : WeaponManager
     /// <returns>True when theres desired light attack input</returns>
     public override bool DetermineLightInput()
     {
-        return m_playerCharacter.m_input.GetKey(CustomInput.INPUT_KEY.ATTACK) == CustomInput.INPUT_STATE.DOWNED;
+        return m_attackState.m_lightAttackFlag;
     }
 
     /// <summary>
@@ -36,7 +37,7 @@ public class Player_WeaponManager : WeaponManager
     /// <returns>True when theres desired heavy attack input</returns>
     public override bool DetermineHeavyInput()
     {
-        return m_playerCharacter.m_input.GetKey(CustomInput.INPUT_KEY.ATTACK_SECONDARY) == CustomInput.INPUT_STATE.DOWNED;
+        return m_attackState.m_heavyAttackFlag;
     }
 
     /// <summary>
@@ -64,7 +65,7 @@ public class Player_WeaponManager : WeaponManager
     /// <returns>Based off input</returns>
     public override AnimController.ATTACK_STANCE DetermineStance()
     {
-        return m_playerCharacter.m_input.GetKey(CustomInput.INPUT_KEY.ATTACK) == CustomInput.INPUT_STATE.DOWNED ? AnimController.ATTACK_STANCE.LIGHT : AnimController.ATTACK_STANCE.HEAVY;
+        return m_attackState.m_lightAttackFlag ? AnimController.ATTACK_STANCE.LIGHT : AnimController.ATTACK_STANCE.HEAVY;
     }
     #endregion
 }

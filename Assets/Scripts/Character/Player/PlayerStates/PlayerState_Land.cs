@@ -10,10 +10,10 @@ public class PlayerState_Land : Player_State
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_parentCharacter">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_parentCharacter)
+    /// <param name="p_character">Parent character reference</param>
+    public override void StateInit(bool p_loopedState, Character p_character)
     {
-        base.StateInit(p_loopedState, p_parentCharacter);
+        base.StateInit(p_loopedState, p_character);
         m_animLand = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.LAND);
     }
 
@@ -47,6 +47,6 @@ public class PlayerState_Land : Player_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_parentCharacter.m_splinePhysics.m_downCollision;
+        return m_character.m_splinePhysics.m_downCollision;
     }
 }

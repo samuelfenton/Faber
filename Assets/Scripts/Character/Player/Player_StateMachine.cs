@@ -8,8 +8,8 @@ public class Player_StateMachine : StateMachine
     /// Initilise the state machine
     /// Run derived class first, add in states needed. 
     /// </summary>
-    /// <param name="p_parentCharacter">Parent character this state machine is attached to</param>
-    public override void InitStateMachine(Character p_parentCharacter)
+    /// <param name="p_character">Parent character this state machine is attached to</param>
+    public override void InitStateMachine(Character p_character)
     {
         //Add components
         PlayerState_Death death = NewInterruptState<PlayerState_Death>();
@@ -23,15 +23,15 @@ public class Player_StateMachine : StateMachine
         PlayerState_Attack attack = NewNextState<PlayerState_Attack>();
 
         //Init all 
-        death.StateInit(true, p_parentCharacter);
-        knockback.StateInit(false, p_parentCharacter);
+        death.StateInit(true, p_character);
+        knockback.StateInit(false, p_character);
 
-        loco.StateInit(true, p_parentCharacter);
-        jump.StateInit(false, p_parentCharacter);
-        inAir.StateInit(true, p_parentCharacter);
-        land.StateInit(false, p_parentCharacter);
+        loco.StateInit(true, p_character);
+        jump.StateInit(false, p_character);
+        inAir.StateInit(true, p_character);
+        land.StateInit(false, p_character);
 
-        attack.StateInit(false, p_parentCharacter);
+        attack.StateInit(false, p_character);
 
         //Add in next states
         loco.AddNextState(jump);
@@ -50,6 +50,6 @@ public class Player_StateMachine : StateMachine
         attack.AddNextState(inAir);
         attack.AddNextState(loco);
 
-        base.InitStateMachine(p_parentCharacter);
+        base.InitStateMachine(p_character);
     }
 }

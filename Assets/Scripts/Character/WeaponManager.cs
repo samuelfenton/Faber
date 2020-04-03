@@ -171,9 +171,44 @@ public class WeaponManager : MonoBehaviour
     /// Update the manoeuvre
     /// </summary>
     /// <returns>True when completed</returns>
-    protected virtual bool UpdateAttackManoeuvre()
+    protected bool UpdateAttackManoeuvre()
     {
-        return true;
+        switch (m_currentState)
+        {
+            case ATTACK_MANOEUVRE_STATE.WIND_UP:
+                if (AnimController.GetAnimationPercent(m_animator) > m_startDamage)
+                    m_currentState = ATTACK_MANOEUVRE_STATE.DAMAGE;
+                break;
+            case ATTACK_MANOEUVRE_STATE.DAMAGE:
+                UpdateWeaponDamage();
+                if (AnimController.GetAnimationPercent(m_animator) > m_endDamage)
+                    m_currentState = ATTACK_MANOEUVRE_STATE.AWAITING_COMBO;
+                break;
+            case ATTACK_MANOEUVRE_STATE.AWAITING_COMBO:
+                if (AnimController.GetAnimationPercent(m_animator) > m_startCombo)
+                    m_currentState = ATTACK_MANOEUVRE_STATE.COMBO_CHECK;
+                break;
+            case ATTACK_MANOEUVRE_STATE.COMBO_CHECK:
+                if (AnimController.GetAnimationPercent(m_animator) > m_endCombo)
+                    m_currentState = ATTACK_MANOEUVRE_STATE.END_ATTACK;
+                if (DetermineLightInput())
+                {
+                    m_comboFlag = true;
+                    m_attackStance = AnimController.ATTACK_STANCE.LIGHT;
+                    m_currentState = ATTACK_MANOEUVRE_STATE.END_ATTACK;
+                }
+                if (DetermineHeavyInput())
+                {
+                    m_comboFlag = true;
+                    m_attackStance = AnimController.ATTACK_STANCE.HEAVY;
+                    m_currentState = ATTACK_MANOEUVRE_STATE.END_ATTACK;
+                }
+                break;
+            case ATTACK_MANOEUVRE_STATE.END_ATTACK:
+                return (m_comboFlag || AnimController.IsAnimationDone(m_animator));
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -226,7 +261,28 @@ public class WeaponManager : MonoBehaviour
 
     #endregion
 
-    #region HELPER FUNCTIONS
+    #region OVERRIDE FUNCTIONS
+
+    /// <summary>
+    /// Function desired to be overridden, should this managed have a possitive light attack input? 
+    /// Example click by player, or logic for NPC
+    /// </summary>
+    /// <returns>True when theres desired light attack input</returns>
+    public virtual bool DetermineLightInput()
+    {
+        return false;
+    }
+
+    /// <summary>
+    /// Function desired to be overridden, should this managed have a possitive heavy attack input? 
+    /// Example click by player, or logic for NPC
+    /// </summary>
+    /// <returns>True when theres desired heavy attack input</returns>
+    public virtual bool DetermineHeavyInput()
+    {
+        return false;
+    }
+
     /// <summary>
     /// Determine what attack type should be performed?
     /// grounded and sprinting = sprinting

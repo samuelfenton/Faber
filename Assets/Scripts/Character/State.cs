@@ -9,19 +9,19 @@ public class State : MonoBehaviour
     [HideInInspector]
     public bool m_loopedState = false;
 
-    protected Character m_parentCharacter = null;
+    protected Character m_character = null;
     protected Animator m_animator = null;
 
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_parentCharacter">Parent character reference</param>
-    public virtual void StateInit(bool p_loopedState, Character p_parentCharacter)
+    /// <param name="p_character">Parent character reference</param>
+    public virtual void StateInit(bool p_loopedState, Character p_character)
     {
         m_loopedState = p_loopedState;
-        m_parentCharacter = p_parentCharacter;
-        m_animator = m_parentCharacter.GetComponentInChildren<Animator>();
+        m_character = p_character;
+        m_animator = m_character.GetComponentInChildren<Animator>();
     }
 
     /// <summary>

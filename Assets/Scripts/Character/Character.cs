@@ -13,8 +13,8 @@ public class Character : Entity
     public TEAM m_characterTeam = TEAM.GAIA;
 
     [Header("Grounded Movement")]
-    public float m_groundedHorizontalSpeedMax = 1.0f;
-    public float m_groundedHorizontalAcceleration = 1.0f;
+    public float m_groundHorizontalMax = 1.0f;
+    public float m_groundHorizontalAccel = 1.0f;
     public float m_groundedHorizontalDeacceleration = 1.0f;
 
     [Header("Jumping Stats")]

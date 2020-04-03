@@ -6,7 +6,7 @@ public class StateMachine : MonoBehaviour
 {
     [HideInInspector]
     public State m_currentState = null;
-    protected Character m_parentCharacter = null;
+    protected Character m_character = null;
 
     [HideInInspector]
     public List<State> m_childStates = new List<State>();
@@ -18,10 +18,10 @@ public class StateMachine : MonoBehaviour
     /// Initilise the state machine
     /// Run derived class first, add in states needed. 
     /// </summary>
-    /// <param name="p_parentCharacter">Parent character this state machine is attached to</param>
-    public virtual void InitStateMachine(Character p_parentCharacter)
+    /// <param name="p_character">Parent character this state machine is attached to</param>
+    public virtual void InitStateMachine(Character p_character)
     {
-        m_parentCharacter = p_parentCharacter;
+        m_character = p_character;
 
         if(m_currentState==null && m_childStates.Count > 0)//Default to first
             m_currentState = m_childStates[0];

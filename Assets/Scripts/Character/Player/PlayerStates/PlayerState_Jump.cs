@@ -11,11 +11,11 @@ public class PlayerState_Jump : Player_State
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_parentCharacter">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_parentCharacter)
+    /// <param name="p_character">Parent character reference</param>
+    public override void StateInit(bool p_loopedState, Character p_character)
     {
-        base.StateInit(p_loopedState, p_parentCharacter);
-        m_jumpSpeed = m_parentCharacter.m_jumpSpeed;
+        base.StateInit(p_loopedState, p_character);
+        m_jumpSpeed = m_character.m_jumpSpeed;
 
         m_animJump = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.JUMP);
     }
@@ -25,9 +25,9 @@ public class PlayerState_Jump : Player_State
     /// </summary>
     public override void StateStart()
     {
-        Vector3 newVelocity = m_parentCharacter.m_localVelocity;
+        Vector3 newVelocity = m_character.m_localVelocity;
         newVelocity.y = m_jumpSpeed;
-        m_parentCharacter.m_localVelocity = newVelocity;
+        m_character.m_localVelocity = newVelocity;
 
         m_animator.Play(m_animJump);
     }
@@ -38,7 +38,7 @@ public class PlayerState_Jump : Player_State
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
     public override bool UpdateState()
     {
-        return AnimController.IsAnimationDone(m_animator) || m_parentCharacter.m_localVelocity.y <= 0.0f;
+        return AnimController.IsAnimationDone(m_animator) || m_character.m_localVelocity.y <= 0.0f;
     }
 
     /// <summary>
@@ -55,8 +55,8 @@ public class PlayerState_Jump : Player_State
     public override bool IsValid()
     {
         //Able to jump while jump key is pressed, grounded, and no collision above
-        return m_parentPlayer.m_input.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED
-            && m_parentCharacter.m_splinePhysics.m_downCollision && 
-            !m_parentCharacter.m_splinePhysics.m_upCollision;
+        return m_playerCharacter.m_input.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED
+            && m_character.m_splinePhysics.m_downCollision && 
+            !m_character.m_splinePhysics.m_upCollision;
     }
 }
