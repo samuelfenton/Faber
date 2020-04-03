@@ -11,7 +11,7 @@ public class AnimController : MonoBehaviour
     public static Dictionary<ANIM_TYPE, string> m_animTypeToString = new Dictionary<ANIM_TYPE, string>();
 
     //Interrupt
-    public enum INTERRUPT_ANIM {DEATH, STUNNED, RECOIL}
+    public enum INTERRUPT_ANIM {DEATH, KNOCKBACK}
     public static Dictionary<INTERRUPT_ANIM, string> m_interruptAnimToString = new Dictionary<INTERRUPT_ANIM, string>();
     //Locomotion
     public enum LOCOMOTION_ANIM {LOCOMOTION, DODGE, JUMP, DOUBLE_JUMP, IN_AIR, LAND, WALL_GRAB, WALL_FLIP }
@@ -36,8 +36,7 @@ public class AnimController : MonoBehaviour
         m_animTypeToString.Add(ANIM_TYPE.ATTACK, "Attack");
 
         m_interruptAnimToString.Add(INTERRUPT_ANIM.DEATH, "Death");
-        m_interruptAnimToString.Add(INTERRUPT_ANIM.STUNNED, "Stunned");
-        m_interruptAnimToString.Add(INTERRUPT_ANIM.RECOIL, "Recoil");
+        m_interruptAnimToString.Add(INTERRUPT_ANIM.KNOCKBACK, "Knockback");
 
         m_locomotionAnimToString.Add(LOCOMOTION_ANIM.LOCOMOTION, "BlendTree");
         m_locomotionAnimToString.Add(LOCOMOTION_ANIM.DODGE, "Dodge");

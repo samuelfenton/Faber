@@ -28,6 +28,9 @@ public class NPC_State : State
     /// <returns></returns>
     protected bool CloseEnough()
     {
+        if (m_parentNPC.m_targetCharacter == null)
+            return false;
+
         float stoppingDistance = m_parentCharacter.m_localVelocity.x == 0.0f ? 0 : Mathf.Pow(m_parentCharacter.m_localVelocity.x, 2) / (2 * m_parentCharacter.m_groundedHorizontalDeacceleration); //Close enough based off time to slow down
 
         return (m_parentNPC.m_targetCharacter != null && MOARMaths.SqrDistance(m_parentCharacter.transform.position, m_parentNPC.m_targetCharacter.transform.position) <= Mathf.Pow(m_parentNPC.m_attackingDistance + stoppingDistance, 2));

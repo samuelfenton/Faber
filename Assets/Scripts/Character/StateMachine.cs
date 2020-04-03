@@ -100,13 +100,10 @@ public class StateMachine : MonoBehaviour
     /// Create a new state component and get it initilised for interrupt list
     /// </summary>
     /// <typeparam name="T">What type of component is it?</typeparam>
-    /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_parentCharacter">Parent character reference</param>
     /// <returns>Ref to created object</returns>
-    protected T NewNInterruptState<T>(bool p_loopedState, Character p_parentCharacter) where T : State
+    protected T NewInterruptState<T>() where T : State
     {
         T newState = gameObject.AddComponent<T>();
-        newState.StateInit(p_loopedState, p_parentCharacter);
 
         m_childInterruptStates.Add(newState);
 

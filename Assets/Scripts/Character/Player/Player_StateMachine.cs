@@ -12,6 +12,9 @@ public class Player_StateMachine : StateMachine
     public override void InitStateMachine(Character p_parentCharacter)
     {
         //Add components
+        PlayerState_Death death = NewInterruptState<PlayerState_Death>();
+        PlayerState_Knockback knockback = NewInterruptState<PlayerState_Knockback>();
+
         PlayerState_Locomotion loco = NewNextState<PlayerState_Locomotion>();
         PlayerState_Jump jump = NewNextState<PlayerState_Jump>();
         PlayerState_InAir inAir = NewNextState<PlayerState_InAir>();
@@ -20,6 +23,9 @@ public class Player_StateMachine : StateMachine
         PlayerState_Attack attack = NewNextState<PlayerState_Attack>();
 
         //Init all 
+        death.StateInit(true, p_parentCharacter);
+        knockback.StateInit(false, p_parentCharacter);
+
         loco.StateInit(true, p_parentCharacter);
         jump.StateInit(false, p_parentCharacter);
         inAir.StateInit(true, p_parentCharacter);

@@ -18,10 +18,19 @@ public class PathfindingController : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Build path using basic a* navigation
+    /// Nodes are built form the splines themselves
+    /// </summary>
+    /// <param name="p_character">Character looking for path</param>
+    /// <param name="p_goalSpline"></param>
+    /// <returns>path to goal, may be empty if invalid data provided, already there.</returns>
     public static List<Pathing_Spline> GetPath(Character p_character, Pathing_Spline p_goalSpline)
     {
         List<Pathing_Spline> path = new List<Pathing_Spline>();
+
+        if (p_character == null)
+            return path;
 
         Pathing_Spline currentSpline = p_character.m_splinePhysics.m_currentSpline;
 
@@ -60,24 +69,27 @@ public class PathfindingController : MonoBehaviour
         return path;
     }
 
-    private static Pathing_Node GetStartingTrigger(Pathing_Spline p_currentSpline, float p_currentPercent)
-    {
-        if (p_currentPercent <= 0.5f)
-            return p_currentSpline.m_nodeA;
-        return p_currentSpline.m_nodeB;
-    }
-
+    /// <summary>
+    /// Add new "node" that is spline and its cost, include all the adjacent nodes
+    /// </summary>
+    /// <param name="p_currentNode">Current node in use</param>
+    /// <param name="p_openList">All possible open nodes</param>
+    /// <param name="p_closedList">All possible closed nodes</param>
     private static void AddToOpenList(PathfindingNode p_currentNode, List<PathfindingNode> p_openList, List<PathfindingNode> p_closedList)
     {
         HashSet<Pathing_Spline> adjacentSplines = new HashSet<Pathing_Spline>();//Unique list
 
         if (p_currentNode.m_nodeSpline.m_nodeA != null)//add start of spline adjacent splines if start exists
-        { 
-            foreach (Pathing_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_nodeA.m_adjacentSplines) 
+        {
+            foreach (Pathing_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_nodeA.m_adjacentSplines)
             {
                 adjacentSplines.Add(adjacentSpline);
             }
-            foreach (Pathing_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_nodeA.m_adjacentSplines)
+        }
+
+        if (p_currentNode.m_nodeSpline.m_nodeB != null) //add end of spline adjacent splines if start exists
+        {
+            foreach (Pathing_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_nodeB.m_adjacentSplines)
             {
                 adjacentSplines.Add(adjacentSpline);
             }
@@ -93,6 +105,12 @@ public class PathfindingController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Does this list contain the spline
+    /// </summary>
+    /// <param name="p_searchList">List to check against</param>
+    /// <param name="p_spline">spline looking for</param>
+    /// <returns>true when spline is found</returns>
     private static bool ListContainsSpline(List<PathfindingNode> p_searchList, Pathing_Spline p_spline)
     {
         foreach (PathfindingNode pathfindingNode in p_searchList)
@@ -103,6 +121,11 @@ public class PathfindingController : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Get the cheapest next node
+    /// </summary>
+    /// <param name="p_openList">All nodes set to open</param>
+    /// <returns>Cheapest node, null when none avalible</returns>
     private static PathfindingNode GetCheapestNode(List<PathfindingNode> p_openList)
     {
         float lowestCost = float.PositiveInfinity;

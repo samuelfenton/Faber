@@ -35,6 +35,9 @@ public class Character : Entity
     [SerializeField]
     private float m_currentHealth = 10.0f;
 
+    public bool m_deathFlag = false;
+    public bool m_damagedFlag = false;
+
     protected CharacterInventory m_characterInventory = null;
 
     /// <summary>
@@ -98,6 +101,9 @@ public class Character : Entity
     public void ModifyHealth(float p_value)
     {
         m_currentHealth += p_value;
+
+        if (p_value < 0)
+            m_damagedFlag = true;
 
         if (!IsAlive())
             OnDeath();

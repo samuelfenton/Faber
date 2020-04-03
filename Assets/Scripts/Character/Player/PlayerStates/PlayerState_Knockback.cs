@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_Death : Player_State
+public class PlayerState_Knockback : Player_State
 {
-    private string m_animDeath = "";
+    private string m_animKnockback = "";
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -15,7 +15,7 @@ public class PlayerState_Death : Player_State
     {
         base.StateInit(p_loopedState, p_parentCharacter);
 
-        m_animDeath = AnimController.GetInterrupt(AnimController.INTERRUPT_ANIM.DEATH);
+        m_animKnockback = AnimController.GetInterrupt(AnimController.INTERRUPT_ANIM.KNOCKBACK);
     }
 
     /// <summary>
@@ -23,7 +23,9 @@ public class PlayerState_Death : Player_State
     /// </summary>
     public override void StateStart()
     {
-        m_animator.Play(m_animDeath);
+        m_parentPlayer.m_damagedFlag = false; //Reset flag
+
+        m_animator.Play(m_animKnockback);
     }
 
     /// <summary>
@@ -32,7 +34,7 @@ public class PlayerState_Death : Player_State
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
     public override bool UpdateState()
     {
-        return false;
+        return AnimController.IsAnimationDone(m_animator);
     }
 
     /// <summary>
@@ -49,7 +51,6 @@ public class PlayerState_Death : Player_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        Debug.Log(!m_parentCharacter.IsAlive());
-        return !m_parentCharacter.IsAlive();
+        return m_parentPlayer.m_damagedFlag;
     }
 }
