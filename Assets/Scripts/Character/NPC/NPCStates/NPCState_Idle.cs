@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPCState_Approach : NPC_State
+public class NPCState_Idle : NPC_State
 {
     private string m_animLoco = "";
-    private string m_paramVelocity = "";
+    private string m_paramIdle = "";
+
+    private Pathing_Spline m_patrolSpline = null;
+    private float m_patrolSplinePercent = 0.0f;
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -17,7 +20,7 @@ public class NPCState_Approach : NPC_State
         base.StateInit(p_loopedState, p_character);
 
         m_animLoco = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.LOCOMOTION);
-        m_paramVelocity = AnimController.GetVarible(AnimController.VARIBLE_ANIM.CURRENT_VELOCITY);
+        m_paramIdle = AnimController.GetVarible(AnimController.VARIBLE_ANIM.RANDOM_IDLE);
     }
 
     /// <summary>
@@ -34,9 +37,7 @@ public class NPCState_Approach : NPC_State
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
     public override bool UpdateState()
     {
-        MoveTowardsEntity(m_NPCCharacter.m_targetCharacter);
-
-        return TargetWithinRange(m_NPCCharacter.m_targetCharacter.transform.position, m_NPCCharacter.m_attackingDistance) || !TargetWithinRange(m_NPCCharacter.m_targetCharacter.transform.position, m_NPCCharacter.m_detectionDistance);
+        return false;
     }
 
     /// <summary>
@@ -53,6 +54,6 @@ public class NPCState_Approach : NPC_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_NPCCharacter.m_targetCharacter != null && TargetWithinRange(m_NPCCharacter.m_targetCharacter.transform.position, m_NPCCharacter.m_detectionDistance);
+        return m_NPCCharacter.m_patrolSplines.Count == 0 && (m_NPCCharacter.m_targetCharacter == null || !TargetWithinRange(m_NPCCharacter.m_targetCharacter.transform.position, m_NPCCharacter.m_detectionDistance));
     }
 }

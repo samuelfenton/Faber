@@ -18,7 +18,6 @@ public class NPCState_Attack : NPC_State
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animKnockback = AnimController.GetInterrupt(AnimController.INTERRUPT_ANIM.KNOCKBACK);
     }
 
     /// <summary>

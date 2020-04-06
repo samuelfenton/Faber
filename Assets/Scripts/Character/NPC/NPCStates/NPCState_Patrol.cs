@@ -7,6 +7,9 @@ public class NPCState_Patrol : NPC_State
     private string m_animLoco = "";
     private string m_paramVelocity = "";
 
+    private Pathing_Spline m_patrolSpline = null;
+    private float m_patrolSplinePercent = 0.0f;
+
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
@@ -26,6 +29,10 @@ public class NPCState_Patrol : NPC_State
     public override void StateStart()
     {
         m_animator.Play(m_animLoco);
+
+        //pick random spline to move to and random percent
+        m_patrolSpline = m_NPCCharacter.m_patrolSplines[Random.Range(0, m_NPCCharacter.m_patrolSplines.Count)];
+        m_patrolSplinePercent = Random.Range(0.1f, 0.9f);
     }
 
     /// <summary>
@@ -34,7 +41,18 @@ public class NPCState_Patrol : NPC_State
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
     public override bool UpdateState()
     {
-        return true;
+        if(m_patrolSpline == m_character.m_splinePhysics.m_currentSpline) //Moveing towards percent
+        {
+            MoveTowardsPercent(m_patrolSplinePercent);
+
+            return m_character.m_splinePhysics.m_currentSplinePercent - m_patrolSplinePercent < 0.1f; //Get within 0.1 percent
+        }
+        else
+        {
+            MoveTowardsSpline(m_patrolSpline);
+        }
+
+        return TargetWithinRange(m_NPCCharacter.m_targetCharacter.transform.position, m_NPCCharacter.m_detectionDistance);
     }
 
     /// <summary>
@@ -51,6 +69,6 @@ public class NPCState_Patrol : NPC_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_character.m_damagedFlag;
+        return m_NPCCharacter.m_patrolSplines.Count > 0 && (m_NPCCharacter.m_targetCharacter == null || !TargetWithinRange(m_NPCCharacter.m_targetCharacter.transform.position, m_NPCCharacter.m_detectionDistance));
     }
 }

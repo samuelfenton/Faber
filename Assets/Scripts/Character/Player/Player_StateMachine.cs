@@ -34,8 +34,12 @@ public class Player_StateMachine : StateMachine
         attack.StateInit(false, p_character);
 
         //Add in next states
-        loco.AddNextState(jump);
+        knockback.AddNextState(attack);
+        knockback.AddNextState(inAir);
+        knockback.AddNextState(loco);
+
         loco.AddNextState(inAir);
+        loco.AddNextState(jump);
         loco.AddNextState(attack);
 
         jump.AddNextState(inAir);
@@ -49,6 +53,8 @@ public class Player_StateMachine : StateMachine
 
         attack.AddNextState(inAir);
         attack.AddNextState(loco);
+
+        m_currentState = loco;
 
         base.InitStateMachine(p_character);
     }

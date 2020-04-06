@@ -4,11 +4,16 @@ using UnityEngine;
 
 public class NPC_Character : Character
 {
+
     [Header("NPC Logic")]
-    public List<Pathing_Spline> m_path = new List<Pathing_Spline>();
     public Character m_targetCharacter = null;
     public float m_attackingDistance = 1.0f;
     public float m_detectionDistance = 10.0f;
+
+    public List<Pathing_Spline> m_patrolSplines = new List<Pathing_Spline>();
+
+    [HideInInspector]
+    public List<Pathing_Spline> m_path = new List<Pathing_Spline>();
 
     private NPC_StateMachine m_NPCStateMachine = null;
 
@@ -20,7 +25,7 @@ public class NPC_Character : Character
     {
         base.InitEntity();
 
-        m_NPCStateMachine = GetComponent<NPC_StateMachine>();
+        m_NPCStateMachine = gameObject.AddComponent<NPC_StateMachine>();
 
         m_NPCStateMachine.InitStateMachine(this);
     }

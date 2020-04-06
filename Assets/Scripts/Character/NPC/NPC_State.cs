@@ -70,9 +70,9 @@ public class NPC_State : State
             return true;
 
         Pathing_Spline goalSpline = m_path[0];
-        float desiredPecent = DetermineDesiredPercent(currentSpline, goalSpline);
+        float desiredPecent = DetermineDesiredPercent(goalSpline);
 
-        MoveTowardsPercent(currentSpline, desiredPecent);
+        MoveTowardsPercent(desiredPecent);
         return false;
     }
 
@@ -91,12 +91,13 @@ public class NPC_State : State
     /// <summary>
     /// Setup velocity for moving towards a percent on a spline
     /// </summary>
-    /// <param name="p_currentSpline">Spline moving across</param>
     /// <param name="p_desiredPercent">Desired spline percent</param>
-    protected void MoveTowardsPercent(Pathing_Spline p_currentSpline, float p_desiredPercent)
+    protected void MoveTowardsPercent(float p_desiredPercent)
     {
+        Pathing_Spline currentSpline = m_character.m_splinePhysics.m_currentSpline;
+
         Vector3 newVelocity = m_character.m_localVelocity;
-        int input = DetermineDirectionInput(p_currentSpline, p_desiredPercent);
+        int input = DetermineDirectionInput(currentSpline, p_desiredPercent);
 
         newVelocity.x += m_character.m_groundHorizontalAccel * input * Time.deltaTime;
         newVelocity.x = Mathf.Clamp(newVelocity.x, -m_character.m_groundHorizontalMax, m_character.m_groundHorizontalMax);
@@ -108,12 +109,13 @@ public class NPC_State : State
     /// <summary>
     /// Get the percent for the next spine 
     /// </summary>
-    /// <param name="p_currentSpline">current spline</param>
     /// <param name="p_goalSpline">goal spline</param>
     /// <returns>0.0f for node A, defaults to 1.0f</returns>
-    protected float DetermineDesiredPercent(Pathing_Spline p_currentSpline, Pathing_Spline p_goalSpline)
+    protected float DetermineDesiredPercent(Pathing_Spline p_goalSpline)
     {
-        if (p_currentSpline.m_nodeA.m_adjacentSplines.Contains(p_currentSpline))
+        Pathing_Spline currentSpline = m_character.m_splinePhysics.m_currentSpline;
+
+        if (currentSpline.m_nodeA.m_adjacentSplines.Contains(p_goalSpline))
             return 0.0f;
         return 1.0f;
     }
