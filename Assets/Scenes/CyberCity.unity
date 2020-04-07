@@ -15660,21 +15660,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1234162522}
     m_Modifications:
-    - target: {fileID: 3775519670443091626, guid: 1defb83b4c531454c8a47e1f92bf4882,
-        type: 3}
-      propertyPath: m_jumpSpeed
-      value: 8
-      objectReference: {fileID: 0}
     - target: {fileID: 4795170144421986615, guid: 1defb83b4c531454c8a47e1f92bf4882,
         type: 3}
       propertyPath: m_currentSpline
       value: 
       objectReference: {fileID: 743040940}
-    - target: {fileID: 4795170144421986615, guid: 1defb83b4c531454c8a47e1f92bf4882,
-        type: 3}
-      propertyPath: m_currentSplinePercent
-      value: 0.394
-      objectReference: {fileID: 0}
     - target: {fileID: 5576363102575397938, guid: 1defb83b4c531454c8a47e1f92bf4882,
         type: 3}
       propertyPath: m_Name
@@ -29133,16 +29123,16 @@ PrefabInstance:
       propertyPath: m_patrolSplines.Array.data[0]
       value: 
       objectReference: {fileID: 357557569}
+    - target: {fileID: 8987506874733537015, guid: 4b82add057659ce4e970e98c43a3322e,
+        type: 3}
+      propertyPath: m_patrolSplines.Array.data[1]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 9077462144384472045, guid: 4b82add057659ce4e970e98c43a3322e,
         type: 3}
       propertyPath: m_currentSpline
       value: 
       objectReference: {fileID: 357557569}
-    - target: {fileID: 9077462144384472045, guid: 4b82add057659ce4e970e98c43a3322e,
-        type: 3}
-      propertyPath: m_currentSplinePercent
-      value: 0.356
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4b82add057659ce4e970e98c43a3322e, type: 3}
 --- !u!1001 &4184727281522728817

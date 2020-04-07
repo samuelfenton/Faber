@@ -23,17 +23,21 @@ public class NPCState_Knockback : NPC_State
     /// </summary>
     public override void StateStart()
     {
+        base.StateStart();
+
         m_character.m_damagedFlag = false; //Reset flag
 
-        m_animator.Play(m_animKnockback);
+        AnimController.PlayAnimtion(m_animator, m_animKnockback);
     }
 
     /// <summary>
     /// State update, perform any actions for the given state
     /// </summary>
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
-    public override bool UpdateState()
+    public override bool StateUpdate()
     {
+        base.StateUpdate();
+
         return AnimController.IsAnimationDone(m_animator);
     }
 
@@ -42,7 +46,7 @@ public class NPCState_Knockback : NPC_State
     /// </summary>
     public override void StateEnd()
     {
-
+        base.StateEnd();
     }
 
     /// <summary>

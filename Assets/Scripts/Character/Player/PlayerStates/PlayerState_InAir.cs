@@ -23,8 +23,8 @@ public class PlayerState_InAir : Player_State
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_horizontalSpeedMax = m_character.m_groundHorizontalMax; //Always use grounded as max speed
-        m_horizontalAcceleration = m_character.m_inAirHorizontalAcceleration;
+        m_horizontalSpeedMax = m_character.m_groundRunVel; //Always use grounded as max speed
+        m_horizontalAcceleration = m_character.m_inAirAccel;
         m_doubleJumpSpeed = m_character.m_doubleJumpSpeed;
 
         m_animInAir = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.IN_AIR);
@@ -36,33 +36,23 @@ public class PlayerState_InAir : Player_State
     /// </summary>
     public override void StateStart()
     {
+        base.StateStart();
+
         m_inAirState = IN_AIR_STATE.INITIAL;
 
-        m_animator.Play(m_animInAir);
+        AnimController.PlayAnimtion(m_animator, m_animInAir);
     }
 
     /// <summary>
     /// State update, perform any actions for the given state
     /// </summary>
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
-    public override bool UpdateState()
+    public override bool StateUpdate()
     {
-        //Movement
+        base.StateUpdate();
+
         float horizontal = m_playerCharacter.m_input.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
-
-        if (horizontal != 0.0f)//Input so normal movemnt
-        {
-            Vector3 newVelocity = m_character.m_localVelocity;
-            
-            newVelocity.x += m_horizontalAcceleration * horizontal * Time.deltaTime;
-            newVelocity.x = Mathf.Clamp(newVelocity.x, -m_horizontalSpeedMax, m_horizontalSpeedMax);
-
-            m_character.m_localVelocity = newVelocity;
-        }
-        else
-        {
-            m_character.ApplyFriction();
-        }
+        m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel);
 
         switch (m_inAirState)
         {
@@ -70,7 +60,7 @@ public class PlayerState_InAir : Player_State
                 //Double Jump
                 if (m_playerCharacter.m_input.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
                 {
-                    m_animator.Play(m_animDoubleJump);
+                    AnimController.PlayAnimtion(m_animator, m_animDoubleJump);
                     
                     Vector3 newVelocity = m_character.m_localVelocity;
                     newVelocity.y = m_doubleJumpSpeed;
@@ -83,7 +73,7 @@ public class PlayerState_InAir : Player_State
                 if(AnimController.IsAnimationDone(m_animator))
                 {
                     m_inAirState = IN_AIR_STATE.FINAL;
-                    m_animator.Play(m_animInAir);
+                    AnimController.PlayAnimtion(m_animator, m_animInAir);
                 }
                 break;
             case IN_AIR_STATE.FINAL:
@@ -100,6 +90,7 @@ public class PlayerState_InAir : Player_State
     /// </summary>
     public override void StateEnd()
     {
+        base.StateEnd();
     }
 
     /// <summary>

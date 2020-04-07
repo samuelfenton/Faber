@@ -25,19 +25,23 @@ public class PlayerState_Jump : Player_State
     /// </summary>
     public override void StateStart()
     {
+        base.StateStart();
+
         Vector3 newVelocity = m_character.m_localVelocity;
         newVelocity.y = m_jumpSpeed;
         m_character.m_localVelocity = newVelocity;
 
-        m_animator.Play(m_animJump);
+        AnimController.PlayAnimtion(m_animator, m_animJump);
     }
 
     /// <summary>
     /// State update, perform any actions for the given state
     /// </summary>
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
-    public override bool UpdateState()
+    public override bool StateUpdate()
     {
+        base.StateUpdate();
+
         return AnimController.IsAnimationDone(m_animator) || m_character.m_localVelocity.y <= 0.0f;
     }
 
@@ -46,6 +50,7 @@ public class PlayerState_Jump : Player_State
     /// </summary>
     public override void StateEnd()
     {
+        base.StateEnd();
     }
 
     /// <summary>

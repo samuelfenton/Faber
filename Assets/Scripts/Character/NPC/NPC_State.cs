@@ -31,7 +31,7 @@ public class NPC_State : State
     /// <returns>True when can stop in time for distance</returns>
     protected bool TargetWithinRange(Vector3 p_target, float p_distance)
     {
-        float stoppingDistance = m_character.m_localVelocity.x == 0.0f ? 0 : Mathf.Pow(m_character.m_localVelocity.x, 2) / (2 * m_character.m_groundedHorizontalDeacceleration); //Close enough based off time to slow down
+        float stoppingDistance = m_character.m_localVelocity.x == 0.0f ? 0 : Mathf.Pow(m_character.m_localVelocity.x, 2) / (2 * m_character.m_groundedDeaccel); //Close enough based off time to slow down
 
         return Vector3.Distance(m_character.transform.position, p_target) <= p_distance + stoppingDistance;
     }
@@ -40,8 +40,9 @@ public class NPC_State : State
     /// Move towards a spine
     /// </summary>
     /// <param name="p_spline">target spline</param>
+    /// <param name="p_speed">Desired speed to move at</param>
     /// <returns>true when completed, invalid data, no path</returns>
-    protected bool MoveTowardsSpline(Pathing_Spline p_spline)
+    protected bool MoveTowardsSpline(Pathing_Spline p_spline, float p_speed)
     {
         if (p_spline == null)//Invalid destination
             return true;
@@ -49,12 +50,7 @@ public class NPC_State : State
         if (m_NPCCharacter.m_splinePhysics.m_currentSpline == p_spline)//already there
             return true;
 
-        if(m_path.Count == 0)//Needs new path
-        {
-            m_path = PathfindingController.GetPath(m_character, p_spline);
-        }
-
-        if(m_path[m_path.Count-1] != p_spline)//goal changed
+        if(m_path.Count == 0 || m_path[m_path.Count - 1] != p_spline)//Needs new path
         {
             m_path = PathfindingController.GetPath(m_character, p_spline);
         }
@@ -72,37 +68,35 @@ public class NPC_State : State
         Pathing_Spline goalSpline = m_path[0];
         float desiredPecent = DetermineDesiredPercent(goalSpline);
 
-        MoveTowardsPercent(desiredPecent);
+        MoveTowardsPercent(desiredPecent, p_speed);
         return false;
     }
 
     /// <summary>
     /// Move towards a given entity
     /// </summary>
+    /// <param name="p_entity">Entity to move towards</param>
+    /// <param name="p_speed">Desired speed to move at</param>
     /// <returns>true when completed or invalid data</returns>
-    protected bool MoveTowardsEntity(Entity p_entity)
+    protected bool MoveTowardsEntity(Entity p_entity, float p_speed)
     {
         if (p_entity == null)
             return true;
 
-        return MoveTowardsSpline(p_entity.m_splinePhysics.m_currentSpline);
+        return MoveTowardsSpline(p_entity.m_splinePhysics.m_currentSpline, p_speed);
     }
 
     /// <summary>
     /// Setup velocity for moving towards a percent on a spline
     /// </summary>
     /// <param name="p_desiredPercent">Desired spline percent</param>
-    protected void MoveTowardsPercent(float p_desiredPercent)
+    /// <param name="p_speed">Desired speed to move at</param>
+    protected void MoveTowardsPercent(float p_desiredPercent, float p_speed)
     {
         Pathing_Spline currentSpline = m_character.m_splinePhysics.m_currentSpline;
 
-        Vector3 newVelocity = m_character.m_localVelocity;
         int input = DetermineDirectionInput(currentSpline, p_desiredPercent);
-
-        newVelocity.x += m_character.m_groundHorizontalAccel * input * Time.deltaTime;
-        newVelocity.x = Mathf.Clamp(newVelocity.x, -m_character.m_groundHorizontalMax, m_character.m_groundHorizontalMax);
-
-        m_character.m_localVelocity = newVelocity;
+        m_character.SetDesiredVelocity(input * p_speed);
     }
 
 
@@ -133,11 +127,11 @@ public class NPC_State : State
 
         float forwardDot = Vector3.Dot(characterForward, splineForward);
 
-        if (p_desiredPercent < 0.5f)//going to node A, same alingment go backwards or -1, otherwise 1
+        if (p_desiredPercent < m_character.m_splinePhysics.m_currentSplinePercent)// towards A, same forward allingment use -1
         {
             return forwardDot >= 0.0f ? -1 : 1;
         }
-        else//going to node A, same alingment go forwards or 1, otherwise -1
+        else// towards B, same forward allingment use -1
         {
             return forwardDot >= 0.0f ? 1 : -1;
         }

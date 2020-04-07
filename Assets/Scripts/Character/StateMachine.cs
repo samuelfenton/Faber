@@ -53,7 +53,7 @@ public class StateMachine : MonoBehaviour
             }
         }
 
-        bool finishedState = m_currentState.UpdateState();
+        bool finishedState = m_currentState.StateUpdate();
 
         if (finishedState || m_currentState.m_loopedState)
         {
@@ -65,6 +65,7 @@ public class StateMachine : MonoBehaviour
                     SwapState(nextState);
                     return; //Early break out
                 }
+                SwapState(m_currentState); //Attempt own state again
             }
         }
     }

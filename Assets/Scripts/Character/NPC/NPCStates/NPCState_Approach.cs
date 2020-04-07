@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class NPCState_Approach : NPC_State
 {
-    private string m_animLoco = "";
     private string m_paramVelocity = "";
 
     /// <summary>
@@ -16,7 +15,6 @@ public class NPCState_Approach : NPC_State
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animLoco = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.LOCOMOTION);
         m_paramVelocity = AnimController.GetVarible(AnimController.VARIBLE_ANIM.CURRENT_VELOCITY);
     }
 
@@ -25,16 +23,18 @@ public class NPCState_Approach : NPC_State
     /// </summary>
     public override void StateStart()
     {
-        m_animator.Play(m_animLoco);
+        base.StateStart();
     }
 
     /// <summary>
     /// State update, perform any actions for the given state
     /// </summary>
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
-    public override bool UpdateState()
+    public override bool StateUpdate()
     {
-        MoveTowardsEntity(m_NPCCharacter.m_targetCharacter);
+        base.StateUpdate();
+
+        MoveTowardsEntity(m_NPCCharacter.m_targetCharacter, m_character.m_groundRunVel);
 
         return TargetWithinRange(m_NPCCharacter.m_targetCharacter.transform.position, m_NPCCharacter.m_attackingDistance) || !TargetWithinRange(m_NPCCharacter.m_targetCharacter.transform.position, m_NPCCharacter.m_detectionDistance);
     }
@@ -44,7 +44,7 @@ public class NPCState_Approach : NPC_State
     /// </summary>
     public override void StateEnd()
     {
-
+        base.StateEnd();
     }
 
     /// <summary>

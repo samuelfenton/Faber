@@ -52,7 +52,7 @@ public class Player_WeaponManager : WeaponManager
         {
             return AnimController.ATTACK_TYPE.IN_AIR;
         }
-        if (m_character.m_localVelocity.x > m_character.m_groundHorizontalMax)//Is it sprinting or just grounded
+        if (m_character.m_localVelocity.x > m_character.m_groundRunVel)//Is it sprinting or just grounded
             return AnimController.ATTACK_TYPE.SPRINTING;
 
         return AnimController.ATTACK_TYPE.GROUND;

@@ -14,7 +14,6 @@ public class PlayerState_Attack : Player_State
     public override void StateInit(bool p_loopedState, Character p_character)
     {
         base.StateInit(p_loopedState, p_character);
-
     }
 
     /// <summary>
@@ -22,6 +21,8 @@ public class PlayerState_Attack : Player_State
     /// </summary>
     public override void StateStart()
     {
+        base.StateStart();
+
         m_weaponManager = m_character.GetCurrentWeapon();
         m_weaponManager.StartAttackSequence();
     }
@@ -30,9 +31,12 @@ public class PlayerState_Attack : Player_State
     /// State update, perform any actions for the given state
     /// </summary>
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
-    public override bool UpdateState()
+    public override bool StateUpdate()
     {
-        m_character.ApplyFriction();
+        base.StateUpdate();
+
+        m_character.SetDesiredVelocity(0.0f);
+
         return m_weaponManager.UpdateAttackSequence();
     }
 
@@ -41,6 +45,7 @@ public class PlayerState_Attack : Player_State
     /// </summary>
     public override void StateEnd()
     {
+        base.StateEnd();
     }
 
     /// <summary>

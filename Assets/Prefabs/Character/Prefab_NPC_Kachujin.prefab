@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 4571789614922683204}
   m_Layer: 0
   m_Name: Prefab_NPC_Kachujin
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_currentSpline: {fileID: 0}
-  m_currentSplinePercent: 0.767
+  m_currentSplinePercent: 0.356
   m_upCollision: 0
   m_downCollision: 0
   m_forwardCollision: 0
@@ -178,12 +178,12 @@ MonoBehaviour:
   m_rightHand: {fileID: 4571789616121429047}
   m_leftHand: {fileID: 4571789615432389086}
   m_characterTeam: 2
-  m_groundHorizontalMax: 1
-  m_groundHorizontalAccel: 1
-  m_groundedHorizontalDeacceleration: 1
+  m_groundRunVel: 8
+  m_groundAccel: 12
+  m_groundedDeaccel: 15
   m_jumpSpeed: 10
   m_landingDistance: 1
-  m_inAirHorizontalAcceleration: 0.5
+  m_inAirAccel: 0.5
   m_doubleJumpSpeed: 6
   m_wallJumpVerticalSpeed: 5
   m_wallJumpHorizontalSpeed: 2
@@ -192,10 +192,13 @@ MonoBehaviour:
   m_currentHealth: 10
   m_deathFlag: 0
   m_damagedFlag: 0
-  m_path: []
   m_targetCharacter: {fileID: 0}
   m_attackingDistance: 1
   m_detectionDistance: 10
+  m_patrolSplines:
+  - {fileID: 0}
+  - {fileID: 0}
+  m_path: []
 --- !u!114 &4571789614922683204
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -36,7 +36,7 @@ public class State : MonoBehaviour
     /// State update, perform any actions for the given state
     /// </summary>
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
-    public virtual bool UpdateState()
+    public virtual bool StateUpdate()
     {
         return true;
     }
@@ -46,7 +46,7 @@ public class State : MonoBehaviour
     /// </summary>
     public virtual void StateEnd()
     {
-
+        AnimController.EndAnimation(m_animator);
     }
 
     /// <summary>

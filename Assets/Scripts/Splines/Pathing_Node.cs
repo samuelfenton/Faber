@@ -39,6 +39,19 @@ public class Pathing_Node : MonoBehaviour
         m_planeEquation = new Vector4(m_globalEntranceVector.x, m_globalEntranceVector.y, m_globalEntranceVector.z, planeZ);
 
         m_boxColdier = GetComponent<BoxCollider>();
+
+        if (m_forwardSpline != null)
+            m_adjacentSplines.Add(m_forwardSpline);
+        if (m_forwardRightSpline != null)
+            m_adjacentSplines.Add(m_forwardRightSpline);
+        if (m_forwardLeftSpline != null)
+            m_adjacentSplines.Add(m_forwardLeftSpline);
+        if (m_backwardSpline != null)
+            m_adjacentSplines.Add(m_backwardSpline);
+        if (m_backwardRightSpline != null)
+            m_adjacentSplines.Add(m_backwardRightSpline);
+        if (m_backwardLeftSpline != null)
+            m_adjacentSplines.Add(m_backwardLeftSpline);
     }
 
     /// <summary>

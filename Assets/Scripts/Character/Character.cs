@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Character : Entity
 {
+    public const float SPRINT_MODIFIER = 1.5f;//Linked to animator
+
     [Header("Assigned Character Varibles")]
     public GameObject m_characterModel = null;
     public GameObject m_rightHand = null;
@@ -13,16 +15,16 @@ public class Character : Entity
     public TEAM m_characterTeam = TEAM.GAIA;
 
     [Header("Grounded Movement")]
-    public float m_groundHorizontalMax = 1.0f;
-    public float m_groundHorizontalAccel = 1.0f;
-    public float m_groundedHorizontalDeacceleration = 1.0f;
+    public float m_groundRunVel = 1.0f;
+    public float m_groundAccel = 1.0f;
+    public float m_groundedDeaccel = 1.0f;
 
     [Header("Jumping Stats")]
     public float m_jumpSpeed = 10.0f;
     public float m_landingDistance = 1.0f;
 
     [Header("In Air Stats")]
-    public float m_inAirHorizontalAcceleration = 0.5f;
+    public float m_inAirAccel = 0.5f;
     public float m_doubleJumpSpeed = 6.0f;
 
     [Header("Wall Jump Stats")]
@@ -39,6 +41,16 @@ public class Character : Entity
     public bool m_damagedFlag = false;
 
     protected CharacterInventory m_characterInventory = null;
+    protected Animator m_animator = null;
+
+    private string m_animRandomIdle = "";
+
+    //Velocity stuff
+    private float m_desiredVelocity = 0.0f;
+
+    private string m_animCurrentVel = "";
+    private string m_animDesiredVel = "";
+    private string m_animAbsVel = "";
 
     /// <summary>
     /// Initiliase the entity
@@ -50,16 +62,73 @@ public class Character : Entity
 
         //Get references
         m_characterInventory = GetComponent<CharacterInventory>();
+        m_animator = m_characterModel.GetComponent<Animator>();
 
         if (m_characterInventory != null)
             m_characterInventory.InitInventory(this);//Least importance as has no dependances
 
         m_currentHealth = m_maxHealth;
+
+        m_animRandomIdle = AnimController.GetVarible(AnimController.VARIBLE_ANIM.RANDOM_IDLE);
+
+        m_animCurrentVel = AnimController.GetVarible(AnimController.VARIBLE_ANIM.CURRENT_VELOCITY);
+        m_animDesiredVel = AnimController.GetVarible(AnimController.VARIBLE_ANIM.DESIRED_VELOCITY);
+        m_animAbsVel = AnimController.GetVarible(AnimController.VARIBLE_ANIM.ABSOLUTE_VELOCITY);
+
     }
 
     protected override void Update()
     {
         base.Update();
+
+        Vector3 newVelocity = m_localVelocity;
+
+        float accel = m_splinePhysics.m_downCollision ? m_groundAccel : m_inAirAccel;
+        float deaccel = m_splinePhysics.m_downCollision ? m_groundedDeaccel : m_inAirAccel;
+
+        //Update velocity
+        //Check for walls
+        if (m_localVelocity.x < 0.0f && m_desiredVelocity < 0.0f && m_splinePhysics.m_backCollision)
+        {
+            m_desiredVelocity = 0.0f;
+        }
+        if (m_localVelocity.x > 0.0f && m_desiredVelocity > 0.0f && m_splinePhysics.m_forwardCollision)
+        {
+            m_desiredVelocity = 0.0f;
+        }
+
+        //Run update to velocity based off desired
+        if (m_desiredVelocity == 0.0f) //Stop
+        {
+            float deltaSpeed = deaccel * Time.deltaTime;
+            if (deltaSpeed > Mathf.Abs(newVelocity.x))//Close enough to stopping this frame
+                newVelocity.x = 0.0f;
+            else
+                newVelocity.x += newVelocity.x < 0 ? deltaSpeed : -deltaSpeed;//Still have high velocity, just slow down
+        }
+        else if(m_desiredVelocity > 0.0f) //Run forwards
+        {
+            float deltaSpeed = m_localVelocity.x > m_desiredVelocity || m_localVelocity.x < 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // how much speed will change?
+
+            if (deltaSpeed > Mathf.Abs(newVelocity.x - m_desiredVelocity))
+                newVelocity.x = m_desiredVelocity;
+            else
+                newVelocity.x += m_localVelocity.x < m_desiredVelocity ? deltaSpeed : -deltaSpeed;
+
+        }
+        else //Run backwards
+        {
+            float deltaSpeed = m_localVelocity.x < m_desiredVelocity || m_localVelocity.x > 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // how much speed will change?
+
+            if (deltaSpeed > Mathf.Abs(newVelocity.x - m_desiredVelocity))
+                newVelocity.x = m_desiredVelocity;
+            else
+                newVelocity.x += m_localVelocity.x > m_desiredVelocity ? -deltaSpeed : deltaSpeed;
+        }
+
+        m_localVelocity = newVelocity;
+
+        UpdateAnimationLocomotion();
 
         //Setup rotation on game model, completly aesthetic based
         if (m_localVelocity.x > 0.1f)
@@ -72,6 +141,10 @@ public class Character : Entity
         }
     }
 
+    /// <summary>
+    /// Get current weapon
+    /// </summary>
+    /// <returns>Current weapon from inventory, defaults to null</returns>
     public WeaponManager GetCurrentWeapon()
     {
         return m_characterInventory.GetCurrentWeapon();
@@ -110,18 +183,31 @@ public class Character : Entity
     }
 
     /// <summary>
-    /// Apply friction to a charcter till it stops
+    /// Set the desired velocity
     /// </summary>
-    public void ApplyFriction()
+    /// <param name="p_val">Desired velocity, will automatically get clamped</param>
+    public void SetDesiredVelocity(float p_val)
     {
-        Vector3 newVelocity = m_localVelocity;
+        m_desiredVelocity = Mathf.Clamp(p_val, -m_groundRunVel * SPRINT_MODIFIER, m_groundRunVel * SPRINT_MODIFIER);
+    }
 
-        float deltaSpeed = m_groundedHorizontalDeacceleration * Time.deltaTime;
-        if (deltaSpeed > Mathf.Abs(newVelocity.x))//Close enough to stopping this frame
-            newVelocity.x = 0.0f;
-        else
-            newVelocity.x += newVelocity.x < 0 ? deltaSpeed : -deltaSpeed;//Still have high velocity, just slow down
+    /// <summary>
+    /// Update the locomotion base varibles
+    /// </summary>
+    public void UpdateAnimationLocomotion()
+    {
+        AnimController.SetVarible(m_animator, m_animCurrentVel, m_localVelocity.x / m_groundRunVel);
+        AnimController.SetVarible(m_animator, m_animDesiredVel, m_desiredVelocity / m_groundRunVel);
+        AnimController.SetVarible(m_animator, m_animAbsVel, Mathf.Abs(m_localVelocity.x / m_groundRunVel));
+    }
 
-        m_localVelocity = newVelocity;
+    /// <summary>
+    /// Set a random idle value
+    /// Should be set at start of aniamtion before play is called
+    /// </summary>
+    public void SetRandomIdle()
+    {
+        int idleIndex = Random.Range(0, AnimController.IDLE_COUNT);
+        AnimController.SetVarible(m_animator, m_animRandomIdle, idleIndex);
     }
 }

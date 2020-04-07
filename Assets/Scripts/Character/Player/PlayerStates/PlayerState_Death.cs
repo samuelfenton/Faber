@@ -23,15 +23,19 @@ public class PlayerState_Death : Player_State
     /// </summary>
     public override void StateStart()
     {
-        m_animator.Play(m_animDeath);
+        base.StateStart();
+
+        AnimController.PlayAnimtion(m_animator, m_animDeath);
     }
 
     /// <summary>
     /// State update, perform any actions for the given state
     /// </summary>
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
-    public override bool UpdateState()
+    public override bool StateUpdate()
     {
+        base.StateUpdate();
+
         return false;
     }
 
@@ -40,7 +44,7 @@ public class PlayerState_Death : Player_State
     /// </summary>
     public override void StateEnd()
     {
-
+        base.StateEnd();
     }
 
     /// <summary>

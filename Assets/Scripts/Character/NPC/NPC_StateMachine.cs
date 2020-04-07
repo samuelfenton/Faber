@@ -20,8 +20,7 @@ public class NPC_StateMachine : StateMachine
         NPCState_Knockback knockback = NewInterruptState<NPCState_Knockback>();
 
         NPCState_Approach approach = NewNextState<NPCState_Approach>();
-        NPCState_Patrol patrol = NewNextState<NPCState_Patrol>();
-        NPCState_Idle idle = NewNextState<NPCState_Idle>();
+        NPCState_Waiting waiting = NewNextState<NPCState_Waiting>();
 
         //NPCState_Attack attack = NewNextState<PlayerState_Land>();
         
@@ -30,35 +29,26 @@ public class NPC_StateMachine : StateMachine
         knockback.StateInit(false, p_character);
 
         approach.StateInit(false, p_character);
-        patrol.StateInit(false, p_character);
-        idle.StateInit(false, p_character);
+        waiting.StateInit(false, p_character);
 
         //attack.StateInit(false, p_character);
 
         //Add in next states
         //knockback.AddNextState(attack);
         knockback.AddNextState(approach);
-        knockback.AddNextState(patrol);
-        knockback.AddNextState(idle);
+        knockback.AddNextState(waiting);
 
 
         //approach.AddNextState(attack);
-        approach.AddNextState(patrol);
-        approach.AddNextState(idle);
+        approach.AddNextState(waiting);
 
         //approach.AddNextState(attack);
-        patrol.AddNextState(approach);
-        patrol.AddNextState(patrol);
-
-        //approach.AddNextState(attack);
-        idle.AddNextState(approach);
-        idle.AddNextState(idle);
+        waiting.AddNextState(approach);
 
         //attack.AddNextState(approach);
-        //attack.AddNextState(patrol);
-        //attack.AddNextState(idle);
+        //attack.AddNextState(waiting);
 
-        m_currentState = idle;
+        m_currentState = waiting;
 
         base.InitStateMachine(p_character);
     }

@@ -5,26 +5,29 @@ using UnityEngine;
 public class AnimController : MonoBehaviour
 {
     public const float END_ANIMATION_TIME = 0.99f;
+    public const int IDLE_COUNT = 4;
+
+    private static string m_nullString = "Null";
 
     //Base animations
     public enum ANIM_TYPE {INTERRUPT, LOCOMOTION, ATTACK }
-    public static Dictionary<ANIM_TYPE, string> m_animTypeToString = new Dictionary<ANIM_TYPE, string>();
+    private static Dictionary<ANIM_TYPE, string> m_animTypeToString = new Dictionary<ANIM_TYPE, string>();
 
     //Interrupt
     public enum INTERRUPT_ANIM {DEATH, KNOCKBACK}
-    public static Dictionary<INTERRUPT_ANIM, string> m_interruptAnimToString = new Dictionary<INTERRUPT_ANIM, string>();
+    private static Dictionary<INTERRUPT_ANIM, string> m_interruptAnimToString = new Dictionary<INTERRUPT_ANIM, string>();
     //Locomotion
-    public enum LOCOMOTION_ANIM {LOCOMOTION, DODGE, JUMP, DOUBLE_JUMP, IN_AIR, LAND, WALL_GRAB, WALL_FLIP }
-    public static Dictionary<LOCOMOTION_ANIM, string> m_locomotionAnimToString = new Dictionary<LOCOMOTION_ANIM, string>();
+    public enum LOCOMOTION_ANIM {NULL, IDLE, DODGE, JUMP, DOUBLE_JUMP, IN_AIR, LAND, WALL_GRAB, WALL_FLIP }
+    private static Dictionary<LOCOMOTION_ANIM, string> m_locomotionAnimToString = new Dictionary<LOCOMOTION_ANIM, string>();
 
     //Attack
     public enum ATTACK_STANCE { LIGHT, HEAVY }
-    public static Dictionary<ATTACK_STANCE, string> m_attackStanceToString = new Dictionary<ATTACK_STANCE, string>();
+    private static Dictionary<ATTACK_STANCE, string> m_attackStanceToString = new Dictionary<ATTACK_STANCE, string>();
     public enum ATTACK_TYPE { GROUND, IN_AIR, SPRINTING }
-    public static Dictionary<ATTACK_TYPE, string> m_attackTypeToString = new Dictionary<ATTACK_TYPE, string>();
+    private static Dictionary<ATTACK_TYPE, string> m_attackTypeToString = new Dictionary<ATTACK_TYPE, string>();
 
-    public enum VARIBLE_ANIM {CURRENT_VELOCITY, RANDOM_IDLE}
-    public static Dictionary<VARIBLE_ANIM, string> m_varibleAnimToString = new Dictionary<VARIBLE_ANIM, string>();
+    public enum VARIBLE_ANIM {CURRENT_VELOCITY, DESIRED_VELOCITY, ABSOLUTE_VELOCITY, RANDOM_IDLE, WEAPON}
+    private static Dictionary<VARIBLE_ANIM, string> m_varibleAnimToString = new Dictionary<VARIBLE_ANIM, string>();
 
     /// <summary>
     /// setup dicionaries used
@@ -38,7 +41,7 @@ public class AnimController : MonoBehaviour
         m_interruptAnimToString.Add(INTERRUPT_ANIM.DEATH, "Death");
         m_interruptAnimToString.Add(INTERRUPT_ANIM.KNOCKBACK, "Knockback");
 
-        m_locomotionAnimToString.Add(LOCOMOTION_ANIM.LOCOMOTION, "BlendTree");
+        m_locomotionAnimToString.Add(LOCOMOTION_ANIM.IDLE, "Idle");
         m_locomotionAnimToString.Add(LOCOMOTION_ANIM.DODGE, "Dodge");
         m_locomotionAnimToString.Add(LOCOMOTION_ANIM.JUMP, "Jump");
         m_locomotionAnimToString.Add(LOCOMOTION_ANIM.DOUBLE_JUMP, "DoubleJump");
@@ -55,7 +58,10 @@ public class AnimController : MonoBehaviour
         m_attackTypeToString.Add(ATTACK_TYPE.SPRINTING, "Sprint");
 
         m_varibleAnimToString.Add(VARIBLE_ANIM.CURRENT_VELOCITY, "CurrentVelocity");
+        m_varibleAnimToString.Add(VARIBLE_ANIM.DESIRED_VELOCITY, "DesiredVelocity");
+        m_varibleAnimToString.Add(VARIBLE_ANIM.ABSOLUTE_VELOCITY, "AbsoluteVelocity");
         m_varibleAnimToString.Add(VARIBLE_ANIM.RANDOM_IDLE, "RandomIdle");
+        m_varibleAnimToString.Add(VARIBLE_ANIM.WEAPON, "WeaponInt");
     }
 
     /// <summary>
@@ -102,6 +108,18 @@ public class AnimController : MonoBehaviour
     }
 
     /// <summary>
+    /// Set the varible value 
+    /// </summary>
+    /// <param name="p_animator">Animator to play on</param>
+    /// <param name="p_animString">Animation string</param>
+    /// <param name="p_value">Value of varible to set to</param>
+    public static void SetVarible(Animator p_animator, string p_animString, float p_value)
+    {
+        p_animator.SetFloat(p_animString, p_value);
+    }
+
+
+    /// <summary>
     /// Get the current normalized time of the animation
     /// </summary>
     /// <param name="p_animator">Animator to check against</param>
@@ -125,5 +143,26 @@ public class AnimController : MonoBehaviour
             return false;
 
         return p_animator.GetCurrentAnimatorStateInfo(0).normalizedTime > END_ANIMATION_TIME;
+    }
+
+    /// <summary>
+    /// Play a given animation
+    /// </summary>
+    /// <param name="p_animator">Animator to play on</param>
+    /// <param name="p_animString">Animation string</param>
+    public static void PlayAnimtion(Animator p_animator, string p_animString)
+    {
+        p_animator.SetLayerWeight(1, 0.0f);
+        p_animator.Play(p_animString, 0);
+    }
+
+    /// <summary>
+    /// End of animation, return to null on layer 0
+    /// </summary>
+    /// <param name="p_animator">Animator to default back to null</param>
+    public static void EndAnimation(Animator p_animator)
+    {
+        p_animator.SetLayerWeight(1, 1.0f);
+        p_animator.Play(m_nullString, 0);
     }
 }

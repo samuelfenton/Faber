@@ -162,7 +162,7 @@ public class WeaponManager : MonoBehaviour
 
         m_currentState = ATTACK_MANOEUVRE_STATE.WIND_UP;
 
-        m_animator.Play(AnimController.GetAttack(m_attackType, m_attackStance, m_manoeuvreIndex));
+        AnimController.PlayAnimtion(m_animator, (AnimController.GetAttack(m_attackType, m_attackStance, m_manoeuvreIndex)));
 
         return true;
     }

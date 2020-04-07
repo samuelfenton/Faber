@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerState_Locomotion : Player_State
 {
-    private string m_animLoco = "";
+    private string m_animIdle = "";
     private string m_paramVelocity = "";
     private string m_paramRandomIdle = "";
 
@@ -17,7 +17,7 @@ public class PlayerState_Locomotion : Player_State
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animLoco = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.LOCOMOTION);
+        m_animIdle = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.IDLE);
         m_paramVelocity = AnimController.GetVarible(AnimController.VARIBLE_ANIM.CURRENT_VELOCITY);
         m_paramRandomIdle = AnimController.GetVarible(AnimController.VARIBLE_ANIM.RANDOM_IDLE);
     }
@@ -27,31 +27,26 @@ public class PlayerState_Locomotion : Player_State
     /// </summary>
     public override void StateStart()
     {
-        m_animator.Play(m_animLoco);
+        base.StateStart();
     }
 
     /// <summary>
     /// State update, perform any actions for the given state
     /// </summary>
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
-    public override bool UpdateState()
+    public override bool StateUpdate()
     {
+        base.StateUpdate();
+
         //Movement
-        Vector3 newVelocity = m_character.m_localVelocity;
         float horizontal = m_playerCharacter.m_input.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
 
-        if (horizontal != 0.0f)//Input so normal movemnt
+        if(m_playerCharacter.m_input.GetKeyBool(CustomInput.INPUT_KEY.SPRINT))
         {
-            newVelocity.x += m_character.m_groundHorizontalAccel * horizontal * Time.deltaTime;
-            newVelocity.x = Mathf.Clamp(newVelocity.x, -m_character.m_groundHorizontalMax, m_character.m_groundHorizontalMax);
-            m_character.m_localVelocity = newVelocity;
+            m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * Character.SPRINT_MODIFIER);
         }
-        else //No input, slowdown
-        {
-            m_character.ApplyFriction();
-        }
-
-        m_animator.SetFloat(m_paramVelocity, Mathf.Abs(newVelocity.x)/ m_character.m_groundHorizontalMax);
+        else
+            m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel);
 
         return false;
     }
@@ -61,6 +56,7 @@ public class PlayerState_Locomotion : Player_State
     /// </summary>
     public override void StateEnd()
     {
+        base.StateEnd();
     }
 
     /// <summary>

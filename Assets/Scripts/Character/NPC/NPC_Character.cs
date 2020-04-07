@@ -10,6 +10,7 @@ public class NPC_Character : Character
     public float m_attackingDistance = 1.0f;
     public float m_detectionDistance = 10.0f;
 
+    [Header("Patrolling")]
     public List<Pathing_Spline> m_patrolSplines = new List<Pathing_Spline>();
 
     [HideInInspector]
@@ -28,6 +29,10 @@ public class NPC_Character : Character
         m_NPCStateMachine = gameObject.AddComponent<NPC_StateMachine>();
 
         m_NPCStateMachine.InitStateMachine(this);
+
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if(playerObject!= null)
+            m_targetCharacter = playerObject.GetComponent<Character>();
     }
 
     protected override void Update()

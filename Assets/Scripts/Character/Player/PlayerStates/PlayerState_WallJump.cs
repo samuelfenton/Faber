@@ -31,6 +31,7 @@ public class PlayerState_WallJump : Player_State
     /// </summary>
     public override void StateStart()
     {
+        base.StateStart();
         //Movement
         Vector3 newVelocity = m_character.m_localVelocity;
 
@@ -55,8 +56,10 @@ public class PlayerState_WallJump : Player_State
     /// State update, perform any actions for the given state
     /// </summary>
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
-    public override bool UpdateState()
+    public override bool StateUpdate()
     {
+        base.StateUpdate();
+
         m_inputDelayTimer -= Time.deltaTime;
         return m_inputDelayTimer < 0.0f;
     }
@@ -66,7 +69,7 @@ public class PlayerState_WallJump : Player_State
     /// </summary>
     public override void StateEnd()
     {
-
+        base.StateEnd();
     }
     /// <summary>
     /// Is this currently a valid state
