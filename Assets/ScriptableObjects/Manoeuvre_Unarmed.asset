@@ -13,38 +13,188 @@ MonoBehaviour:
   m_Name: Manoeuvre_Unarmed
   m_EditorClassIdentifier: 
   m_currentWeapon: 0
-  m_groundAttacks:
-  - m_lightDamageStart: 0.3
-    m_lightDamageEnd: 0.6
-    m_lightComboStart: 0.65
-    m_lightComboEnd: 0.9
-    m_heavyDamageStart: 0.2
-    m_heavyDamageEnd: 0.6
-    m_heavyComboStart: 0.65
-    m_heavyComboEnd: 0.9
-  - m_lightDamageStart: 0.3
-    m_lightDamageEnd: 0.6
-    m_lightComboStart: 0.65
-    m_lightComboEnd: 0.9
-    m_heavyDamageStart: 0.2
-    m_heavyDamageEnd: 0.6
-    m_heavyComboStart: 0.65
-    m_heavyComboEnd: 0.9
-  m_inAirAttacks:
-  - m_lightDamageStart: 0.146
-    m_lightDamageEnd: 0.338
-    m_lightComboStart: 0.56
-    m_lightComboEnd: 0.786
-    m_heavyDamageStart: 0.134
-    m_heavyDamageEnd: 0.326
-    m_heavyComboStart: 0.572
-    m_heavyComboEnd: 0.825
-  m_sprintAttacks:
-  - m_lightDamageStart: 0
-    m_lightDamageEnd: 0
-    m_lightComboStart: 0
-    m_lightComboEnd: 0
-    m_heavyDamageStart: 0
-    m_heavyDamageEnd: 0
-    m_heavyComboStart: 0
-    m_heavyComboEnd: 0
+  m_groundLight:
+  - m_damageStart: 0.3
+    m_damageEnd: 0.6
+    m_comboStart: 0.8
+    m_comboEnd: 0.95
+    m_translationCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - m_damageStart: 0.3
+    m_damageEnd: 0.6
+    m_comboStart: 0.8
+    m_comboEnd: 0.95
+    m_translationCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_groundHeavy:
+  - m_damageStart: 0.33
+    m_damageEnd: 0.6
+    m_comboStart: 0.7
+    m_comboEnd: 0.9
+    m_translationCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - m_damageStart: 0.5
+    m_damageEnd: 0.65
+    m_comboStart: 0.75
+    m_comboEnd: 0.9
+    m_translationCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_inAirLight:
+  - m_damageStart: 0
+    m_damageEnd: 0
+    m_comboStart: 0
+    m_comboEnd: 0
+    m_translationCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_inAirHeavy:
+  - m_damageStart: 0
+    m_damageEnd: 0
+    m_comboStart: 0
+    m_comboEnd: 0
+    m_translationCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_sprintLight:
+  - m_damageStart: 0
+    m_damageEnd: 0
+    m_comboStart: 0
+    m_comboEnd: 0
+    m_translationCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_sprintHeavy:
+  - m_damageStart: 0.15
+    m_damageEnd: 0.3
+    m_comboStart: 0.55
+    m_comboEnd: 0.9
+    m_translationCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.38257048
+        value: 2.3626404
+        inSlope: 3.0907574
+        outSlope: 3.0907574
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.10420492
+      - serializedVersion: 3
+        time: 1
+        value: 3
+        inSlope: -0.008229897
+        outSlope: -0.008229897
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.32488197
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4

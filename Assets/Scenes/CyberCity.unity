@@ -5489,7 +5489,7 @@ PrefabInstance:
     - target: {fileID: 6843506353925248136, guid: f31b504c5498e014a8a5553bd558be3e,
         type: 3}
       propertyPath: m_RootOrder
-      value: 15
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 6843506353925248136, guid: f31b504c5498e014a8a5553bd558be3e,
         type: 3}
@@ -7350,7 +7350,7 @@ PrefabInstance:
     - target: {fileID: 6036739476752220814, guid: 38f6a70c349a08a4ab38ba0b2b412d6d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 15
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6036739476752220814, guid: 38f6a70c349a08a4ab38ba0b2b412d6d,
         type: 3}
@@ -14964,7 +14964,7 @@ PrefabInstance:
     - target: {fileID: 2391468447124643204, guid: 69899781d3438774883ea6024c6b1212,
         type: 3}
       propertyPath: m_RootOrder
-      value: 13
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 2391468447124643204, guid: 69899781d3438774883ea6024c6b1212,
         type: 3}
@@ -15200,7 +15200,7 @@ PrefabInstance:
     - target: {fileID: 6843506353925248136, guid: f31b504c5498e014a8a5553bd558be3e,
         type: 3}
       propertyPath: m_RootOrder
-      value: 14
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 6843506353925248136, guid: f31b504c5498e014a8a5553bd558be3e,
         type: 3}
@@ -15660,6 +15660,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1234162522}
     m_Modifications:
+    - target: {fileID: 3775519670443091626, guid: 1defb83b4c531454c8a47e1f92bf4882,
+        type: 3}
+      propertyPath: m_groundedDeaccel
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 4795170144421986615, guid: 1defb83b4c531454c8a47e1f92bf4882,
         type: 3}
       propertyPath: m_currentSpline
@@ -15879,7 +15884,7 @@ PrefabInstance:
     - target: {fileID: 7751907588572374983, guid: 25320c7ad19457c44a705628f1f02758,
         type: 3}
       propertyPath: m_RootOrder
-      value: 16
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7751907588572374983, guid: 25320c7ad19457c44a705628f1f02758,
         type: 3}
@@ -21058,7 +21063,7 @@ PrefabInstance:
     - target: {fileID: 8482402443136745245, guid: 5ccfe2d45be0abc4e9a4d6ccc7801177,
         type: 3}
       propertyPath: m_RootOrder
-      value: 12
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8482402443136745245, guid: 5ccfe2d45be0abc4e9a4d6ccc7801177,
         type: 3}
@@ -29044,6 +29049,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BottleHologram
       objectReference: {fileID: 0}
+    - target: {fileID: 8134357590575396594, guid: 09a31ec130864f14aa57d44816b6f857,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 09a31ec130864f14aa57d44816b6f857, type: 3}
 --- !u!1001 &4002579574761392027
@@ -29053,10 +29063,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1234162522}
     m_Modifications:
+    - target: {fileID: 6622485043305183244, guid: 4b82add057659ce4e970e98c43a3322e,
+        type: 3}
+      propertyPath: m_weaponPrefabs.Array.data[0]
+      value: 
+      objectReference: {fileID: 2231452535714967377, guid: e46ddca1514e64a449f4c41fce1ac61d,
+        type: 3}
     - target: {fileID: 8219485882895916776, guid: 4b82add057659ce4e970e98c43a3322e,
         type: 3}
       propertyPath: m_Name
       value: Prefab_NPC_Kachujin
+      objectReference: {fileID: 0}
+    - target: {fileID: 8219485882895916776, guid: 4b82add057659ce4e970e98c43a3322e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8219485882896269960, guid: 4b82add057659ce4e970e98c43a3322e,
         type: 3}
@@ -29127,6 +29148,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_patrolSplines.Array.data[1]
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8987506874733537015, guid: 4b82add057659ce4e970e98c43a3322e,
+        type: 3}
+      propertyPath: m_groundedDeaccel
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8987506874733537015, guid: 4b82add057659ce4e970e98c43a3322e,
+        type: 3}
+      propertyPath: m_detectionDistance
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 9077462144384472045, guid: 4b82add057659ce4e970e98c43a3322e,
         type: 3}

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Character : Entity
 {
+    public enum FACING_DIR {RIGHT, LEFT}
+
     public const float SPRINT_MODIFIER = 1.5f;//Linked to animator
 
     [Header("Assigned Character Varibles")]
@@ -133,12 +135,41 @@ public class Character : Entity
         //Setup rotation on game model, completly aesthetic based
         if (m_localVelocity.x > 0.1f)
         {
-            m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+            FaceDirection(FACING_DIR.RIGHT);
         }
         else if (m_localVelocity.x < -0.1f)
         {
+            FaceDirection(FACING_DIR.LEFT);
+        }
+    }
+
+    /// <summary>
+    /// Make model face left or right
+    /// </summary>
+    /// <param name="p_facingDir"></param>
+    public void FaceDirection(FACING_DIR p_facingDir)
+    {
+        if(p_facingDir == FACING_DIR.RIGHT)
+        {
+            m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+        }
+        else
+        {
             m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
         }
+    }
+
+    /// <summary>
+    /// Get the current facnig direction
+    /// </summary>
+    /// <returns>Right when forward is same for model and base object</returns>
+    public FACING_DIR GetFacingDir()
+    {
+        float alignedModelDot = Vector3.Dot(transform.forward, m_characterModel.transform.forward);
+
+        if (alignedModelDot >= 0.0f)
+            return FACING_DIR.RIGHT;
+        return FACING_DIR.LEFT;
     }
 
     /// <summary>
@@ -192,6 +223,15 @@ public class Character : Entity
     }
 
     /// <summary>
+    /// Hard set the value of velocity
+    /// </summary>
+    /// <param name="p_val">velocity</param>
+    public void HardSetVelocity(float p_val)
+    {
+        m_localVelocity.x = p_val;
+    }
+
+    /// <summary>
     /// Update the locomotion base varibles
     /// </summary>
     public void UpdateAnimationLocomotion()
@@ -210,4 +250,27 @@ public class Character : Entity
         int idleIndex = Random.Range(0, AnimController.IDLE_COUNT);
         AnimController.SetVarible(m_animator, m_animRandomIdle, idleIndex);
     }
+
+    #region WEAPON FUNCTIONS - OVERRIDE
+
+    /// <summary>
+    /// Function desired to be overridden, should this managed have a possitive light attack input? 
+    /// Example click by player, or logic for NPC
+    /// </summary>
+    /// <returns>True when theres desired light attack input</returns>
+    public virtual bool DetermineLightInput()
+    {
+        return false;
+    }
+
+    /// <summary>
+    /// Function desired to be overridden, should this managed have a possitive heavy attack input? 
+    /// Example click by player, or logic for NPC
+    /// </summary>
+    /// <returns>True when theres desired heavy attack input</returns>
+    public virtual bool DetermineHeavyInput()
+    {
+        return false;
+    }
+    #endregion
 }

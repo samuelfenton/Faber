@@ -22,7 +22,7 @@ public class NPC_StateMachine : StateMachine
         NPCState_Approach approach = NewNextState<NPCState_Approach>();
         NPCState_Waiting waiting = NewNextState<NPCState_Waiting>();
 
-        //NPCState_Attack attack = NewNextState<PlayerState_Land>();
+        NPCState_Attack attack = NewNextState<NPCState_Attack>();
         
         //Init all 
         death.StateInit(true, p_character);
@@ -31,22 +31,21 @@ public class NPC_StateMachine : StateMachine
         approach.StateInit(false, p_character);
         waiting.StateInit(false, p_character);
 
-        //attack.StateInit(false, p_character);
+        attack.StateInit(false, p_character);
 
         //Add in next states
-        //knockback.AddNextState(attack);
+        knockback.AddNextState(attack);
         knockback.AddNextState(approach);
         knockback.AddNextState(waiting);
 
-
-        //approach.AddNextState(attack);
+        approach.AddNextState(attack);
         approach.AddNextState(waiting);
 
-        //approach.AddNextState(attack);
+        waiting.AddNextState(attack);
         waiting.AddNextState(approach);
 
-        //attack.AddNextState(approach);
-        //attack.AddNextState(waiting);
+        attack.AddNextState(approach);
+        attack.AddNextState(waiting);
 
         m_currentState = waiting;
 

@@ -20,20 +20,88 @@ public class NPC_State : State
     }
 
     /// <summary>
-    /// Is the character close enough based off current speed and slowdown rate
-    ///     Kinematic equation
-    ///     Vf^2 = Vi^2 + 2ad
-    ///     d = -Vi^2 / 2a
-    ///     As a is negitive -> d = Vi^2 / 2a
+    /// Check distance based off position, much faster, but wont be accurate
     /// </summary>
     /// <param name="p_target">Target to check against</param>
     /// <param name="p_distance">Distance from target that returns true</param>
-    /// <returns>True when can stop in time for distance</returns>
-    protected bool TargetWithinRange(Vector3 p_target, float p_distance)
+    /// <returns>True when distance is close enough</returns>
+    protected bool FastTargetWithinRange(Entity p_target, float p_distance)
     {
-        float stoppingDistance = m_character.m_localVelocity.x == 0.0f ? 0 : Mathf.Pow(m_character.m_localVelocity.x, 2) / (2 * m_character.m_groundedDeaccel); //Close enough based off time to slow down
+        return (p_target.transform.position - m_character.transform.position).magnitude < p_distance;
+    }
 
-        return Vector3.Distance(m_character.transform.position, p_target) <= p_distance + stoppingDistance;
+    /// <summary>
+    /// Slow distance check, builds path and uses spline percents
+    /// </summary>
+    /// <param name="p_target">Target to check against</param>
+    /// <param name="p_distance">Distance from target that returns true</param>
+    /// <returns>True when distance is close enough</returns>
+    protected bool SlowTargetWithinRange(Entity p_target, float p_distance)
+    {
+        if (p_target == null)
+            return false;
+
+        Pathing_Spline currentSpline = m_character.m_splinePhysics.m_currentSpline;
+        Pathing_Spline targetSpline = p_target.m_splinePhysics.m_currentSpline;
+        float currentPercent = m_character.m_splinePhysics.m_currentSplinePercent;
+        float targetPercent = p_target.m_splinePhysics.m_currentSplinePercent;
+
+        if (currentSpline == targetSpline) //Same spline compare difference in percents
+        {
+            float splineDistance = Mathf.Abs(currentPercent - targetPercent) * currentSpline.m_splineLength;
+
+            return splineDistance < p_distance;
+        }
+        else //Get path, add up all
+        {
+            List<Pathing_Spline> path = PathfindingController.GetPath(m_character, targetSpline);
+
+            if(path.Count == 0)
+            {
+                return false;
+            }
+
+            path.RemoveAt(path.Count - 1);//Dont want to add in last spline distance
+
+            float totalDistance = 0.0f;
+            
+            if(path.Count == 0) //Theres no paths inbetween
+            {
+                float currentToNodeDistance = Mathf.Abs(currentPercent - DetermineDesiredPercent(targetSpline));
+                totalDistance += currentToNodeDistance;
+
+                float targetToNodeDistance = Mathf.Abs(targetPercent - DetermineDesiredPercent(currentSpline));
+                totalDistance += targetToNodeDistance;
+            }
+            else //Include pathing
+            {
+                float currentToNodeDistance = Mathf.Abs(m_character.m_splinePhysics.m_currentSplinePercent - DetermineDesiredPercent(path[0]));
+                totalDistance += currentToNodeDistance;
+
+                float targetToNodeDistance = Mathf.Abs(p_target.m_splinePhysics.m_currentSplinePercent - DetermineDesiredPercent(path[path.Count -1]));
+                totalDistance += targetToNodeDistance;
+
+                foreach (Pathing_Spline spline in path)
+                {
+                    totalDistance += spline.m_splineLength;
+                }
+            }
+
+            return totalDistance < p_distance;
+        }
+    }
+
+    /// <summary>
+    /// Uses both methods to ensure entity is in range, first fast to ensure checking is worth it, and then slow
+    /// </summary>
+    /// <param name="p_target">Target to check against</param>
+    /// <param name="p_distance">Distance from target that returns true</param>
+    /// <returns>True when distance is close enough</returns>
+    protected bool SmartTargetWithinRange(Entity p_target, float p_distance)
+    {
+        if(FastTargetWithinRange(p_target, p_distance))
+            return SlowTargetWithinRange(p_target, p_distance);
+        return false;
     }
 
     /// <summary>
@@ -42,13 +110,13 @@ public class NPC_State : State
     /// <param name="p_spline">target spline</param>
     /// <param name="p_speed">Desired speed to move at</param>
     /// <returns>true when completed, invalid data, no path</returns>
-    protected bool MoveTowardsSpline(Pathing_Spline p_spline, float p_speed)
+    protected void MoveTowardsSpline(Pathing_Spline p_spline, float p_speed)
     {
         if (p_spline == null)//Invalid destination
-            return true;
+            return;
 
         if (m_NPCCharacter.m_splinePhysics.m_currentSpline == p_spline)//already there
-            return true;
+            return;
 
         if(m_path.Count == 0 || m_path[m_path.Count - 1] != p_spline)//Needs new path
         {
@@ -56,20 +124,20 @@ public class NPC_State : State
         }
 
         if (m_path.Count == 0)//no path
-            return true;
+            return;
 
         Pathing_Spline currentSpline = m_character.m_splinePhysics.m_currentSpline;
         if (currentSpline == m_path[0])//At next spline
             m_path.RemoveAt(0);
 
         if (m_path.Count == 0)//finished path
-            return true;
+            return;
 
         Pathing_Spline goalSpline = m_path[0];
         float desiredPecent = DetermineDesiredPercent(goalSpline);
 
         MoveTowardsPercent(desiredPecent, p_speed);
-        return false;
+        return;
     }
 
     /// <summary>
@@ -78,12 +146,18 @@ public class NPC_State : State
     /// <param name="p_entity">Entity to move towards</param>
     /// <param name="p_speed">Desired speed to move at</param>
     /// <returns>true when completed or invalid data</returns>
-    protected bool MoveTowardsEntity(Entity p_entity, float p_speed)
+    protected void MoveTowardsEntity(Entity p_entity, float p_speed)
     {
         if (p_entity == null)
-            return true;
+            return;
 
-        return MoveTowardsSpline(p_entity.m_splinePhysics.m_currentSpline, p_speed);
+        Pathing_Spline currentSpline = m_character.m_splinePhysics.m_currentSpline;
+        Pathing_Spline targetSpline = p_entity.m_splinePhysics.m_currentSpline;
+
+        if (currentSpline == targetSpline)
+            MoveTowardsPercent(p_entity.m_splinePhysics.m_currentSplinePercent, p_speed);
+        else
+            MoveTowardsSpline(targetSpline, p_speed);
     }
 
     /// <summary>

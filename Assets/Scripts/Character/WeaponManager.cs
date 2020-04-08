@@ -25,11 +25,14 @@ public class WeaponManager : MonoBehaviour
     protected ATTACK_MANOEUVRE_STATE m_currentState = ATTACK_MANOEUVRE_STATE.WIND_UP;
 
     protected bool m_comboFlag = false;
+    protected float m_previousTranslation = 0.0f;
 
-    protected float m_startDamage;
-    protected float m_endDamage;
-    protected float m_startCombo;
-    protected float m_endCombo;
+    protected float m_startDamage = 0.0f;
+    protected float m_endDamage = 0.0f;
+    protected float m_startCombo = 0.0f;
+    protected float m_endCombo = 0.0f;
+
+    protected AnimationCurve m_translationCurve;
 
     protected WeaponTrigger m_primaryWeaponScript = null;
     protected WeaponTrigger m_secondaryWeaponScript = null;
@@ -80,6 +83,8 @@ public class WeaponManager : MonoBehaviour
         m_manoeuvreIndex = 0;
 
         StartAttackManoeuvre();
+
+        m_character.HardSetVelocity(0.0f);
     }
 
     /// <summary>
@@ -125,40 +130,59 @@ public class WeaponManager : MonoBehaviour
         switch (m_attackType)
         {
             case AnimController.ATTACK_TYPE.GROUND:
-                if (m_weaponData.m_groundAttacks.Length <= m_manoeuvreIndex)
-                    return false;
-                attackDetails = m_weaponData.m_groundAttacks[m_manoeuvreIndex];
+                if(m_attackStance == AnimController.ATTACK_STANCE.LIGHT)
+                {
+                    if (m_weaponData.m_groundLight.Length <= m_manoeuvreIndex)
+                        return false;
+                    attackDetails = m_weaponData.m_groundLight[m_manoeuvreIndex];
+                }
+                else
+                {
+                    if (m_weaponData.m_groundHeavy.Length <= m_manoeuvreIndex)
+                        return false;
+                    attackDetails = m_weaponData.m_groundHeavy[m_manoeuvreIndex];
+                }
                 break;
             case AnimController.ATTACK_TYPE.IN_AIR:
-                if (m_weaponData.m_inAirAttacks.Length <= m_manoeuvreIndex)
-                    return false;
-                attackDetails = m_weaponData.m_inAirAttacks[m_manoeuvreIndex];
+                if (m_attackStance == AnimController.ATTACK_STANCE.LIGHT)
+                {
+                    if (m_weaponData.m_inAirLight.Length <= m_manoeuvreIndex)
+                        return false;
+                    attackDetails = m_weaponData.m_inAirLight[m_manoeuvreIndex];
+                }
+                else
+                {
+                    if (m_weaponData.m_inAirHeavy.Length <= m_manoeuvreIndex)
+                        return false;
+                    attackDetails = m_weaponData.m_inAirHeavy[m_manoeuvreIndex];
+                }
                 break;
             case AnimController.ATTACK_TYPE.SPRINTING:
-                if (m_weaponData.m_sprintAttacks.Length <= m_manoeuvreIndex)
-                    return false;
-                attackDetails = m_weaponData.m_sprintAttacks[m_manoeuvreIndex];
+                if (m_attackStance == AnimController.ATTACK_STANCE.LIGHT)
+                {
+                    if (m_weaponData.m_sprintLight.Length <= m_manoeuvreIndex)
+                        return false;
+                    attackDetails = m_weaponData.m_sprintLight[m_manoeuvreIndex];
+                }
+                else
+                {
+                    if (m_weaponData.m_sprintHeavy.Length <= m_manoeuvreIndex)
+                        return false;
+                    attackDetails = m_weaponData.m_sprintHeavy[m_manoeuvreIndex];
+                }
                 break;
             default:
                 return false;
         }
 
         m_comboFlag = false;
+        m_previousTranslation = 0.0f;
 
-        if (m_attackStance == AnimController.ATTACK_STANCE.LIGHT)
-        {
-            m_startDamage = attackDetails.m_lightDamageStart;
-            m_endDamage = attackDetails.m_lightDamageEnd;
-            m_startCombo = attackDetails.m_lightComboStart;
-            m_endCombo = attackDetails.m_lightComboEnd;
-        }
-        else
-        {
-            m_startDamage = attackDetails.m_heavyDamageStart;
-            m_endDamage = attackDetails.m_heavyDamageEnd;
-            m_startCombo = attackDetails.m_heavyComboStart;
-            m_endCombo = attackDetails.m_heavyComboEnd;
-        }
+        m_startDamage = attackDetails.m_damageStart;
+        m_endDamage = attackDetails.m_damageEnd;
+        m_startCombo = attackDetails.m_comboStart;
+        m_endCombo = attackDetails.m_comboEnd;
+        m_translationCurve = attackDetails.m_translationCurve;
 
         m_currentState = ATTACK_MANOEUVRE_STATE.WIND_UP;
 
@@ -173,31 +197,44 @@ public class WeaponManager : MonoBehaviour
     /// <returns>True when completed</returns>
     protected bool UpdateAttackManoeuvre()
     {
+        float animationPercent = AnimController.GetAnimationPercent(m_animator);
+
+        float modelToSplineForwardDot = Vector3.Dot(m_character.m_characterModel.transform.forward, m_character.m_splinePhysics.m_currentSpline.GetForwardDir(m_character.m_splinePhysics.m_currentSplinePercent));
+
+        //Update Translation
+        float expectedTranslation = m_translationCurve.Evaluate(animationPercent);
+        if(modelToSplineForwardDot >= 0.0f)//Facing correct way
+            m_character.Translate(expectedTranslation - m_previousTranslation);
+        else
+            m_character.Translate(-expectedTranslation + m_previousTranslation);
+
+        m_previousTranslation = expectedTranslation;
+
         switch (m_currentState)
         {
             case ATTACK_MANOEUVRE_STATE.WIND_UP:
-                if (AnimController.GetAnimationPercent(m_animator) > m_startDamage)
+                if (animationPercent > m_startDamage)
                     m_currentState = ATTACK_MANOEUVRE_STATE.DAMAGE;
                 break;
             case ATTACK_MANOEUVRE_STATE.DAMAGE:
                 UpdateWeaponDamage();
-                if (AnimController.GetAnimationPercent(m_animator) > m_endDamage)
+                if (animationPercent > m_endDamage)
                     m_currentState = ATTACK_MANOEUVRE_STATE.AWAITING_COMBO;
                 break;
             case ATTACK_MANOEUVRE_STATE.AWAITING_COMBO:
-                if (AnimController.GetAnimationPercent(m_animator) > m_startCombo)
+                if (animationPercent > m_startCombo)
                     m_currentState = ATTACK_MANOEUVRE_STATE.COMBO_CHECK;
                 break;
             case ATTACK_MANOEUVRE_STATE.COMBO_CHECK:
-                if (AnimController.GetAnimationPercent(m_animator) > m_endCombo)
+                if (animationPercent > m_endCombo)
                     m_currentState = ATTACK_MANOEUVRE_STATE.END_ATTACK;
-                if (DetermineLightInput())
+                if (m_character.DetermineLightInput())
                 {
                     m_comboFlag = true;
                     m_attackStance = AnimController.ATTACK_STANCE.LIGHT;
                     m_currentState = ATTACK_MANOEUVRE_STATE.END_ATTACK;
                 }
-                if (DetermineHeavyInput())
+                if (m_character.DetermineHeavyInput())
                 {
                     m_comboFlag = true;
                     m_attackStance = AnimController.ATTACK_STANCE.HEAVY;
@@ -261,28 +298,6 @@ public class WeaponManager : MonoBehaviour
 
     #endregion
 
-    #region OVERRIDE FUNCTIONS
-
-    /// <summary>
-    /// Function desired to be overridden, should this managed have a possitive light attack input? 
-    /// Example click by player, or logic for NPC
-    /// </summary>
-    /// <returns>True when theres desired light attack input</returns>
-    public virtual bool DetermineLightInput()
-    {
-        return false;
-    }
-
-    /// <summary>
-    /// Function desired to be overridden, should this managed have a possitive heavy attack input? 
-    /// Example click by player, or logic for NPC
-    /// </summary>
-    /// <returns>True when theres desired heavy attack input</returns>
-    public virtual bool DetermineHeavyInput()
-    {
-        return false;
-    }
-
     /// <summary>
     /// Determine what attack type should be performed?
     /// grounded and sprinting = sprinting
@@ -290,8 +305,15 @@ public class WeaponManager : MonoBehaviour
     /// in the air = in_air
     /// </summary>
     /// <returns>Correct type, defualt to grounded</returns>
-    public virtual AnimController.ATTACK_TYPE DetermineAttackType()
+    public AnimController.ATTACK_TYPE DetermineAttackType()
     {
+        if (!m_character.m_splinePhysics.m_downCollision) //In the air
+        {
+            return AnimController.ATTACK_TYPE.IN_AIR;
+        }
+        if (Mathf.Abs(m_character.m_localVelocity.x) > m_character.m_groundRunVel)//Is it sprinting or just grounded
+            return AnimController.ATTACK_TYPE.SPRINTING;
+
         return AnimController.ATTACK_TYPE.GROUND;
     }
 
@@ -299,9 +321,8 @@ public class WeaponManager : MonoBehaviour
     /// Determine attacking stance, light or heavy
     /// </summary>
     /// <returns>Based off input</returns>
-    public virtual AnimController.ATTACK_STANCE DetermineStance()
+    public AnimController.ATTACK_STANCE DetermineStance()
     {
-        return AnimController.ATTACK_STANCE.LIGHT;
+        return m_character.DetermineLightInput() ? AnimController.ATTACK_STANCE.LIGHT : AnimController.ATTACK_STANCE.HEAVY;
     }
-    #endregion
 }

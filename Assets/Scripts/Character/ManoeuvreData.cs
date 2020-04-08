@@ -8,24 +8,15 @@ public class ManoeuvreData : ScriptableObject
     [System.Serializable]
     public struct AttackDetails
     {
-        [Header("Light")]
         [Range(0.0f,1.0f)]
-        public float m_lightDamageStart;
+        public float m_damageStart;
         [Range(0.0f, 1.0f)]
-        public float m_lightDamageEnd;
+        public float m_damageEnd;
         [Range(0.0f, 1.0f)]
-        public float m_lightComboStart;
+        public float m_comboStart;
         [Range(0.0f, 1.0f)]
-        public float m_lightComboEnd;
-        [Header("Heavy")]
-        [Range(0.0f, 1.0f)]
-        public float m_heavyDamageStart;
-        [Range(0.0f, 1.0f)]
-        public float m_heavyDamageEnd;
-        [Range(0.0f, 1.0f)]
-        public float m_heavyComboStart;
-        [Range(0.0f, 1.0f)]
-        public float m_heavyComboEnd;
+        public float m_comboEnd;
+        public AnimationCurve m_translationCurve;
     }
 
     public enum WEAPON_TYPE {UNARMED = 0, ONE_HANDED_SWORD, TWO_HANDED_SWORD, SWORD_AND_SHIELD, POLEARM, POLEARM_AND_SHIELD } //used for determining animations
@@ -33,9 +24,15 @@ public class ManoeuvreData : ScriptableObject
 
     [Header("Manouevre Details")]
     [SerializeField]
-    public AttackDetails[] m_groundAttacks = new AttackDetails[1];
+    public AttackDetails[] m_groundLight = new AttackDetails[1];
     [SerializeField]
-    public AttackDetails[] m_inAirAttacks = new AttackDetails[1];
+    public AttackDetails[] m_groundHeavy = new AttackDetails[1];
     [SerializeField]
-    public AttackDetails[] m_sprintAttacks = new AttackDetails[1];
+    public AttackDetails[] m_inAirLight = new AttackDetails[1];
+    [SerializeField]
+    public AttackDetails[] m_inAirHeavy = new AttackDetails[1];
+    [SerializeField]
+    public AttackDetails[] m_sprintLight = new AttackDetails[1];
+    [SerializeField]
+    public AttackDetails[] m_sprintHeavy = new AttackDetails[1];
 }

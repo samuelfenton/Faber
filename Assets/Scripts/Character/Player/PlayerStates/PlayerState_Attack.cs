@@ -25,6 +25,8 @@ public class PlayerState_Attack : Player_State
 
         m_weaponManager = m_character.GetCurrentWeapon();
         m_weaponManager.StartAttackSequence();
+
+        m_character.SetDesiredVelocity(0.0f);
     }
 
     /// <summary>
@@ -34,8 +36,6 @@ public class PlayerState_Attack : Player_State
     public override bool StateUpdate()
     {
         base.StateUpdate();
-
-        m_character.SetDesiredVelocity(0.0f);
 
         return m_weaponManager.UpdateAttackSequence();
     }

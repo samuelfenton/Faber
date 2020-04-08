@@ -18,6 +18,8 @@ public class NPC_Character : Character
 
     private NPC_StateMachine m_NPCStateMachine = null;
 
+    private NPCState_Attack m_attackState = null;
+
     /// <summary>
     /// Initiliase the entity
     /// setup varible/physics
@@ -33,6 +35,8 @@ public class NPC_Character : Character
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if(playerObject!= null)
             m_targetCharacter = playerObject.GetComponent<Character>();
+
+        m_attackState = GetComponent<NPCState_Attack>();
     }
 
     protected override void Update()
@@ -85,4 +89,27 @@ public class NPC_Character : Character
             }
         }
     }
+
+    #region WEAPON FUNCTIONS - OVERRIDE
+
+    /// <summary>
+    /// Function desired to be overridden, should this managed have a possitive light attack input? 
+    /// Example click by player, or logic for NPC
+    /// </summary>
+    /// <returns>True when theres desired light attack input</returns>
+    public override bool DetermineLightInput()
+    {
+        return m_attackState.m_lightAttackFlag;
+    }
+
+    /// <summary>
+    /// Function desired to be overridden, should this managed have a possitive heavy attack input? 
+    /// Example click by player, or logic for NPC
+    /// </summary>
+    /// <returns>True when theres desired heavy attack input</returns>
+    public override bool DetermineHeavyInput()
+    {
+        return m_attackState.m_heavyAttackFlag;
+    }
+    #endregion
 }

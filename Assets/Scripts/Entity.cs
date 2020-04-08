@@ -57,6 +57,15 @@ public class Entity : MonoBehaviour
     }
 
     /// <summary>
+    /// Translate the entity 
+    /// </summary>
+    /// <param name="p_val">Translation distance</param>
+    public void Translate(float p_val)
+    {
+        m_splinePhysics.m_currentSplinePercent += p_val / m_splinePhysics.m_currentSpline.m_splineLength;
+    }
+
+    /// <summary>
     /// Get turning direction for junction navigation, based off current input
     /// </summary>
     /// <param name="p_node">junction entity will pass through</param>
@@ -66,6 +75,10 @@ public class Entity : MonoBehaviour
         return TURNING_DIR.CENTER;
     }
 
+    /// <summary>
+    /// Destory a given entity, will call immeditate and delayed destruciton functions
+    /// </summary>
+    /// <returns>Waits DESTRUCTION_TIME</returns>
     public IEnumerator DestroyEntity()
     {
         EntityImmediateDestory();

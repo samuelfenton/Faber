@@ -58,7 +58,7 @@ public class PathfindingController : MonoBehaviour
 
         if(currentNode.m_nodeSpline == p_goalSpline)
         {
-            //Build path
+            //Build path - Doesnt include start spline, does include goal spline
             while(currentNode.m_previousNode != null)
             {
                 path.Add(currentNode.m_nodeSpline);

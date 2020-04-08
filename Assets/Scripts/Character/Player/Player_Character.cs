@@ -60,4 +60,27 @@ public class Player_Character : Character
         }
         return TURNING_DIR.CENTER;
     }
+
+    #region WEAPON FUNCTIONS - OVERRIDE
+
+    /// <summary>
+    /// Function desired to be overridden, should this managed have a possitive light attack input? 
+    /// Example click by player, or logic for NPC
+    /// </summary>
+    /// <returns>True when theres desired light attack input</returns>
+    public override bool DetermineLightInput()
+    {
+        return m_input.GetKey(CustomInput.INPUT_KEY.ATTACK) == CustomInput.INPUT_STATE.DOWNED;
+    }
+
+    /// <summary>
+    /// Function desired to be overridden, should this managed have a possitive heavy attack input? 
+    /// Example click by player, or logic for NPC
+    /// </summary>
+    /// <returns>True when theres desired heavy attack input</returns>
+    public override bool DetermineHeavyInput()
+    {
+        return m_input.GetKey(CustomInput.INPUT_KEY.ATTACK_SECONDARY) == CustomInput.INPUT_STATE.DOWNED;
+    }
+    #endregion
 }

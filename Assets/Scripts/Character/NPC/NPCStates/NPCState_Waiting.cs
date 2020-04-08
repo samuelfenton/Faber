@@ -67,7 +67,7 @@ public class NPCState_Waiting : NPC_State
 
         if (m_currentWaitingState == WAITING_STATUS.IDLE)
         {
-            return AnimController.IsAnimationDone(m_animator);
+            return AnimController.IsAnimationDone(m_animator) || (m_NPCCharacter.m_targetCharacter != null && SmartTargetWithinRange(m_NPCCharacter.m_targetCharacter, m_NPCCharacter.m_detectionDistance));
         }
         else //Patrol
         {
@@ -83,7 +83,7 @@ public class NPCState_Waiting : NPC_State
             }
         }
 
-        return m_NPCCharacter.m_targetCharacter != null && TargetWithinRange(m_NPCCharacter.m_targetCharacter.transform.position, m_NPCCharacter.m_detectionDistance);
+        return m_NPCCharacter.m_targetCharacter != null && SmartTargetWithinRange(m_NPCCharacter.m_targetCharacter, m_NPCCharacter.m_detectionDistance);
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public class NPCState_Waiting : NPC_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_NPCCharacter.m_targetCharacter == null || !TargetWithinRange(m_NPCCharacter.m_targetCharacter.transform.position, m_NPCCharacter.m_detectionDistance);
+        return m_NPCCharacter.m_targetCharacter == null || !SmartTargetWithinRange(m_NPCCharacter.m_targetCharacter, m_NPCCharacter.m_detectionDistance);
     }
 
     /// <summary>
