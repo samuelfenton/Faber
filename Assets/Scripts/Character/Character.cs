@@ -232,6 +232,15 @@ public class Character : Entity
     }
 
     /// <summary>
+    /// Hard set the value of velocity
+    /// </summary>
+    /// <param name="p_val">velocity</param>
+    public void HardSetUpwardsVelocity(float p_val)
+    {
+        m_localVelocity.y = p_val;
+    }
+
+    /// <summary>
     /// Update the locomotion base varibles
     /// </summary>
     public void UpdateAnimationLocomotion()

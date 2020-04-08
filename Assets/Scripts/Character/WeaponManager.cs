@@ -116,6 +116,9 @@ public class WeaponManager : MonoBehaviour
     /// <returns>flase when invalid manoeuvre</returns>
     private bool StartAttackManoeuvre()
     {
+        m_character.m_gravity = false;
+        m_character.HardSetUpwardsVelocity(0.0f);
+
         //Toggle Colliders
         if (m_primaryWeaponScript != null)
             m_primaryWeaponScript.ToggleTrigger(true);
@@ -253,6 +256,8 @@ public class WeaponManager : MonoBehaviour
     /// </summary>
     private void EndAttackManoeuvre()
     {
+        m_character.m_gravity = true;
+
         //Toggle Colliders
         if (m_primaryWeaponScript != null)
             m_primaryWeaponScript.ToggleTrigger(false);
