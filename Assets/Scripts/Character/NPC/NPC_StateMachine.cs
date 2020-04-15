@@ -18,6 +18,7 @@ public class NPC_StateMachine : StateMachine
         //Add components
         NPCState_Death death = NewInterruptState<NPCState_Death>();
         NPCState_Knockback knockback = NewInterruptState<NPCState_Knockback>();
+        NPCState_Recoil recoil = NewInterruptState<NPCState_Recoil>();
 
         NPCState_Approach approach = NewNextState<NPCState_Approach>();
         NPCState_Waiting waiting = NewNextState<NPCState_Waiting>();
@@ -27,6 +28,7 @@ public class NPC_StateMachine : StateMachine
         //Init all 
         death.StateInit(true, p_character);
         knockback.StateInit(false, p_character);
+        recoil.StateInit(false, p_character);
 
         approach.StateInit(false, p_character);
         waiting.StateInit(false, p_character);
@@ -34,10 +36,16 @@ public class NPC_StateMachine : StateMachine
         attack.StateInit(false, p_character);
 
         //Add in next states
+        //Interrrupts
         knockback.AddNextState(attack);
         knockback.AddNextState(approach);
         knockback.AddNextState(waiting);
 
+        recoil.AddNextState(attack);
+        recoil.AddNextState(approach);
+        recoil.AddNextState(waiting);
+
+        //Normal
         approach.AddNextState(attack);
         approach.AddNextState(waiting);
 

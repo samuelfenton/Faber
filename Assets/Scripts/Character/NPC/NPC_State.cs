@@ -5,7 +5,6 @@ using UnityEngine;
 public class NPC_State : State
 {
     protected NPC_Character m_NPCCharacter = null;
-    protected List<Pathing_Spline> m_path = new List<Pathing_Spline>();
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -118,23 +117,24 @@ public class NPC_State : State
         if (m_NPCCharacter.m_splinePhysics.m_currentSpline == p_spline)//already there
             return;
 
-        if(m_path.Count == 0 || m_path[m_path.Count - 1] != p_spline)//Needs new path
+        if(m_NPCCharacter.m_path.Count == 0 || m_NPCCharacter.m_path[m_NPCCharacter.m_path.Count - 1] != p_spline)//Needs new path
         {
-            m_path = PathfindingController.GetPath(m_character, p_spline);
+            m_NPCCharacter.m_path = PathfindingController.GetPath(m_character, p_spline);
         }
 
-        if (m_path.Count == 0)//no path
+        if (m_NPCCharacter.m_path.Count == 0)//no path
             return;
 
         Pathing_Spline currentSpline = m_character.m_splinePhysics.m_currentSpline;
-        if (currentSpline == m_path[0])//At next spline
-            m_path.RemoveAt(0);
+        if (currentSpline == m_NPCCharacter.m_path[0])//At next spline
+            m_NPCCharacter.m_path.RemoveAt(0);
 
-        if (m_path.Count == 0)//finished path
+        if (m_NPCCharacter.m_path.Count == 0)//finished path
             return;
 
-        Pathing_Spline goalSpline = m_path[0];
-        float desiredPecent = DetermineDesiredPercent(goalSpline);
+        Pathing_Spline currentGoalSpline = m_NPCCharacter.m_path[0];
+
+        float desiredPecent = DetermineDesiredPercent(currentGoalSpline);
 
         MoveTowardsPercent(desiredPecent, p_speed);
         return;

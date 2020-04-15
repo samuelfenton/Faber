@@ -14,7 +14,7 @@ public class Character : Entity
     public GameObject m_leftHand = null;
 
     public enum TEAM { PLAYER, NPC, GAIA }
-    public TEAM m_characterTeam = TEAM.GAIA;
+    public TEAM m_team = TEAM.NPC;
 
     [Header("Grounded Movement")]
     public float m_groundRunVel = 1.0f;
@@ -34,15 +34,15 @@ public class Character : Entity
     public float m_wallJumpHorizontalSpeed = 2.0f;
     public float m_wallJumpInputDelay = 0.1f;
 
+    [Header("Roll Backwards Stats")]
+    public float m_rollbackVelocity = 12.0f;
+
     [Header("Character Stats")]
     public float m_maxHealth = 10.0f;
     [SerializeField]
     private float m_currentHealth = 10.0f;
 
-    public bool m_deathFlag = false;
-    public bool m_damagedFlag = false;
-
-    protected CharacterInventory m_characterInventory = null;
+    protected WeaponManager m_weaponManager = null;
     protected Animator m_animator = null;
 
     private string m_animRandomIdle = "";
@@ -54,6 +54,12 @@ public class Character : Entity
     private string m_animDesiredVel = "";
     private string m_animAbsVel = "";
 
+    //Flags
+    public bool m_blockingFlag = false;
+    public bool m_knockbackFlag = false;
+    public bool m_recoilFlag = false;
+    public bool m_deathFlag = false;
+
     /// <summary>
     /// Initiliase the entity
     /// setup varible/physics
@@ -63,11 +69,11 @@ public class Character : Entity
         base.InitEntity();
 
         //Get references
-        m_characterInventory = GetComponent<CharacterInventory>();
+        m_weaponManager = GetComponent<WeaponManager>();
         m_animator = m_characterModel.GetComponent<Animator>();
 
-        if (m_characterInventory != null)
-            m_characterInventory.InitInventory(this);//Least importance as has no dependances
+        if (m_weaponManager != null)
+            m_weaponManager.Init(this);//Least importance as has no dependances
 
         m_currentHealth = m_maxHealth;
 
@@ -173,15 +179,6 @@ public class Character : Entity
     }
 
     /// <summary>
-    /// Get current weapon
-    /// </summary>
-    /// <returns>Current weapon from inventory, defaults to null</returns>
-    public WeaponManager GetCurrentWeapon()
-    {
-        return m_characterInventory.GetCurrentWeapon();
-    }
-
-    /// <summary>
     /// Is the given Character alive?
     /// </summary>
     /// <returns>true when health is greater than 0</returns>
@@ -199,15 +196,33 @@ public class Character : Entity
     }
 
     /// <summary>
+    /// Deal dmage to another character, set flags as needed
+    /// </summary>
+    /// <param name="p_value"></param>
+    /// <param name="p_targetCharacter"></param>
+    public void DealDamage(float p_value, Character p_targetCharacter)
+    {
+        if (p_targetCharacter == null)
+            return;
+
+        if(p_targetCharacter.m_blockingFlag)
+        {
+            m_recoilFlag = true;
+        }
+        else
+        {
+            p_targetCharacter.ModifyHealth(-p_value);
+            p_targetCharacter.m_knockbackFlag = true;
+        }
+    }
+
+    /// <summary>
     /// Change characters health and check for death after health change
     /// </summary>
     /// <param name="p_value">how much to change health by</param>
     public void ModifyHealth(float p_value)
     {
         m_currentHealth += p_value;
-
-        if (p_value < 0)
-            m_damagedFlag = true;
 
         if (!IsAlive())
             OnDeath();

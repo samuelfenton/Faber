@@ -71,9 +71,9 @@ GameObject:
   - component: {fileID: 8219485882896269960}
   - component: {fileID: 2460570204123780259}
   - component: {fileID: 6190521572550420060}
-  - component: {fileID: 6622485043305183244}
   - component: {fileID: 9077462144384472045}
   - component: {fileID: 8987506874733537015}
+  - component: {fileID: 7761223505839620268}
   - component: {fileID: 4571789614922683204}
   m_Layer: 0
   m_Name: Prefab_NPC_Kachujin
@@ -127,20 +127,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &6622485043305183244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8219485882895916776}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd4f6501f8172394089bb6240cb43757, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_weaponPrefabs:
-  - {fileID: 6406856099921073660, guid: 1ebad3dd0ad363f4ca61c7f43943edd3, type: 3}
 --- !u!114 &9077462144384472045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,10 +163,10 @@ MonoBehaviour:
   m_characterModel: {fileID: 3715885035700959508}
   m_rightHand: {fileID: 4571789616121429047}
   m_leftHand: {fileID: 4571789615432389086}
-  m_characterTeam: 2
+  m_team: 1
   m_groundRunVel: 8
   m_groundAccel: 12
-  m_groundedDeaccel: 15
+  m_groundedDeaccel: 50
   m_jumpSpeed: 10
   m_landingDistance: 1
   m_inAirAccel: 0.5
@@ -188,17 +174,35 @@ MonoBehaviour:
   m_wallJumpVerticalSpeed: 5
   m_wallJumpHorizontalSpeed: 2
   m_wallJumpInputDelay: 0.1
+  m_rollbackVelocity: 12
   m_maxHealth: 10
   m_currentHealth: 10
+  m_blockingFlag: 0
+  m_knockbackFlag: 0
+  m_recoilFlag: 0
   m_deathFlag: 0
-  m_damagedFlag: 0
   m_targetCharacter: {fileID: 0}
   m_attackingDistance: 1
-  m_detectionDistance: 10
+  m_detectionDistance: 20
   m_patrolSplines:
   - {fileID: 0}
-  - {fileID: 0}
   m_path: []
+--- !u!114 &7761223505839620268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8219485882895916776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abe54aedea7d6514fac4b62449e4be9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_weaponData: {fileID: 11400000, guid: e0ee7c6471160ef45964620af8acc21d, type: 2}
+  m_primaryWeaponPrefab: {fileID: 3301097230926706484, guid: c1573aab28562be469626887bde4ef2f,
+    type: 3}
+  m_secondaryWeaponPrefab: {fileID: 0}
 --- !u!114 &4571789614922683204
 MonoBehaviour:
   m_ObjectHideFlags: 0

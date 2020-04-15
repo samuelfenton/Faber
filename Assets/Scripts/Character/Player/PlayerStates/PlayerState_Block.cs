@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_Knockback : PlayerState_Interrupt
+public class PlayerState_Block : Player_State
 {
-    private string m_animKnockback = "";
+    private string m_animBlock = "";
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -15,7 +15,7 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animKnockback = AnimController.GetInterrupt(AnimController.INTERRUPT_ANIM.KNOCKBACK);
+        m_animBlock = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.BLOCK);
     }
 
     /// <summary>
@@ -25,8 +25,8 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     {
         base.StateStart();
 
-
-        AnimController.PlayAnimtion(m_animator, m_animKnockback);
+        m_character.m_blockingFlag = true;
+        AnimController.PlayAnimtion(m_animator, m_animBlock);
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     {
         base.StateUpdate();
 
-        return AnimController.IsAnimationDone(m_animator);
+        return false;
     }
 
     /// <summary>
@@ -45,9 +45,9 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     /// </summary>
     public override void StateEnd()
     {
-        m_character.m_knockbackFlag = false; //Reset flag
-
         base.StateEnd();
+     
+        m_character.m_blockingFlag = false;
     }
 
     /// <summary>
@@ -56,6 +56,6 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_playerCharacter.m_knockbackFlag && !m_inProgressFlag;
+        return m_character.m_splinePhysics.m_downCollision && m_playerCharacter.m_input.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
     }
 }

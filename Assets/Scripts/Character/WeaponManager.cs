@@ -4,38 +4,43 @@ using UnityEngine;
 
 public class WeaponManager : MonoBehaviour
 {
+    public const float COMBO_START = 0.7f;
+    public const float COMBO_END = 0.95f;
+
     public ManoeuvreData m_weaponData = null;
 
-    public GameObject m_primaryWeaponObject = null;
-    public GameObject m_secondaryWeaponObject = null;
+    public GameObject m_primaryWeaponPrefab = null;
+    public GameObject m_secondaryWeaponPrefab = null;
 
-    protected Character m_character = null;
-    protected Animator m_animator = null;
+    private GameObject m_primaryWeaponObject = null;
+    private GameObject m_secondaryWeaponObject = null;
 
-    //Collision
-    protected Dictionary<Character, float> m_collidingCharacters = new Dictionary<Character, float>();
+    private Character m_character = null;
+    private Animator m_animator = null;
 
     //Attacking sequence
-    protected AnimController.ATTACK_TYPE m_attackType = AnimController.ATTACK_TYPE.GROUND;
-    protected AnimController.ATTACK_STANCE m_attackStance = AnimController.ATTACK_STANCE.LIGHT;
-    protected int m_manoeuvreIndex = 0; //Combo position, 0 is the first position and does not require the combo flag, goes up to 3
+    private AnimController.ATTACK_TYPE m_attackType = AnimController.ATTACK_TYPE.GROUND;
+    private AnimController.ATTACK_STANCE m_attackStance = AnimController.ATTACK_STANCE.LIGHT;
+    private int m_manoeuvreIndex = 0; //Combo position, 0 is the first position and does not require the combo flag, goes up to 3
 
     //Attacking manoeurve
-    protected enum ATTACK_MANOEUVRE_STATE { WIND_UP, DAMAGE, AWAITING_COMBO, COMBO_CHECK, END_ATTACK }
-    protected ATTACK_MANOEUVRE_STATE m_currentState = ATTACK_MANOEUVRE_STATE.WIND_UP;
+    private enum ATTACK_MANOEUVRE_STATE { WINDUP, COMBO_CHECK, COOLOFF }
+    private ATTACK_MANOEUVRE_STATE m_currentState = ATTACK_MANOEUVRE_STATE.WINDUP;
 
-    protected bool m_comboFlag = false;
-    protected float m_previousTranslation = 0.0f;
+    private bool m_comboFlag = false;
+    private float m_previousXTranslation = 0.0f;
+    private float m_previousYTranslation = 0.0f;
 
-    protected float m_startDamage = 0.0f;
-    protected float m_endDamage = 0.0f;
-    protected float m_startCombo = 0.0f;
-    protected float m_endCombo = 0.0f;
+    private float m_primaryDamageStart = 0.0f;
+    private float m_primaryDamageEnd = 0.0f;
+    private float m_secondaryDamageStart = 0.0f;
+    private float m_secondaryDamageEnd = 0.0f;
 
-    protected AnimationCurve m_translationCurve;
+    private AnimationCurve m_translationXCurve;
+    private AnimationCurve m_translationYCurve;
 
-    protected WeaponTrigger m_primaryWeaponScript = null;
-    protected WeaponTrigger m_secondaryWeaponScript = null;
+    private WeaponTrigger m_primaryWeaponScript = null;
+    private WeaponTrigger m_secondaryWeaponScript = null;
 
     /// <summary>
     /// Init manager
@@ -46,26 +51,28 @@ public class WeaponManager : MonoBehaviour
         m_character = p_character;
         m_animator = m_character.GetComponentInChildren<Animator>();
 
-        if (m_primaryWeaponObject != null)
+        if (m_primaryWeaponPrefab != null)
         {
+            m_primaryWeaponObject = Instantiate(m_primaryWeaponPrefab);
+
             m_primaryWeaponScript = m_primaryWeaponObject.GetComponent<WeaponTrigger>();
             m_primaryWeaponObject.transform.SetParent(m_character.m_rightHand.transform, false);
         }
-        if (m_secondaryWeaponObject != null)
+        if (m_secondaryWeaponPrefab != null)
         {
+            m_secondaryWeaponObject = Instantiate(m_secondaryWeaponPrefab);
+
             m_secondaryWeaponScript = m_secondaryWeaponObject.GetComponent<WeaponTrigger>();
             m_secondaryWeaponObject.transform.SetParent(m_character.m_leftHand.transform, false);
         }
 
         if (m_primaryWeaponScript != null)
         {
-            m_primaryWeaponScript.Init(this);
-            m_primaryWeaponScript.ToggleTrigger(false);
+            m_primaryWeaponScript.Init(p_character);
         }
         if (m_secondaryWeaponScript != null)
         {
-            m_secondaryWeaponScript.Init(this);
-            m_secondaryWeaponScript.ToggleTrigger(false);
+            m_secondaryWeaponScript.Init(p_character);
         }
     }
 
@@ -119,13 +126,9 @@ public class WeaponManager : MonoBehaviour
         m_character.m_gravity = false;
         m_character.HardSetUpwardsVelocity(0.0f);
 
-        //Toggle Colliders
-        if (m_primaryWeaponScript != null)
-            m_primaryWeaponScript.ToggleTrigger(true);
-        if (m_secondaryWeaponScript != null)
-            m_secondaryWeaponScript.ToggleTrigger(true);
+        m_currentState = ATTACK_MANOEUVRE_STATE.WINDUP;
 
-        ManoeuvreData.AttackDetails attackDetails;
+        ManoeuvreData.ManoeuvreDetails attackDetails;
 
         m_attackType = DetermineAttackType();
 
@@ -179,15 +182,21 @@ public class WeaponManager : MonoBehaviour
         }
 
         m_comboFlag = false;
-        m_previousTranslation = 0.0f;
+        m_previousXTranslation = 0.0f;
+        m_previousYTranslation = 0.0f;
 
-        m_startDamage = attackDetails.m_damageStart;
-        m_endDamage = attackDetails.m_damageEnd;
-        m_startCombo = attackDetails.m_comboStart;
-        m_endCombo = attackDetails.m_comboEnd;
-        m_translationCurve = attackDetails.m_translationCurve;
+        m_primaryDamageStart = attackDetails.m_primaryDamageStart;
+        m_primaryDamageEnd = attackDetails.m_primaryDamageEnd;
+        m_secondaryDamageStart = attackDetails.m_secondaryDamageStart;
+        m_secondaryDamageEnd = attackDetails.m_secondaryDamageEnd;
+        m_translationXCurve = attackDetails.m_translationXCurve;
+        m_translationYCurve = attackDetails.m_translationYCurve;
 
-        m_currentState = ATTACK_MANOEUVRE_STATE.WIND_UP;
+        //Setup weapons
+        if(m_primaryWeaponScript!=null)
+            m_primaryWeaponScript.StartManoeuvre(m_primaryDamageStart, m_primaryDamageEnd, m_attackStance);
+        if (m_secondaryWeaponScript != null)
+            m_secondaryWeaponScript.StartManoeuvre(m_secondaryDamageStart, m_secondaryDamageEnd, m_attackStance);
 
         AnimController.PlayAnimtion(m_animator, (AnimController.GetAttack(m_attackType, m_attackStance, m_manoeuvreIndex)));
 
@@ -202,51 +211,52 @@ public class WeaponManager : MonoBehaviour
     {
         float animationPercent = AnimController.GetAnimationPercent(m_animator);
 
+        //Update Translation
         float modelToSplineForwardDot = Vector3.Dot(m_character.m_characterModel.transform.forward, m_character.m_splinePhysics.m_currentSpline.GetForwardDir(m_character.m_splinePhysics.m_currentSplinePercent));
 
-        //Update Translation
-        float expectedTranslation = m_translationCurve.Evaluate(animationPercent);
+        float expectedTranslation = m_translationXCurve.Evaluate(animationPercent);
         if(modelToSplineForwardDot >= 0.0f)//Facing correct way
-            m_character.Translate(expectedTranslation - m_previousTranslation);
+            m_character.Translate(expectedTranslation - m_previousXTranslation);
         else
-            m_character.Translate(-expectedTranslation + m_previousTranslation);
+            m_character.Translate(-expectedTranslation + m_previousXTranslation);
 
-        m_previousTranslation = expectedTranslation;
+        m_previousXTranslation = expectedTranslation;
 
+        //Update manoeuvre
         switch (m_currentState)
         {
-            case ATTACK_MANOEUVRE_STATE.WIND_UP:
-                if (animationPercent > m_startDamage)
-                    m_currentState = ATTACK_MANOEUVRE_STATE.DAMAGE;
-                break;
-            case ATTACK_MANOEUVRE_STATE.DAMAGE:
-                UpdateWeaponDamage();
-                if (animationPercent > m_endDamage)
-                    m_currentState = ATTACK_MANOEUVRE_STATE.AWAITING_COMBO;
-                break;
-            case ATTACK_MANOEUVRE_STATE.AWAITING_COMBO:
-                if (animationPercent > m_startCombo)
+            case ATTACK_MANOEUVRE_STATE.WINDUP:
+                if (animationPercent > COMBO_START)
                     m_currentState = ATTACK_MANOEUVRE_STATE.COMBO_CHECK;
+
                 break;
             case ATTACK_MANOEUVRE_STATE.COMBO_CHECK:
-                if (animationPercent > m_endCombo)
-                    m_currentState = ATTACK_MANOEUVRE_STATE.END_ATTACK;
+                if (animationPercent > COMBO_END)
+                    m_currentState = ATTACK_MANOEUVRE_STATE.COOLOFF;
+
                 if (m_character.DetermineLightInput())
                 {
                     m_comboFlag = true;
                     m_attackStance = AnimController.ATTACK_STANCE.LIGHT;
-                    m_currentState = ATTACK_MANOEUVRE_STATE.END_ATTACK;
+                    m_currentState = ATTACK_MANOEUVRE_STATE.COOLOFF;
                 }
                 if (m_character.DetermineHeavyInput())
                 {
                     m_comboFlag = true;
                     m_attackStance = AnimController.ATTACK_STANCE.HEAVY;
-                    m_currentState = ATTACK_MANOEUVRE_STATE.END_ATTACK;
+                    m_currentState = ATTACK_MANOEUVRE_STATE.COOLOFF;
                 }
+
                 break;
-            case ATTACK_MANOEUVRE_STATE.END_ATTACK:
+            case ATTACK_MANOEUVRE_STATE.COOLOFF:
                 return (m_comboFlag || AnimController.IsAnimationDone(m_animator));
         }
+
+        //Update weapons
+        if (m_primaryWeaponScript != null)
+            m_primaryWeaponScript.UpdateManoeuvre(animationPercent);
+        if (m_secondaryWeaponScript != null)
+            m_secondaryWeaponScript.UpdateManoeuvre(animationPercent);
 
         return false;
     }
@@ -267,38 +277,12 @@ public class WeaponManager : MonoBehaviour
         m_manoeuvreIndex++;
     }
 
-    #endregion
-
-    #region WEAPON DAMAGE
-    //Attacking states
-    public void StartWeaponDamage()
-    {
-        m_collidingCharacters.Clear();
-    }
-
-    public void UpdateWeaponDamage()
-    {
-        foreach (KeyValuePair<Character, float> colliderDetails in m_collidingCharacters)
-        {
-
-        }
-    }
-
     /// <summary>
-    /// Collider has entered, add to list of objects being damaged 
+    /// Force the end attack, e.g. chaarcter egts hit, inturrupt runs
     /// </summary>
-    /// <param name="p_collider">Collider</param>
-    public void ColliderEntered(Collider p_collider)
+    public void ForceEndAttack()
     {
-        if (p_collider.gameObject.layer == LayerController.m_character && p_collider.gameObject != gameObject)
-        {
-            Character character = p_collider.gameObject.GetComponent<Character>();
-
-            if (character != null && !m_collidingCharacters.ContainsKey(character))
-            {
-                m_collidingCharacters.Add(character, AnimController.GetAnimationPercent(m_animator));
-            }
-        }
+        EndAttackManoeuvre();
     }
 
     #endregion

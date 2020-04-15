@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class NPC_Character : Character
 {
-
     [Header("NPC Logic")]
     public Character m_targetCharacter = null;
     public float m_attackingDistance = 1.0f;

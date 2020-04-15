@@ -14,6 +14,7 @@ public class PlayerState_Attack : Player_State
     public override void StateInit(bool p_loopedState, Character p_character)
     {
         base.StateInit(p_loopedState, p_character);
+        m_weaponManager = p_character.GetComponent<WeaponManager>();
     }
 
     /// <summary>
@@ -23,7 +24,6 @@ public class PlayerState_Attack : Player_State
     {
         base.StateStart();
 
-        m_weaponManager = m_character.GetCurrentWeapon();
         m_weaponManager.StartAttackSequence();
 
         m_character.SetDesiredVelocity(0.0f);
@@ -45,6 +45,8 @@ public class PlayerState_Attack : Player_State
     /// </summary>
     public override void StateEnd()
     {
+        m_weaponManager.ForceEndAttack();
+
         base.StateEnd();
     }
 

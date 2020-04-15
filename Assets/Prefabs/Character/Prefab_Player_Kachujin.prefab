@@ -71,9 +71,9 @@ GameObject:
   - component: {fileID: 5576363102575628370}
   - component: {fileID: 2114424625788487289}
   - component: {fileID: 7681844626118014086}
-  - component: {fileID: 7247850228471671510}
   - component: {fileID: 4795170144421986615}
   - component: {fileID: 3775519670443091626}
+  - component: {fileID: 8533570605815633378}
   - component: {fileID: 1149895070}
   m_Layer: 0
   m_Name: Prefab_Player_Kachujin
@@ -127,20 +127,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &7247850228471671510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5576363102575397938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd4f6501f8172394089bb6240cb43757, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_weaponPrefabs:
-  - {fileID: 2231452535714967377, guid: e46ddca1514e64a449f4c41fce1ac61d, type: 3}
 --- !u!114 &4795170144421986615
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,10 +163,10 @@ MonoBehaviour:
   m_characterModel: {fileID: 928651568539397070}
   m_rightHand: {fileID: 226488045}
   m_leftHand: {fileID: 979993348}
-  m_characterTeam: 0
+  m_team: 0
   m_groundRunVel: 8
   m_groundAccel: 12
-  m_groundedDeaccel: 14
+  m_groundedDeaccel: 30
   m_jumpSpeed: 8
   m_landingDistance: 1
   m_inAirAccel: 0.5
@@ -188,11 +174,31 @@ MonoBehaviour:
   m_wallJumpVerticalSpeed: 5
   m_wallJumpHorizontalSpeed: 2
   m_wallJumpInputDelay: 0.1
+  m_rollbackVelocity: 6
   m_maxHealth: 10
   m_currentHealth: 10
+  m_blockingFlag: 0
+  m_knockbackFlag: 0
+  m_recoilFlag: 0
   m_deathFlag: 0
-  m_damagedFlag: 0
   m_input: {fileID: 0}
+--- !u!114 &8533570605815633378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5576363102575397938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abe54aedea7d6514fac4b62449e4be9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_weaponData: {fileID: 11400000, guid: e0ee7c6471160ef45964620af8acc21d, type: 2}
+  m_primaryWeaponPrefab: {fileID: 3301097230926706484, guid: ceef3579e2f01d34983d6ca476f81b53,
+    type: 3}
+  m_secondaryWeaponPrefab: {fileID: 3301097230926706484, guid: c1573aab28562be469626887bde4ef2f,
+    type: 3}
 --- !u!114 &1149895070
 MonoBehaviour:
   m_ObjectHideFlags: 0

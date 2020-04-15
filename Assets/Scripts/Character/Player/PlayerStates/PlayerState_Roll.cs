@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_Knockback : PlayerState_Interrupt
+public class PlayerState_Roll : Player_State
 {
-    private string m_animKnockback = "";
+    private string m_animRoll = "";
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -15,7 +15,7 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animKnockback = AnimController.GetInterrupt(AnimController.INTERRUPT_ANIM.KNOCKBACK);
+        m_animRoll = AnimController.GetLocomotion(AnimController.LOCOMOTION_ANIM.ROLL);
     }
 
     /// <summary>
@@ -25,8 +25,19 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     {
         base.StateStart();
 
+        AnimController.PlayAnimtion(m_animator, m_animRoll);
 
-        AnimController.PlayAnimtion(m_animator, m_animKnockback);
+        float desiredVelocity = 0.0f;
+        float modelToObjectForwardDot = Vector3.Dot(m_character.m_characterModel.transform.forward, m_character.transform.forward);
+
+        //Update Translation
+        if (modelToObjectForwardDot >= 0.0f)//Facing correct way, roll backwards
+            desiredVelocity = -m_character.m_rollbackVelocity;
+        else
+            desiredVelocity = m_character.m_rollbackVelocity;
+
+        m_character.SetDesiredVelocity(desiredVelocity);
+        m_character.HardSetVelocity(desiredVelocity);
     }
 
     /// <summary>
@@ -37,6 +48,9 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     {
         base.StateUpdate();
 
+        if(AnimController.GetAnimationPercent(m_animator) >0.7f)
+            m_character.SetDesiredVelocity(0.0f);
+
         return AnimController.IsAnimationDone(m_animator);
     }
 
@@ -45,7 +59,8 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     /// </summary>
     public override void StateEnd()
     {
-        m_character.m_knockbackFlag = false; //Reset flag
+        m_character.SetDesiredVelocity(0.0f);
+        m_character.HardSetVelocity(0.0f);
 
         base.StateEnd();
     }
@@ -56,6 +71,6 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_playerCharacter.m_knockbackFlag && !m_inProgressFlag;
+        return m_character.m_splinePhysics.m_downCollision && m_playerCharacter.m_input.GetKeyBool(CustomInput.INPUT_KEY.ROLL);
     }
 }

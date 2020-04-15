@@ -9,7 +9,7 @@ public class CustomInput : MonoBehaviour
 
     public bool m_inverted = false;
 
-    public enum INPUT_KEY {JUMP, CROUCH, ATTACK, ATTACK_SECONDARY, ATTACK_TERTIARY, USE, SUBMIT, CANCEL, SPRINT, KEY_COUNT };
+    public enum INPUT_KEY {JUMP, SPRINT, ATTACK, ATTACK_SECONDARY, USE, SUBMIT, CANCEL, ROLL, BLOCK, KEY_COUNT };
     
     public enum INPUT_STATE { UP, DOWN, UPPED, DOWNED };
 
@@ -26,14 +26,14 @@ public class CustomInput : MonoBehaviour
     private void Start()
     {
         m_keyStrings[(int)INPUT_KEY.JUMP] = "Jump";
-        m_keyStrings[(int)INPUT_KEY.CROUCH] = "Crouch";
-        m_keyStrings[(int)INPUT_KEY.ATTACK] = "Attack";
+        m_keyStrings[(int)INPUT_KEY.SPRINT] = "Sprint";
+        m_keyStrings[(int)INPUT_KEY.ATTACK] = "AttackPrimary";
         m_keyStrings[(int)INPUT_KEY.ATTACK_SECONDARY] = "AttackSecondary";
-        m_keyStrings[(int)INPUT_KEY.ATTACK_TERTIARY] = "AttackTertiary";
         m_keyStrings[(int)INPUT_KEY.USE] = "Use";
         m_keyStrings[(int)INPUT_KEY.SUBMIT] = "Submit";
         m_keyStrings[(int)INPUT_KEY.CANCEL] = "Cancel";
-        m_keyStrings[(int)INPUT_KEY.SPRINT] = "Sprint";
+        m_keyStrings[(int)INPUT_KEY.ROLL] = "Roll";
+        m_keyStrings[(int)INPUT_KEY.BLOCK] = "Block";
 
         m_axisStrings[(int)INPUT_AXIS.HORIZONTAL] = "Horizontal";
         m_axisStrings[(int)INPUT_AXIS.DEPTH] = "Depth";
@@ -88,7 +88,7 @@ public class CustomInput : MonoBehaviour
     }
 
     /// <summary>
-    /// Simplyfy key state to a boolean
+    /// Simplify key state to a boolean
     /// </summary>
     /// <param name="p_input">Key to test against</param>
     /// <returns>true when down or downed</returns>

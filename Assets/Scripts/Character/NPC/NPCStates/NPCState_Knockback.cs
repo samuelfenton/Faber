@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPCState_Knockback : NPC_State
+public class NPCState_Knockback : NPCState_Interrupt
 {
     private string m_animKnockback = "";
 
@@ -25,8 +25,6 @@ public class NPCState_Knockback : NPC_State
     {
         base.StateStart();
 
-        m_character.m_damagedFlag = false; //Reset flag
-
         AnimController.PlayAnimtion(m_animator, m_animKnockback);
     }
 
@@ -46,6 +44,8 @@ public class NPCState_Knockback : NPC_State
     /// </summary>
     public override void StateEnd()
     {
+        m_character.m_knockbackFlag = false; //Reset flag
+
         base.StateEnd();
     }
 
@@ -55,6 +55,6 @@ public class NPCState_Knockback : NPC_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_character.m_damagedFlag;
+        return m_character.m_knockbackFlag && !m_inProgressFlag;
     }
 }

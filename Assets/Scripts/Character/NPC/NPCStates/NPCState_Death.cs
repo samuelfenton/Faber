@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPCState_Death : NPC_State
+public class NPCState_Death : NPCState_Interrupt
 {
     private string m_animDeath = "";
 
@@ -53,6 +53,6 @@ public class NPCState_Death : NPC_State
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return !m_character.IsAlive();
+        return !m_character.IsAlive() && !m_inProgressFlag; ;
     }
 }

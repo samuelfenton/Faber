@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_Knockback : PlayerState_Interrupt
+public class NPCState_Recoil : NPCState_Interrupt
 {
-    private string m_animKnockback = "";
+    private string m_animRecoil = "";
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -15,7 +15,7 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animKnockback = AnimController.GetInterrupt(AnimController.INTERRUPT_ANIM.KNOCKBACK);
+        m_animRecoil = AnimController.GetInterrupt(AnimController.INTERRUPT_ANIM.RECOIL);
     }
 
     /// <summary>
@@ -25,8 +25,7 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     {
         base.StateStart();
 
-
-        AnimController.PlayAnimtion(m_animator, m_animKnockback);
+        AnimController.PlayAnimtion(m_animator, m_animRecoil);
     }
 
     /// <summary>
@@ -45,7 +44,7 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     /// </summary>
     public override void StateEnd()
     {
-        m_character.m_knockbackFlag = false; //Reset flag
+        m_character.m_recoilFlag = false; // Reset flag
 
         base.StateEnd();
     }
@@ -56,6 +55,6 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_playerCharacter.m_knockbackFlag && !m_inProgressFlag;
+        return m_character.m_recoilFlag && !m_inProgressFlag;
     }
 }

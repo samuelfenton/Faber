@@ -14,10 +14,10 @@ public class AnimController : MonoBehaviour
     private static Dictionary<ANIM_TYPE, string> m_animTypeToString = new Dictionary<ANIM_TYPE, string>();
 
     //Interrupt
-    public enum INTERRUPT_ANIM {DEATH, KNOCKBACK}
+    public enum INTERRUPT_ANIM {DEATH, KNOCKBACK, RECOIL}
     private static Dictionary<INTERRUPT_ANIM, string> m_interruptAnimToString = new Dictionary<INTERRUPT_ANIM, string>();
     //Locomotion
-    public enum LOCOMOTION_ANIM {NULL, IDLE, DODGE, JUMP, DOUBLE_JUMP, IN_AIR, LAND, WALL_GRAB, WALL_FLIP }
+    public enum LOCOMOTION_ANIM {NULL, IDLE, DODGE, JUMP, DOUBLE_JUMP, IN_AIR, LAND, WALL_GRAB, WALL_FLIP, ROLL, BLOCK}
     private static Dictionary<LOCOMOTION_ANIM, string> m_locomotionAnimToString = new Dictionary<LOCOMOTION_ANIM, string>();
 
     //Attack
@@ -40,6 +40,7 @@ public class AnimController : MonoBehaviour
 
         m_interruptAnimToString.Add(INTERRUPT_ANIM.DEATH, "Death");
         m_interruptAnimToString.Add(INTERRUPT_ANIM.KNOCKBACK, "Knockback");
+        m_interruptAnimToString.Add(INTERRUPT_ANIM.RECOIL, "Recoil");
 
         m_locomotionAnimToString.Add(LOCOMOTION_ANIM.IDLE, "Idle");
         m_locomotionAnimToString.Add(LOCOMOTION_ANIM.DODGE, "Dodge");
@@ -49,6 +50,8 @@ public class AnimController : MonoBehaviour
         m_locomotionAnimToString.Add(LOCOMOTION_ANIM.LAND, "Land");
         m_locomotionAnimToString.Add(LOCOMOTION_ANIM.WALL_GRAB, "WallGrab");
         m_locomotionAnimToString.Add(LOCOMOTION_ANIM.WALL_FLIP, "WallFlip");
+        m_locomotionAnimToString.Add(LOCOMOTION_ANIM.ROLL, "Roll");
+        m_locomotionAnimToString.Add(LOCOMOTION_ANIM.BLOCK, "Block");
 
         m_attackStanceToString.Add(ATTACK_STANCE.LIGHT, "Light");
         m_attackStanceToString.Add(ATTACK_STANCE.HEAVY, "Heavy");

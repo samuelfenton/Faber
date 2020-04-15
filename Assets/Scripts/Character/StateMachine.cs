@@ -65,7 +65,8 @@ public class StateMachine : MonoBehaviour
                     SwapState(nextState);
                     return; //Early break out
                 }
-                SwapState(m_currentState); //Attempt own state again
+                if(finishedState)
+                    SwapState(m_currentState); //Attempt own state again, only if not already looping
             }
         }
     }
