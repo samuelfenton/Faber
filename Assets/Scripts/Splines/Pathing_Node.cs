@@ -20,25 +20,17 @@ public class Pathing_Node : MonoBehaviour
     [HideInInspector]
     public Dictionary<Entity, TRIGGER_DIRECTION> m_activeColliders = new Dictionary<Entity, TRIGGER_DIRECTION>();
 
-    private BoxCollider m_boxColdier = null;
-
     //Plane Equations
-    private Vector3 m_globalEntranceVector = Vector3.zero;
-    private Vector4 m_planeEquation = Vector4.zero;
+    private Vector3 m_planeForwardVector = Vector3.zero;
 
     /// <summary>
     /// Setup colision plane
     /// </summary>
     public void InitNode()
     {
-        m_globalEntranceVector = transform.forward;
-
-        Vector3 triggerPos = transform.position;
-        float planeZ = (-triggerPos.x * m_globalEntranceVector.x) + (-triggerPos.y * m_globalEntranceVector.y) + (-triggerPos.z * m_globalEntranceVector.z);
-
-        m_planeEquation = new Vector4(m_globalEntranceVector.x, m_globalEntranceVector.y, m_globalEntranceVector.z, planeZ);
-
-        m_boxColdier = GetComponent<BoxCollider>();
+        m_planeForwardVector = transform.forward;
+        m_planeForwardVector.y = 0;
+        m_planeForwardVector = m_planeForwardVector.normalized;
 
         if (m_forwardSpline != null)
             m_adjacentSplines.Add(m_forwardSpline);
@@ -59,7 +51,7 @@ public class Pathing_Node : MonoBehaviour
     /// Determine exact moment of moving through using plane formula
     /// ax + by + cz + d where a,b,c,d are determiened from the plane equation
     /// </summary>
-    private void Update()
+    private void Update() 
     {
 #if UNITY_EDITOR
         if (m_forwardSpline != null)
@@ -166,9 +158,12 @@ public class Pathing_Node : MonoBehaviour
     /// <returns>Entering when moving close to trigger forward</returns>
     private TRIGGER_DIRECTION GetTriggerDir(Vector3 p_position)
     {
-        float expandedDot = m_planeEquation.x * p_position.x + m_planeEquation.y * p_position.y + m_planeEquation.z * p_position.z + m_planeEquation.w;
+        Vector3 centerToPos = p_position - transform.position;
+        centerToPos.y = 0.0f; //Dont need to worry about y
 
-        return expandedDot >= 0.0f ? TRIGGER_DIRECTION.FORWARDS : TRIGGER_DIRECTION.BACKWARDS;
+        centerToPos = centerToPos.normalized;
+
+        return Vector3.Dot(m_planeForwardVector, centerToPos) >= 0.0f ? TRIGGER_DIRECTION.FORWARDS : TRIGGER_DIRECTION.BACKWARDS;
     }
 
     /// <summary>

@@ -22,7 +22,7 @@ public class ControllerMaster : MonoBehaviour
 
     private void InitSceneControllers()
     {
-        GameObject controllerObj = GameObject.FindGameObjectWithTag("GameController");
+        GameObject controllerObj = GameObject.FindGameObjectWithTag(CustomTags.GAME_CONTROLLER);
         SceneController sceneController = controllerObj.GetComponent<SceneController>();
 
         if (sceneController != null)
