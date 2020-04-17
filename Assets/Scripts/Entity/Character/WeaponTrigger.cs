@@ -7,8 +7,6 @@ public class WeaponTrigger : MonoBehaviour
     public float m_lightDamage = 0.0f;
     public float m_heavyDamage = 0.0f;
 
-    private const int HITMARKER_COUNT = 5;
-
     private enum WEAPON_STATE {WINDUP, ATTACK, COOLOFF}
     
     private WEAPON_STATE m_currentState = WEAPON_STATE.WINDUP;
@@ -20,9 +18,6 @@ public class WeaponTrigger : MonoBehaviour
     private float m_damageEnd = 0.0f;
 
     private CustomAnimation.ATTACK_STANCE m_currentStance = CustomAnimation.ATTACK_STANCE.LIGHT;
-
-    private float m_damageInterval = 0.0f;
-    private float m_damageNextInterval = 0.0f;
 
     private List<Character> m_hitCharacters = new List<Character>();
 
@@ -52,9 +47,6 @@ public class WeaponTrigger : MonoBehaviour
         
         m_currentStance = p_currentStance;
 
-        m_damageNextInterval = m_damageStart;
-        m_damageInterval = (p_damageEnd - p_damageStart) / HITMARKER_COUNT;
-
         m_currentState = WEAPON_STATE.WINDUP;
 
         m_hitCharacters.Clear();
@@ -77,7 +69,6 @@ public class WeaponTrigger : MonoBehaviour
                 }
                 break;
             case WEAPON_STATE.ATTACK:
-                DealDamage(p_animationPercent);
                 if (p_animationPercent > m_damageEnd)
                 {
                     ToggleTrigger(false);
@@ -94,20 +85,12 @@ public class WeaponTrigger : MonoBehaviour
     /// <summary>
     /// Deal damage to all chraters that are in wepaon range
     /// </summary>
-    /// <param name="p_animationPercent">Current aniamtion percentage</param>
-    private void DealDamage(float p_animationPercent)
+    /// <param name="p_character">Chaarcter to deal damge to</param>
+    private void DealDamage(Character p_character)
     {
-        if(m_damageNextInterval < p_animationPercent)
-        {
-            m_damageNextInterval += m_damageInterval;
+        float damage = m_currentStance == CustomAnimation.ATTACK_STANCE.LIGHT ? m_lightDamage  : m_heavyDamage;
 
-            float damage = m_currentStance == CustomAnimation.ATTACK_STANCE.LIGHT ? m_lightDamage / HITMARKER_COUNT : m_heavyDamage / HITMARKER_COUNT;
-
-            foreach (Character character in m_hitCharacters)
-            {
-                m_character.DealDamage(damage, character);
-            }
-        }
+        m_character.DealDamage(damage, p_character);
     }
 
     /// <summary>
@@ -131,23 +114,10 @@ public class WeaponTrigger : MonoBehaviour
         if(character != null && character != m_character && m_character.m_team != character.m_team) //Is chaarcter collider, not parent, different team
         {
             if (!m_hitCharacters.Contains(character))
+            {
+                DealDamage(character);
                 m_hitCharacters.Add(character);
+            }
         }
     }
-
-    /// <summary>
-    /// Object trigger exit
-    /// Remove from the list of characters to damage
-    /// </summary>
-    /// <param name="other">Other collider</param>
-    private void OnTriggerExit(Collider other)
-    {
-        Character character = other.GetComponent<Character>();
-
-        if (character != null) //Is chaarcter collider
-        {
-            m_hitCharacters.Remove(character);
-        }
-    }
-
 }

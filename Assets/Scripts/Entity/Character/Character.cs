@@ -220,7 +220,7 @@ public class Character : Entity
             p_targetCharacter.ModifyHealth(-p_value);
             p_targetCharacter.m_knockbackFlag = true;
 
-            m_objectPoolingManger.SpawnHitMarker(transform.position + Vector3.up * 2.0f, Quaternion.identity, Mathf.RoundToInt(p_value));
+            m_objectPoolingManger.SpawnHitMarker(p_targetCharacter.transform.position + Vector3.up * 2.0f, Quaternion.identity, Mathf.RoundToInt(p_value));
         }
     }
 
