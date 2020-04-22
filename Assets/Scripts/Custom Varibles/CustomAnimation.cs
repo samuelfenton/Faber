@@ -211,6 +211,8 @@ public class CustomAnimation : MonoBehaviour
         p_animator.SetLayerWeight(locomotionIndex, 1.0f);
 
         p_animator.Play(m_nullString, baseIndex);
+
+        m_crossfadeFlag = false;
     }
 
     /// <summary>
@@ -236,6 +238,11 @@ public class CustomAnimation : MonoBehaviour
             yield return null;
 
             crossfadeTimer += Time.deltaTime;
+
+            if(!m_crossfadeFlag) //Early breakout
+            {
+                yield break;
+            }
         }
 
         p_animator.Play(p_animString, baseIndex, CROSSFADE_TIME);

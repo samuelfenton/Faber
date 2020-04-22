@@ -275,8 +275,6 @@ public class WeaponManager : MonoBehaviour
             m_secondaryWeaponScript.ToggleTrigger(false);
 
         m_manoeuvreIndex++;
-
-        CustomAnimation.Instance.EndAnimation(m_animator);
     }
 
     /// <summary>
