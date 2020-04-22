@@ -15,7 +15,7 @@ public class PlayerState_Roll : Player_State
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animRoll = CustomAnimation.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.ROLL);
+        m_animRoll = CustomAnimation.Instance.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.ROLL);
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ public class PlayerState_Roll : Player_State
     {
         base.StateStart();
 
-        CustomAnimation.PlayAnimtion(m_animator, m_animRoll);
+        CustomAnimation.Instance.PlayAnimation(m_animator, m_animRoll);
 
         float desiredVelocity = 0.0f;
         float modelToObjectForwardDot = Vector3.Dot(m_character.m_characterModel.transform.forward, m_character.transform.forward);
@@ -48,10 +48,10 @@ public class PlayerState_Roll : Player_State
     {
         base.StateUpdate();
 
-        if(CustomAnimation.GetAnimationPercent(m_animator) >0.7f)
+        if(CustomAnimation.Instance.GetAnimationPercent(m_animator) >0.7f)
             m_character.SetDesiredVelocity(0.0f);
 
-        return CustomAnimation.IsAnimationDone(m_animator);
+        return CustomAnimation.Instance.IsAnimationDone(m_animator);
     }
 
     /// <summary>

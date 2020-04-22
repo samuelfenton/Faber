@@ -14,7 +14,7 @@ public class PlayerState_Land : Player_State
     public override void StateInit(bool p_loopedState, Character p_character)
     {
         base.StateInit(p_loopedState, p_character);
-        m_animLand = CustomAnimation.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.LAND);
+        m_animLand = CustomAnimation.Instance.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.LAND);
     }
 
     /// <summary>
@@ -24,7 +24,7 @@ public class PlayerState_Land : Player_State
     {
         base.StateStart();
 
-        CustomAnimation.PlayAnimtion(m_animator, m_animLand);
+        CustomAnimation.Instance.PlayAnimation(m_animator, m_animLand);
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public class PlayerState_Land : Player_State
     {
         base.StateUpdate();
 
-        return CustomAnimation.IsAnimationDone(m_animator);
+        return CustomAnimation.Instance.IsAnimationDone(m_animator);
     }
 
     /// <summary>

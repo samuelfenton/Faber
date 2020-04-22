@@ -15,7 +15,7 @@ public class NPCState_Death : NPCState_Interrupt
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animDeath = CustomAnimation.GetInterrupt(CustomAnimation.INTERRUPT_ANIM.DEATH);
+        m_animDeath = CustomAnimation.Instance.GetInterrupt(CustomAnimation.INTERRUPT_ANIM.DEATH);
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ public class NPCState_Death : NPCState_Interrupt
     {
         base.StateStart();
 
-        CustomAnimation.PlayAnimtion(m_animator, m_animDeath);
+        CustomAnimation.Instance.PlayAnimation(m_animator, m_animDeath);
     }
 
     /// <summary>
@@ -53,6 +53,6 @@ public class NPCState_Death : NPCState_Interrupt
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return !m_character.IsAlive() && !m_inProgressFlag; ;
+        return !m_character.IsAlive() && !m_inProgressFlag;
     }
 }

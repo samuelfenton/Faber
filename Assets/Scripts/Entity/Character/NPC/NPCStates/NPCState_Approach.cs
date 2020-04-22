@@ -15,7 +15,7 @@ public class NPCState_Approach : NPC_State
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_paramVelocity = CustomAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.CURRENT_VELOCITY);
+        m_paramVelocity = CustomAnimation.Instance.GetVarible(CustomAnimation.VARIBLE_ANIM.CURRENT_VELOCITY);
     }
 
     /// <summary>

@@ -27,8 +27,8 @@ public class PlayerState_InAir : Player_State
         m_horizontalAcceleration = m_character.m_inAirAccel;
         m_doubleJumpSpeed = m_character.m_doubleJumpSpeed;
 
-        m_animInAir = CustomAnimation.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.IN_AIR);
-        m_animDoubleJump = CustomAnimation.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.DOUBLE_JUMP);
+        m_animInAir = CustomAnimation.Instance.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.IN_AIR);
+        m_animDoubleJump = CustomAnimation.Instance.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.DOUBLE_JUMP);
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ public class PlayerState_InAir : Player_State
 
         m_inAirState = IN_AIR_STATE.INITIAL;
 
-        CustomAnimation.PlayAnimtion(m_animator, m_animInAir);
+        CustomAnimation.Instance.PlayAnimation(m_animator, m_animInAir);
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public class PlayerState_InAir : Player_State
                 //Double Jump
                 if (m_playerCharacter.m_input.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
                 {
-                    CustomAnimation.PlayAnimtion(m_animator, m_animDoubleJump);
+                    CustomAnimation.Instance.PlayAnimation(m_animator, m_animDoubleJump);
                     
                     Vector3 newVelocity = m_character.m_localVelocity;
                     newVelocity.y = m_doubleJumpSpeed;
@@ -70,10 +70,10 @@ public class PlayerState_InAir : Player_State
                 }
                 break;
             case IN_AIR_STATE.SECOND_JUMP:
-                if(CustomAnimation.IsAnimationDone(m_animator))
+                if(CustomAnimation.Instance.IsAnimationDone(m_animator))
                 {
                     m_inAirState = IN_AIR_STATE.FINAL;
-                    CustomAnimation.PlayAnimtion(m_animator, m_animInAir);
+                    CustomAnimation.Instance.PlayAnimation(m_animator, m_animInAir);
                 }
                 break;
             case IN_AIR_STATE.FINAL:

@@ -4,9 +4,13 @@ using UnityEngine;
 
 public class CustomAnimation : MonoBehaviour
 {
+    public const float CROSSFADE_TIME = 0.1f;
+
     public const float END_ANIMATION_TIME = 0.99f;
     public const int IDLE_COUNT = 4;
 
+    private static string m_baseLayer = "BaseLayer";
+    private static string m_locomotionLayer = "LocomotionLayer";
     private static string m_nullString = "Null";
 
     //Base animations
@@ -29,10 +33,45 @@ public class CustomAnimation : MonoBehaviour
     public enum VARIBLE_ANIM {CURRENT_VELOCITY, DESIRED_VELOCITY, ABSOLUTE_VELOCITY, RANDOM_IDLE, WEAPON}
     private static Dictionary<VARIBLE_ANIM, string> m_varibleAnimToString = new Dictionary<VARIBLE_ANIM, string>();
 
+    private static CustomAnimation m_Instance;
+
+    private bool m_crossfadeFlag = false;
+
+    /// <summary>
+    /// Access singleton instance through this propriety.
+    /// </summary>
+    public static CustomAnimation Instance
+    {
+        get
+        {
+            if (m_Instance == null)
+            {
+                // Search for existing instance.
+                m_Instance = FindObjectOfType<CustomAnimation>();
+
+                // Create new instance if one doesn't already exist.
+                if (m_Instance == null)
+                {
+                    // Need to create a new GameObject to attach the singleton to.
+                    GameObject singletonObject = new GameObject();
+                    m_Instance = singletonObject.AddComponent<CustomAnimation>();
+                    singletonObject.name = "Custom Animation Object";
+
+                    m_Instance.InitStrings();
+
+                    // Make instance persistent.
+                    DontDestroyOnLoad(singletonObject);
+                }
+            }
+
+            return m_Instance;
+        }
+    }
+
     /// <summary>
     /// setup dicionaries used
     /// </summary>
-    static CustomAnimation()
+    private void InitStrings()
     {
         m_animTypeToString.Add(ANIM_TYPE.INTERRUPT, "Interrupt");
         m_animTypeToString.Add(ANIM_TYPE.LOCOMOTION, "Loco");
@@ -72,7 +111,7 @@ public class CustomAnimation : MonoBehaviour
     /// </summary>
     /// <param name="p_interruptAnim">animation that is desired</param>
     /// <returns>Constructed string followiong naming convention</returns>
-    public static string GetInterrupt(INTERRUPT_ANIM p_interruptAnim)
+    public string GetInterrupt(INTERRUPT_ANIM p_interruptAnim)
     {
         return m_animTypeToString[ANIM_TYPE.INTERRUPT] + "_" + m_interruptAnimToString[p_interruptAnim];
     }
@@ -82,7 +121,7 @@ public class CustomAnimation : MonoBehaviour
     /// </summary>
     /// <param name="p_locomotionAnim">animation that is desired</param>
     /// <returns>Constructed string followiong naming convention</returns>
-    public static string GetLocomotion(LOCOMOTION_ANIM p_locomotionAnim)
+    public string GetLocomotion(LOCOMOTION_ANIM p_locomotionAnim)
     {
         return m_animTypeToString[ANIM_TYPE.LOCOMOTION] + "_" + m_locomotionAnimToString[p_locomotionAnim];
     }
@@ -94,7 +133,7 @@ public class CustomAnimation : MonoBehaviour
     /// <param name="p_attackType">The attacking type</param>
     /// <param name="p_comboIndex">In the case of combos between 0 and 3</param>
     /// <returns>Constructed string followiong naming convention</returns>
-    public static string GetAttack(ATTACK_TYPE p_attackType, ATTACK_STANCE p_atackStance, int p_comboIndex)
+    public string GetAttack(ATTACK_TYPE p_attackType, ATTACK_STANCE p_atackStance, int p_comboIndex)
     {
         p_comboIndex = Mathf.Clamp(p_comboIndex, 0, 3);
         return m_animTypeToString[ANIM_TYPE.ATTACK] + "_" + m_attackTypeToString[p_attackType] + "_" + m_attackStanceToString[p_atackStance] + p_comboIndex;
@@ -105,7 +144,7 @@ public class CustomAnimation : MonoBehaviour
     /// </summary>
     /// <param name="p_varibleAnim">animation that is desired</param>
     /// <returns>Constructed string followiong naming convention</returns>
-    public static string GetVarible(VARIBLE_ANIM p_varibleAnim)
+    public string GetVarible(VARIBLE_ANIM p_varibleAnim)
     {
         return m_varibleAnimToString[p_varibleAnim];
     }
@@ -116,7 +155,7 @@ public class CustomAnimation : MonoBehaviour
     /// <param name="p_animator">Animator to play on</param>
     /// <param name="p_animString">Animation string</param>
     /// <param name="p_value">Value of varible to set to</param>
-    public static void SetVarible(Animator p_animator, string p_animString, float p_value)
+    public void SetVarible(Animator p_animator, string p_animString, float p_value)
     {
         p_animator.SetFloat(p_animString, p_value);
     }
@@ -127,7 +166,7 @@ public class CustomAnimation : MonoBehaviour
     /// </summary>
     /// <param name="p_animator">Animator to check against</param>
     /// <returns>Animator normalised time, defaults to 0.0f</returns>
-    public static float GetAnimationPercent(Animator p_animator)
+    public float GetAnimationPercent(Animator p_animator)
     {
         if (p_animator == null)
             return 0.0f;
@@ -140,12 +179,14 @@ public class CustomAnimation : MonoBehaviour
     /// </summary>
     /// <param name="p_animator">Animator to check against</param>
     /// <returns>True when normalized time is great than END_ANIMATION_TIME, defaults to false</returns>
-    public static bool IsAnimationDone(Animator p_animator)
+    public bool IsAnimationDone(Animator p_animator)
     {
         if (p_animator == null)
             return false;
 
-        return p_animator.GetCurrentAnimatorStateInfo(0).normalizedTime > END_ANIMATION_TIME;
+        int baseIndex = p_animator.GetLayerIndex(m_baseLayer);
+
+        return p_animator.GetCurrentAnimatorStateInfo(baseIndex).normalizedTime > END_ANIMATION_TIME && !m_crossfadeFlag;
     }
 
     /// <summary>
@@ -153,19 +194,53 @@ public class CustomAnimation : MonoBehaviour
     /// </summary>
     /// <param name="p_animator">Animator to play on</param>
     /// <param name="p_animString">Animation string</param>
-    public static void PlayAnimtion(Animator p_animator, string p_animString)
+    public void PlayAnimation(Animator p_animator, string p_animString)
     {
-        p_animator.SetLayerWeight(1, 0.0f);
-        p_animator.Play(p_animString, 0);
+        StartCoroutine(CrossFadeInto(p_animator, p_animString));
     }
 
     /// <summary>
     /// End of animation, return to null on layer 0
     /// </summary>
     /// <param name="p_animator">Animator to default back to null</param>
-    public static void EndAnimation(Animator p_animator)
+    public void EndAnimation(Animator p_animator)
     {
-        p_animator.SetLayerWeight(1, 1.0f);
-        p_animator.Play(m_nullString, 0);
+        int locomotionIndex = p_animator.GetLayerIndex(m_locomotionLayer);
+        int baseIndex = p_animator.GetLayerIndex(m_baseLayer);
+
+        p_animator.SetLayerWeight(locomotionIndex, 1.0f);
+
+        p_animator.Play(m_nullString, baseIndex);
+    }
+
+    /// <summary>
+    /// Cross fade into animation from idle
+    /// </summary>
+    /// <param name="p_animator">Animator to play on</param>
+    /// <param name="p_animString">Animation string</param>
+    /// <returns>waits till end of frame repeativly till timer is reached</returns>
+    public IEnumerator CrossFadeInto(Animator p_animator, string p_animString)
+    {
+        m_crossfadeFlag = true;
+        
+        float crossfadeTimer = 0.0f;
+        int locomotionIndex = p_animator.GetLayerIndex(m_locomotionLayer);
+        int baseIndex = p_animator.GetLayerIndex(m_baseLayer);
+
+        p_animator.CrossFade(p_animString, CROSSFADE_TIME, baseIndex);
+        
+        while (crossfadeTimer < CROSSFADE_TIME)
+        {
+            p_animator.SetLayerWeight(locomotionIndex, 1 - crossfadeTimer / CROSSFADE_TIME);
+
+            yield return null;
+
+            crossfadeTimer += Time.deltaTime;
+        }
+
+        p_animator.Play(p_animString, baseIndex, CROSSFADE_TIME);
+
+        p_animator.SetLayerWeight(locomotionIndex, 0.0f);
+        m_crossfadeFlag = false;
     }
 }

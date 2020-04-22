@@ -15,7 +15,7 @@ public class PlayerState_Recoil : PlayerState_Interrupt
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animRecoil = CustomAnimation.GetInterrupt(CustomAnimation.INTERRUPT_ANIM.RECOIL);
+        m_animRecoil = CustomAnimation.Instance.GetInterrupt(CustomAnimation.INTERRUPT_ANIM.RECOIL);
     }
 
     /// <summary>
@@ -27,7 +27,7 @@ public class PlayerState_Recoil : PlayerState_Interrupt
 
         m_playerCharacter.m_recoilFlag = false; //Reset flag
 
-        CustomAnimation.PlayAnimtion(m_animator, m_animRecoil);
+        CustomAnimation.Instance.PlayAnimation(m_animator, m_animRecoil);
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public class PlayerState_Recoil : PlayerState_Interrupt
     {
         base.StateUpdate();
 
-        return CustomAnimation.IsAnimationDone(m_animator);
+        return CustomAnimation.Instance.IsAnimationDone(m_animator);
     }
 
     /// <summary>

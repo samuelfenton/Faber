@@ -198,7 +198,7 @@ public class WeaponManager : MonoBehaviour
         if (m_secondaryWeaponScript != null)
             m_secondaryWeaponScript.StartManoeuvre(m_secondaryDamageStart, m_secondaryDamageEnd, m_attackStance);
 
-        CustomAnimation.PlayAnimtion(m_animator, (CustomAnimation.GetAttack(m_attackType, m_attackStance, m_manoeuvreIndex)));
+        CustomAnimation.Instance.PlayAnimation(m_animator, (CustomAnimation.Instance.GetAttack(m_attackType, m_attackStance, m_manoeuvreIndex)));
 
         return true;
     }
@@ -209,7 +209,7 @@ public class WeaponManager : MonoBehaviour
     /// <returns>True when completed</returns>
     protected bool UpdateAttackManoeuvre()
     {
-        float animationPercent = CustomAnimation.GetAnimationPercent(m_animator);
+        float animationPercent = CustomAnimation.Instance.GetAnimationPercent(m_animator);
 
         //Update Translation
         float modelToSplineForwardDot = Vector3.Dot(m_character.m_characterModel.transform.forward, m_character.m_splinePhysics.m_currentSpline.GetForwardDir(m_character.m_splinePhysics.m_currentSplinePercent));
@@ -249,7 +249,7 @@ public class WeaponManager : MonoBehaviour
 
                 break;
             case ATTACK_MANOEUVRE_STATE.COOLOFF:
-                return (m_comboFlag || CustomAnimation.IsAnimationDone(m_animator));
+                return (m_comboFlag || CustomAnimation.Instance.IsAnimationDone(m_animator));
         }
 
         //Update weapons
@@ -275,6 +275,8 @@ public class WeaponManager : MonoBehaviour
             m_secondaryWeaponScript.ToggleTrigger(false);
 
         m_manoeuvreIndex++;
+
+        CustomAnimation.Instance.EndAnimation(m_animator);
     }
 
     /// <summary>

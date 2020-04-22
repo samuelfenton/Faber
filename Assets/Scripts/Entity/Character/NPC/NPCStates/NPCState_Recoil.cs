@@ -15,7 +15,7 @@ public class NPCState_Recoil : NPCState_Interrupt
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animRecoil = CustomAnimation.GetInterrupt(CustomAnimation.INTERRUPT_ANIM.RECOIL);
+        m_animRecoil = CustomAnimation.Instance.GetInterrupt(CustomAnimation.INTERRUPT_ANIM.RECOIL);
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ public class NPCState_Recoil : NPCState_Interrupt
     {
         base.StateStart();
 
-        CustomAnimation.PlayAnimtion(m_animator, m_animRecoil);
+        CustomAnimation.Instance.PlayAnimation(m_animator, m_animRecoil);
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ public class NPCState_Recoil : NPCState_Interrupt
     {
         base.StateUpdate();
 
-        return CustomAnimation.IsAnimationDone(m_animator);
+        return CustomAnimation.Instance.IsAnimationDone(m_animator);
     }
 
     /// <summary>

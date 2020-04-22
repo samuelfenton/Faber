@@ -15,7 +15,7 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animKnockback = CustomAnimation.GetInterrupt(CustomAnimation.INTERRUPT_ANIM.KNOCKBACK);
+        m_animKnockback = CustomAnimation.Instance.GetInterrupt(CustomAnimation.INTERRUPT_ANIM.KNOCKBACK);
     }
 
     /// <summary>
@@ -26,7 +26,7 @@ public class PlayerState_Knockback : PlayerState_Interrupt
         base.StateStart();
 
 
-        CustomAnimation.PlayAnimtion(m_animator, m_animKnockback);
+        CustomAnimation.Instance.PlayAnimation(m_animator, m_animKnockback);
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     {
         base.StateUpdate();
 
-        return CustomAnimation.IsAnimationDone(m_animator);
+        return CustomAnimation.Instance.IsAnimationDone(m_animator);
     }
 
     /// <summary>
