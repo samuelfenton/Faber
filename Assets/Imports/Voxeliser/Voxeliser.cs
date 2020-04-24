@@ -642,7 +642,7 @@ public class Voxeliser : MonoBehaviour
     /// <returns>new merged UV</returns>
     private Vector2 MergeUVs(Vector2 p_UVA, Vector2 p_UVB, float p_percent)
     {
-        return p_UVA * p_percent + p_UVB * (1 - p_percent);
+        return p_UVB * p_percent + p_UVA * (1 - p_percent);
     }
 
     /// <summary>

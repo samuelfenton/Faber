@@ -754,27 +754,6 @@ public class Voxeliser_Burst : MonoBehaviour
 
 
         #region Supporting Fuctions
-
-        /// <summary>
-        /// Get a Vector3Int that has been rounded to closest, not down
-        /// </summary>
-        /// <param name="p_vector">Vector to round to Vector3Int</param>
-        /// <returns>final Vector3Int</returns>
-        private float3 GetSnappedFloat3(float4 p_vector)
-        {
-            return new float3(math.round(p_vector.x), math.round(p_vector.y), math.round(p_vector.z));
-        }
-
-        /// <summary>
-        /// Get a Vector3Int that has been rounded to closest, not down
-        /// </summary>
-        /// <param name="p_vector">Vector to round to Vector3Int</param>
-        /// <returns>final Vector3Int</returns>
-        private float3 GetSnappedFloat3(float3 p_vector)
-        {
-            return new float3(math.round(p_vector.x), math.round(p_vector.y), math.round(p_vector.z));
-        }
-
         /// <summary>
         /// Get a Vector3Int that has been rounded to closest, not down
         /// </summary>
@@ -794,7 +773,7 @@ public class Voxeliser_Burst : MonoBehaviour
         /// <returns>new merged UV</returns>
         private float2 MergeUVs(float2 p_UVA, float2 p_UVB, float p_percent)
         {
-            return p_UVA * p_percent + p_UVB * (1 - p_percent);
+            return p_UVB * p_percent + p_UVA * (1 - p_percent);
         }
 
         /// <summary>
