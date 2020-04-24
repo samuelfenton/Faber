@@ -83,11 +83,11 @@ public class Character : Entity
 
         m_currentHealth = m_maxHealth;
 
-        m_animRandomIdle = CustomAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.RANDOM_IDLE);
+        m_animRandomIdle = CustomAnimation.Instance.GetVarible(CustomAnimation.VARIBLE_ANIM.RANDOM_IDLE);
 
-        m_animCurrentVel = CustomAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.CURRENT_VELOCITY);
-        m_animDesiredVel = CustomAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.DESIRED_VELOCITY);
-        m_animAbsVel = CustomAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.ABSOLUTE_VELOCITY);
+        m_animCurrentVel = CustomAnimation.Instance.GetVarible(CustomAnimation.VARIBLE_ANIM.CURRENT_VELOCITY);
+        m_animDesiredVel = CustomAnimation.Instance.GetVarible(CustomAnimation.VARIBLE_ANIM.DESIRED_VELOCITY);
+        m_animAbsVel = CustomAnimation.Instance.GetVarible(CustomAnimation.VARIBLE_ANIM.ABSOLUTE_VELOCITY);
 
     }
 
@@ -268,9 +268,9 @@ public class Character : Entity
     /// </summary>
     public void UpdateAnimationLocomotion()
     {
-        CustomAnimation.SetVarible(m_animator, m_animCurrentVel, m_localVelocity.x / m_groundRunVel);
-        CustomAnimation.SetVarible(m_animator, m_animDesiredVel, m_desiredVelocity / m_groundRunVel);
-        CustomAnimation.SetVarible(m_animator, m_animAbsVel, Mathf.Abs(m_localVelocity.x / m_groundRunVel));
+        CustomAnimation.Instance.SetVarible(m_animator, m_animCurrentVel, m_localVelocity.x / m_groundRunVel);
+        CustomAnimation.Instance.SetVarible(m_animator, m_animDesiredVel, m_desiredVelocity / m_groundRunVel);
+        CustomAnimation.Instance.SetVarible(m_animator, m_animAbsVel, Mathf.Abs(m_localVelocity.x / m_groundRunVel));
     }
 
     /// <summary>
@@ -280,7 +280,7 @@ public class Character : Entity
     public void SetRandomIdle()
     {
         int idleIndex = Random.Range(0, CustomAnimation.IDLE_COUNT);
-        CustomAnimation.SetVarible(m_animator, m_animRandomIdle, idleIndex);
+        CustomAnimation.Instance.SetVarible(m_animator, m_animRandomIdle, idleIndex);
     }
 
     #region WEAPON FUNCTIONS - OVERRIDE

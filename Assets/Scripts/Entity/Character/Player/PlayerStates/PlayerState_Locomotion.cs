@@ -17,9 +17,9 @@ public class PlayerState_Locomotion : Player_State
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animIdle = CustomAnimation.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.IDLE);
-        m_paramVelocity = CustomAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.CURRENT_VELOCITY);
-        m_paramRandomIdle = CustomAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.RANDOM_IDLE);
+        m_animIdle = CustomAnimation.Instance.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.IDLE);
+        m_paramVelocity = CustomAnimation.Instance.GetVarible(CustomAnimation.VARIBLE_ANIM.CURRENT_VELOCITY);
+        m_paramRandomIdle = CustomAnimation.Instance.GetVarible(CustomAnimation.VARIBLE_ANIM.RANDOM_IDLE);
     }
 
     /// <summary>

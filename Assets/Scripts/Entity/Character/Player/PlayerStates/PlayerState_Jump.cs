@@ -17,7 +17,7 @@ public class PlayerState_Jump : Player_State
         base.StateInit(p_loopedState, p_character);
         m_jumpSpeed = m_character.m_jumpSpeed;
 
-        m_animJump = CustomAnimation.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.JUMP);
+        m_animJump = CustomAnimation.Instance.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.JUMP);
     }
 
     /// <summary>
@@ -31,7 +31,7 @@ public class PlayerState_Jump : Player_State
         newVelocity.y = m_jumpSpeed;
         m_character.m_localVelocity = newVelocity;
 
-        CustomAnimation.PlayAnimtion(m_animator, m_animJump);
+        CustomAnimation.Instance.PlayAnimation(m_animator, m_animJump);
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public class PlayerState_Jump : Player_State
     {
         base.StateUpdate();
 
-        return CustomAnimation.IsAnimationDone(m_animator) || m_character.m_localVelocity.y <= 0.0f;
+        return CustomAnimation.Instance.IsAnimationDone(m_animator) || m_character.m_localVelocity.y <= 0.0f;
     }
 
     /// <summary>

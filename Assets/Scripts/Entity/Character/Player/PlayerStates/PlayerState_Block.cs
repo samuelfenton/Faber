@@ -15,7 +15,7 @@ public class PlayerState_Block : Player_State
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animBlock = CustomAnimation.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.BLOCK);
+        m_animBlock = CustomAnimation.Instance.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.BLOCK);
     }
 
     /// <summary>
@@ -26,7 +26,7 @@ public class PlayerState_Block : Player_State
         base.StateStart();
 
         m_character.m_blockingFlag = true;
-        CustomAnimation.PlayAnimtion(m_animator, m_animBlock);
+        CustomAnimation.Instance.PlayAnimation(m_animator, m_animBlock);
     }
 
     /// <summary>

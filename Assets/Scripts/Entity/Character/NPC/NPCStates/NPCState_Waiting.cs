@@ -23,9 +23,9 @@ public class NPCState_Waiting : NPC_State
     {
         base.StateInit(p_loopedState, p_character);
 
-        m_animIdle = CustomAnimation.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.IDLE);
-        m_paramVelocity = CustomAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.CURRENT_VELOCITY);
-        m_paramIdle = CustomAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.RANDOM_IDLE);
+        m_animIdle = CustomAnimation.Instance.GetLocomotion(CustomAnimation.LOCOMOTION_ANIM.IDLE);
+        m_paramVelocity = CustomAnimation.Instance.GetVarible(CustomAnimation.VARIBLE_ANIM.CURRENT_VELOCITY);
+        m_paramIdle = CustomAnimation.Instance.GetVarible(CustomAnimation.VARIBLE_ANIM.RANDOM_IDLE);
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ public class NPCState_Waiting : NPC_State
         if (m_currentWaitingState == WAITING_STATUS.IDLE)
         {
             m_character.SetRandomIdle();
-            CustomAnimation.PlayAnimtion(m_animator, m_animIdle);
+            CustomAnimation.Instance.PlayAnimation(m_animator, m_animIdle);
 
             m_character.SetDesiredVelocity(0.0f);
         }
@@ -67,7 +67,7 @@ public class NPCState_Waiting : NPC_State
 
         if (m_currentWaitingState == WAITING_STATUS.IDLE)
         {
-            return CustomAnimation.IsAnimationDone(m_animator) || (m_NPCCharacter.m_targetCharacter != null && SmartTargetWithinRange(m_NPCCharacter.m_targetCharacter, m_NPCCharacter.m_detectionDistance));
+            return CustomAnimation.Instance.IsAnimationDone(m_animator) || (m_NPCCharacter.m_targetCharacter != null && SmartTargetWithinRange(m_NPCCharacter.m_targetCharacter, m_NPCCharacter.m_detectionDistance));
         }
         else //Patrol
         {

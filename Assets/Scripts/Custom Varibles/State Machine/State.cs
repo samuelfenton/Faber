@@ -46,7 +46,7 @@ public class State : MonoBehaviour
     /// </summary>
     public virtual void StateEnd()
     {
-        CustomAnimation.EndAnimation(m_animator);
+        CustomAnimation.Instance.EndAnimation(m_animator);
     }
 
     /// <summary>
