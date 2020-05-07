@@ -18,9 +18,28 @@ MonoBehaviour:
     m_primaryDamageEnd: 0.6
     m_secondaryDamageStart: 0
     m_secondaryDamageEnd: 0
+    m_canComboPercent: 0.8
     m_translationXCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -34,6 +53,7 @@ MonoBehaviour:
     m_primaryDamageEnd: 0
     m_secondaryDamageStart: 0.3
     m_secondaryDamageEnd: 0.6
+    m_canComboPercent: 0.8
     m_translationXCurve:
       serializedVersion: 2
       m_Curve: []
@@ -51,9 +71,28 @@ MonoBehaviour:
     m_primaryDamageEnd: 0.6
     m_secondaryDamageStart: 0
     m_secondaryDamageEnd: 0
+    m_canComboPercent: 0.8
     m_translationXCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -67,6 +106,7 @@ MonoBehaviour:
     m_primaryDamageEnd: 0.6
     m_secondaryDamageStart: 0
     m_secondaryDamageEnd: 0
+    m_canComboPercent: 0.8
     m_translationXCurve:
       serializedVersion: 2
       m_Curve: []
@@ -84,6 +124,7 @@ MonoBehaviour:
     m_primaryDamageEnd: 0
     m_secondaryDamageStart: 0
     m_secondaryDamageEnd: 0
+    m_canComboPercent: 0
     m_translationXCurve:
       serializedVersion: 2
       m_Curve: []
@@ -101,6 +142,7 @@ MonoBehaviour:
     m_primaryDamageEnd: 0
     m_secondaryDamageStart: 0
     m_secondaryDamageEnd: 0
+    m_canComboPercent: 0
     m_translationXCurve:
       serializedVersion: 2
       m_Curve: []
@@ -118,6 +160,7 @@ MonoBehaviour:
     m_primaryDamageEnd: 0
     m_secondaryDamageStart: 0
     m_secondaryDamageEnd: 0
+    m_canComboPercent: 0
     m_translationXCurve:
       serializedVersion: 2
       m_Curve: []
@@ -135,6 +178,7 @@ MonoBehaviour:
     m_primaryDamageEnd: 0
     m_secondaryDamageStart: 0
     m_secondaryDamageEnd: 0
+    m_canComboPercent: 0
     m_translationXCurve:
       serializedVersion: 2
       m_Curve: []

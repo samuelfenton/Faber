@@ -17,7 +17,7 @@ public class WeaponTrigger : MonoBehaviour
     private float m_damageStart = 0.0f;
     private float m_damageEnd = 0.0f;
 
-    private CustomAnimation.ATTACK_STANCE m_currentStance = CustomAnimation.ATTACK_STANCE.LIGHT;
+    private CustomAnimation_Humanoid.ATTACK_STANCE m_currentStance = CustomAnimation_Humanoid.ATTACK_STANCE.LIGHT;
 
     private List<Character> m_hitCharacters = new List<Character>();
 
@@ -40,7 +40,7 @@ public class WeaponTrigger : MonoBehaviour
     /// <param name="p_damageStart">When damage wil start given a percentage 0-1</param>
     /// <param name="p_damageEnd">When damage wil end given a percentage 0-1</param>
     /// <param name="p_currentStance">Current weapon stance</param>
-    public void StartManoeuvre(float p_damageStart, float p_damageEnd, CustomAnimation.ATTACK_STANCE p_currentStance)
+    public void StartManoeuvre(float p_damageStart, float p_damageEnd, CustomAnimation_Humanoid.ATTACK_STANCE p_currentStance)
     {
         m_damageStart = p_damageStart;
         m_damageEnd = p_damageEnd;
@@ -88,7 +88,7 @@ public class WeaponTrigger : MonoBehaviour
     /// <param name="p_character">Chaarcter to deal damge to</param>
     private void DealDamage(Character p_character)
     {
-        float damage = m_currentStance == CustomAnimation.ATTACK_STANCE.LIGHT ? m_lightDamage  : m_heavyDamage;
+        float damage = m_currentStance == CustomAnimation_Humanoid.ATTACK_STANCE.LIGHT ? m_lightDamage  : m_heavyDamage;
 
         m_character.DealDamage(damage, p_character);
     }

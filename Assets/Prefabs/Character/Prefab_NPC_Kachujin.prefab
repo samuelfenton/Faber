@@ -71,6 +71,7 @@ GameObject:
   - component: {fileID: 8219485882896269960}
   - component: {fileID: 2460570204123780259}
   - component: {fileID: 6190521572550420060}
+  - component: {fileID: 6857588652535352834}
   - component: {fileID: 9077462144384472045}
   - component: {fileID: 8987506874733537015}
   - component: {fileID: 7761223505839620268}
@@ -127,6 +128,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &6857588652535352834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8219485882895916776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56a41d62cfe9b394cb85905fbfc1e1dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &9077462144384472045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,6 +177,8 @@ MonoBehaviour:
   m_rightHand: {fileID: 4571789616121429047}
   m_leftHand: {fileID: 4571789615432389086}
   m_team: 1
+  m_maxHealth: 10
+  m_currentHealth: 10
   m_groundRunVel: 8
   m_groundAccel: 12
   m_groundedDeaccel: 50
@@ -175,8 +190,6 @@ MonoBehaviour:
   m_wallJumpHorizontalSpeed: 2
   m_wallJumpInputDelay: 0.1
   m_rollbackVelocity: 12
-  m_maxHealth: 10
-  m_currentHealth: 10
   m_blockingFlag: 0
   m_knockbackFlag: 0
   m_recoilFlag: 0

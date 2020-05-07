@@ -16,7 +16,7 @@ public class WeaponManager : MonoBehaviour
     private GameObject m_secondaryWeaponObject = null;
 
     private Character m_character = null;
-    private Animator m_animator = null;
+    private CustomAnimation m_customAnimation = null;
 
     //Attacking sequence
     private CustomAnimation.ATTACK_TYPE m_attackType = CustomAnimation.ATTACK_TYPE.GROUND;
@@ -36,6 +36,8 @@ public class WeaponManager : MonoBehaviour
     private float m_secondaryDamageStart = 0.0f;
     private float m_secondaryDamageEnd = 0.0f;
 
+    private float m_canComboPercent = 0.0f;
+
     private AnimationCurve m_translationXCurve;
     private AnimationCurve m_translationYCurve;
 
@@ -49,7 +51,7 @@ public class WeaponManager : MonoBehaviour
     public virtual void Init(Character p_character)
     {
         m_character = p_character;
-        m_animator = m_character.GetComponentInChildren<Animator>();
+        m_customAnimation = p_character.GetComponentInChildren<CustomAnimation>();
 
         if (m_primaryWeaponPrefab != null)
         {
@@ -135,8 +137,8 @@ public class WeaponManager : MonoBehaviour
         //Determine attack details
         switch (m_attackType)
         {
-            case CustomAnimation.ATTACK_TYPE.GROUND:
-                if(m_attackStance == CustomAnimation.ATTACK_STANCE.LIGHT)
+            case CustomAnimation_Humanoid.ATTACK_TYPE.GROUND:
+                if(m_attackStance == CustomAnimation_Humanoid.ATTACK_STANCE.LIGHT)
                 {
                     if (m_weaponData.m_groundLight.Length <= m_manoeuvreIndex)
                         return false;
@@ -149,8 +151,8 @@ public class WeaponManager : MonoBehaviour
                     attackDetails = m_weaponData.m_groundHeavy[m_manoeuvreIndex];
                 }
                 break;
-            case CustomAnimation.ATTACK_TYPE.IN_AIR:
-                if (m_attackStance == CustomAnimation.ATTACK_STANCE.LIGHT)
+            case CustomAnimation_Humanoid.ATTACK_TYPE.IN_AIR:
+                if (m_attackStance == CustomAnimation_Humanoid.ATTACK_STANCE.LIGHT)
                 {
                     if (m_weaponData.m_inAirLight.Length <= m_manoeuvreIndex)
                         return false;
@@ -163,8 +165,8 @@ public class WeaponManager : MonoBehaviour
                     attackDetails = m_weaponData.m_inAirHeavy[m_manoeuvreIndex];
                 }
                 break;
-            case CustomAnimation.ATTACK_TYPE.SPRINTING:
-                if (m_attackStance == CustomAnimation.ATTACK_STANCE.LIGHT)
+            case CustomAnimation_Humanoid.ATTACK_TYPE.SPRINTING:
+                if (m_attackStance == CustomAnimation_Humanoid.ATTACK_STANCE.LIGHT)
                 {
                     if (m_weaponData.m_sprintLight.Length <= m_manoeuvreIndex)
                         return false;
@@ -189,6 +191,7 @@ public class WeaponManager : MonoBehaviour
         m_primaryDamageEnd = attackDetails.m_primaryDamageEnd;
         m_secondaryDamageStart = attackDetails.m_secondaryDamageStart;
         m_secondaryDamageEnd = attackDetails.m_secondaryDamageEnd;
+        m_canComboPercent = attackDetails.m_canComboPercent;
         m_translationXCurve = attackDetails.m_translationXCurve;
         m_translationYCurve = attackDetails.m_translationYCurve;
 
@@ -198,7 +201,7 @@ public class WeaponManager : MonoBehaviour
         if (m_secondaryWeaponScript != null)
             m_secondaryWeaponScript.StartManoeuvre(m_secondaryDamageStart, m_secondaryDamageEnd, m_attackStance);
 
-        CustomAnimation.Instance.PlayAnimation(m_animator, (CustomAnimation.Instance.GetAttack(m_attackType, m_attackStance, m_manoeuvreIndex)));
+        m_customAnimation.PlayAnimation(m_customAnimation.GetAttack(m_attackType, m_attackStance, m_manoeuvreIndex));
 
         return true;
     }
@@ -209,7 +212,7 @@ public class WeaponManager : MonoBehaviour
     /// <returns>True when completed</returns>
     protected bool UpdateAttackManoeuvre()
     {
-        float animationPercent = CustomAnimation.Instance.GetAnimationPercent(m_animator);
+        float animationPercent = m_customAnimation.GetAnimationPercent();
 
         //Update Translation
         float modelToSplineForwardDot = Vector3.Dot(m_character.m_characterModel.transform.forward, m_character.m_splinePhysics.m_currentSpline.GetForwardDir(m_character.m_splinePhysics.m_currentSplinePercent));
@@ -237,19 +240,19 @@ public class WeaponManager : MonoBehaviour
                 if (m_character.DetermineLightInput())
                 {
                     m_comboFlag = true;
-                    m_attackStance = CustomAnimation.ATTACK_STANCE.LIGHT;
+                    m_attackStance = CustomAnimation_Humanoid.ATTACK_STANCE.LIGHT;
                     m_currentState = ATTACK_MANOEUVRE_STATE.COOLOFF;
                 }
                 if (m_character.DetermineHeavyInput())
                 {
                     m_comboFlag = true;
-                    m_attackStance = CustomAnimation.ATTACK_STANCE.HEAVY;
+                    m_attackStance = CustomAnimation_Humanoid.ATTACK_STANCE.HEAVY;
                     m_currentState = ATTACK_MANOEUVRE_STATE.COOLOFF;
                 }
 
                 break;
             case ATTACK_MANOEUVRE_STATE.COOLOFF:
-                return (m_comboFlag || CustomAnimation.Instance.IsAnimationDone(m_animator));
+                return (m_comboFlag && m_customAnimation.GetAnimationPercent() > m_canComboPercent) || m_customAnimation.IsAnimationDone();
         }
 
         //Update weapons
@@ -294,24 +297,24 @@ public class WeaponManager : MonoBehaviour
     /// in the air = in_air
     /// </summary>
     /// <returns>Correct type, defualt to grounded</returns>
-    public CustomAnimation.ATTACK_TYPE DetermineAttackType()
+    public CustomAnimation_Humanoid.ATTACK_TYPE DetermineAttackType()
     {
         if (!m_character.m_splinePhysics.m_downCollision) //In the air
         {
-            return CustomAnimation.ATTACK_TYPE.IN_AIR;
+            return CustomAnimation_Humanoid.ATTACK_TYPE.IN_AIR;
         }
         if (Mathf.Abs(m_character.m_localVelocity.x) > m_character.m_groundRunVel)//Is it sprinting or just grounded
-            return CustomAnimation.ATTACK_TYPE.SPRINTING;
+            return CustomAnimation_Humanoid.ATTACK_TYPE.SPRINTING;
 
-        return CustomAnimation.ATTACK_TYPE.GROUND;
+        return CustomAnimation_Humanoid.ATTACK_TYPE.GROUND;
     }
 
     /// <summary>
     /// Determine attacking stance, light or heavy
     /// </summary>
     /// <returns>Based off input</returns>
-    public CustomAnimation.ATTACK_STANCE DetermineStance()
+    public CustomAnimation_Humanoid.ATTACK_STANCE DetermineStance()
     {
-        return m_character.DetermineLightInput() ? CustomAnimation.ATTACK_STANCE.LIGHT : CustomAnimation.ATTACK_STANCE.HEAVY;
+        return m_character.DetermineLightInput() ? CustomAnimation_Humanoid.ATTACK_STANCE.LIGHT : CustomAnimation_Humanoid.ATTACK_STANCE.HEAVY;
     }
 }

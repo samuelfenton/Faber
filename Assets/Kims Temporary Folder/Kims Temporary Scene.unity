@@ -7297,12 +7297,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bc5db65b5ff22f42b5b86ca95839008, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_voxelSize: 0.5
+  m_voxelSize: 0.02
   m_voxeliserType: 0
-  m_performOverFrames: 0
+  m_performOverFrames: 1
   m_objectWithMesh: {fileID: 1756206254}
   m_delayedInitialisation: 0
-  m_totalMeshCount: 1
+  m_totalMeshCount: 5
   m_vertType: 0
   m_saveStaticMesh: 0
   m_resetRotation: 0
@@ -18946,12 +18946,12 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -6.56
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.539
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
         type: 3}
@@ -21749,6 +21749,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1788648882916227074, guid: f04f607cb2a6b38409f6d0ae47919968,
+        type: 3}
+      propertyPath: m_Intensity
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474508862409968155, guid: f04f607cb2a6b38409f6d0ae47919968,
+        type: 3}
+      propertyPath: m_Intensity
+      value: 0.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f04f607cb2a6b38409f6d0ae47919968, type: 3}

@@ -10,7 +10,7 @@ public class State : MonoBehaviour
     public bool m_loopedState = false;
 
     protected Character m_character = null;
-    protected Animator m_animator = null;
+    protected CustomAnimation_Humanoid m_customAnimation = null;
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -21,7 +21,7 @@ public class State : MonoBehaviour
     {
         m_loopedState = p_loopedState;
         m_character = p_character;
-        m_animator = m_character.GetComponentInChildren<Animator>();
+        m_customAnimation = m_character.GetComponentInChildren<CustomAnimation_Humanoid>();
     }
 
     /// <summary>
@@ -46,7 +46,6 @@ public class State : MonoBehaviour
     /// </summary>
     public virtual void StateEnd()
     {
-        CustomAnimation.Instance.EndAnimation(m_animator);
     }
 
     /// <summary>

@@ -62,6 +62,7 @@ public class Character : Entity
     //Stored references
     protected WeaponManager m_weaponManager = null;
     protected Animator m_animator = null;
+    protected CustomAnimation m_customAnimation = null;
     protected ObjectPoolManager_InGame m_objectPoolingManger = null;
 
     /// <summary>
@@ -76,6 +77,9 @@ public class Character : Entity
         m_weaponManager = GetComponent<WeaponManager>();
         m_animator = m_characterModel.GetComponent<Animator>();
 
+        m_customAnimation = GetComponentInChildren<CustomAnimation>();
+        m_customAnimation.Init(m_animator);
+
         if (m_weaponManager != null)
             m_weaponManager.Init(this);//Least importance as has no dependances
 
@@ -83,11 +87,11 @@ public class Character : Entity
 
         m_currentHealth = m_maxHealth;
 
-        m_animRandomIdle = CustomAnimation.Instance.GetVarible(CustomAnimation.VARIBLE_ANIM.RANDOM_IDLE);
+        m_animRandomIdle = m_customAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.RANDOM_IDLE);
 
-        m_animCurrentVel = CustomAnimation.Instance.GetVarible(CustomAnimation.VARIBLE_ANIM.CURRENT_VELOCITY);
-        m_animDesiredVel = CustomAnimation.Instance.GetVarible(CustomAnimation.VARIBLE_ANIM.DESIRED_VELOCITY);
-        m_animAbsVel = CustomAnimation.Instance.GetVarible(CustomAnimation.VARIBLE_ANIM.ABSOLUTE_VELOCITY);
+        m_animCurrentVel = m_customAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.CURRENT_VELOCITY);
+        m_animDesiredVel = m_customAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.DESIRED_VELOCITY);
+        m_animAbsVel = m_customAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.ABSOLUTE_VELOCITY);
 
     }
 
@@ -268,9 +272,9 @@ public class Character : Entity
     /// </summary>
     public void UpdateAnimationLocomotion()
     {
-        CustomAnimation.Instance.SetVarible(m_animator, m_animCurrentVel, m_localVelocity.x / m_groundRunVel);
-        CustomAnimation.Instance.SetVarible(m_animator, m_animDesiredVel, m_desiredVelocity / m_groundRunVel);
-        CustomAnimation.Instance.SetVarible(m_animator, m_animAbsVel, Mathf.Abs(m_localVelocity.x / m_groundRunVel));
+        m_customAnimation.SetVarible(m_animCurrentVel, m_localVelocity.x / m_groundRunVel);
+        m_customAnimation.SetVarible(m_animDesiredVel, m_desiredVelocity / m_groundRunVel);
+        m_customAnimation.SetVarible(m_animAbsVel, Mathf.Abs(m_localVelocity.x / m_groundRunVel));
     }
 
     /// <summary>
@@ -279,8 +283,8 @@ public class Character : Entity
     /// </summary>
     public void SetRandomIdle()
     {
-        int idleIndex = Random.Range(0, CustomAnimation.IDLE_COUNT);
-        CustomAnimation.Instance.SetVarible(m_animator, m_animRandomIdle, idleIndex);
+        int idleIndex = Random.Range(0, CustomAnimation_Humanoid.IDLE_COUNT);
+        m_customAnimation.SetVarible(m_animRandomIdle, idleIndex);
     }
 
     #region WEAPON FUNCTIONS - OVERRIDE

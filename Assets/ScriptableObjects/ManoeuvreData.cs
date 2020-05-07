@@ -16,6 +16,8 @@ public class ManoeuvreData : ScriptableObject
         public float m_secondaryDamageStart;
         [Range(0.0f, 1.0f)]
         public float m_secondaryDamageEnd;
+        [Range(0.0f, 1.0f)]
+        public float m_canComboPercent;
 
         public AnimationCurve m_translationXCurve; 
         public AnimationCurve m_translationYCurve;
