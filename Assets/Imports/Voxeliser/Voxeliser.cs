@@ -407,10 +407,7 @@ public class Voxeliser : MonoBehaviour
         m_voxelIntDetails.Clear();
 
         //Varible setup
-        Vector3 currentPosition = m_objectWithMesh.transform.position;
-
-        Matrix4x4 localToWorld = m_objectWithMesh.transform.localToWorldMatrix;
-        localToWorld.SetColumn(3, Vector4.zero); //Remove position component
+        Matrix4x4 localToWorld = BuildGlobalLocalToWorldMat4x4(m_objectWithMesh);
         float voxelSizeRatio = 1.0f / p_voxelSize;
 
         //Build new mesh
@@ -462,9 +459,6 @@ public class Voxeliser : MonoBehaviour
 
             m_voxelMeshs[meshIndex].Optimize();
             m_voxelMeshs[meshIndex].RecalculateNormals();
-
-            //Move obejct to position
-            m_voxelObjects[meshIndex].transform.position = currentPosition;
         }
         yield break;
     }
@@ -497,9 +491,9 @@ public class Voxeliser : MonoBehaviour
     private IEnumerator BuildTri(float p_voxelSizeRatio, int p_tirIndex, Matrix4x4 p_localToWorld)
     {
         //Float 4 varients due to matrix math
-        Vector3Int vertA = GetVector3Int(p_localToWorld * (m_orginalVerts[m_originalTris[p_tirIndex * 3]] * p_voxelSizeRatio));
-        Vector3Int vertB = GetVector3Int(p_localToWorld * (m_orginalVerts[m_originalTris[p_tirIndex * 3 + 1]] * p_voxelSizeRatio));
-        Vector3Int vertC = GetVector3Int(p_localToWorld * (m_orginalVerts[m_originalTris[p_tirIndex * 3 + 2]] * p_voxelSizeRatio));
+        Vector3Int vertA = GetVector3Int(p_localToWorld.MultiplyPoint3x4(m_orginalVerts[m_originalTris[p_tirIndex * 3]]) * p_voxelSizeRatio);
+        Vector3Int vertB = GetVector3Int(p_localToWorld.MultiplyPoint3x4(m_orginalVerts[m_originalTris[p_tirIndex * 3 + 1]]) * p_voxelSizeRatio);
+        Vector3Int vertC = GetVector3Int(p_localToWorld.MultiplyPoint3x4(m_orginalVerts[m_originalTris[p_tirIndex * 3 + 2]]) * p_voxelSizeRatio);
 
         //Has UV's been set?
         Vector2 vertAUV = Vector2.zero;
@@ -701,11 +695,11 @@ public class Voxeliser : MonoBehaviour
 
             for (int voxelIndex = 0; voxelIndex < m_calcVoxelsPerMesh; voxelIndex++)
             {
-                Vector3 voxelPos = new Vector3(uniquePositions[firstVoxelIndex + voxelIndex].x * m_voxelSize, uniquePositions[firstVoxelIndex + voxelIndex].y * m_voxelSize, uniquePositions[firstVoxelIndex + voxelIndex].z * m_voxelSize);
+                Vector3 voxelPos = new Vector3(uniquePositions[firstVoxelIndex + voxelIndex].x * p_voxelSize, uniquePositions[firstVoxelIndex + voxelIndex].y * p_voxelSize, uniquePositions[firstVoxelIndex + voxelIndex].z * p_voxelSize);
 
-                Vector3 right = new Vector3(m_voxelSize / 2.0f, 0.0f, 0.0f); // r = right l = left
-                Vector3 up = new Vector3(0.0f, m_voxelSize / 2.0f, 0.0f); // u = up, d = down
-                Vector3 forward = new Vector3(0.0f, 0.0f, m_voxelSize / 2.0f); // f = forward b = backward
+                Vector3 right = new Vector3(p_voxelSize / 2.0f, 0.0f, 0.0f); // r = right l = left
+                Vector3 up = new Vector3(0.0f, p_voxelSize / 2.0f, 0.0f); // u = up, d = down
+                Vector3 forward = new Vector3(0.0f, 0.0f, p_voxelSize / 2.0f); // f = forward b = backward
 
                 if (m_storedIsHardEdge) //Soft edge, 24 verts in total
                 {
@@ -1181,6 +1175,19 @@ public class Voxeliser : MonoBehaviour
             verts[vertIndex] = scaleMatrix * verts[vertIndex];
         }
         m_originalMesh.vertices = verts;
+    }
+
+    /// <summary>
+    /// Build a global local to world matrix
+    /// </summary>
+    /// <param name="p_gameObject">Object to build</param>
+    /// <returns>TRS matrix contianing pos, rot and scale</returns>
+    private Matrix4x4 BuildGlobalLocalToWorldMat4x4(GameObject p_gameObject)
+    {
+        Matrix4x4 positionMatrix = Matrix4x4.Translate(p_gameObject.transform.position);
+        Matrix4x4 rotationMatrix = Matrix4x4.Rotate(p_gameObject.transform.rotation);
+        Matrix4x4 scaleMatrix = Matrix4x4.Scale(p_gameObject.transform.lossyScale);
+        return positionMatrix * rotationMatrix * scaleMatrix;
     }
 
     #endregion

@@ -1,5 +1,45 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-4368871863780225384
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79c756fe45ae37747864bbe1e991ae38, type: 3}
+  m_Name: EdgeDetect_AfterStack
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 1
+  mode:
+    overrideState: 1
+    value: 1
+  sensitivityDepth:
+    overrideState: 0
+    value: 4.35
+  sensitivityNormals:
+    overrideState: 1
+    value: 0
+  lumThreshold:
+    overrideState: 1
+    value: 11.12
+  edgeExp:
+    overrideState: 1
+    value: 2.01
+  sampleDist:
+    overrideState: 1
+    value: 1
+  edgesOnly:
+    overrideState: 0
+    value: 1
+  edgesOnlyBgColor:
+    overrideState: 0
+    value: {r: 1, g: 1, b: 1, a: 0}
 --- !u!114 &-3678814443404753090
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -17,17 +57,17 @@ MonoBehaviour:
     overrideState: 1
     value: 1
   focusDistance:
-    overrideState: 0
-    value: 35.1
+    overrideState: 1
+    value: 10.58
   aperture:
     overrideState: 1
-    value: 0.1
+    value: 0.79
   focalLength:
     overrideState: 1
-    value: 255.7
+    value: 40.1
   kernelSize:
     overrideState: 1
-    value: 3
+    value: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42,3 +82,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings:
   - {fileID: -3678814443404753090}
+  - {fileID: -4368871863780225384}

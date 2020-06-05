@@ -14,7 +14,7 @@ using Unity.Mathematics;
 [ExecuteAlways]
 public class Voxeliser_Burst : MonoBehaviour
 {
-    #if VOXELISER_MATHEMATICS_ENABLED && VOXELISER_BURST_ENABLED && VOXELISER_COLLECTIONS_ENABLED
+#if VOXELISER_MATHEMATICS_ENABLED && VOXELISER_BURST_ENABLED && VOXELISER_COLLECTIONS_ENABLED
 
     private const int MAX_MESH_COUNT = 65535; //Mesh can have 65535 verts
 
@@ -417,10 +417,7 @@ public class Voxeliser_Burst : MonoBehaviour
         m_voxelDetails.Clear();
 
         //Varible setup
-        Vector3 currentPosition = m_objectWithMesh.transform.position;
-
-        Matrix4x4 localToWorld = m_objectWithMesh.transform.localToWorldMatrix;
-        localToWorld.SetColumn(3, Vector4.zero); //Remove position component
+        Matrix4x4 localToWorld = BuildGlobalLocalToWorldMat4x4(m_objectWithMesh);
         float4x4 localToWorldConverted = localToWorld;
         float voxelSizeRatio = 1.0f / p_voxelSize;
 
@@ -518,9 +515,6 @@ public class Voxeliser_Burst : MonoBehaviour
 
             m_voxelMeshs[meshIndex].Optimize();
             m_voxelMeshs[meshIndex].RecalculateNormals();
-
-            //Move obejct to position
-            m_voxelObjects[meshIndex].transform.position = currentPosition;
         }
 
         yield break;
@@ -753,7 +747,7 @@ public class Voxeliser_Burst : MonoBehaviour
         }
 
 
-        #region Supporting Fuctions
+    #region Supporting Fuctions
         /// <summary>
         /// Get a Vector3Int that has been rounded to closest, not down
         /// </summary>
@@ -811,7 +805,7 @@ public class Voxeliser_Burst : MonoBehaviour
         {
             return math.sqrt(p_val.x * p_val.x + p_val.y * p_val.y + p_val.z * p_val.z);
         }
-        #endregion
+    #endregion
     }
 
 
@@ -1090,9 +1084,9 @@ public class Voxeliser_Burst : MonoBehaviour
         {
             if (voxelObject == null)
             {
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
                 Debug.Log(name + " voxel object is missing");
-    #endif
+#endif
                 m_runFlag = false;
 
                 return false;
@@ -1345,8 +1339,21 @@ public class Voxeliser_Burst : MonoBehaviour
         m_originalMesh.vertices = verts;
     }
 
+        /// <summary>
+    /// Build a global local to world matrix
+    /// </summary>
+    /// <param name="p_gameObject">Object to build</param>
+    /// <returns>TRS matrix contianing pos, rot and scale</returns>
+    private Matrix4x4 BuildGlobalLocalToWorldMat4x4(GameObject p_gameObject)
+    {
+        Matrix4x4 positionMatrix = Matrix4x4.Translate(p_gameObject.transform.position);
+        Matrix4x4 rotationMatrix = Matrix4x4.Rotate(p_gameObject.transform.rotation);
+        Matrix4x4 scaleMatrix = Matrix4x4.Scale(p_gameObject.transform.lossyScale);
+        return positionMatrix * rotationMatrix * scaleMatrix;
+    }
+
     #endregion
-    #endif
+#endif
 }
 
 
