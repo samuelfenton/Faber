@@ -56,11 +56,11 @@ public class NPC_Character : Character
         {
             Pathing_Spline desiredSpline = m_path[0];
 
-            if (p_node.m_forwardLeftSpline == desiredSpline)
-                return TURNING_DIR.LEFT;
-
-            if (p_node.m_forwardRightSpline == desiredSpline)
+            if (p_node.m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_RIGHT] == desiredSpline)
                 return TURNING_DIR.RIGHT;
+
+            if (p_node.m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_LEFT] == desiredSpline)
+                return TURNING_DIR.LEFT;
         }
 
         return TURNING_DIR.CENTER;

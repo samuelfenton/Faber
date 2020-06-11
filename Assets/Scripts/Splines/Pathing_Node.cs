@@ -1,18 +1,49 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TreeEditor;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 [ExecuteAlways]
 public class Pathing_Node : MonoBehaviour
 {
+    [System.Serializable]
+    public struct Spline_Details
+    {
+        public Pathing_Spline.SPLINE_POSITION m_splinePosition;
+
+        public Pathing_Node m_conjoinedNode;
+
+        public Pathing_Spline.SPLINE_TYPE m_splineType;
+
+        [Header("Circle values")]
+        public Pathing_Spline.CIRCLE_DIR m_circleDir;
+        public float m_circleAngle;
+
+        [Header("Bezier Settings")]
+        public float m_bezierStrength;
+
+        public void CopyDetails(Spline_Details p_details)
+        {
+            m_splineType = p_details.m_splineType;
+            m_circleDir = m_circleDir == Pathing_Spline.CIRCLE_DIR.CLOCKWISE ? Pathing_Spline.CIRCLE_DIR.COUNTER_CLOCKWISE : p_details.m_circleDir;
+            m_circleAngle = p_details.m_circleAngle;
+            m_bezierStrength = p_details.m_bezierStrength;
+        }
+
+        public bool IsValidSpline(Pathing_Node p_currentNode)
+        {
+            return m_conjoinedNode != null && m_conjoinedNode.ContainsConjoinedNode(p_currentNode);
+        }
+    };
+
     public enum TRIGGER_DIRECTION { FORWARDS, BACKWARDS }
 
-    public Pathing_Spline m_forwardSpline = null;
-    public Pathing_Spline m_forwardRightSpline = null;
-    public Pathing_Spline m_forwardLeftSpline = null;
-    public Pathing_Spline m_backwardSpline = null;
-    public Pathing_Spline m_backwardRightSpline = null;
-    public Pathing_Spline m_backwardLeftSpline = null;
+    [SerializeField]
+    public Spline_Details[] m_pathingSplineDetails = new Spline_Details[(int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH];
+
+    [HideInInspector]
+    public Pathing_Spline[] m_pathingSplines = new Pathing_Spline[(int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH];
 
     [HideInInspector]
     public List<Pathing_Spline> m_adjacentSplines = new List<Pathing_Spline>();
@@ -32,18 +63,7 @@ public class Pathing_Node : MonoBehaviour
         m_planeForwardVector.y = 0;
         m_planeForwardVector = m_planeForwardVector.normalized;
 
-        if (m_forwardSpline != null)
-            m_adjacentSplines.Add(m_forwardSpline);
-        if (m_forwardRightSpline != null)
-            m_adjacentSplines.Add(m_forwardRightSpline);
-        if (m_forwardLeftSpline != null)
-            m_adjacentSplines.Add(m_forwardLeftSpline);
-        if (m_backwardSpline != null)
-            m_adjacentSplines.Add(m_backwardSpline);
-        if (m_backwardRightSpline != null)
-            m_adjacentSplines.Add(m_backwardRightSpline);
-        if (m_backwardLeftSpline != null)
-            m_adjacentSplines.Add(m_backwardLeftSpline);
+        RebuildSplines();
     }
 
     /// <summary>
@@ -51,22 +71,8 @@ public class Pathing_Node : MonoBehaviour
     /// Determine exact moment of moving through using plane formula
     /// ax + by + cz + d where a,b,c,d are determiened from the plane equation
     /// </summary>
-    private void Update() 
+    private void Update()
     {
-#if UNITY_EDITOR
-        if (m_forwardSpline != null)
-            m_forwardSpline.UpdatePosition();
-        if (m_forwardRightSpline != null)
-            m_forwardRightSpline.UpdatePosition();
-        if (m_forwardLeftSpline != null)
-            m_forwardLeftSpline.UpdatePosition();
-        if (m_backwardSpline != null)
-            m_backwardSpline.UpdatePosition();
-        if (m_backwardRightSpline != null)
-            m_backwardRightSpline.UpdatePosition();
-        if (m_backwardLeftSpline != null)
-            m_backwardLeftSpline.UpdatePosition();
-#endif
         //Get all keys
         Entity[] transferingEntities = new Entity[m_activeColliders.Count];
         m_activeColliders.Keys.CopyTo(transferingEntities, 0);
@@ -86,11 +92,11 @@ public class Pathing_Node : MonoBehaviour
 
                     if (currentDirection == TRIGGER_DIRECTION.FORWARDS) //Previously on backside side, entering forwards splines
                     {
-                        entity.SwapSplines(this, GetTransferSpline(desiredTurnignDir, m_forwardSpline, m_forwardRightSpline, m_forwardLeftSpline));
+                        entity.SwapSplines(this, GetTransferSpline(desiredTurnignDir, m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FOWARD], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_RIGHT], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_LEFT]));
                     }
                     else //Previously on forward side, entering backwards splines
                     {
-                        entity.SwapSplines(this, GetTransferSpline(desiredTurnignDir, m_backwardSpline, m_backwardRightSpline, m_backwardLeftSpline));
+                        entity.SwapSplines(this, GetTransferSpline(desiredTurnignDir, m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD_RIGHT], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD_LEFT]));
                     }
 
                     m_activeColliders[entity] = currentDirection;
@@ -127,7 +133,7 @@ public class Pathing_Node : MonoBehaviour
     {
         Entity collidingEntity = p_other.GetComponent<Entity>();
 
-        if(collidingEntity!= null)
+        if (collidingEntity != null)
         {
             if (m_activeColliders.ContainsKey(collidingEntity)) //Remove to update new state
             {
@@ -177,7 +183,7 @@ public class Pathing_Node : MonoBehaviour
     private Pathing_Spline GetTransferSpline(Entity.TURNING_DIR p_desireDirection, Pathing_Spline p_center, Pathing_Spline p_right, Pathing_Spline p_left)
     {
         //Try get desired
-        if(p_desireDirection == Entity.TURNING_DIR.CENTER && p_center!=null)
+        if (p_desireDirection == Entity.TURNING_DIR.CENTER && p_center != null)
             return p_center;
         if (p_desireDirection == Entity.TURNING_DIR.RIGHT && p_right != null)
             return p_right;
@@ -191,13 +197,169 @@ public class Pathing_Node : MonoBehaviour
             return p_right;
         return p_left;
     }
-
     /// <summary>
     /// Valid node when theres at least one forward spline and one backwards spline
     /// </summary>
     /// <returns>true when above is valid</returns>
     public bool ValidNode()
     {
-        return (m_forwardSpline != null || m_forwardRightSpline != null || m_forwardLeftSpline != null) && (m_backwardSpline != null || m_backwardRightSpline != null || m_backwardLeftSpline != null);
+        return (m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FOWARD] != null || m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_RIGHT] != null || (m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_LEFT] != null)
+            && (m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD] != null || m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD_RIGHT] != null|| m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD_LEFT] != null));
     }
+
+    #region Spline building stuff
+
+    private void OnValidate()
+    {
+        for (int splineDetailsIndex = 0; splineDetailsIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineDetailsIndex++)
+        {
+            Spline_Details currentDetails = m_pathingSplineDetails[splineDetailsIndex];
+
+            if (currentDetails.IsValidSpline(this))
+            {
+                Pathing_Node conjoinedNode = currentDetails.m_conjoinedNode;
+
+                Pathing_Spline.SPLINE_POSITION nodeBPosition = conjoinedNode.DetermineNodePosition(this);
+
+                conjoinedNode.m_pathingSplineDetails[(int)nodeBPosition].CopyDetails(currentDetails);
+
+                CreateSpline(currentDetails, (Pathing_Spline.SPLINE_POSITION)splineDetailsIndex);
+            }
+            else if(m_pathingSplines[splineDetailsIndex] != null) //Invalid setup, but spline exists
+            {
+                m_pathingSplines[splineDetailsIndex].SplineRemoved();
+            }
+        }
+    }
+
+    private bool CreateSpline(Spline_Details p_relavantSplineDetails, Pathing_Spline.SPLINE_POSITION p_desiredPosition)
+    {
+        if (p_relavantSplineDetails.IsValidSpline(this))//Vaild spline details, attempt to make spline and ensure is valid
+        {
+            if(m_pathingSplines[(int)p_desiredPosition] != null)
+            {
+                if (m_pathingSplines[(int)p_desiredPosition].SameAsDetails(this, p_relavantSplineDetails))
+                {
+                    return true;
+                }
+                else //Remove as no longer needed
+                {
+                    DestroyImmediate(m_pathingSplines[(int)p_desiredPosition]);
+                }
+            }
+
+            Pathing_Spline newPathingSpline = ScriptableObject.CreateInstance("Pathing_Spline") as Pathing_Spline;
+
+            Pathing_Node nodeA = this;
+            Pathing_Node nodeB = p_relavantSplineDetails.m_conjoinedNode;
+
+            Pathing_Spline.SPLINE_POSITION nodeAPosition = DetermineNodePosition(nodeB);
+            Pathing_Spline.SPLINE_POSITION nodeBPosition = nodeB.DetermineNodePosition(nodeA);
+
+            newPathingSpline.InitVaribles(nodeA, nodeAPosition, nodeB, nodeBPosition, p_relavantSplineDetails.m_splineType, p_relavantSplineDetails.m_circleDir, p_relavantSplineDetails.m_circleAngle, p_relavantSplineDetails.m_bezierStrength);
+
+            m_pathingSplines[(int)p_desiredPosition] = newPathingSpline;
+            nodeB.AssignSpline(newPathingSpline, nodeBPosition);
+
+            return newPathingSpline;
+        }
+
+        return false;
+
+    }
+
+    public Pathing_Spline.SPLINE_POSITION DetermineNodePosition(Pathing_Node p_node)
+    {
+        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
+        {
+            if (m_pathingSplineDetails[splineIndex].m_conjoinedNode == p_node)
+                return (Pathing_Spline.SPLINE_POSITION)splineIndex;
+        }
+
+        return Pathing_Spline.SPLINE_POSITION.MAX_LENGTH;
+    }
+
+    public bool ContainsConjoinedNode(Pathing_Node p_conjoinedNode)
+    {
+        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
+        {
+            if(m_pathingSplineDetails[splineIndex].m_conjoinedNode == p_conjoinedNode)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void AssignSpline(Pathing_Spline p_spline, Pathing_Spline.SPLINE_POSITION p_position)
+    {
+        if (p_position != Pathing_Spline.SPLINE_POSITION.MAX_LENGTH && p_spline != null)
+        {
+            m_pathingSplines[(int)p_position] = p_spline;
+        }
+    }
+
+    /// <summary>
+    /// Used to rebuild all spline connections based off the spline details given
+    /// </summary>
+    private void RebuildSplines()
+    {
+        //Build all the splines
+        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
+        {
+            CreateSpline(m_pathingSplineDetails[splineIndex], (Pathing_Spline.SPLINE_POSITION)splineIndex);
+        }
+
+        //Add to adjacent list
+        m_adjacentSplines.Clear();
+        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
+        {
+            if (m_pathingSplines[splineIndex] != null)
+            {
+                m_adjacentSplines.Add(m_pathingSplines[splineIndex]);
+            }
+        }
+    }
+
+
+    #region Editor Specific
+    #if UNITY_EDITOR
+    private const int SPLINE_STEPS = 10;
+
+    private void OnDrawGizmos()
+    {
+        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
+        {
+            if (m_pathingSplines[splineIndex] != null)
+                DrawSpline(m_pathingSplines[splineIndex]);
+        }
+    }
+
+    /// <summary>
+    /// Draw a spline
+    /// </summary>
+    /// <param name="p_spline">Spline to draw</param>
+    private void DrawSpline(Pathing_Spline p_pathingSpline)
+    {
+        Gizmos.color = Color.blue;
+
+        float percentStep = 1.0f / SPLINE_STEPS;
+        float currentPercent = percentStep;
+
+        Vector3 previous = p_pathingSpline.m_nodeA.transform.position;
+        //Loop through approximating circle, every (m_totalDegrees / DEBUG_STEPS) degrees
+        for (int i = 1; i <= SPLINE_STEPS; i++)
+        {
+            Vector3 next = p_pathingSpline.GetPosition(currentPercent);
+
+            Gizmos.DrawLine(previous, next);
+
+            previous = next;
+            currentPercent += percentStep;
+        }
+    }
+#endif
+    #endregion
+
+    #endregion
 }

@@ -31,6 +31,8 @@ public class Entity : MonoBehaviour
             Destroy(this);
             return;
         }
+
+        m_splinePhysics.Init();
     }
 
     protected virtual void Update()

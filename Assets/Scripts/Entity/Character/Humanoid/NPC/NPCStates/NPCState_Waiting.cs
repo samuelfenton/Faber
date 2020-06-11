@@ -8,7 +8,7 @@ public class NPCState_Waiting : NPC_State
     private string m_paramVelocity = "";
     private string m_paramIdle = "";
 
-    private Pathing_Spline m_patrolSpline = null;
+    private Pathing_Spline m_patrolSpline;
     private float m_patrolSplinePercent = 0.0f;
 
     private enum WAITING_STATUS {IDLE, PATROLLING}

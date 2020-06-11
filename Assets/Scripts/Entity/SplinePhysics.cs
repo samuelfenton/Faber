@@ -11,7 +11,9 @@ public class SplinePhysics : MonoBehaviour
     public const float GRAVITY = -9.8f;
 
     [Header("Spline settings")]
-    public Pathing_Spline m_currentSpline = null;
+    public Pathing_Node m_nodeA = null;
+    public Pathing_Node m_nodeB = null;
+
     [Range(0, 1)]
     public float m_currentSplinePercent = 0.0f;
 
@@ -24,16 +26,18 @@ public class SplinePhysics : MonoBehaviour
     [HideInInspector]
     public bool m_backCollision = false;
 
+    [HideInInspector]
+    public Pathing_Spline m_currentSpline = null;
     protected Vector3 m_colliderExtents = Vector3.zero;
     protected float m_collisionDetection = 0.1f;
 
     protected Entity m_parentEntity = null;
 
-    protected virtual void Start()
+    public virtual void Init()
     {
         m_parentEntity = GetComponent<Entity>();
 
-        if(m_parentEntity==null)
+        if (m_parentEntity == null)
         {
 #if UNITY_EDITOR
             Debug.Log(name + " has no entity attached, considering removing the spline physcis, or add one");
@@ -41,34 +45,36 @@ public class SplinePhysics : MonoBehaviour
             return;
         }
 
-        if (m_currentSpline == null)//Safety breakout
+        if (m_nodeA == null || m_nodeB == null)
         {
 #if UNITY_EDITOR
-            Debug.Log(name + " does not have a spline set in spline physics");
+            Debug.Log(name + " doesnt have both nodes set in the inspector");
 #endif
             return;
         }
 
-        if (m_currentSpline != null)
-        {
-            transform.position = m_currentSpline.GetPosition(m_currentSplinePercent);
-        }
-    }
+        Pathing_Spline.SPLINE_POSITION splinePosition = m_nodeA.DetermineNodePosition(m_nodeB);
 
-#if UNITY_EDITOR
-    /// <summary>
-    /// DEV_MODE, places character on current spline based on its spline percent
-    /// </summary>
-    ///
-    private void OnValidate()
-    {
-        //Update position in scene 
-        if (m_currentSpline != null)
+        if (splinePosition == Pathing_Spline.SPLINE_POSITION.MAX_LENGTH)
         {
-            transform.position = m_currentSpline.GetPosition(m_currentSplinePercent);
-        }
-    }
+#if UNITY_EDITOR
+            Debug.Log(name + " nodes are invalid");
 #endif
+            return;
+        }
+
+        m_currentSpline = m_nodeA.m_pathingSplines[(int)splinePosition];
+
+        if (m_currentSpline == null)
+        { 
+#if UNITY_EDITOR
+            Debug.Log(name + " spline is invalid");
+#endif
+            return;
+        }
+
+        transform.position = m_currentSpline.GetPosition(m_currentSplinePercent);
+    }
 
     /// <summary>
     /// Updates characters physics

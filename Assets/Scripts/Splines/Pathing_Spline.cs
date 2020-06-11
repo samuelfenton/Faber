@@ -2,63 +2,149 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pathing_Spline : MonoBehaviour
+public class Pathing_Spline : ScriptableObject
 {
-    private const int STEPS = 10;
+    public enum SPLINE_TYPE { STRAIGHT, BEZIER, CIRCLE }
+    public enum CIRCLE_DIR { CLOCKWISE, COUNTER_CLOCKWISE }
+    public enum SPLINE_POSITION {FOWARD = 0, FORWARD_RIGHT, FORWARD_LEFT, BACKWARD, BACKWARD_RIGHT, BACKWARD_LEFT, MAX_LENGTH} //Where on a node is the spline
 
+    //Assigned from editor
     public Pathing_Node m_nodeA = null;
+    public SPLINE_POSITION m_nodeAPosition = SPLINE_POSITION.MAX_LENGTH;
+
     public Pathing_Node m_nodeB = null;
+    public SPLINE_POSITION m_nodeBPosition = SPLINE_POSITION.MAX_LENGTH;
 
-    public enum SPLINE_TYPE {STRAIGHT, BEZIER, CIRCLE }
-    public SPLINE_TYPE m_splineType = SPLINE_TYPE.BEZIER;
+    private SPLINE_TYPE m_splineType = SPLINE_TYPE.STRAIGHT;
 
-    [Header("Bezier Settings")]
-    public float m_controlPointStrength = 1.0f;
-    public enum CIRCLE_DIR {CLOCKWISE, COUNTER_CLOCKWISE }
-    [Header("Circle values")]
-    public CIRCLE_DIR m_circleDir = CIRCLE_DIR.CLOCKWISE;
-    public float m_circleAngle = 90.0f;
+    private CIRCLE_DIR m_circleDir = CIRCLE_DIR.CLOCKWISE;
+    private float m_circleAngle = 90.0f;
 
+    private float m_bezierStrength = 10.0f;
 
-    //Stored varibles for efficiency sake
-    [HideInInspector]
+    //Derived varibles
     public float m_splineLength = 1.0f;
-        
+
     //Straight
-    private Vector3 m_straightDir = Vector3.zero;
+    private Vector3 m_straightDir;
 
     //Bezier
-    private Vector3 m_bezierPointA = Vector3.zero;
-    private Vector3 m_bezierPointB = Vector3.zero;
-    private Vector3 m_bezierControlA = Vector3.zero;
-    private Vector3 m_bezierControlB = Vector3.zero;
+    private Vector3 m_bezierPointA;
+    private Vector3 m_bezierPointB;
+    private Vector3 m_bezierControlA;
+    private Vector3 m_bezierControlB;
 
     //Circle
-    private float m_circleHeight = 0.0f;
-    private Vector3 m_circleCenter = Vector3.zero;
-    private Vector3 m_centerADir = Vector3.zero;
+    private float m_circleHeight;
+    private Vector3 m_circleCenter;
+    private Vector3 m_centerADir;
 
     /// <summary>
-    /// Initilasie the spline for settings 
+    /// Assigne all varibles to a spline
     /// </summary>
-    public void InitSpline()
+    /// <param name="p_nodeA"></param>
+    /// <param name="p_nodeB"></param>
+    /// <param name="p_splineType"></param>
+    /// <param name="p_circleDir"></param>
+    /// <param name="p_circleAngle"></param>
+    /// <param name="p_bezierStrength"></param>
+    public void InitVaribles(Pathing_Node p_nodeA, SPLINE_POSITION p_nodeAPosition, Pathing_Node p_nodeB, SPLINE_POSITION p_nodeBPosition, SPLINE_TYPE p_splineType, CIRCLE_DIR p_circleDir, float p_circleAngle, float p_bezierStrength)
+    {
+        m_nodeA = p_nodeA;
+        m_nodeAPosition = p_nodeAPosition;
+        m_nodeB = p_nodeB;
+        m_nodeBPosition = p_nodeBPosition;
+        m_splineType = p_splineType;
+        m_circleDir = p_circleDir;
+        m_circleAngle = p_circleAngle;
+        m_bezierStrength = p_bezierStrength;
+
+        SetupSpline();
+    }
+
+    /// <summary>
+    /// Rebuild the spline for derived varibles 
+    /// </summary>
+    public void SetupSpline()
     {
         switch (m_splineType)
         {
             case SPLINE_TYPE.STRAIGHT:
-                InitStraight();
+                RebuildStraight();
                 break;
             case SPLINE_TYPE.BEZIER:
-                InitBezier();
+                RebuildBezier();
                 break;
             case SPLINE_TYPE.CIRCLE:
-                InitCircle();
+                RebuildCircle();
                 break;
             default:
                 break;
         }
     }
 
+    /// <summary>
+    /// If a spline has been removed ensure all "connections" are also removed
+    /// </summary>
+    public void SplineRemoved()
+    {
+        if(m_nodeA != null && m_nodeAPosition != SPLINE_POSITION.MAX_LENGTH)
+        {
+            m_nodeA.m_pathingSplines[(int)m_nodeAPosition] = null;
+        }
+        if (m_nodeB != null && m_nodeBPosition != SPLINE_POSITION.MAX_LENGTH)
+        {
+            m_nodeB.m_pathingSplines[(int)m_nodeBPosition] = null;
+        }
+    }
+
+    /// <summary>
+    /// Determine if the given details match up to the spline
+    /// </summary>
+    /// <param name="p_currentNode">Node to check against</param>
+    /// <param name="p_splineDetails">Node details to check against</param>
+    /// <returns>true when all the details matchup</returns>
+    public bool SameAsDetails(Pathing_Node p_currentNode, Pathing_Node.Spline_Details p_splineDetails)
+    {
+        Pathing_Node conjoinedNode = p_splineDetails.m_conjoinedNode;
+
+        //Check node details, could be back to front
+        if(m_nodeA == p_currentNode && m_nodeB == conjoinedNode)
+        {
+            if (m_nodeAPosition != m_nodeA.DetermineNodePosition(m_nodeB) || m_nodeBPosition != m_nodeB.DetermineNodePosition(m_nodeA))
+                return false;
+        }
+        else if(m_nodeB == p_currentNode && m_nodeA == conjoinedNode)
+        {
+            if (m_nodeAPosition != m_nodeB.DetermineNodePosition(m_nodeA) || m_nodeBPosition != m_nodeA.DetermineNodePosition(m_nodeB))
+                return false;
+        }
+        else
+        {
+            return false;
+        }
+
+        //Circle Direction is opposite 
+
+        if (m_circleDir == p_splineDetails.m_circleDir)
+            return false;
+
+        //Basic details
+        if (m_splineType != p_splineDetails.m_splineType || m_circleAngle != p_splineDetails.m_circleAngle || m_bezierStrength != p_splineDetails.m_bezierStrength)
+            return false;
+
+        return true;
+
+    }
+
+    /// <summary>
+    /// Get the splines length
+    /// </summary>
+    /// <returns>Returns stored varible m_splineLength</returns>
+    public float GetSplineLength()
+    {
+        return m_splineLength;
+    }
     /// <summary>
     /// Get the position of the spline based off percent
     /// </summary>
@@ -119,12 +205,12 @@ public class Pathing_Spline : MonoBehaviour
         return p_distanceTravelled / m_splineLength;
     }
 
-    #region Inits
+    #region Rebuild
 
     /// <summary>
-    /// Initliase the straight spline
+    /// Rebuild the straight spline
     /// </summary>
-    private void InitStraight()
+    private void RebuildStraight()
     {
         m_straightDir = m_nodeB.transform.position - m_nodeA.transform.position;
         m_splineLength = m_straightDir.magnitude;
@@ -133,12 +219,12 @@ public class Pathing_Spline : MonoBehaviour
     /// <summary>
     /// Setup varibles used in bezier calculations
     /// </summary>
-    private void InitBezier()
+    private void RebuildBezier()
     {
         m_bezierPointA = m_nodeA.transform.position;
         m_bezierPointB = m_nodeB.transform.position;
-        m_bezierControlA = m_bezierPointA + m_nodeA.transform.forward * m_controlPointStrength;
-        m_bezierControlB = m_bezierPointB - m_nodeB.transform.forward * m_controlPointStrength;
+        m_bezierControlA = m_bezierPointA + m_nodeA.transform.forward * m_bezierStrength;
+        m_bezierControlB = m_bezierPointB - m_nodeB.transform.forward * m_bezierStrength;
 
         //See example at https://stackoverflow.com/questions/29438398/cheap-way-of-calculating-cubic-bezier-length
         float chord = (m_bezierPointB - m_bezierPointA).magnitude;
@@ -150,7 +236,7 @@ public class Pathing_Spline : MonoBehaviour
     /// <summary>
     /// Setup varibles in circle calculations
     /// </summary>
-    private void InitCircle()
+    private void RebuildCircle()
     {
         Vector3 ABDir = m_nodeB.transform.position - m_nodeA.transform.position;
         Vector3 ABHalf = ABDir / 2.0f;
@@ -162,13 +248,13 @@ public class Pathing_Spline : MonoBehaviour
 
         Vector3 ABPerp = Quaternion.Euler(0.0f, m_circleDir == CIRCLE_DIR.CLOCKWISE ? 90.0f : -90.0f, 0.0f) * ABHalf;
 
-        Vector3 centerOffset = Mathf.Tan((-m_circleAngle + 180)  * Mathf.Deg2Rad / 2.0f) * ABPerp;
+        Vector3 centerOffset = Mathf.Tan((-m_circleAngle + 180) * Mathf.Deg2Rad / 2.0f) * ABPerp;
 
         m_circleCenter = m_nodeA.transform.position + ABHalf + centerOffset;
 
-        m_centerADir =  m_nodeA.transform.position - m_circleCenter;
+        m_centerADir = m_nodeA.transform.position - m_circleCenter;
 
-        m_splineLength = 2.0f * Mathf.PI * m_centerADir.magnitude * m_circleAngle/360.0f;
+        m_splineLength = 2.0f * Mathf.PI * m_centerADir.magnitude * m_circleAngle / 360.0f;
     }
     #endregion
 
@@ -202,12 +288,12 @@ public class Pathing_Spline : MonoBehaviour
     {
         if (m_circleAngle % 360 == 0.0f) //Dont want it to go to infinite fo  just use stright
         {
-            InitStraight();
+            RebuildStraight();
 
             return GetStraightPosition(p_percent);
         }
 
-        Quaternion transformRot = Quaternion.Euler(0.0f, m_circleDir == CIRCLE_DIR.CLOCKWISE ? m_circleAngle * p_percent : -m_circleAngle * p_percent, 0.0f); 
+        Quaternion transformRot = Quaternion.Euler(0.0f, m_circleDir == CIRCLE_DIR.CLOCKWISE ? m_circleAngle * p_percent : -m_circleAngle * p_percent, 0.0f);
         Vector3 position = m_circleCenter + (transformRot * m_centerADir);
 
         position.y = m_nodeA.transform.position.y + m_circleHeight * p_percent;
@@ -253,57 +339,9 @@ public class Pathing_Spline : MonoBehaviour
         Vector3 percentPos = GetCirclePosition(p_percent);
         Vector3 desiredDir = m_circleCenter - percentPos;
         desiredDir = new Vector3(desiredDir.z, 0.0f, -desiredDir.x);
-        Vector3 forward = desiredDir * (m_circleDir == CIRCLE_DIR.CLOCKWISE ? -1:1);
+        Vector3 forward = desiredDir * (m_circleDir == CIRCLE_DIR.CLOCKWISE ? -1 : 1);
         forward.y = 0.0f;
         return forward.normalized;
     }
-    #endregion
-
-    #region Editor Specific
-#if UNITY_EDITOR
-
-    /// <summary>
-    /// Purely cosmetic, update position of spline in editor
-    /// </summary>
-    public void UpdatePosition()
-    {
-        //Draw the line from A to B
-        if (m_nodeA == null || m_nodeB == null)
-            return;
-
-        //For visiblility dont be right in middle
-        transform.position = GetPosition(0.3f); 
-    }
-
-    /// <summary>
-    /// Draw the correct line for the given spline
-    /// </summary>
-    private void OnDrawGizmos()
-    {
-        //Draw the line from A to B
-        if (m_nodeA == null || m_nodeB == null)
-            return;
-
-        //ensure data is up to date
-        InitSpline();
-
-        Gizmos.color = Color.blue;
-
-        float percentStep = 1.0f / STEPS;
-        float currentPercent = percentStep;
-
-        Vector3 previous = m_nodeA.transform.position;
-        //Loop through approximating circle, every (m_totalDegrees / DEBUG_STEPS) degrees
-        for (int i = 1; i <= STEPS; i++)
-        {
-            Vector3 next = GetPosition(currentPercent);
-
-            Gizmos.DrawLine(previous, next);
-
-            previous = next;
-            currentPercent += percentStep;
-        }
-    }
-#endif
     #endregion
 }

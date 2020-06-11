@@ -5,21 +5,17 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class Character_SplinePhysics : SplinePhysics
 {
-    private Character m_parentCharacter = null;
-
     /// <summary>
     /// Initilise entity physics
     /// Setup collider extents for future use
     /// </summary>
-    protected override void Start()
+    public override void Init()
     {
-        base.Start();
+        base.Init();
 
-        m_parentCharacter = GetComponent<Character>();
+        CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
 
-        CapsuleCollider capculeCollider = GetComponent<CapsuleCollider>();
-
-        m_colliderExtents.x = m_colliderExtents.z = capculeCollider.radius;
-        m_colliderExtents.y = capculeCollider.height / 2.0f;
+        m_colliderExtents.x = m_colliderExtents.z = capsuleCollider.radius;
+        m_colliderExtents.y = capsuleCollider.height / 2.0f;
     }
 }
