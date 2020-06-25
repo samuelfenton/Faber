@@ -1,8 +1,11 @@
 fileFormatVersion: 2
-guid: 4cfaa36bc91f76d4f85f769347a4fad4
+guid: bb5023d7693b90e40aff9e4d3db18041
 ModelImporter:
   serializedVersion: 26
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      74: -6755746215670033459
+    second: Character_Lilith_Lightattack1
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -14,7 +17,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
-    motionNodeName: 
+    motionNodeName: <Root Transform>
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
@@ -69,7 +72,7 @@ ModelImporter:
     normalSmoothingSource: 0
   referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
+  copyAvatar: 1
   humanDescription:
     serializedVersion: 3
     human: []
@@ -86,7 +89,8 @@ ModelImporter:
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
+    type: 3}
   animationType: 2
   humanoidOversampling: 1
   additionalBone: 0

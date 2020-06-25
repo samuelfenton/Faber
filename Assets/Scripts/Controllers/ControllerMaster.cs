@@ -15,7 +15,13 @@ public class ControllerMaster : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+
+
+        GameObject topObject = gameObject;
+        while (topObject.transform.parent != null)
+            topObject = topObject.transform.parent.gameObject;
+
+        DontDestroyOnLoad(topObject);
 
         InitSceneControllers();
     }

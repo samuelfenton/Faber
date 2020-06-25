@@ -152,12 +152,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc4e21cd721a2bb43ac1e201def8c337, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_currentSpline: {fileID: 0}
+  m_nodeA: {fileID: 0}
+  m_nodeB: {fileID: 0}
   m_currentSplinePercent: 0.394
   m_upCollision: 0
   m_downCollision: 0
   m_forwardCollision: 0
   m_backCollision: 0
+  m_currentSpline: {fileID: 0}
 --- !u!114 &3775519670443091626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,7 +226,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bc5db65b5ff22f42b5b86ca95839008, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_voxelSize: 0.05
+  m_voxelSize: 0.03
   m_voxeliserType: 2
   m_performOverFrames: 0
   m_objectWithMesh: {fileID: 7997150523994316377}
