@@ -30,6 +30,11 @@ public class Pathing_Node : MonoBehaviour
             m_bezierStrength = p_details.m_bezierStrength;
         }
 
+        /// <summary>
+        /// Does the current spline have both 
+        /// </summary>
+        /// <param name="p_currentNode"></param>
+        /// <returns></returns>
         public bool IsValidSpline(Pathing_Node p_currentNode)
         {
             return m_conjoinedNode != null && m_conjoinedNode.ContainsConjoinedNode(p_currentNode);
