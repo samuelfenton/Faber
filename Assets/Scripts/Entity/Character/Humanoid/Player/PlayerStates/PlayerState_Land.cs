@@ -4,17 +4,14 @@ using UnityEngine;
 
 public class PlayerState_Land : State_Player
 {
-    private string m_animLand = "";
-
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public override void StateInit(bool p_loopedState, Enity p_entity)
     {
-        base.StateInit(p_loopedState, p_character);
-        m_animLand = m_customAnimation.GetLocomotion(CustomAnimation_Humanoid.LOCOMOTION_ANIM.LAND);
+        base.StateInit(p_loopedState, p_entity);
     }
 
     /// <summary>
@@ -24,7 +21,7 @@ public class PlayerState_Land : State_Player
     {
         base.StateStart();
 
-        m_customAnimation.PlayAnimation(m_animLand);
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.LAND, true);
     }
 
     /// <summary>
@@ -44,8 +41,8 @@ public class PlayerState_Land : State_Player
     public override void StateEnd()
     {
         base.StateEnd();
-        
-        m_customAnimation.EndAnimation();
+
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.LAND, false);
     }
 
     /// <summary>
@@ -54,6 +51,6 @@ public class PlayerState_Land : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_character.m_splinePhysics.m_downCollision;
+        return m_entity.m_splinePhysics.m_downCollision;
     }
 }

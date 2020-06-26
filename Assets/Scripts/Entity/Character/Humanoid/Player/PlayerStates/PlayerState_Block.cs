@@ -4,18 +4,14 @@ using UnityEngine;
 
 public class PlayerState_Block : State_Player
 {
-    private string m_animBlock = "";
-
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public override void StateInit(bool p_loopedState, Enity p_entity)
     {
-        base.StateInit(p_loopedState, p_character);
-
-        m_animBlock = m_customAnimation.GetLocomotion(CustomAnimation_Humanoid.LOCOMOTION_ANIM.BLOCK);
+        base.StateInit(p_loopedState, p_entity);
     }
 
     /// <summary>
@@ -25,8 +21,8 @@ public class PlayerState_Block : State_Player
     {
         base.StateStart();
 
-        m_character.m_blockingFlag = true;
-        m_customAnimation.PlayAnimation(m_animBlock);
+        m_entity.m_blockingFlag = true;
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.BLOCK, true);
     }
 
     /// <summary>
@@ -47,9 +43,8 @@ public class PlayerState_Block : State_Player
     {
         base.StateEnd();
 
-        m_customAnimation.EndAnimation();
-
-        m_character.m_blockingFlag = false;
+        m_entity.m_blockingFlag = false;
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.BLOCK, false);
     }
 
     /// <summary>
@@ -58,6 +53,6 @@ public class PlayerState_Block : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_character.m_splinePhysics.m_downCollision && m_player.m_input.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
+        return m_entity.m_splinePhysics.m_downCollision && m_player.m_input.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
     }
 }

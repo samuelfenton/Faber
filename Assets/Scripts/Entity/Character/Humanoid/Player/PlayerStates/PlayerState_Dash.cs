@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_Roll : State_Player
+public class PlayerState_Dash : State_Player
 {
-    private string m_animRoll = "";
-
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public override void StateInit(bool p_loopedState, Enity p_entity)
     {
-        base.StateInit(p_loopedState, p_character);
-        
-        m_animRoll = m_customAnimation.GetLocomotion(CustomAnimation_Humanoid.LOCOMOTION_ANIM.ROLL);
+        base.StateInit(p_loopedState, p_entity);
     }
 
     /// <summary>
@@ -25,19 +21,19 @@ public class PlayerState_Roll : State_Player
     {
         base.StateStart();
 
-        m_customAnimation.PlayAnimation(m_animRoll);
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.DASH, true);
 
         float desiredVelocity = 0.0f;
-        float modelToObjectForwardDot = Vector3.Dot(m_character.m_characterModel.transform.forward, m_character.transform.forward);
+        float modelToObjectForwardDot = Vector3.Dot(m_entity.m_characterModel.transform.forward, m_entity.transform.forward);
 
         //Update Translation
         if (modelToObjectForwardDot >= 0.0f)//Facing correct way, roll backwards
-            desiredVelocity = -m_character.m_rollbackVelocity;
+            desiredVelocity = -m_entity.m_rollbackVelocity;
         else
-            desiredVelocity = m_character.m_rollbackVelocity;
+            desiredVelocity = m_entity.m_rollbackVelocity;
 
-        m_character.SetDesiredVelocity(desiredVelocity);
-        m_character.HardSetVelocity(desiredVelocity);
+        m_entity.SetDesiredVelocity(desiredVelocity);
+        m_entity.HardSetVelocity(desiredVelocity);
     }
 
     /// <summary>
@@ -49,7 +45,7 @@ public class PlayerState_Roll : State_Player
         base.StateUpdate();
 
         if(m_customAnimation.GetAnimationPercent() >0.7f)
-            m_character.SetDesiredVelocity(0.0f);
+            m_entity.SetDesiredVelocity(0.0f);
 
         return m_customAnimation.IsAnimationDone();
     }
@@ -61,10 +57,10 @@ public class PlayerState_Roll : State_Player
     {
         base.StateEnd();
         
-        m_character.SetDesiredVelocity(0.0f);
-        m_character.HardSetVelocity(0.0f);
+        m_entity.SetDesiredVelocity(0.0f);
+        m_entity.HardSetVelocity(0.0f);
 
-        m_customAnimation.EndAnimation();
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.DASH, false);
     }
 
     /// <summary>
@@ -73,6 +69,6 @@ public class PlayerState_Roll : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_character.m_splinePhysics.m_downCollision && m_player.m_input.GetKeyBool(CustomInput.INPUT_KEY.ROLL);
+        return m_entity.m_splinePhysics.m_downCollision && m_player.m_input.GetKeyBool(CustomInput.INPUT_KEY.ROLL);
     }
 }

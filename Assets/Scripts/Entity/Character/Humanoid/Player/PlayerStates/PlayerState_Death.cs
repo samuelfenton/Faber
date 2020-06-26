@@ -4,18 +4,14 @@ using UnityEngine;
 
 public class PlayerState_Death : PlayerState_Interrupt
 {
-    private string m_animDeath = "";
-
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public override void StateInit(bool p_loopedState, Enity p_entity)
     {
-        base.StateInit(p_loopedState, p_character);
-
-        m_animDeath = m_customAnimation.GetInterrupt(CustomAnimation_Humanoid.INTERRUPT_ANIM.DEATH);
+        base.StateInit(p_loopedState, p_entity);
     }
 
     /// <summary>
@@ -25,7 +21,7 @@ public class PlayerState_Death : PlayerState_Interrupt
     {
         base.StateStart();
 
-        m_customAnimation.PlayAnimation(m_animDeath);
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.DEATH, true);
     }
 
     /// <summary>
@@ -53,6 +49,6 @@ public class PlayerState_Death : PlayerState_Interrupt
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return !m_character.IsAlive() && !m_inProgressFlag;
+        return !m_entity.IsAlive() && !m_inProgressFlag;
     }
 }

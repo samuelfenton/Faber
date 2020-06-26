@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character_Humanoid : Character
+public class Character_Humanoid : Enity
 {
 
 }

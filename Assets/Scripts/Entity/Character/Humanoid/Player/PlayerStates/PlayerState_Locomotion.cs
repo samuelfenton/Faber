@@ -4,22 +4,14 @@ using UnityEngine;
 
 public class PlayerState_Locomotion : State_Player
 {
-    private string m_animIdle = "";
-    private string m_paramVelocity = "";
-    private string m_paramRandomIdle = "";
-
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public override void StateInit(bool p_loopedState, Enity p_entity)
     {
-        base.StateInit(p_loopedState, p_character);
-
-        m_animIdle = m_customAnimation.GetLocomotion(CustomAnimation_Humanoid.LOCOMOTION_ANIM.IDLE);
-        m_paramVelocity = m_customAnimation.GetVarible(CustomAnimation_Humanoid.VARIBLE_ANIM.CURRENT_VELOCITY);
-        m_paramRandomIdle = m_customAnimation.GetVarible(CustomAnimation_Humanoid.VARIBLE_ANIM.RANDOM_IDLE);
+        base.StateInit(p_loopedState, p_entity);
     }
 
     /// <summary>
@@ -43,10 +35,10 @@ public class PlayerState_Locomotion : State_Player
 
         if(m_player.m_input.GetKeyBool(CustomInput.INPUT_KEY.SPRINT))
         {
-            m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * Character.SPRINT_MODIFIER);
+            m_entity.SetDesiredVelocity(horizontal * m_entity.m_groundRunVel * Enity.SPRINT_MODIFIER);
         }
         else
-            m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel);
+            m_entity.SetDesiredVelocity(horizontal * m_entity.m_groundRunVel);
 
         return false;
     }
@@ -65,6 +57,6 @@ public class PlayerState_Locomotion : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_character.m_splinePhysics.m_downCollision && !m_player.m_input.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
+        return m_entity.m_splinePhysics.m_downCollision && !m_player.m_input.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
     }
 }

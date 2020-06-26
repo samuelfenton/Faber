@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class NPCState_Waiting : NPC_State
 {
-    private string m_animIdle = "";
-    private string m_paramVelocity = "";
-    private string m_paramIdle = "";
-
     private Pathing_Spline m_patrolSpline;
     private float m_patrolSplinePercent = 0.0f;
 
@@ -18,14 +14,10 @@ public class NPCState_Waiting : NPC_State
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public override void StateInit(bool p_loopedState, Enity p_entity)
     {
-        base.StateInit(p_loopedState, p_character);
-
-        m_animIdle = m_customAnimation.GetLocomotion(CustomAnimation_Humanoid.LOCOMOTION_ANIM.IDLE);
-        m_paramVelocity = m_customAnimation.GetVarible(CustomAnimation_Humanoid.VARIBLE_ANIM.CURRENT_VELOCITY);
-        m_paramIdle = m_customAnimation.GetVarible(CustomAnimation_Humanoid.VARIBLE_ANIM.RANDOM_IDLE);
+        base.StateInit(p_loopedState, p_entity);
     }
 
     /// <summary>
@@ -39,10 +31,10 @@ public class NPCState_Waiting : NPC_State
 
         if (m_currentWaitingState == WAITING_STATUS.IDLE)
         {
-            m_character.SetRandomIdle();
-            m_customAnimation.PlayAnimation(m_animIdle);
+            m_entity.SetRandomIdle();
+            m_customAnimation.SetFloat(CustomAnimation.VARIBLE_FLOAT.DESIRED_VELOCITY, 0.0f);
 
-            m_character.SetDesiredVelocity(0.0f);
+            m_entity.SetDesiredVelocity(0.0f);
         }
         else //Patrolling
         {
@@ -50,7 +42,7 @@ public class NPCState_Waiting : NPC_State
             List<Pathing_Spline> possibleSplines = new List<Pathing_Spline>();
 
             possibleSplines.AddRange(m_NPCCharacter.m_patrolSplines);
-            possibleSplines.Remove(m_character.m_splinePhysics.m_currentSpline); //Dont attempt to get current spline
+            possibleSplines.Remove(m_entity.m_splinePhysics.m_currentSpline); //Dont attempt to get current spline
 
             m_patrolSpline = possibleSplines[Random.Range(0, possibleSplines.Count)];
             m_patrolSplinePercent = Random.Range(0.2f, 0.8f);
@@ -71,15 +63,15 @@ public class NPCState_Waiting : NPC_State
         }
         else //Patrol
         {
-            if (m_patrolSpline == m_character.m_splinePhysics.m_currentSpline) //Moveing towards percent
+            if (m_patrolSpline == m_entity.m_splinePhysics.m_currentSpline) //Moveing towards percent
             {
-                MoveTowardsPercent(m_patrolSplinePercent, m_character.m_groundRunVel / 2.0f); //Walk speed
+                MoveTowardsPercent(m_patrolSplinePercent, m_entity.m_groundRunVel / 2.0f); //Walk speed
 
-                return Mathf.Abs(m_character.m_splinePhysics.m_currentSplinePercent - m_patrolSplinePercent) < 0.1f; //Get within 0.1 percent
+                return Mathf.Abs(m_entity.m_splinePhysics.m_currentSplinePercent - m_patrolSplinePercent) < 0.1f; //Get within 0.1 percent
             }
             else
             {
-                MoveTowardsSpline(m_patrolSpline, m_character.m_groundRunVel / 2.0f);
+                MoveTowardsSpline(m_patrolSpline, m_entity.m_groundRunVel / 2.0f);
             }
         }
 

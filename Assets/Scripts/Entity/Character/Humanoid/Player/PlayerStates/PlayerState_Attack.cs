@@ -10,11 +10,11 @@ public class PlayerState_Attack : State_Player
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public override void StateInit(bool p_loopedState, Enity p_entity)
     {
-        base.StateInit(p_loopedState, p_character);
-        m_weaponManager = p_character.GetComponent<WeaponManager>();
+        base.StateInit(p_loopedState, p_entity);
+        m_weaponManager = m_player.GetComponent<WeaponManager>();
     }
 
     /// <summary>
@@ -26,7 +26,7 @@ public class PlayerState_Attack : State_Player
 
         m_weaponManager.StartAttackSequence();
 
-        m_character.SetDesiredVelocity(0.0f);
+        m_entity.SetDesiredVelocity(0.0f);
     }
 
     /// <summary>
@@ -46,10 +46,8 @@ public class PlayerState_Attack : State_Player
     public override void StateEnd()
     {
         base.StateEnd();
-
-        m_customAnimation.EndAnimation();
         
-        m_weaponManager.ForceEndAttack();
+        m_customAnimation.EndAttackAnimation();
     }
 
     /// <summary>

@@ -10,10 +10,10 @@ public class NPC_StateMachine : StateMachine
     /// Initilise the state machine
     /// Run derived class first, add in states needed. 
     /// </summary>
-    /// <param name="p_character">Parent character this state machine is attached to</param>
-    public override void InitStateMachine(Character p_character)
+    /// <param name="p_entity">Parent entity this state machine is attached to</param>
+    public override void InitStateMachine(Enity p_entity)
     {
-        m_NPCCharacter = (NPC_Character)p_character;
+        m_NPCCharacter = (NPC_Character)p_entity;
 
         //Add components
         NPCState_Death death = NewInterruptState<NPCState_Death>();
@@ -26,14 +26,14 @@ public class NPC_StateMachine : StateMachine
         NPCState_Attack attack = NewNextState<NPCState_Attack>();
         
         //Init all 
-        death.StateInit(true, p_character);
-        knockback.StateInit(false, p_character);
-        recoil.StateInit(false, p_character);
+        death.StateInit(true, p_entity);
+        knockback.StateInit(false, p_entity);
+        recoil.StateInit(false, p_entity);
 
-        approach.StateInit(false, p_character);
-        waiting.StateInit(false, p_character);
+        approach.StateInit(false, p_entity);
+        waiting.StateInit(false, p_entity);
 
-        attack.StateInit(false, p_character);
+        attack.StateInit(false, p_entity);
 
         //Add in next states
         //Interrrupts
@@ -57,6 +57,6 @@ public class NPC_StateMachine : StateMachine
 
         m_currentState = waiting;
 
-        base.InitStateMachine(p_character);
+        base.InitStateMachine(p_entity);
     }
 }

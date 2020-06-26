@@ -4,28 +4,23 @@ using UnityEngine;
 
 public class WeaponTrigger : MonoBehaviour
 {
-    public float m_lightDamage = 0.0f;
-    public float m_heavyDamage = 0.0f;
-
     private enum WEAPON_STATE {WINDUP, ATTACK, COOLOFF}
     
     private WEAPON_STATE m_currentState = WEAPON_STATE.WINDUP;
     
     private Collider m_colldier = null;
-    private Character m_character = null;
+    private Enity m_character = null;
 
     private float m_damageStart = 0.0f;
     private float m_damageEnd = 0.0f;
 
-    private CustomAnimation_Humanoid.ATTACK_STANCE m_currentStance = CustomAnimation_Humanoid.ATTACK_STANCE.LIGHT;
-
-    private List<Character> m_hitCharacters = new List<Character>();
+    private List<Enity> m_hitCharacters = new List<Enity>();
 
     /// <summary>
     /// Setup varibles for later use
     /// </summary>
     /// <param name="p_character">Parent character</param>
-    public void Init(Character p_character)
+    public void Init(Enity p_character)
     {
         m_character = p_character;
 
@@ -39,14 +34,11 @@ public class WeaponTrigger : MonoBehaviour
     /// </summary>
     /// <param name="p_damageStart">When damage wil start given a percentage 0-1</param>
     /// <param name="p_damageEnd">When damage wil end given a percentage 0-1</param>
-    /// <param name="p_currentStance">Current weapon stance</param>
-    public void StartManoeuvre(float p_damageStart, float p_damageEnd, CustomAnimation_Humanoid.ATTACK_STANCE p_currentStance)
+    public void StartManoeuvre(float p_damageStart, float p_damageEnd)
     {
         m_damageStart = p_damageStart;
         m_damageEnd = p_damageEnd;
         
-        m_currentStance = p_currentStance;
-
         m_currentState = WEAPON_STATE.WINDUP;
 
         m_hitCharacters.Clear();
@@ -85,12 +77,11 @@ public class WeaponTrigger : MonoBehaviour
     /// <summary>
     /// Deal damage to all chraters that are in wepaon range
     /// </summary>
-    /// <param name="p_character">Chaarcter to deal damge to</param>
-    private void DealDamage(Character p_character)
+    /// <param name="p_character">Character to deal damge to</param>
+    /// <param name="p_damage">How much damage to inflict</param>
+    private void DealDamage(Enity p_character, float p_damage)
     {
-        float damage = m_currentStance == CustomAnimation_Humanoid.ATTACK_STANCE.LIGHT ? m_lightDamage  : m_heavyDamage;
-
-        m_character.DealDamage(damage, p_character);
+        m_character.DealDamage(p_damage, p_character);
     }
 
     /// <summary>
@@ -109,13 +100,14 @@ public class WeaponTrigger : MonoBehaviour
     /// <param name="other">Other collider</param>
     private void OnTriggerEnter(Collider other)
     {
-        Character character = other.GetComponent<Character>();
+        Enity character = other.GetComponent<Enity>();
 
-        if(character != null && character != m_character && m_character.m_team != character.m_team) //Is chaarcter collider, not parent, different team
+        if(character != null && character != m_character && m_character.m_team != character.m_team) //Is character collider, not parent, different team
         {
             if (!m_hitCharacters.Contains(character))
             {
-                DealDamage(character);
+                //TODO get proper damage calc
+                DealDamage(character, 0.0f);
                 m_hitCharacters.Add(character);
             }
         }

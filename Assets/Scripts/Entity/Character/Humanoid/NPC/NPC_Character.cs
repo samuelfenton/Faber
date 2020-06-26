@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPC_Character : Character
+public class NPC_Character : Enity
 {
     [Header("NPC Logic")]
-    public Character m_targetCharacter = null;
+    public Enity m_targetCharacter = null;
     public float m_attackingDistance = 1.0f;
     public float m_detectionDistance = 10.0f;
 
@@ -33,7 +33,7 @@ public class NPC_Character : Character
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if(playerObject!= null)
-            m_targetCharacter = playerObject.GetComponent<Character>();
+            m_targetCharacter = playerObject.GetComponent<Enity>();
 
         m_attackState = GetComponent<NPCState_Attack>();
     }

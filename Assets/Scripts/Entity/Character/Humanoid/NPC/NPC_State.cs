@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPC_State : State
+public class NPC_State : State_Humanoid
 {
     protected NPC_Character m_NPCCharacter = null;
 
@@ -10,12 +10,12 @@ public class NPC_State : State
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public override void StateInit(bool p_loopedState, Enity p_entity)
     {
-        base.StateInit(p_loopedState, p_character);
+        base.StateInit(p_loopedState, p_entity);
 
-        m_NPCCharacter = (NPC_Character)p_character;
+        m_NPCCharacter = (NPC_Character)p_entity;
     }
 
     /// <summary>
@@ -26,7 +26,7 @@ public class NPC_State : State
     /// <returns>True when distance is close enough</returns>
     protected bool FastTargetWithinRange(Entity p_target, float p_distance)
     {
-        return (p_target.transform.position - m_character.transform.position).magnitude < p_distance;
+        return (p_target.transform.position - m_entity.transform.position).magnitude < p_distance;
     }
 
     /// <summary>
@@ -40,9 +40,9 @@ public class NPC_State : State
         if (p_target == null)
             return false;
 
-        Pathing_Spline currentSpline = m_character.m_splinePhysics.m_currentSpline;
+        Pathing_Spline currentSpline = m_entity.m_splinePhysics.m_currentSpline;
         Pathing_Spline targetSpline = p_target.m_splinePhysics.m_currentSpline;
-        float currentPercent = m_character.m_splinePhysics.m_currentSplinePercent;
+        float currentPercent = m_entity.m_splinePhysics.m_currentSplinePercent;
         float targetPercent = p_target.m_splinePhysics.m_currentSplinePercent;
 
         if (currentSpline == targetSpline) //Same spline compare difference in percents
@@ -53,7 +53,7 @@ public class NPC_State : State
         }
         else //Get path, add up all
         {
-            List<Pathing_Spline> path = ControllerPathfinding.GetPath(m_character, targetSpline);
+            List<Pathing_Spline> path = ControllerPathfinding.GetPath(m_entity, targetSpline);
 
             if(path.Count == 0)
             {
@@ -74,7 +74,7 @@ public class NPC_State : State
             }
             else //Include pathing
             {
-                float currentToNodeDistance = Mathf.Abs(m_character.m_splinePhysics.m_currentSplinePercent - DetermineDesiredPercent(path[0]));
+                float currentToNodeDistance = Mathf.Abs(m_entity.m_splinePhysics.m_currentSplinePercent - DetermineDesiredPercent(path[0]));
                 totalDistance += currentToNodeDistance;
 
                 float targetToNodeDistance = Mathf.Abs(p_target.m_splinePhysics.m_currentSplinePercent - DetermineDesiredPercent(path[path.Count -1]));
@@ -119,13 +119,13 @@ public class NPC_State : State
 
         if(m_NPCCharacter.m_path.Count == 0 || m_NPCCharacter.m_path[m_NPCCharacter.m_path.Count - 1] != p_spline)//Needs new path
         {
-            m_NPCCharacter.m_path = ControllerPathfinding.GetPath(m_character, p_spline);
+            m_NPCCharacter.m_path = ControllerPathfinding.GetPath(m_entity, p_spline);
         }
 
         if (m_NPCCharacter.m_path.Count == 0)//no path
             return;
 
-        Pathing_Spline currentSpline = m_character.m_splinePhysics.m_currentSpline;
+        Pathing_Spline currentSpline = m_entity.m_splinePhysics.m_currentSpline;
         if (currentSpline == m_NPCCharacter.m_path[0])//At next spline
             m_NPCCharacter.m_path.RemoveAt(0);
 
@@ -151,7 +151,7 @@ public class NPC_State : State
         if (p_entity == null)
             return;
 
-        Pathing_Spline currentSpline = m_character.m_splinePhysics.m_currentSpline;
+        Pathing_Spline currentSpline = m_entity.m_splinePhysics.m_currentSpline;
         Pathing_Spline targetSpline = p_entity.m_splinePhysics.m_currentSpline;
 
         if (currentSpline == targetSpline)
@@ -167,10 +167,10 @@ public class NPC_State : State
     /// <param name="p_speed">Desired speed to move at</param>
     protected void MoveTowardsPercent(float p_desiredPercent, float p_speed)
     {
-        Pathing_Spline currentSpline = m_character.m_splinePhysics.m_currentSpline;
+        Pathing_Spline currentSpline = m_entity.m_splinePhysics.m_currentSpline;
 
         int input = DetermineDirectionInput(currentSpline, p_desiredPercent);
-        m_character.SetDesiredVelocity(input * p_speed);
+        m_entity.SetDesiredVelocity(input * p_speed);
     }
 
 
@@ -181,7 +181,7 @@ public class NPC_State : State
     /// <returns>0.0f for node A, defaults to 1.0f</returns>
     protected float DetermineDesiredPercent(Pathing_Spline p_goalSpline)
     {
-        Pathing_Spline currentSpline = m_character.m_splinePhysics.m_currentSpline;
+        Pathing_Spline currentSpline = m_entity.m_splinePhysics.m_currentSpline;
 
         if (currentSpline.m_nodeA.m_adjacentSplines.Contains(p_goalSpline))
             return 0.0f;
@@ -196,12 +196,12 @@ public class NPC_State : State
     /// <returns></returns>
     protected int DetermineDirectionInput(Pathing_Spline p_currentSpline, float p_desiredPercent)
     {
-        Vector3 splineForward = p_currentSpline.GetForwardDir(m_character.m_splinePhysics.m_currentSplinePercent);
+        Vector3 splineForward = p_currentSpline.GetForwardDir(m_entity.m_splinePhysics.m_currentSplinePercent);
         Vector3 characterForward = transform.forward;
 
         float forwardDot = Vector3.Dot(characterForward, splineForward);
 
-        if (p_desiredPercent < m_character.m_splinePhysics.m_currentSplinePercent)// towards A, same forward allingment use -1
+        if (p_desiredPercent < m_entity.m_splinePhysics.m_currentSplinePercent)// towards A, same forward allingment use -1
         {
             return forwardDot >= 0.0f ? -1 : 1;
         }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : Entity
+public class Enity : Entity
 {
     public enum FACING_DIR {RIGHT, LEFT}
     public enum TEAM { PLAYER, NPC, GAIA }
@@ -49,10 +49,6 @@ public class Character : Entity
     //Velocity stuff
     private float m_desiredVelocity = 0.0f;
 
-    private string m_animCurrentVel = "";
-    private string m_animDesiredVel = "";
-    private string m_animAbsVel = "";
-
     //Flags
     public bool m_blockingFlag = false;
     public bool m_knockbackFlag = false;
@@ -86,13 +82,6 @@ public class Character : Entity
         m_objectPoolingManger = GameObject.FindGameObjectWithTag(CustomTags.GAME_CONTROLLER).GetComponent<ObjectPoolManager_InGame>();
 
         m_currentHealth = m_maxHealth;
-
-        m_animRandomIdle = m_customAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.RANDOM_IDLE);
-
-        m_animCurrentVel = m_customAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.CURRENT_VELOCITY);
-        m_animDesiredVel = m_customAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.DESIRED_VELOCITY);
-        m_animAbsVel = m_customAnimation.GetVarible(CustomAnimation.VARIBLE_ANIM.ABSOLUTE_VELOCITY);
-
     }
 
     protected override void Update()
@@ -210,7 +199,7 @@ public class Character : Entity
     /// </summary>
     /// <param name="p_value"></param>
     /// <param name="p_targetCharacter"></param>
-    public void DealDamage(float p_value, Character p_targetCharacter)
+    public void DealDamage(float p_value, Enity p_targetCharacter)
     {
         if (p_targetCharacter == null)
             return;
@@ -272,9 +261,9 @@ public class Character : Entity
     /// </summary>
     public void UpdateAnimationLocomotion()
     {
-        m_customAnimation.SetVarible(m_animCurrentVel, m_localVelocity.x / m_groundRunVel);
-        m_customAnimation.SetVarible(m_animDesiredVel, m_desiredVelocity / m_groundRunVel);
-        m_customAnimation.SetVarible(m_animAbsVel, Mathf.Abs(m_localVelocity.x / m_groundRunVel));
+        m_customAnimation.SetFloat(CustomAnimation.VARIBLE_FLOAT.CURRENT_VELOCITY, m_localVelocity.x / m_groundRunVel);
+        m_customAnimation.SetFloat(CustomAnimation.VARIBLE_FLOAT.DESIRED_VELOCITY, m_desiredVelocity / m_groundRunVel);
+        m_customAnimation.SetFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_localVelocity.x / m_groundRunVel));
     }
 
     /// <summary>
@@ -283,8 +272,9 @@ public class Character : Entity
     /// </summary>
     public void SetRandomIdle()
     {
-        int idleIndex = Random.Range(0, CustomAnimation_Humanoid.IDLE_COUNT);
-        m_customAnimation.SetVarible(m_animRandomIdle, idleIndex);
+        //TODO reimplement
+        //int idleIndex = Random.Range(0, CustomAnimation_Humanoid.IDLE_COUNT);
+        //m_customAnimation.SetFloat(m_animRandomIdle, idleIndex);
     }
 
     #region WEAPON FUNCTIONS - OVERRIDE

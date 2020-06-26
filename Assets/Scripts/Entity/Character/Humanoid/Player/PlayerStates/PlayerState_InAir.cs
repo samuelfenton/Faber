@@ -11,24 +11,19 @@ public class PlayerState_InAir : State_Player
 
     private enum IN_AIR_STATE {INITIAL, SECOND_JUMP, FINAL }
     private IN_AIR_STATE m_inAirState = IN_AIR_STATE.INITIAL;
-    private string m_animInAir = "";
-    private string m_animDoubleJump = "";
 
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public override void StateInit(bool p_loopedState, Enity p_entity)
     {
-        base.StateInit(p_loopedState, p_character);
+        base.StateInit(p_loopedState, p_entity);
 
-        m_horizontalSpeedMax = m_character.m_groundRunVel; //Always use grounded as max speed
-        m_horizontalAcceleration = m_character.m_inAirAccel;
-        m_doubleJumpSpeed = m_character.m_doubleJumpSpeed;
-
-        m_animInAir = m_customAnimation.GetLocomotion(CustomAnimation_Humanoid.LOCOMOTION_ANIM.IN_AIR);
-        m_animDoubleJump = m_customAnimation.GetLocomotion(CustomAnimation_Humanoid.LOCOMOTION_ANIM.DOUBLE_JUMP);
+        m_horizontalSpeedMax = m_entity.m_groundRunVel; //Always use grounded as max speed
+        m_horizontalAcceleration = m_entity.m_inAirAccel;
+        m_doubleJumpSpeed = m_entity.m_doubleJumpSpeed;
     }
 
     /// <summary>
@@ -40,7 +35,7 @@ public class PlayerState_InAir : State_Player
 
         m_inAirState = IN_AIR_STATE.INITIAL;
 
-        m_customAnimation.PlayAnimation(m_animInAir);
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, true);
     }
 
     /// <summary>
@@ -52,7 +47,7 @@ public class PlayerState_InAir : State_Player
         base.StateUpdate();
 
         float horizontal = m_player.m_input.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
-        m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel);
+        m_entity.SetDesiredVelocity(horizontal * m_entity.m_groundRunVel);
 
         switch (m_inAirState)
         {
@@ -60,11 +55,11 @@ public class PlayerState_InAir : State_Player
                 //Double Jump
                 if (m_player.m_input.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
                 {
-                    m_customAnimation.PlayAnimation(m_animDoubleJump);
-                    
-                    Vector3 newVelocity = m_character.m_localVelocity;
+                    m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.DOUBLE_JUMP, true);
+
+                    Vector3 newVelocity = m_entity.m_localVelocity;
                     newVelocity.y = m_doubleJumpSpeed;
-                    m_character.m_localVelocity = newVelocity;
+                    m_entity.m_localVelocity = newVelocity;
                     
                     m_inAirState = IN_AIR_STATE.SECOND_JUMP;
                 }
@@ -72,8 +67,10 @@ public class PlayerState_InAir : State_Player
             case IN_AIR_STATE.SECOND_JUMP:
                 if(m_customAnimation.IsAnimationDone())
                 {
+                    m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.DOUBLE_JUMP, false);
+                    
                     m_inAirState = IN_AIR_STATE.FINAL;
-                    m_customAnimation.PlayAnimation(m_animInAir);
+                    m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, true);
                 }
                 break;
             case IN_AIR_STATE.FINAL:
@@ -82,7 +79,7 @@ public class PlayerState_InAir : State_Player
                 break;
         }
 
-        return m_character.m_splinePhysics.m_downCollision;
+        return m_entity.m_splinePhysics.m_downCollision;
     }
 
     /// <summary>
@@ -92,7 +89,7 @@ public class PlayerState_InAir : State_Player
     {
         base.StateEnd();
 
-        m_customAnimation.EndAnimation();
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, false);
     }
 
     /// <summary>
@@ -101,6 +98,6 @@ public class PlayerState_InAir : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return !m_character.m_splinePhysics.m_downCollision;
+        return !m_entity.m_splinePhysics.m_downCollision;
     }
 }

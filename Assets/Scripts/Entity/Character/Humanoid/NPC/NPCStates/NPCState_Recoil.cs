@@ -4,18 +4,14 @@ using UnityEngine;
 
 public class NPCState_Recoil : NPCState_Interrupt
 {
-    private string m_animRecoil = "";
-
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public override void StateInit(bool p_loopedState, Enity p_entity)
     {
-        base.StateInit(p_loopedState, p_character);
-
-        m_animRecoil = m_customAnimation.GetInterrupt(CustomAnimation_Humanoid.INTERRUPT_ANIM.RECOIL);
+        base.StateInit(p_loopedState, p_entity);
     }
 
     /// <summary>
@@ -25,7 +21,7 @@ public class NPCState_Recoil : NPCState_Interrupt
     {
         base.StateStart();
 
-        m_customAnimation.PlayAnimation(m_animRecoil);
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.RECOIL, true);
     }
 
     /// <summary>
@@ -44,7 +40,8 @@ public class NPCState_Recoil : NPCState_Interrupt
     /// </summary>
     public override void StateEnd()
     {
-        m_character.m_recoilFlag = false; // Reset flag
+        m_entity.m_recoilFlag = false; // Reset flag
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.RECOIL, false);
 
         base.StateEnd();
     }
@@ -55,6 +52,6 @@ public class NPCState_Recoil : NPCState_Interrupt
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_character.m_recoilFlag && !m_inProgressFlag;
+        return m_entity.m_recoilFlag && !m_inProgressFlag;
     }
 }

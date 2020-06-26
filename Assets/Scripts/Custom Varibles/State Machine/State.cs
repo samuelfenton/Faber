@@ -9,19 +9,17 @@ public class State : MonoBehaviour
     [HideInInspector]
     public bool m_loopedState = false;
 
-    protected Character m_character = null;
-    protected CustomAnimation_Humanoid m_customAnimation = null;
+    protected Enity m_entity = null;
 
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public virtual void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public virtual void StateInit(bool p_loopedState, Enity p_entity)
     {
         m_loopedState = p_loopedState;
-        m_character = p_character;
-        m_customAnimation = m_character.GetComponentInChildren<CustomAnimation_Humanoid>();
+        m_entity = p_entity;
     }
 
     /// <summary>
@@ -57,6 +55,10 @@ public class State : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Add the next possible state
+    /// </summary>
+    /// <param name="p_nextState">Next possible state</param>
     public void AddNextState(State p_nextState)
     {
         m_nextStates.Add(p_nextState);

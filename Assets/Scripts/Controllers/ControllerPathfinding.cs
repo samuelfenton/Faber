@@ -25,7 +25,7 @@ public class ControllerPathfinding : MonoBehaviour
     /// <param name="p_character">Character looking for path</param>
     /// <param name="p_goalSpline"></param>
     /// <returns>path to goal, may be empty if invalid data provided, already there.</returns>
-    public static List<Pathing_Spline> GetPath(Character p_character, Pathing_Spline p_goalSpline)
+    public static List<Pathing_Spline> GetPath(Enity p_character, Pathing_Spline p_goalSpline)
     {
         List<Pathing_Spline> path = new List<Pathing_Spline>();
 

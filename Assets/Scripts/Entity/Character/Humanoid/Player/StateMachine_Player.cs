@@ -8,8 +8,8 @@ public class StateMachine_Player : StateMachine
     /// Initilise the state machine
     /// Run derived class first, add in states needed. 
     /// </summary>
-    /// <param name="p_character">Parent character this state machine is attached to</param>
-    public override void InitStateMachine(Character p_character)
+    /// <param name="p_entity">Parent entity this state machine is attached to</param>
+    public override void InitStateMachine(Enity p_entity)
     {
         //Add components
         PlayerState_Death death = NewInterruptState<PlayerState_Death>();
@@ -20,24 +20,24 @@ public class StateMachine_Player : StateMachine
         PlayerState_Jump jump = NewNextState<PlayerState_Jump>();
         PlayerState_InAir inAir = NewNextState<PlayerState_InAir>();
         PlayerState_Land land = NewNextState<PlayerState_Land>();
-        PlayerState_Roll roll = NewNextState<PlayerState_Roll>();
+        PlayerState_Dash roll = NewNextState<PlayerState_Dash>();
         PlayerState_Block block = NewNextState<PlayerState_Block>();
 
         PlayerState_Attack attack = NewNextState<PlayerState_Attack>();
 
         //Init all 
-        death.StateInit(true, p_character);
-        knockback.StateInit(false, p_character);
-        recoil.StateInit(false, p_character);
+        death.StateInit(true, p_entity);
+        knockback.StateInit(false, p_entity);
+        recoil.StateInit(false, p_entity);
 
-        loco.StateInit(true, p_character);
-        jump.StateInit(false, p_character);
-        inAir.StateInit(true, p_character);
-        land.StateInit(false, p_character);
-        roll.StateInit(false, p_character);
-        block.StateInit(true, p_character);
+        loco.StateInit(true, p_entity);
+        jump.StateInit(false, p_entity);
+        inAir.StateInit(true, p_entity);
+        land.StateInit(false, p_entity);
+        roll.StateInit(false, p_entity);
+        block.StateInit(true, p_entity);
 
-        attack.StateInit(false, p_character);
+        attack.StateInit(false, p_entity);
 
         //Add in next states
         //Interrrupts
@@ -85,6 +85,6 @@ public class StateMachine_Player : StateMachine
 
         m_currentState = loco;
 
-        base.InitStateMachine(p_character);
+        base.InitStateMachine(p_entity);
     }
 }

@@ -4,18 +4,15 @@ using UnityEngine;
 
 public class PlayerState_Knockback : PlayerState_Interrupt
 {
-    private string m_animKnockback = "";
 
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public override void StateInit(bool p_loopedState, Enity p_entity)
     {
-        base.StateInit(p_loopedState, p_character);
-
-        m_animKnockback = m_customAnimation.GetInterrupt(CustomAnimation_Humanoid.INTERRUPT_ANIM.KNOCKBACK);
+        base.StateInit(p_loopedState, p_entity);
     }
 
     /// <summary>
@@ -25,7 +22,7 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     {
         base.StateStart();
 
-        m_customAnimation.PlayAnimation(m_animKnockback);
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.KNOCKBACKED, true);
     }
 
     /// <summary>
@@ -46,8 +43,8 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     {
         base.StateEnd();
 
-        m_customAnimation.EndAnimation();
-        m_character.m_knockbackFlag = false; //Reset flag
+        m_entity.m_knockbackFlag = false; //Reset flag
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.KNOCKBACKED, true);
     }
 
     /// <summary>

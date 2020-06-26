@@ -13,11 +13,11 @@ public class NPCState_Attack : NPC_State
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public override void StateInit(bool p_loopedState, Enity p_entity)
     {
-        base.StateInit(p_loopedState, p_character);
-        m_weaponManager = p_character.GetComponent<WeaponManager>();
+        base.StateInit(p_loopedState, p_entity);
+        m_weaponManager = m_NPCCharacter.GetComponent<WeaponManager>();
     }
 
     /// <summary>
@@ -27,11 +27,11 @@ public class NPCState_Attack : NPC_State
     {
         base.StateStart();
 
-        m_character.FaceDirection(GetDesiredTargetFacing());
+        m_entity.FaceDirection(GetDesiredTargetFacing());
 
         m_weaponManager.StartAttackSequence();
 
-        m_character.SetDesiredVelocity(0.0f);
+        m_entity.SetDesiredVelocity(0.0f);
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ public class NPCState_Attack : NPC_State
         m_lightAttackFlag = false;
         m_heavyAttackFlag = false;
 
-        if (GetDesiredTargetFacing() == m_character.GetFacingDir() && SmartTargetWithinRange(m_NPCCharacter.m_targetCharacter, m_NPCCharacter.m_attackingDistance)) //Nto facing right way, or enemy has moved away end
+        if (GetDesiredTargetFacing() == m_entity.GetFacingDir() && SmartTargetWithinRange(m_NPCCharacter.m_targetCharacter, m_NPCCharacter.m_attackingDistance)) //Nto facing right way, or enemy has moved away end
         {
             //Setup flags
             int randomIndex = Random.Range(0, 3);
@@ -69,8 +69,9 @@ public class NPCState_Attack : NPC_State
     /// </summary>
     public override void StateEnd()
     {
-        m_weaponManager.ForceEndAttack();
         base.StateEnd();
+
+        m_customAnimation.EndAttackAnimation();
     }
 
     /// <summary>
@@ -86,15 +87,15 @@ public class NPCState_Attack : NPC_State
     /// Get the desired facing direction
     /// </summary>
     /// <returns>Right when allinged towards enemy</returns>
-    public Character.FACING_DIR GetDesiredTargetFacing()
+    public Enity.FACING_DIR GetDesiredTargetFacing()
     {
         if (m_NPCCharacter.m_targetCharacter == null)
-            return Character.FACING_DIR.RIGHT;
+            return Enity.FACING_DIR.RIGHT;
 
         float enemyAlignedDot = Vector3.Dot(transform.forward, (m_NPCCharacter.m_targetCharacter.transform.position - transform.position).normalized);
 
         if (enemyAlignedDot >= 0.0f)
-            return Character.FACING_DIR.RIGHT;
-        return Character.FACING_DIR.LEFT;
+            return Enity.FACING_DIR.RIGHT;
+        return Enity.FACING_DIR.LEFT;
     }
 }

@@ -5,19 +5,16 @@ using UnityEngine;
 public class PlayerState_Jump : State_Player
 {
     private float m_jumpSpeed = 10.0f;
-    private string m_animJump = "";
 
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
     /// <param name="p_loopedState">Will this state be looping?</param>
-    /// <param name="p_character">Parent character reference</param>
-    public override void StateInit(bool p_loopedState, Character p_character)
+    /// <param name="p_entity">Parent entity reference</param>
+    public override void StateInit(bool p_loopedState, Enity p_entity)
     {
-        base.StateInit(p_loopedState, p_character);
-        m_jumpSpeed = m_character.m_jumpSpeed;
-
-        m_animJump = m_customAnimation.GetLocomotion(CustomAnimation_Humanoid.LOCOMOTION_ANIM.JUMP);
+        base.StateInit(p_loopedState, p_entity);
+        m_jumpSpeed = m_entity.m_jumpSpeed;
     }
 
     /// <summary>
@@ -27,11 +24,11 @@ public class PlayerState_Jump : State_Player
     {
         base.StateStart();
 
-        Vector3 newVelocity = m_character.m_localVelocity;
+        Vector3 newVelocity = m_entity.m_localVelocity;
         newVelocity.y = m_jumpSpeed;
-        m_character.m_localVelocity = newVelocity;
+        m_entity.m_localVelocity = newVelocity;
 
-        m_customAnimation.PlayAnimation(m_animJump);
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.JUMP, true);
     }
 
     /// <summary>
@@ -42,7 +39,7 @@ public class PlayerState_Jump : State_Player
     {
         base.StateUpdate();
 
-        return m_customAnimation.IsAnimationDone() || m_character.m_localVelocity.y <= 0.0f;
+        return m_customAnimation.IsAnimationDone() || m_entity.m_localVelocity.y <= 0.0f;
     }
 
     /// <summary>
@@ -52,7 +49,7 @@ public class PlayerState_Jump : State_Player
     {
         base.StateEnd();
 
-        m_customAnimation.EndAnimation();
+        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.JUMP, false);
     }
 
     /// <summary>
@@ -63,7 +60,7 @@ public class PlayerState_Jump : State_Player
     {
         //Able to jump while jump key is pressed, grounded, and no collision above
         return m_player.m_input.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED
-            && m_character.m_splinePhysics.m_downCollision && 
-            !m_character.m_splinePhysics.m_upCollision;
+            && m_entity.m_splinePhysics.m_downCollision && 
+            !m_entity.m_splinePhysics.m_upCollision;
     }
 }
