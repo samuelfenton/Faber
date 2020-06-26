@@ -48,7 +48,6 @@ public class CustomAnimation : MonoBehaviour
         m_locomotionIndex = m_animator.GetLayerIndex(m_locomotionLayer);
         m_baseIndex = m_animator.GetLayerIndex(m_baseLayer);
 
-
         m_animTypeToString.Add(ANIM_TYPE.INTERRUPT, "Interrupt");
         m_animTypeToString.Add(ANIM_TYPE.LOCOMOTION, "Loco");
         m_animTypeToString.Add(ANIM_TYPE.ATTACK, "Attack");
