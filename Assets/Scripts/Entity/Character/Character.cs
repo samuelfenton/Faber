@@ -261,9 +261,9 @@ public class Enity : Entity
     /// </summary>
     public void UpdateAnimationLocomotion()
     {
-        m_customAnimation.SetFloat(CustomAnimation.VARIBLE_FLOAT.CURRENT_VELOCITY, m_localVelocity.x / m_groundRunVel);
-        m_customAnimation.SetFloat(CustomAnimation.VARIBLE_FLOAT.DESIRED_VELOCITY, m_desiredVelocity / m_groundRunVel);
-        m_customAnimation.SetFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_localVelocity.x / m_groundRunVel));
+        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.CURRENT_VELOCITY, m_localVelocity.x / m_groundRunVel);
+        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.DESIRED_VELOCITY, m_desiredVelocity / m_groundRunVel);
+        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_localVelocity.x / m_groundRunVel));
     }
 
     /// <summary>

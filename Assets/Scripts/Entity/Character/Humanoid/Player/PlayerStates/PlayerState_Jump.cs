@@ -28,7 +28,7 @@ public class PlayerState_Jump : State_Player
         newVelocity.y = m_jumpSpeed;
         m_entity.m_localVelocity = newVelocity;
 
-        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.JUMP, true);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, true);
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ public class PlayerState_Jump : State_Player
     {
         base.StateEnd();
 
-        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.JUMP, false);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, false);
     }
 
     /// <summary>

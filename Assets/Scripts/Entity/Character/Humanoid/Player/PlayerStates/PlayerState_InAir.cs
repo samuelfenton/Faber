@@ -35,7 +35,7 @@ public class PlayerState_InAir : State_Player
 
         m_inAirState = IN_AIR_STATE.INITIAL;
 
-        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, true);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, true);
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public class PlayerState_InAir : State_Player
                 //Double Jump
                 if (m_player.m_input.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
                 {
-                    m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.DOUBLE_JUMP, true);
+                    m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, true);
 
                     Vector3 newVelocity = m_entity.m_localVelocity;
                     newVelocity.y = m_doubleJumpSpeed;
@@ -67,10 +67,10 @@ public class PlayerState_InAir : State_Player
             case IN_AIR_STATE.SECOND_JUMP:
                 if(m_customAnimation.IsAnimationDone())
                 {
-                    m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.DOUBLE_JUMP, false);
+                    m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, false);
                     
                     m_inAirState = IN_AIR_STATE.FINAL;
-                    m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, true);
+                    m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, true);
                 }
                 break;
             case IN_AIR_STATE.FINAL:
@@ -89,7 +89,7 @@ public class PlayerState_InAir : State_Player
     {
         base.StateEnd();
 
-        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, false);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, false);
     }
 
     /// <summary>

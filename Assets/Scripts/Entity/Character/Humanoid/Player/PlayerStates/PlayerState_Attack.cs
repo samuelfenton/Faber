@@ -47,7 +47,7 @@ public class PlayerState_Attack : State_Player
     {
         base.StateEnd();
         
-        m_customAnimation.EndAttackAnimation();
+        m_customAnimation.EndAttack();
     }
 
     /// <summary>

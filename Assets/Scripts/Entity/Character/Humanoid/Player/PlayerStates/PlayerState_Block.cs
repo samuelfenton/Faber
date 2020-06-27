@@ -22,7 +22,7 @@ public class PlayerState_Block : State_Player
         base.StateStart();
 
         m_entity.m_blockingFlag = true;
-        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.BLOCK, true);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.BLOCK, true);
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ public class PlayerState_Block : State_Player
         base.StateEnd();
 
         m_entity.m_blockingFlag = false;
-        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.BLOCK, false);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.BLOCK, false);
     }
 
     /// <summary>

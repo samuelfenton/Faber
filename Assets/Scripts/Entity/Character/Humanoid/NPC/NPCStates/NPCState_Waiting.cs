@@ -32,7 +32,7 @@ public class NPCState_Waiting : NPC_State
         if (m_currentWaitingState == WAITING_STATUS.IDLE)
         {
             m_entity.SetRandomIdle();
-            m_customAnimation.SetFloat(CustomAnimation.VARIBLE_FLOAT.DESIRED_VELOCITY, 0.0f);
+            m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.DESIRED_VELOCITY, 0.0f);
 
             m_entity.SetDesiredVelocity(0.0f);
         }

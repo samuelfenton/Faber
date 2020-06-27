@@ -21,7 +21,7 @@ public class PlayerState_Dash : State_Player
     {
         base.StateStart();
 
-        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.DASH, true);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.DASH, true);
 
         float desiredVelocity = 0.0f;
         float modelToObjectForwardDot = Vector3.Dot(m_entity.m_characterModel.transform.forward, m_entity.transform.forward);
@@ -60,7 +60,7 @@ public class PlayerState_Dash : State_Player
         m_entity.SetDesiredVelocity(0.0f);
         m_entity.HardSetVelocity(0.0f);
 
-        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.DASH, false);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.DASH, false);
     }
 
     /// <summary>

@@ -21,7 +21,7 @@ public class NPCState_Recoil : NPCState_Interrupt
     {
         base.StateStart();
 
-        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.RECOIL, true);
+        m_customAnimation.PlayInterrupt(CustomAnimation.INTERRUPT_BOOL.RECOIL);
     }
 
     /// <summary>
@@ -40,10 +40,10 @@ public class NPCState_Recoil : NPCState_Interrupt
     /// </summary>
     public override void StateEnd()
     {
-        m_entity.m_recoilFlag = false; // Reset flag
-        m_customAnimation.SetBool(CustomAnimation.VARIBLE_BOOL.RECOIL, false);
-
         base.StateEnd();
+        
+        m_entity.m_recoilFlag = false; // Reset flag
+        m_customAnimation.EndInterrupt();
     }
 
     /// <summary>
