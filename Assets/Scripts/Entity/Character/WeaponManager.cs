@@ -1,48 +1,48 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using UnityEngine;
 
 public class WeaponManager : MonoBehaviour
 {
-    public const float COMBO_START = 0.7f;
-    public const float COMBO_END = 0.95f;
-
-
+    private enum MANOEUVRE_STATE {AWAITING_ATTACK, PERFORMING_ATTACK, COMPLETED_ATTACK}
+    
     public GameObject m_primaryWeaponPrefab = null;
     public GameObject m_secondaryWeaponPrefab = null;
+
+    [Header("Intial manoeuvre leaves")]
+    [Header("Ground")]
+    public ManoeuvreLeaf m_groundLightManoeuvre = null;
+    public ManoeuvreLeaf m_groundHeavyManoeuvre = null;
+    [Header("In Air")]
+    public ManoeuvreLeaf m_inAirLightManoeuvre = null;
+    public ManoeuvreLeaf m_inAirHeavyManoeuvre = null;
+    [Header("Sprinting")]
+    public ManoeuvreLeaf m_sprintingLightManoeuvre = null;
+    public ManoeuvreLeaf m_sprintingHeavyManoeuvre = null;
+    //Stored varibles
+    private ManoeuvreLeaf m_currentManoeuvreLeaf = null;
 
     private GameObject m_primaryWeaponObject = null;
     private GameObject m_secondaryWeaponObject = null;
 
-    private Enity m_character = null;
+    private Weapon m_primaryWeaponScript = null;
+    private Weapon m_secondaryWeaponScript = null;
+
+    private Character m_character = null;
     private CustomAnimation m_customAnimation = null;
 
-    //Attacking manoeurve
-    private enum ATTACK_MANOEUVRE_STATE { WINDUP, COMBO_CHECK, COOLOFF }
-    private ATTACK_MANOEUVRE_STATE m_currentState = ATTACK_MANOEUVRE_STATE.WINDUP;
-
-    private bool m_comboFlag = false;
-    private float m_previousXTranslation = 0.0f;
-    private float m_previousYTranslation = 0.0f;
-
-    private float m_primaryDamageStart = 0.0f;
-    private float m_primaryDamageEnd = 0.0f;
-    private float m_secondaryDamageStart = 0.0f;
-    private float m_secondaryDamageEnd = 0.0f;
-
-    private float m_canComboPercent = 0.0f;
-
-    private AnimationCurve m_translationXCurve;
-    private AnimationCurve m_translationYCurve;
-
-    private WeaponTrigger m_primaryWeaponScript = null;
-    private WeaponTrigger m_secondaryWeaponScript = null;
+    //Manoeuvre Varibles
+    private MANOEUVRE_STATE m_currentManoeuvreState = MANOEUVRE_STATE.AWAITING_ATTACK;
+    private int m_manoeuvreActionIndex = 0;
+    private Character.ATTACK_INPUT_STANCE m_nextAttackStance = Character.ATTACK_INPUT_STANCE.NONE;
 
     /// <summary>
     /// Init manager
     /// </summary>
     /// <param name="p_character">Character that uses this manager</param>
-    public virtual void Init(Enity p_character)
+    public virtual void Init(Character p_character)
     {
         m_character = p_character;
         m_customAnimation = p_character.GetComponentInChildren<CustomAnimation>();
@@ -51,15 +51,15 @@ public class WeaponManager : MonoBehaviour
         {
             m_primaryWeaponObject = Instantiate(m_primaryWeaponPrefab);
 
-            m_primaryWeaponScript = m_primaryWeaponObject.GetComponent<WeaponTrigger>();
-            m_primaryWeaponObject.transform.SetParent(m_character.m_rightHand.transform, false);
+            m_primaryWeaponScript = m_primaryWeaponObject.GetComponent<Weapon>();
+            m_primaryWeaponObject.transform.SetParent(m_character.m_primaryAnchor.transform, false);
         }
         if (m_secondaryWeaponPrefab != null)
         {
             m_secondaryWeaponObject = Instantiate(m_secondaryWeaponPrefab);
 
-            m_secondaryWeaponScript = m_secondaryWeaponObject.GetComponent<WeaponTrigger>();
-            m_secondaryWeaponObject.transform.SetParent(m_character.m_leftHand.transform, false);
+            m_secondaryWeaponScript = m_secondaryWeaponObject.GetComponent<Weapon>();
+            m_secondaryWeaponObject.transform.SetParent(m_character.m_secondaryAnchor.transform, false);
         }
 
         if (m_primaryWeaponScript != null)
@@ -72,121 +72,210 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
-    #region ATTACK SEQUENCE
-
     /// <summary>
-    /// Start of the attack sequence
+    /// Start the tree of attacks
     /// </summary>
-    public void StartAttackSequence()
+    /// <param name="p_initialType">What the first attack type is</param>
+    /// <param name="p_intialStance">What the first attack stance is</param>
+    public void StartAttack(ManoeuvreLeaf.MANOEUVRE_TYPE p_initialType, ManoeuvreLeaf.MANOEUVRE_STANCE p_intialStance)
     {
-        m_comboFlag = false;
+        //Reset details
+        m_currentManoeuvreLeaf = null;
 
-        StartAttackManoeuvre();
+        switch (p_initialType)
+        {
+            case ManoeuvreLeaf.MANOEUVRE_TYPE.GROUND:
+                switch (p_intialStance)
+                {
+                    case ManoeuvreLeaf.MANOEUVRE_STANCE.LIGHT:
+                        m_currentManoeuvreLeaf = m_groundLightManoeuvre;
+                        break;
+                    case ManoeuvreLeaf.MANOEUVRE_STANCE.HEAVY:
+                        m_currentManoeuvreLeaf = m_groundHeavyManoeuvre;
+                        break;
+                    default:
+                        m_currentManoeuvreLeaf = null;
+                        break;
+                }
+                break;
+            case ManoeuvreLeaf.MANOEUVRE_TYPE.INAIR:
+                switch (p_intialStance)
+                {
+                    case ManoeuvreLeaf.MANOEUVRE_STANCE.LIGHT:
+                        m_currentManoeuvreLeaf = m_inAirLightManoeuvre;
+                        break;
+                    case ManoeuvreLeaf.MANOEUVRE_STANCE.HEAVY:
+                        m_currentManoeuvreLeaf = m_inAirHeavyManoeuvre;
+                        break;
+                    default:
+                        m_currentManoeuvreLeaf = null;
+                        break;
+                }
+                break;
+            case ManoeuvreLeaf.MANOEUVRE_TYPE.SPRINT:
+                switch (p_intialStance)
+                {
+                    case ManoeuvreLeaf.MANOEUVRE_STANCE.LIGHT:
+                        m_currentManoeuvreLeaf = m_sprintingLightManoeuvre;
+                        break;
+                    case ManoeuvreLeaf.MANOEUVRE_STANCE.HEAVY:
+                        m_currentManoeuvreLeaf = m_sprintingHeavyManoeuvre;
+                        break;
+                    default:
+                        m_currentManoeuvreLeaf = null;
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
 
-        m_character.HardSetVelocity(0.0f);
+        if (m_currentManoeuvreLeaf != null)
+            StartManoeuvre();
     }
 
     /// <summary>
-    /// Update the attack sequence
+    /// Update a tree of attacks
     /// </summary>
-    /// <returns>true when completed</returns>
-    public bool UpdateAttackSequence()
+    /// <returns>True once a tree has completed</returns>
+    public bool UpdateAttack()
     {
-        if (UpdateAttackManoeuvre())//current manoeuvre completed
+        if (m_currentManoeuvreLeaf == null)
         {
-            EndAttackManoeuvre();
+            EndAttack();
+            return true;
+        }
 
-            if (!m_comboFlag) //No attempt to combo
+        if(UpdateManoeuvre())
+        {
+            EndManoeuvre();
+
+            switch (m_nextAttackStance)
+            {
+                case Character.ATTACK_INPUT_STANCE.LIGHT:
+                    m_currentManoeuvreLeaf = m_currentManoeuvreLeaf.m_lightBranch;
+                    break;
+                case Character.ATTACK_INPUT_STANCE.HEAVY:
+                    m_currentManoeuvreLeaf = m_currentManoeuvreLeaf.m_heavyBranch;
+                    break;
+                case Character.ATTACK_INPUT_STANCE.NONE:
+                default:
+                    m_currentManoeuvreLeaf = null;
+                    break;
+            }
+
+            if (m_currentManoeuvreLeaf != null)
+            {
+                StartManoeuvre();
+            }
+            else
+            {
+                EndAttack();
                 return true;
-
-            return !StartAttackManoeuvre(); //Invalid next manoeuvre, stop here
+            }
         }
 
         return false;
     }
 
-    #endregion
-
-    #region ATTACK MANOEUVRE
-
     /// <summary>
-    /// Start of attackin manoeurve
+    /// Attack has ended ensure all colldiers are disabled etc
     /// </summary>
-    /// <returns>flase when invalid manoeuvre</returns>
-    private bool StartAttackManoeuvre()
+    public void EndAttack()
     {
-        return true;
+        m_currentManoeuvreLeaf = null;
+
+        m_customAnimation.EndAttack();
     }
 
     /// <summary>
-    /// Update the manoeuvre
+    /// Start of a single tree attack AKA Attack Manoeuvre
     /// </summary>
-    /// <returns>True when completed</returns>
-    protected bool UpdateAttackManoeuvre()
+    public void StartManoeuvre()
     {
-        float animationPercent = m_customAnimation.GetAnimationPercent();
+        m_nextAttackStance = Character.ATTACK_INPUT_STANCE.NONE;
+        m_manoeuvreActionIndex = 0;
+        m_currentManoeuvreState = MANOEUVRE_STATE.AWAITING_ATTACK;
 
-        //Update Translation
-        float modelToSplineForwardDot = Vector3.Dot(m_character.m_characterModel.transform.forward, m_character.m_splinePhysics.m_currentSpline.GetForwardDir(m_character.m_splinePhysics.m_currentSplinePercent));
+        m_customAnimation.PlayAttack(m_currentManoeuvreLeaf);
 
-        float expectedTranslation = m_translationXCurve.Evaluate(animationPercent);
-        if(modelToSplineForwardDot >= 0.0f)//Facing correct way
-            m_character.Translate(expectedTranslation - m_previousXTranslation);
-        else
-            m_character.Translate(-expectedTranslation + m_previousXTranslation);
+        if (m_currentManoeuvreLeaf.m_manoeuvreActions.Count == 0) //Early stop 
+            m_currentManoeuvreState = MANOEUVRE_STATE.COMPLETED_ATTACK;
+    }
 
-        m_previousXTranslation = expectedTranslation;
+    /// <summary>
+    /// Updates the manoeuvre
+    /// Should toggle colliders, update weapons as needed
+    /// </summary>
+    /// <returns>True when a manoeuvre is completed</returns>
+    public bool UpdateManoeuvre()
+    {
+        float currentPercent = m_customAnimation.GetAnimationPercent(CustomAnimation.LAYER.ATTACK);
 
-        //Update manoeuvre
-        switch (m_currentState)
+        if (m_currentManoeuvreState != MANOEUVRE_STATE.COMPLETED_ATTACK)
         {
-            case ATTACK_MANOEUVRE_STATE.WINDUP:
-                if (animationPercent > COMBO_START)
-                    m_currentState = ATTACK_MANOEUVRE_STATE.COMBO_CHECK;
+            ManoeuvreLeaf.ManoeuvreAction nextAction = m_currentManoeuvreLeaf.m_manoeuvreActions[m_manoeuvreActionIndex];
 
-                break;
-            case ATTACK_MANOEUVRE_STATE.COMBO_CHECK:
-                if (animationPercent > COMBO_END)
-                    m_currentState = ATTACK_MANOEUVRE_STATE.COOLOFF;
+            //Update manoeurvre "statemachine"
+            switch (m_currentManoeuvreState)
+            {
+                case MANOEUVRE_STATE.AWAITING_ATTACK:
 
-                if (m_character.DetermineLightInput())
-                {
-                    m_comboFlag = true;
-                    m_currentState = ATTACK_MANOEUVRE_STATE.COOLOFF;
-                }
-                if (m_character.DetermineHeavyInput())
-                {
-                    m_comboFlag = true;
-                    m_currentState = ATTACK_MANOEUVRE_STATE.COOLOFF;
-                }
+                    if (nextAction.m_damageStart <= currentPercent) //Can start damaging
+                    {
+                        //Setup weapons
+                        if (nextAction.m_primaryUsage && m_primaryWeaponScript != null)
+                            m_primaryWeaponScript.EnableWeaponDamage(nextAction.m_damageModifier);
+                        if (nextAction.m_secondaryUsage && m_secondaryWeaponScript != null)
+                            m_secondaryWeaponScript.EnableWeaponDamage(nextAction.m_damageModifier);
 
-                break;
-            case ATTACK_MANOEUVRE_STATE.COOLOFF:
-                return (m_comboFlag && m_customAnimation.GetAnimationPercent() > m_canComboPercent) || m_customAnimation.IsAnimationDone();
+                        //Update "statemachine"
+                        m_currentManoeuvreState = MANOEUVRE_STATE.PERFORMING_ATTACK;
+                    }
+                    break;
+                case MANOEUVRE_STATE.PERFORMING_ATTACK:
+
+                    if (nextAction.m_damageEnd <= currentPercent) //Can start damaging
+                    {
+                        //Setup weapons
+                        if (nextAction.m_primaryUsage && m_primaryWeaponScript != null)
+                            m_primaryWeaponScript.DisableWeaponDamage();
+                        if (nextAction.m_secondaryUsage && m_secondaryWeaponScript != null)
+                            m_secondaryWeaponScript.DisableWeaponDamage();
+
+                        m_manoeuvreActionIndex++;
+
+                        //Update "statemachine"
+                        if (m_manoeuvreActionIndex >= m_currentManoeuvreLeaf.m_manoeuvreActions.Count)
+                            m_currentManoeuvreState = MANOEUVRE_STATE.COMPLETED_ATTACK;
+                        else
+                            m_currentManoeuvreState = MANOEUVRE_STATE.PERFORMING_ATTACK;
+                    }
+                    break;
+            }
         }
 
-        //Update weapons
-        if (m_primaryWeaponScript != null)
-            m_primaryWeaponScript.UpdateManoeuvre(animationPercent);
-        if (m_secondaryWeaponScript != null)
-            m_secondaryWeaponScript.UpdateManoeuvre(animationPercent);
+        if(m_nextAttackStance == Character.ATTACK_INPUT_STANCE.NONE && currentPercent > 0.1f) //Get next input
+        {
+            Character.ATTACK_INPUT_STANCE nextAttackStance = m_character.DetermineAttackStance();
 
-        return false;
+            if (m_currentManoeuvreLeaf.m_lightBranch != null && nextAttackStance == Character.ATTACK_INPUT_STANCE.LIGHT)
+                m_nextAttackStance = Character.ATTACK_INPUT_STANCE.LIGHT;
+            else if (m_currentManoeuvreLeaf.m_heavyBranch != null && nextAttackStance == Character.ATTACK_INPUT_STANCE.HEAVY)
+                m_nextAttackStance = Character.ATTACK_INPUT_STANCE.HEAVY;
+        }
+
+        return currentPercent >= 0.99f;
     }
 
     /// <summary>
-    /// End of attacking manoeuvre
+    /// Attack has ended ensure all colldiers are disabled etc
     /// </summary>
-    private void EndAttackManoeuvre()
+    public void EndManoeuvre()
     {
-        m_character.m_gravity = true;
-
-        //Toggle Colliders
         if (m_primaryWeaponScript != null)
-            m_primaryWeaponScript.ToggleTrigger(false);
+            m_primaryWeaponScript.DisableWeaponDamage();
         if (m_secondaryWeaponScript != null)
-            m_secondaryWeaponScript.ToggleTrigger(false);
+            m_secondaryWeaponScript.DisableWeaponDamage();
     }
-
-    #endregion
 }

@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enity : Entity
+public class Character : Entity
 {
     public enum FACING_DIR {RIGHT, LEFT}
     public enum TEAM { PLAYER, NPC, GAIA }
+    public enum ATTACK_INPUT_STANCE { LIGHT, HEAVY, NONE }
 
     public const float SPRINT_MODIFIER = 1.5f;//Linked to animator
 
     [Header("Assigned Character Varibles")]
     public GameObject m_characterModel = null;
-    public GameObject m_rightHand = null;
-    public GameObject m_leftHand = null;
+    public GameObject m_primaryAnchor = null;
+    public GameObject m_secondaryAnchor = null;
 
     [Header("Team")]
     public TEAM m_team = TEAM.NPC;
@@ -199,7 +200,7 @@ public class Enity : Entity
     /// </summary>
     /// <param name="p_value"></param>
     /// <param name="p_targetCharacter"></param>
-    public void DealDamage(float p_value, Enity p_targetCharacter)
+    public void DealDamage(float p_value, Character p_targetCharacter)
     {
         if (p_targetCharacter == null)
             return;
@@ -239,24 +240,6 @@ public class Enity : Entity
     }
 
     /// <summary>
-    /// Hard set the value of velocity
-    /// </summary>
-    /// <param name="p_val">velocity</param>
-    public void HardSetVelocity(float p_val)
-    {
-        m_localVelocity.x = p_val;
-    }
-
-    /// <summary>
-    /// Hard set the value of velocity
-    /// </summary>
-    /// <param name="p_val">velocity</param>
-    public void HardSetUpwardsVelocity(float p_val)
-    {
-        m_localVelocity.y = p_val;
-    }
-
-    /// <summary>
     /// Update the locomotion base varibles
     /// </summary>
     public void UpdateAnimationLocomotion()
@@ -266,37 +249,15 @@ public class Enity : Entity
         m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_localVelocity.x / m_groundRunVel));
     }
 
-    /// <summary>
-    /// Set a random idle value
-    /// Should be set at start of aniamtion before play is called
-    /// </summary>
-    public void SetRandomIdle()
-    {
-        //TODO reimplement
-        //int idleIndex = Random.Range(0, CustomAnimation_Humanoid.IDLE_COUNT);
-        //m_customAnimation.SetFloat(m_animRandomIdle, idleIndex);
-    }
-
     #region WEAPON FUNCTIONS - OVERRIDE
-
     /// <summary>
-    /// Function desired to be overridden, should this managed have a possitive light attack input? 
+    /// Function desired to be overridden, should this character be attempting to perform light or heavy attack
     /// Example click by player, or logic for NPC
     /// </summary>
-    /// <returns>True when theres desired light attack input</returns>
-    public virtual bool DetermineLightInput()
+    /// <returns>Light,heavy or none based off logic</returns>
+    public virtual ATTACK_INPUT_STANCE DetermineAttackStance()
     {
-        return false;
-    }
-
-    /// <summary>
-    /// Function desired to be overridden, should this managed have a possitive heavy attack input? 
-    /// Example click by player, or logic for NPC
-    /// </summary>
-    /// <returns>True when theres desired heavy attack input</returns>
-    public virtual bool DetermineHeavyInput()
-    {
-        return false;
+        return ATTACK_INPUT_STANCE.NONE;
     }
     #endregion
 }

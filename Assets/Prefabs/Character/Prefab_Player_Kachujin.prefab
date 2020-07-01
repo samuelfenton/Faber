@@ -116,8 +116,8 @@ MonoBehaviour:
   m_gravity: 1
   m_splinePhysics: {fileID: 0}
   m_characterModel: {fileID: 7633926807805041317}
-  m_rightHand: {fileID: 1392919925366981228}
-  m_leftHand: {fileID: 6678754843817201293}
+  m_primaryAnchor: {fileID: 1392919925366981228}
+  m_secondaryAnchor: {fileID: 6678754843817201293}
   m_team: 0
   m_maxHealth: 10
   m_currentHealth: 10
@@ -153,6 +153,16 @@ MonoBehaviour:
     type: 3}
   m_secondaryWeaponPrefab: {fileID: 3301097230926706484, guid: c1573aab28562be469626887bde4ef2f,
     type: 3}
+  m_groundLightManoeuvre: {fileID: 11400000, guid: 45b49a574343cea4281221f0b3f67efc,
+    type: 2}
+  m_groundHeavyManoeuvre: {fileID: 11400000, guid: 60b3812dc202ef345b1a669a6b7b9a95,
+    type: 2}
+  m_inAirLightManoeuvre: {fileID: 11400000, guid: 029ef31029a4b894fa6d627aaa3ded74,
+    type: 2}
+  m_inAirHeavyManoeuvre: {fileID: 11400000, guid: ffcb113d7180b604e8e0c6d5a4f048b4,
+    type: 2}
+  m_sprintingLightManoeuvre: {fileID: 0}
+  m_sprintingHeavyManoeuvre: {fileID: 0}
 --- !u!114 &1149895070
 MonoBehaviour:
   m_ObjectHideFlags: 0

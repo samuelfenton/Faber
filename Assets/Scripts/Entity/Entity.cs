@@ -59,6 +59,24 @@ public class Entity : MonoBehaviour
     }
 
     /// <summary>
+    /// Hard set the value of velocity
+    /// </summary>
+    /// <param name="p_val">velocity</param>
+    public void HardSetVelocity(float p_val)
+    {
+        m_localVelocity.x = p_val;
+    }
+
+    /// <summary>
+    /// Hard set the value of velocity
+    /// </summary>
+    /// <param name="p_val">velocity</param>
+    public void HardSetUpwardsVelocity(float p_val)
+    {
+        m_localVelocity.y = p_val;
+    }
+
+    /// <summary>
     /// Translate the entity 
     /// </summary>
     /// <param name="p_val">Translation distance</param>
