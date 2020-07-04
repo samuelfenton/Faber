@@ -22,10 +22,28 @@ public class Pathing_Node : MonoBehaviour
         [Header("Bezier Settings")]
         public float m_bezierStrength;
 
-        public void CopyDetails(Spline_Details p_details)
+        /// <summary>
+        /// Pass details form one node to another
+        /// </summary>
+        /// <param name="p_otherSplinePosition">What position is this spline on other node</param>
+        /// <param name="p_details">Spline details from copied node</param>
+        public void CopyDetails(Pathing_Spline.SPLINE_POSITION p_otherSplinePosition, Spline_Details p_details)
         {
             m_splineType = p_details.m_splineType;
-            m_circleDir = m_circleDir == Pathing_Spline.CIRCLE_DIR.CLOCKWISE ? Pathing_Spline.CIRCLE_DIR.COUNTER_CLOCKWISE : p_details.m_circleDir;
+
+            //Determine Dir 
+            bool isForwardNode = m_splinePosition == Pathing_Spline.SPLINE_POSITION.FOWARD || m_splinePosition == Pathing_Spline.SPLINE_POSITION.FORWARD_RIGHT || m_splinePosition == Pathing_Spline.SPLINE_POSITION.FORWARD_LEFT;
+            bool isOtherForwardNode = p_otherSplinePosition == Pathing_Spline.SPLINE_POSITION.FOWARD || p_otherSplinePosition == Pathing_Spline.SPLINE_POSITION.FORWARD_RIGHT || p_otherSplinePosition == Pathing_Spline.SPLINE_POSITION.FORWARD_LEFT;
+
+            if (isForwardNode != isOtherForwardNode) //Spline positions are opposite, same circleDir
+            {
+                m_circleDir = p_details.m_circleDir;
+            }
+            else
+            {
+                m_circleDir = p_details.m_circleDir == Pathing_Spline.CIRCLE_DIR.CLOCKWISE ? Pathing_Spline.CIRCLE_DIR.COUNTER_CLOCKWISE : Pathing_Spline.CIRCLE_DIR.CLOCKWISE;
+            }
+
             m_circleAngle = p_details.m_circleAngle;
             m_bezierStrength = p_details.m_bezierStrength;
         }
@@ -94,14 +112,19 @@ public class Pathing_Node : MonoBehaviour
                 {
                     Entity.TURNING_DIR desiredTurnignDir = entity.GetDesiredTurning(this);
 
+                    Pathing_Spline nextSpline = null;
+
                     if (currentDirection == TRIGGER_DIRECTION.FORWARDS) //Previously on backside side, entering forwards splines
                     {
-                        entity.SwapSplines(this, GetTransferSpline(desiredTurnignDir, m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FOWARD], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_RIGHT], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_LEFT]));
+                        nextSpline = GetTransferSpline(desiredTurnignDir, m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FOWARD], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_RIGHT], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_LEFT]);
                     }
                     else //Previously on forward side, entering backwards splines
                     {
-                        entity.SwapSplines(this, GetTransferSpline(desiredTurnignDir, m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD_RIGHT], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD_LEFT]));
+                        nextSpline = GetTransferSpline(desiredTurnignDir, m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD_RIGHT], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD_LEFT]);
                     }
+
+                    if (nextSpline != null)
+                        entity.SwapSplines(this, nextSpline);
 
                     m_activeColliders[entity] = currentDirection;
                 }
@@ -225,7 +248,7 @@ public class Pathing_Node : MonoBehaviour
 
                 Pathing_Spline.SPLINE_POSITION nodeBPosition = conjoinedNode.DetermineNodePosition(this);
 
-                conjoinedNode.m_pathingSplineDetails[(int)nodeBPosition].CopyDetails(currentDetails);
+                conjoinedNode.m_pathingSplineDetails[(int)nodeBPosition].CopyDetails((Pathing_Spline.SPLINE_POSITION)splineDetailsIndex, currentDetails);
 
                 CreateSpline(currentDetails, (Pathing_Spline.SPLINE_POSITION)splineDetailsIndex);
             }
@@ -242,14 +265,7 @@ public class Pathing_Node : MonoBehaviour
         {
             if(m_pathingSplines[(int)p_desiredPosition] != null)
             {
-                if (m_pathingSplines[(int)p_desiredPosition].SameAsDetails(this, p_relavantSplineDetails))
-                {
-                    return true;
-                }
-                else //Remove as no longer needed
-                {
-                    DestroyImmediate(m_pathingSplines[(int)p_desiredPosition]);
-                }
+                DestroyImmediate(m_pathingSplines[(int)p_desiredPosition]);
             }
 
             Pathing_Spline newPathingSpline = ScriptableObject.CreateInstance("Pathing_Spline") as Pathing_Spline;

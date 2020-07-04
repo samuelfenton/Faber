@@ -100,45 +100,6 @@ public class Pathing_Spline : ScriptableObject
     }
 
     /// <summary>
-    /// Determine if the given details match up to the spline
-    /// </summary>
-    /// <param name="p_currentNode">Node to check against</param>
-    /// <param name="p_splineDetails">Node details to check against</param>
-    /// <returns>true when all the details matchup</returns>
-    public bool SameAsDetails(Pathing_Node p_currentNode, Pathing_Node.Spline_Details p_splineDetails)
-    {
-        Pathing_Node conjoinedNode = p_splineDetails.m_conjoinedNode;
-
-        //Check node details, could be back to front
-        if(m_nodeA == p_currentNode && m_nodeB == conjoinedNode)
-        {
-            if (m_nodeAPosition != m_nodeA.DetermineNodePosition(m_nodeB) || m_nodeBPosition != m_nodeB.DetermineNodePosition(m_nodeA))
-                return false;
-        }
-        else if(m_nodeB == p_currentNode && m_nodeA == conjoinedNode)
-        {
-            if (m_nodeAPosition != m_nodeB.DetermineNodePosition(m_nodeA) || m_nodeBPosition != m_nodeA.DetermineNodePosition(m_nodeB))
-                return false;
-        }
-        else
-        {
-            return false;
-        }
-
-        //Circle Direction is opposite 
-
-        if (m_circleDir == p_splineDetails.m_circleDir)
-            return false;
-
-        //Basic details
-        if (m_splineType != p_splineDetails.m_splineType || m_circleAngle != p_splineDetails.m_circleAngle || m_bezierStrength != p_splineDetails.m_bezierStrength)
-            return false;
-
-        return true;
-
-    }
-
-    /// <summary>
     /// Get the splines length
     /// </summary>
     /// <returns>Returns stored varible m_splineLength</returns>

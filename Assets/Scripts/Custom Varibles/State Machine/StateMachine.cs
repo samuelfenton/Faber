@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class StateMachine : MonoBehaviour
 {
-    [HideInInspector]
+    [Tooltip("Used to sere current state, dont set manually")]
     public State m_currentState = null;
     protected Character m_character = null;
 
