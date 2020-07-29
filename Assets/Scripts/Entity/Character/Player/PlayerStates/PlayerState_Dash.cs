@@ -23,17 +23,17 @@ public class PlayerState_Dash : State_Player
 
         m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.DASH, true);
 
-        float desiredVelocity = 0.0f;
-        float modelToObjectForwardDot = Vector3.Dot(m_character.m_characterModel.transform.forward, m_entity.transform.forward);
-
-        //Update Translation
-        if (modelToObjectForwardDot >= 0.0f)//Facing correct way, roll backwards
-            desiredVelocity = -m_character.m_rollbackVelocity;
+        //Determine direction of velocity
+        if(m_character.GetFacingDir() == Character.FACING_DIR.RIGHT)
+        {
+            m_character.SetDesiredVelocity(m_player.m_dashVelocity);
+            m_character.HardSetVelocity(m_player.m_dashVelocity);
+        }
         else
-            desiredVelocity = m_character.m_rollbackVelocity;
-
-        m_character.SetDesiredVelocity(desiredVelocity);
-        m_character.HardSetVelocity(desiredVelocity);
+        {
+            m_character.SetDesiredVelocity(-m_player.m_dashVelocity);
+            m_character.HardSetVelocity(-m_player.m_dashVelocity);
+        }
     }
 
     /// <summary>
@@ -43,9 +43,6 @@ public class PlayerState_Dash : State_Player
     public override bool StateUpdate()
     {
         base.StateUpdate();
-
-        if(m_customAnimation.GetAnimationPercent(CustomAnimation.LAYER.BASE) >0.7f)
-            m_character.SetDesiredVelocity(0.0f);
 
         return m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.BASE);
     }
@@ -69,6 +66,6 @@ public class PlayerState_Dash : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_entity.m_splinePhysics.m_downCollision && m_player.m_input.GetKeyBool(CustomInput.INPUT_KEY.ROLL);
+        return m_entity.m_splinePhysics.m_downCollision && m_player.m_input.GetKeyBool(CustomInput.INPUT_KEY.DASH);
     }
 }

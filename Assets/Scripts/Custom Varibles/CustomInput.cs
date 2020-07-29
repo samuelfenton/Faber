@@ -9,7 +9,7 @@ public class CustomInput : MonoBehaviour
 
     public bool m_inverted = false;
 
-    public enum INPUT_KEY {JUMP, SPRINT, ATTACK, ATTACK_SECONDARY, USE, SUBMIT, CANCEL, ROLL, BLOCK, CAMERA_FLIP, KEY_COUNT };
+    public enum INPUT_KEY {JUMP, SPRINT, ATTACK, ATTACK_SECONDARY, USE, SUBMIT, CANCEL, DASH, BLOCK, CAMERA_FLIP, KEY_COUNT };
     
     public enum INPUT_STATE { UP, DOWN, UPPED, DOWNED };
 
@@ -32,7 +32,7 @@ public class CustomInput : MonoBehaviour
         m_keyStrings[(int)INPUT_KEY.USE] = "Use";
         m_keyStrings[(int)INPUT_KEY.SUBMIT] = "Submit";
         m_keyStrings[(int)INPUT_KEY.CANCEL] = "Cancel";
-        m_keyStrings[(int)INPUT_KEY.ROLL] = "Roll";
+        m_keyStrings[(int)INPUT_KEY.DASH] = "Dash";
         m_keyStrings[(int)INPUT_KEY.BLOCK] = "Block";
         m_keyStrings[(int)INPUT_KEY.CAMERA_FLIP] = "CameraFlip";
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerState_Jump : State_Player
 {
-    private float m_jumpSpeed = 10.0f;
+    private float m_jumpVelocity = 10.0f;
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -14,7 +14,7 @@ public class PlayerState_Jump : State_Player
     public override void StateInit(bool p_loopedState, Entity p_entity)
     {
         base.StateInit(p_loopedState, p_entity);
-        m_jumpSpeed = m_character.m_jumpSpeed;
+        m_jumpVelocity = m_character.m_jumpVelocity;
     }
 
     /// <summary>
@@ -24,9 +24,7 @@ public class PlayerState_Jump : State_Player
     {
         base.StateStart();
 
-        Vector3 newVelocity = m_character.m_localVelocity;
-        newVelocity.y = m_jumpSpeed;
-        m_character.m_localVelocity = newVelocity;
+        m_character.HardSetUpwardsVelocity(m_jumpVelocity);
 
         m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, true);
     }

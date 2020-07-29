@@ -1,5 +1,23 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!220 &393176856517978625
+LightProbeGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1923960976811222904}
+  m_Enabled: 1
+  m_SourcePositions:
+  - {x: 1, y: 1, z: 1}
+  - {x: 1, y: 1, z: -1}
+  - {x: 1, y: -1, z: 1}
+  - {x: 1, y: -1, z: -1}
+  - {x: -1, y: 1, z: 1}
+  - {x: -1, y: 1, z: -1}
+  - {x: -1, y: -1, z: 1}
+  - {x: -1, y: -1, z: -1}
+  m_Dering: 1
 --- !u!1 &5576363102575397938
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,7 +112,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_nodeA: {fileID: 0}
   m_nodeB: {fileID: 0}
-  m_currentSplinePercent: 0.394
+  m_currentSplinePercent: 0
   m_upCollision: 0
   m_downCollision: 0
   m_forwardCollision: 0
@@ -124,14 +142,14 @@ MonoBehaviour:
   m_groundRunVel: 8
   m_groundAccel: 12
   m_groundedDeaccel: 30
-  m_jumpSpeed: 8
+  m_jumpVelocity: 10
   m_landingDistance: 1
   m_inAirAccel: 0.5
   m_doubleJumpSpeed: 6
   m_wallJumpVerticalSpeed: 5
   m_wallJumpHorizontalSpeed: 2
   m_wallJumpInputDelay: 0.1
-  m_rollbackVelocity: 6
+  m_dashVelocity: 12
   m_blockingFlag: 0
   m_knockbackFlag: 0
   m_recoilFlag: 0

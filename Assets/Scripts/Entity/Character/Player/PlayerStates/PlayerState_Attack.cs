@@ -24,6 +24,8 @@ public class PlayerState_Attack : State_Player
     {
         base.StateStart();
 
+        m_player.SetDesiredVelocity(0.0f);
+
         //TODO logic to determine type of attack, in air vs ground vs sprint
         ManoeuvreLeaf.MANOEUVRE_TYPE currentType = ManoeuvreLeaf.MANOEUVRE_TYPE.GROUND;
         ManoeuvreLeaf.MANOEUVRE_STANCE currentStance = ManoeuvreLeaf.MANOEUVRE_STANCE.LIGHT;

@@ -30,7 +30,7 @@ public class Character : Entity
     public float m_groundedDeaccel = 1.0f;
 
     [Header("Jumping Stats")]
-    public float m_jumpSpeed = 10.0f;
+    public float m_jumpVelocity = 10.0f;
     public float m_landingDistance = 1.0f;
 
     [Header("In Air Stats")]
@@ -42,8 +42,8 @@ public class Character : Entity
     public float m_wallJumpHorizontalSpeed = 2.0f;
     public float m_wallJumpInputDelay = 0.1f;
 
-    [Header("Roll Backwards Stats")]
-    public float m_rollbackVelocity = 12.0f;
+    [Header("Dash Stats")]
+    public float m_dashVelocity = 12.0f;
 
     private string m_animRandomIdle = "";
 
@@ -233,10 +233,10 @@ public class Character : Entity
     /// <summary>
     /// Set the desired velocity
     /// </summary>
-    /// <param name="p_val">Desired velocity, will automatically get clamped</param>
+    /// <param name="p_val">Desired velocity</param>
     public void SetDesiredVelocity(float p_val)
     {
-        m_desiredVelocity = Mathf.Clamp(p_val, -m_groundRunVel * SPRINT_MODIFIER, m_groundRunVel * SPRINT_MODIFIER);
+        m_desiredVelocity = p_val;
     }
 
     /// <summary>
