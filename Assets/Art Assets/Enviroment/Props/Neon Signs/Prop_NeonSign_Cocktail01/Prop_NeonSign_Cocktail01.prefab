@@ -1,20 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &4050076968806435679
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1670710548526574277}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92618951e90823f4db305e66e36f365e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_totalTime: 0
-  m_neonSequence: []
-  m_objectWithRenderer: {fileID: 0}
 --- !u!1 &9125889473424500121
 GameObject:
   m_ObjectHideFlags: 0
@@ -25,9 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8370726557408202947}
   - component: {fileID: 2084114988230646137}
-  - component: {fileID: 6452306579239096527}
-  - component: {fileID: 2911419636729997211}
-  - component: {fileID: 1834696528656794977}
   m_Layer: 0
   m_Name: Prop_NeonSign_Cocktail01
   m_TagString: Untagged
@@ -65,78 +47,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92618951e90823f4db305e66e36f365e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_totalTime: 6
-  m_neonSequence:
-  - m_color: {r: 0, g: 0, b: 0, a: 0}
-    m_flashTime: 0
-  - m_color: {r: 1, g: 0, b: 0.79818773, a: 0}
-    m_flashTime: 1
-  - m_color: {r: 0, g: 0, b: 0, a: 0}
-    m_flashTime: 5
-  m_objectWithRenderer: {fileID: 1670710548526574277}
---- !u!114 &6452306579239096527
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9125889473424500121}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92618951e90823f4db305e66e36f365e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_totalTime: 6
-  m_neonSequence:
-  - m_color: {r: 0, g: 0, b: 0, a: 0}
-    m_flashTime: 0
-  - m_color: {r: 0, g: 0.952054, b: 1, a: 0}
-    m_flashTime: 0.5
-  - m_color: {r: 0, g: 0, b: 0, a: 0}
-    m_flashTime: 5.5
-  m_objectWithRenderer: {fileID: 1655543135668655411}
---- !u!114 &2911419636729997211
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9125889473424500121}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92618951e90823f4db305e66e36f365e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_totalTime: 6
-  m_neonSequence:
-  - m_color: {r: 0, g: 0, b: 0, a: 0}
-    m_flashTime: 0
-  - m_color: {r: 0, g: 1, b: 0.20283651, a: 0}
-    m_flashTime: 2
-  - m_color: {r: 0, g: 0, b: 0, a: 0}
-    m_flashTime: 4.3
-  m_objectWithRenderer: {fileID: 8851559086504885984}
---- !u!114 &1834696528656794977
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9125889473424500121}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92618951e90823f4db305e66e36f365e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_totalTime: 6
-  m_neonSequence:
-  - m_color: {r: 0, g: 0, b: 0, a: 0}
-    m_flashTime: 0
-  - m_color: {r: 1, g: 0.5151677, b: 0, a: 0}
-    m_flashTime: 2.5
-  - m_color: {r: 0, g: 0, b: 0, a: 0}
-    m_flashTime: 4
-  m_objectWithRenderer: {fileID: 6990306734034059802}
+  m_totalTime: 7
+  m_colourType: 1
+  m_materialVarible: 
+  m_neonSequenceData:
+  - m_neonObject: {fileID: 1670710548526574277}
+    m_neonSequence:
+    - m_neonColor: {r: 0, g: 0, b: 0, a: 0}
+      m_timeCode: 0
+    - m_neonColor: {r: 1, g: 0, b: 0.37731886, a: 0}
+      m_timeCode: 1
+    - m_neonColor: {r: 0, g: 0, b: 0, a: 0}
+      m_timeCode: 6.5
+  - m_neonObject: {fileID: 1655543135668655411}
+    m_neonSequence:
+    - m_neonColor: {r: 0, g: 0, b: 0, a: 0}
+      m_timeCode: 0
+    - m_neonColor: {r: 0, g: 0.8430505, b: 1, a: 0}
+      m_timeCode: 1.2
+    - m_neonColor: {r: 0, g: 0, b: 0, a: 0}
+      m_timeCode: 6.3
+  - m_neonObject: {fileID: 8851559086504885984}
+    m_neonSequence:
+    - m_neonColor: {r: 0, g: 0, b: 0, a: 0}
+      m_timeCode: 0
+    - m_neonColor: {r: 0.048089504, g: 1, b: 0, a: 0}
+      m_timeCode: 2
+    - m_neonColor: {r: 0, g: 0, b: 0, a: 0}
+      m_timeCode: 3.7
+    - m_neonColor: {r: 0.047058824, g: 1, b: 0, a: 0}
+      m_timeCode: 4.5
+    - m_neonColor: {r: 0, g: 0, b: 0, a: 0}
+      m_timeCode: 6
+  - m_neonObject: {fileID: 6990306734034059802}
+    m_neonSequence:
+    - m_neonColor: {r: 0, g: 0, b: 0, a: 0}
+      m_timeCode: 0
+    - m_neonColor: {r: 1, g: 0.58280706, b: 0, a: 0}
+      m_timeCode: 2.5
+    - m_neonColor: {r: 0, g: 0, b: 0, a: 0}
+      m_timeCode: 3.5
+    - m_neonColor: {r: 1, g: 0.58431375, b: 0, a: 0}
+      m_timeCode: 4.7
+    - m_neonColor: {r: 0, g: 0, b: 0, a: 0}
+      m_timeCode: 5.8
 --- !u!1001 &2498879843913854060
 PrefabInstance:
   m_ObjectHideFlags: 0
