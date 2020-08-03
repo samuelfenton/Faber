@@ -7,29 +7,27 @@ public class FPS_Counter : MonoBehaviour
 {
     private TextMeshProUGUI m_text = null;
 
-    int frameCount = 0;
-    float dt = 0.0f;
-    float fps = 0.0f;
-    float updateRate = 4.0f;  // 4 updates per sec.
+    private float m_udateRate = 0.5f;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         m_text = GetComponent<TextMeshProUGUI>();
+		StartCoroutine(FPSLoop());
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        frameCount++;
-        dt += Time.deltaTime;
-        if (dt > 1.0f / updateRate)
-        {
-            fps = frameCount / dt;
-            frameCount = 0;
-            dt -= 1.0f / updateRate;
-        }
+	private IEnumerator FPSLoop()
+	{
+		// Capture frame-per-second
+		int lastFrameCount = Time.frameCount;
+		float lastTime = Time.realtimeSinceStartup;
+		yield return new WaitForSeconds(m_udateRate);
+		float timeSpan = Time.realtimeSinceStartup - lastTime;
+		int frameCount = Time.frameCount - lastFrameCount;
 
-        m_text.text = "FPS: " + fps;
-    }
+		// Display it
+		int FPS = Mathf.RoundToInt(frameCount / timeSpan);
+		m_text.text = FPS.ToString() + " fps";
+
+		StartCoroutine(FPSLoop());
+	}
 }

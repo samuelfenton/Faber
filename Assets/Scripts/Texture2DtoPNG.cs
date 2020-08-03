@@ -7,6 +7,7 @@ using UnityEditor;
 [ExecuteAlways]
 public class Texture2DtoPNG : MonoBehaviour
 {
+#if UNITY_EDITOR
     public bool m_convert = false;
     public Texture2D m_textureToConvert = null;
 
@@ -31,4 +32,5 @@ public class Texture2DtoPNG : MonoBehaviour
             }
         }
     }
+#endif
 }
