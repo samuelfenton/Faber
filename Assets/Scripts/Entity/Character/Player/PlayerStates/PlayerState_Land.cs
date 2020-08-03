@@ -22,6 +22,7 @@ public class PlayerState_Land : State_Player
         base.StateStart();
 
         m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, false);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.LAND, true);
     }
 
     /// <summary>
@@ -41,6 +42,8 @@ public class PlayerState_Land : State_Player
     public override void StateEnd()
     {
         base.StateEnd();
+
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.LAND, false);
     }
 
     /// <summary>

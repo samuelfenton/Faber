@@ -615,7 +615,7 @@ public class Voxeliser_Burst : MonoBehaviour
         {
             for (int triIndex = 0; triIndex < m_tris.Length/3; triIndex++)
             {
-                if(m_voxelDetails.Length >= m_maxVoxels)
+                if(m_voxelDetails.Count() >= m_maxVoxels)
                     return;
 
                 //Float 4 varients due to matrix math
@@ -728,7 +728,7 @@ public class Voxeliser_Burst : MonoBehaviour
         /// <param name="p_endUV">Ending UV</param>
         private void AddPoint(float3 p_startPoint, float3 p_vector, float3 p_currentPoint, float2 p_startUV, float2 p_endUV, bool p_shouldTempStore)
         {
-            if (m_voxelDetails.Length >= m_maxVoxels)
+            if (m_voxelDetails.Count() >= m_maxVoxels)
                 return;
 
             float a2bPercent = GetPercent(p_startPoint, p_vector, p_currentPoint);
@@ -807,7 +807,6 @@ public class Voxeliser_Burst : MonoBehaviour
         }
     #endregion
     }
-
 
     [BurstCompile]
     private struct GetConvertedMesh : IJob

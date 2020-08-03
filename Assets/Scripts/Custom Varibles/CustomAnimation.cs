@@ -13,7 +13,7 @@ public class CustomAnimation : MonoBehaviour
 
     public enum VARIBLE_FLOAT { CURRENT_VELOCITY, DESIRED_VELOCITY, ABSOLUTE_VELOCITY, VERTICAL_VELOCITY, RANDOM_IDLE, FLOAT_COUNT}
     private string[] m_varibleFloatToString = new string[(int)VARIBLE_FLOAT.FLOAT_COUNT];
-    public enum VARIBLE_BOOL {BLOCK, DASH, JUMP, IN_AIR, BOOL_COUNT}
+    public enum VARIBLE_BOOL {BLOCK, DASH, JUMP, IN_AIR, LAND, BOOL_COUNT}
     private string[] m_varibleBoolToString = new string[(int)VARIBLE_BOOL.BOOL_COUNT];
 
     public enum INTERRUPT_BOOL {RECOIL, KNOCKBACK, DEATH, INTERRUPT_COUNT}
@@ -49,6 +49,7 @@ public class CustomAnimation : MonoBehaviour
         m_varibleBoolToString[(int)VARIBLE_BOOL.DASH] = "Dash";
         m_varibleBoolToString[(int)VARIBLE_BOOL.JUMP] = "Jump";
         m_varibleBoolToString[(int)VARIBLE_BOOL.IN_AIR] = "InAir";
+        m_varibleBoolToString[(int)VARIBLE_BOOL.LAND] = "Land";
 
         m_interruptToString[(int)INTERRUPT_BOOL.RECOIL]="Recoil";
         m_interruptToString[(int)INTERRUPT_BOOL.KNOCKBACK] = "Knockback";

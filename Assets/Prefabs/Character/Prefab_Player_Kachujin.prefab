@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abe54aedea7d6514fac4b62449e4be9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_primaryWeaponPrefab: {fileID: 3301097230926706484, guid: ceef3579e2f01d34983d6ca476f81b53,
+  m_primaryWeaponPrefab: {fileID: 872240425218595252, guid: 596d8a3acdb2fc44d8ed3b64c46c1292,
     type: 3}
   m_secondaryWeaponPrefab: {fileID: 3301097230926706484, guid: c1573aab28562be469626887bde4ef2f,
     type: 3}
@@ -269,6 +269,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -1601876252581897263, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a948400fcaee2384ab417cdaaf92c8b9, type: 2}
     - target: {fileID: -927199367670048503, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
         type: 3}
       propertyPath: m_Name

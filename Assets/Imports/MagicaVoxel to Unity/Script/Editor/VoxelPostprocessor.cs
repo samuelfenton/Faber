@@ -69,8 +69,9 @@
 
 
 
-		// LGC
-		private void OnPreprocessModel () {
+        // LGC
+        [System.Obsolete]
+        private void OnPreprocessModel () {
 
 			string fullPath = Util.GetFullPath(assetImporter.assetPath);
 			ModelImporter mi = assetImporter as ModelImporter;
