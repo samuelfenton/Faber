@@ -299,6 +299,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1932267347226280876}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1424785604618189804 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 654447047505164352, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
+    type: 3}
+  m_PrefabInstance: {fileID: 1932267347226280876}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1392919925366981228 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 685795780053844416, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
@@ -311,3 +317,72 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1932267347226280876}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6493271775490204067
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1424785604618189804}
+    m_Modifications:
+    - target: {fileID: 4910998762797527038, guid: 07bc3d2f3227ea245b80b503f7e9d233,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910998762797527038, guid: 07bc3d2f3227ea245b80b503f7e9d233,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910998762797527038, guid: 07bc3d2f3227ea245b80b503f7e9d233,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910998762797527038, guid: 07bc3d2f3227ea245b80b503f7e9d233,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910998762797527038, guid: 07bc3d2f3227ea245b80b503f7e9d233,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910998762797527038, guid: 07bc3d2f3227ea245b80b503f7e9d233,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910998762797527038, guid: 07bc3d2f3227ea245b80b503f7e9d233,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910998762797527038, guid: 07bc3d2f3227ea245b80b503f7e9d233,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910998762797527038, guid: 07bc3d2f3227ea245b80b503f7e9d233,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910998762797527038, guid: 07bc3d2f3227ea245b80b503f7e9d233,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4910998762797527038, guid: 07bc3d2f3227ea245b80b503f7e9d233,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7923432893025396020, guid: 07bc3d2f3227ea245b80b503f7e9d233,
+        type: 3}
+      propertyPath: m_Name
+      value: Prefab_Weapon_Katana01_Sheath01
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 07bc3d2f3227ea245b80b503f7e9d233, type: 3}

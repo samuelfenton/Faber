@@ -94,6 +94,14 @@ public class CustomNeon : MonoBehaviour
                 sectionRenderers[rendererIndex].sharedMaterial = m_materials[rendererIndex];
             }
 
+            //Only one change needed so set now and forget
+            if(m_neonSequence.Count == 1)
+            {
+                SetColour(m_neonSequence[0].m_neonColor);
+
+                return false;
+            }
+
             return true;
         }
 
@@ -207,10 +215,12 @@ public class CustomNeon : MonoBehaviour
             }
         }
 
+        //Check if theres no sequence left
         if(m_neonSequence.Count == 0)
         {
             return;
         }
+
 
         StartCoroutine(TotalSequence());
     }
