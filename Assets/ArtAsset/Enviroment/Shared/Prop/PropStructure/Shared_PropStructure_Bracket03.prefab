@@ -46,10 +46,11 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -2708456104885967835}
+  - {fileID: -4686386893658648340}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -77,7 +78,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3038000936386182000}
-  m_Mesh: {fileID: -1485515697905392990}
+  m_Mesh: {fileID: -372165117259053782}
 --- !u!1 &5164934742273148018
 GameObject:
   m_ObjectHideFlags: 0
@@ -88,7 +89,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4227521664480056357}
   m_Layer: 0
-  m_Name: Building_PropExterior_Bracket03
+  m_Name: Shared_PropStructure_Bracket03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -109,14 +110,14 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!21 &-2708456104885967835
+--- !u!21 &-4686386893658648340
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Material_Building_PropExterior_Bracket03_Base0
+  m_Name: Material_Shared_PropStructure_Bracket03_Base0
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -149,7 +150,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 7390395950917374317}
+        m_Texture: {fileID: 7306442224501221371}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -184,13 +185,13 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
---- !u!43 &-1485515697905392990
+--- !u!43 &-372165117259053782
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Mesh_Building_PropExterior_Bracket03_Base0
+  m_Name: Mesh_Shared_PropStructure_Bracket03_Base0
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -347,13 +348,13 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!28 &7390395950917374317
+--- !u!28 &7306442224501221371
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Texture_Building_PropExterior_Bracket03_Base0
+  m_Name: Texture_Shared_PropStructure_Bracket03_Base0
   m_ImageContentsHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -366,6 +367,7 @@ Texture2D:
   m_TextureFormat: 5
   m_MipCount: 1
   m_IsReadable: 1
+  m_IgnoreMasterTextureLimit: 0
   m_StreamingMipmaps: 0
   m_StreamingMipmapsPriority: 0
   m_AlphaIsTransparency: 0

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1306153654025416579}
   m_Layer: 0
-  m_Name: Building_PropExterior_MiscWire04
+  m_Name: Shared_PropBuilding_MiscWire04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77,10 +77,11 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 1943188269943417577}
+  - {fileID: -5709724596339771285}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -108,54 +109,89 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6597134941446044226}
-  m_Mesh: {fileID: 664201727206487457}
---- !u!28 &-8558770405814591537
-Texture2D:
+  m_Mesh: {fileID: -3783385906110599919}
+--- !u!21 &-5709724596339771285
+Material:
+  serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Texture_Building_PropExterior_MiscWire04_Base0
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  serializedVersion: 2
-  m_Width: 32
-  m_Height: 34
-  m_CompleteImageSize: 4352
-  m_TextureFormat: 5
-  m_MipCount: 1
-  m_IsReadable: 1
-  m_StreamingMipmaps: 0
-  m_StreamingMipmapsPriority: 0
-  m_AlphaIsTransparency: 0
-  m_ImageCount: 1
-  m_TextureDimension: 2
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 0
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 0
-    m_WrapV: 0
-    m_WrapW: 0
-  m_LightmapFormat: 0
-  m_ColorSpace: 1
-  image data: 4352
-  _typelessdata: ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd
-  m_StreamData:
-    offset: 0
-    size: 0
-    path: 
---- !u!43 &664201727206487457
+  m_Name: Material_Shared_PropBuilding_MiscWire04_Base0
+  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 1079931042750710494}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BumpScale: 1
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _Metallic: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _UVSec: 0
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+--- !u!43 &-3783385906110599919
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Mesh_Building_PropExterior_MiscWire04_Base0
+  m_Name: Mesh_Shared_PropBuilding_MiscWire04_Base0
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -312,78 +348,44 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!21 &1943188269943417577
-Material:
-  serializedVersion: 6
+--- !u!28 &1079931042750710494
+Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Material_Building_PropExterior_MiscWire04_Base0
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _BumpMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DetailAlbedoMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DetailMask:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _DetailNormalMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _EmissionMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MainTex:
-        m_Texture: {fileID: -8558770405814591537}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MetallicGlossMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _OcclusionMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _ParallaxMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - _BumpScale: 1
-    - _Cutoff: 0.5
-    - _DetailNormalMapScale: 1
-    - _DstBlend: 0
-    - _GlossMapScale: 1
-    - _Glossiness: 0.5
-    - _GlossyReflections: 1
-    - _Metallic: 0
-    - _Mode: 0
-    - _OcclusionStrength: 1
-    - _Parallax: 0.02
-    - _SmoothnessTextureChannel: 0
-    - _SpecularHighlights: 1
-    - _SrcBlend: 1
-    - _UVSec: 0
-    - _ZWrite: 1
-    m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+  m_Name: Texture_Shared_PropBuilding_MiscWire04_Base0
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  serializedVersion: 2
+  m_Width: 32
+  m_Height: 34
+  m_CompleteImageSize: 4352
+  m_TextureFormat: 5
+  m_MipCount: 1
+  m_IsReadable: 1
+  m_IgnoreMasterTextureLimit: 0
+  m_StreamingMipmaps: 0
+  m_StreamingMipmapsPriority: 0
+  m_AlphaIsTransparency: 0
+  m_ImageCount: 1
+  m_TextureDimension: 2
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 0
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 0
+    m_WrapV: 0
+    m_WrapW: 0
+  m_LightmapFormat: 0
+  m_ColorSpace: 1
+  image data: 4352
+  _typelessdata: ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828cdcdcdcdcdcdcdcdff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff080808ff080808ff080808cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff080808ff080808ff080808ff080808ff080808ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828ff282828cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd
+  m_StreamData:
+    offset: 0
+    size: 0
+    path: 

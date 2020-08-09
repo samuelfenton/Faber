@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9034001919646066836}
   m_Layer: 0
-  m_Name: Prop_NeonSign_Cocktail01_Section03
+  m_Name: NeonCity_Prop_NeonSign_Cocktail01_Section03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77,10 +77,11 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -3557737837649138122}
+  - {fileID: -8088480326541180359}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -108,15 +109,15 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8435668681196265053}
-  m_Mesh: {fileID: 2156009144940211198}
---- !u!21 &-3557737837649138122
+  m_Mesh: {fileID: -7394385209154617990}
+--- !u!21 &-8088480326541180359
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Material_Prop_NeonSign_Cocktail01_Section03_Base0
+  m_Name: Material_NeonCity_Prop_NeonSign_Cocktail01_Section03_Base0
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -149,7 +150,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 7381321757111316700}
+        m_Texture: {fileID: -1302358051768998443}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -184,13 +185,13 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
---- !u!43 &2156009144940211198
+--- !u!43 &-7394385209154617990
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Mesh_Prop_NeonSign_Cocktail01_Section03_Base0
+  m_Name: Mesh_NeonCity_Prop_NeonSign_Cocktail01_Section03_Base0
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -347,13 +348,13 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!28 &7381321757111316700
+--- !u!28 &-1302358051768998443
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Texture_Prop_NeonSign_Cocktail01_Section03_Base0
+  m_Name: Texture_NeonCity_Prop_NeonSign_Cocktail01_Section03_Base0
   m_ImageContentsHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -366,6 +367,7 @@ Texture2D:
   m_TextureFormat: 5
   m_MipCount: 1
   m_IsReadable: 1
+  m_IgnoreMasterTextureLimit: 0
   m_StreamingMipmaps: 0
   m_StreamingMipmapsPriority: 0
   m_AlphaIsTransparency: 0
