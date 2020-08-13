@@ -33,6 +33,10 @@ public class PlayerState_Land : State_Player
     {
         base.StateUpdate();
 
+        //Allow player to land and move
+        float horizontal = m_player.m_input.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
+        m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * m_character.m_inAirModifier);
+
         return m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.BASE);
     }
 

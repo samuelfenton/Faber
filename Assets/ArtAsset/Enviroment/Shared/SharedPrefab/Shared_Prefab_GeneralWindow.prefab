@@ -12,11 +12,11 @@ GameObject:
   - component: {fileID: 5836591655750331552}
   - component: {fileID: 4853720660619872366}
   m_Layer: 0
-  m_Name: Enviroment_GeneralWindow
+  m_Name: Shared_Prefab_GeneralWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &7051166863485720250
 Transform:
@@ -54,6 +54,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

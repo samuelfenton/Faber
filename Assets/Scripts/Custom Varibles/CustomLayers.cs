@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class CustomLayers : MonoBehaviour
 {
-    public static int m_walkable = 0;
-
+    public static int m_enviroment = 0;
+    public static int m_background = 0;
     public static int m_character = 0;
 
     //-------------------
@@ -13,7 +13,8 @@ public class CustomLayers : MonoBehaviour
     //-------------------
     static CustomLayers()
     {
-        m_walkable = LayerMask.GetMask("Walkable");
+        m_enviroment = LayerMask.GetMask("Enviroment");
+        m_background = LayerMask.GetMask("Background");
         m_character = LayerMask.GetMask("Character");
     }
 }

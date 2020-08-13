@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class SplinePhysics : MonoBehaviour
@@ -29,7 +30,7 @@ public class SplinePhysics : MonoBehaviour
     [HideInInspector]
     public Pathing_Spline m_currentSpline = null;
     protected Vector3 m_colliderExtents = Vector3.zero;
-    protected float m_collisionDetection = 0.1f;
+    protected float m_collisionDetection = 0.3f;
 
     protected Entity m_parentEntity = null;
 
@@ -173,15 +174,15 @@ public class SplinePhysics : MonoBehaviour
     public bool CollidingVertical(Vector3 p_direction, Vector3 p_centerPos)
     {
         //Forward raycast
-        if (Physics.Raycast(p_centerPos + Vector3.forward * m_colliderExtents.x, p_direction, m_colliderExtents.y + m_collisionDetection, CustomLayers.m_walkable))
+        if (Physics.Raycast(p_centerPos + transform.forward * m_colliderExtents.z, p_direction, m_colliderExtents.y + m_collisionDetection, CustomLayers.m_enviroment))
             return true; //Early breakout
 
         //Back raycast
-        if (Physics.Raycast(p_centerPos * m_colliderExtents.x, p_direction, m_colliderExtents.y + m_collisionDetection, CustomLayers.m_walkable))
+        if (Physics.Raycast(p_centerPos, p_direction, m_colliderExtents.y + m_collisionDetection, CustomLayers.m_enviroment))
             return true; //Early breakout
 
         //Center raycast
-        if (Physics.Raycast(p_centerPos - Vector3.forward * m_colliderExtents.x, p_direction, m_colliderExtents.y + m_collisionDetection, CustomLayers.m_walkable))
+        if (Physics.Raycast(p_centerPos - transform.forward * m_colliderExtents.z, p_direction, m_colliderExtents.y + m_collisionDetection, CustomLayers.m_enviroment))
             return true; //Early breakout
 
         return false;
@@ -196,16 +197,18 @@ public class SplinePhysics : MonoBehaviour
     /// <returns>True when any collisions occur</returns>
     public bool CollidingHorizontal(Vector3 p_direction, Vector3 p_centerPos)
     {
+        Debug.DrawLine(p_centerPos + transform.up * m_colliderExtents.y, p_centerPos + transform.up * m_colliderExtents.y + p_direction * (m_colliderExtents.z + m_collisionDetection));
+
         //Top raycast
-        if (Physics.Raycast(p_centerPos + Vector3.up * m_colliderExtents.x, p_direction, m_colliderExtents.z + m_collisionDetection, CustomLayers.m_walkable))
+        if (Physics.Raycast(p_centerPos + transform.up * m_colliderExtents.y, p_direction, m_colliderExtents.z + m_collisionDetection, CustomLayers.m_enviroment))
             return true; //Early breakout
 
         //Center raycast
-        if (Physics.Raycast(p_centerPos * m_colliderExtents.x, p_direction, m_colliderExtents.z + m_collisionDetection, CustomLayers.m_walkable))
+        if (Physics.Raycast(p_centerPos, p_direction, m_colliderExtents.z + m_collisionDetection, CustomLayers.m_enviroment))
             return true; //Early breakout
 
         //Bottom raycast, starting offset has been modified, to all moving up inclines
-        if (Physics.Raycast(p_centerPos - Vector3.up * m_colliderExtents.x, p_direction, m_colliderExtents.z + m_collisionDetection, CustomLayers.m_walkable))
+        if (Physics.Raycast(p_centerPos - transform.up * m_colliderExtents.y, p_direction, m_colliderExtents.z + m_collisionDetection, CustomLayers.m_enviroment))
             return true; //Early breakout
 
         return false;

@@ -13,9 +13,8 @@ public class Character_SplinePhysics : SplinePhysics
     {
         base.Init();
 
-        CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
+        Collider collider = GetComponent<Collider>();
 
-        m_colliderExtents.x = m_colliderExtents.z = capsuleCollider.radius;
-        m_colliderExtents.y = capsuleCollider.height / 2.0f;
+        m_colliderExtents = collider.bounds.extents;
     }
 }

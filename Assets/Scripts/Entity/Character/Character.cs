@@ -8,7 +8,7 @@ public class Character : Entity
     public enum TEAM { PLAYER, NPC, GAIA }
     public enum ATTACK_INPUT_STANCE { LIGHT, HEAVY, NONE }
 
-    public const float SPRINT_MODIFIER = 1.5f;//Linked to animator
+    public const float SPRINT_MODIFIER = 1.5f;//Linked to animator, To slow down sprint, change here and in animation all related blend trees
 
     [Header("Assigned Character Varibles")]
     public GameObject m_characterModel = null;
@@ -34,7 +34,7 @@ public class Character : Entity
     public float m_landingDistance = 1.0f;
 
     [Header("In Air Stats")]
-    public float m_inAirAccel = 0.5f;
+    public float m_inAirModifier = 0.5f;
     public float m_doubleJumpSpeed = 6.0f;
 
     [Header("Wall Jump Stats")]
@@ -62,6 +62,9 @@ public class Character : Entity
     protected CustomAnimation m_customAnimation = null;
     protected ObjectPoolManager_InGame m_objectPoolingManger = null;
 
+    [HideInInspector]
+    public CharacterAbilities m_abilities = null;
+
     /// <summary>
     /// Initiliase the entity
     /// setup varible/physics
@@ -71,6 +74,7 @@ public class Character : Entity
         base.InitEntity();
 
         //Get references
+        m_abilities = GetComponent<CharacterAbilities>();
         m_weaponManager = GetComponent<WeaponManager>();
         m_animator = m_characterModel.GetComponent<Animator>();
 
@@ -91,8 +95,8 @@ public class Character : Entity
 
         Vector3 newVelocity = m_localVelocity;
 
-        float accel = m_splinePhysics.m_downCollision ? m_groundAccel : m_inAirAccel;
-        float deaccel = m_splinePhysics.m_downCollision ? m_groundedDeaccel : m_inAirAccel;
+        float accel = m_splinePhysics.m_downCollision ? m_groundAccel : m_groundAccel * m_inAirModifier;
+        float deaccel = m_splinePhysics.m_downCollision ? m_groundedDeaccel : m_groundedDeaccel * m_inAirModifier;
 
         //Update velocity
         //Check for walls

@@ -22,7 +22,7 @@ public class PlayerState_InAir : State_Player
         base.StateInit(p_loopedState, p_entity);
 
         m_horizontalSpeedMax = m_character.m_groundRunVel; //Always use grounded as max speed
-        m_horizontalAcceleration = m_character.m_inAirAccel;
+        m_horizontalAcceleration = m_character.m_inAirModifier;
         m_doubleJumpSpeed = m_character.m_doubleJumpSpeed;
     }
 
@@ -33,7 +33,7 @@ public class PlayerState_InAir : State_Player
     {
         base.StateStart();
 
-        m_inAirState = IN_AIR_STATE.INITIAL;
+        m_inAirState = m_character.m_abilities.HasAbility(CharacterAbilities.ABILITY.DOUBLE_JUMP) ? IN_AIR_STATE.INITIAL : IN_AIR_STATE.FINAL;
 
         m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, true);
     }
@@ -46,8 +46,9 @@ public class PlayerState_InAir : State_Player
     {
         base.StateUpdate();
 
+        //Allow player to move in air
         float horizontal = m_player.m_input.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
-        m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel);
+        m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * m_character.m_inAirModifier);
 
         switch (m_inAirState)
         {

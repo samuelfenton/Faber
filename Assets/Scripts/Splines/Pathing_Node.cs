@@ -351,26 +351,36 @@ public class Pathing_Node : MonoBehaviour
         for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
         {
             if (m_pathingSplines[splineIndex] != null)
-                DrawSpline(m_pathingSplines[splineIndex]);
+                DrawSpline(splineIndex);
         }
     }
 
     /// <summary>
     /// Draw a spline
     /// </summary>
-    /// <param name="p_spline">Spline to draw</param>
-    private void DrawSpline(Pathing_Spline p_pathingSpline)
+    /// <param name="p_pathingSplineIndex">Index of spline to draw</param>
+    private void DrawSpline(int p_pathingSplineIndex)
     {
+        if (!m_pathingSplineDetails[p_pathingSplineIndex].IsValidSpline(this)) //Invalid setup, but spline exists
+        {
+            m_pathingSplines[p_pathingSplineIndex].SplineRemoved();
+
+            return;
+        }
+
+        Pathing_Spline splineToDraw = m_pathingSplines[p_pathingSplineIndex];
+
         Gizmos.color = Color.blue;
 
         float percentStep = 1.0f / SPLINE_STEPS;
         float currentPercent = percentStep;
 
-        Vector3 previous = p_pathingSpline.m_nodeA.transform.position;
+        Vector3 previous = splineToDraw.m_nodeA.transform.position;
+
         //Loop through approximating circle, every (m_totalDegrees / DEBUG_STEPS) degrees
         for (int i = 1; i <= SPLINE_STEPS; i++)
         {
-            Vector3 next = p_pathingSpline.GetPosition(currentPercent);
+            Vector3 next = splineToDraw.GetPosition(currentPercent);
 
             Gizmos.DrawLine(previous, next);
 
