@@ -13,7 +13,7 @@ public class CustomAnimation : MonoBehaviour
 
     public enum VARIBLE_FLOAT { CURRENT_VELOCITY, DESIRED_VELOCITY, ABSOLUTE_VELOCITY, VERTICAL_VELOCITY, RANDOM_IDLE, FLOAT_COUNT}
     private string[] m_varibleFloatToString = new string[(int)VARIBLE_FLOAT.FLOAT_COUNT];
-    public enum VARIBLE_BOOL {BLOCK, DASH, JUMP, IN_AIR, LAND, BOOL_COUNT}
+    public enum VARIBLE_BOOL {BLOCK, DASH, JUMP, IN_AIR, LAND, SECTION01_TRANSISTION, SECTION02_TRANSISTION, BOOL_COUNT }
     private string[] m_varibleBoolToString = new string[(int)VARIBLE_BOOL.BOOL_COUNT];
 
     public enum INTERRUPT_BOOL {RECOIL, KNOCKBACK, DEATH, INTERRUPT_COUNT}
@@ -39,17 +39,19 @@ public class CustomAnimation : MonoBehaviour
         m_layerToInt[(int)LAYER.ATTACK] = m_animator.GetLayerIndex("AttackLayer");
         m_layerToInt[(int)LAYER.INTERRUPT] = m_animator.GetLayerIndex("InterruptLayer");
 
-        m_varibleFloatToString[(int)VARIBLE_FLOAT.CURRENT_VELOCITY] ="CurrentVelocity";
-        m_varibleFloatToString[(int)VARIBLE_FLOAT.DESIRED_VELOCITY] = "DesiredVelocity";
-        m_varibleFloatToString[(int)VARIBLE_FLOAT.ABSOLUTE_VELOCITY] = "AbsoluteVelocity";
-        m_varibleFloatToString[(int)VARIBLE_FLOAT.VERTICAL_VELOCITY] ="VerticalVelocity";
+        m_varibleFloatToString[(int)VARIBLE_FLOAT.CURRENT_VELOCITY] ="Current Velocity";
+        m_varibleFloatToString[(int)VARIBLE_FLOAT.DESIRED_VELOCITY] = "Desired Velocity";
+        m_varibleFloatToString[(int)VARIBLE_FLOAT.ABSOLUTE_VELOCITY] = "Absolute Velocity";
+        m_varibleFloatToString[(int)VARIBLE_FLOAT.VERTICAL_VELOCITY] ="Vertical Velocity";
         m_varibleFloatToString[(int)VARIBLE_FLOAT.RANDOM_IDLE] = "RandomIdle";
 
         m_varibleBoolToString[(int)VARIBLE_BOOL.BLOCK] = "Block";
         m_varibleBoolToString[(int)VARIBLE_BOOL.DASH] = "Dash";
         m_varibleBoolToString[(int)VARIBLE_BOOL.JUMP] = "Jump";
-        m_varibleBoolToString[(int)VARIBLE_BOOL.IN_AIR] = "InAir";
+        m_varibleBoolToString[(int)VARIBLE_BOOL.IN_AIR] = "In Air";
         m_varibleBoolToString[(int)VARIBLE_BOOL.LAND] = "Land";
+        m_varibleBoolToString[(int)VARIBLE_BOOL.SECTION01_TRANSISTION] = "Section01 Transistion";
+        m_varibleBoolToString[(int)VARIBLE_BOOL.SECTION02_TRANSISTION] = "Section02 Transistion";
 
         m_interruptToString[(int)INTERRUPT_BOOL.RECOIL]="Recoil";
         m_interruptToString[(int)INTERRUPT_BOOL.KNOCKBACK] = "Knockback";

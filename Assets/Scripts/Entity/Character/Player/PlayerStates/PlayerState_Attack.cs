@@ -27,7 +27,7 @@ public class PlayerState_Attack : State_Player
         m_player.SetDesiredVelocity(0.0f);
 
         //TODO logic to determine type of attack, in air vs ground vs sprint
-        ManoeuvreLeaf.MANOEUVRE_TYPE currentType = ManoeuvreLeaf.MANOEUVRE_TYPE.GROUND;
+        ManoeuvreLeaf.MANOEUVRE_TYPE currentType = m_character.m_splinePhysics.m_downCollision ? m_character.m_localVelocity.z > m_character.m_groundRunVel ? ManoeuvreLeaf.MANOEUVRE_TYPE.SPRINT : ManoeuvreLeaf.MANOEUVRE_TYPE.GROUND : ManoeuvreLeaf.MANOEUVRE_TYPE.INAIR;
         ManoeuvreLeaf.MANOEUVRE_STANCE currentStance = ManoeuvreLeaf.MANOEUVRE_STANCE.LIGHT;
 
         if (m_player.m_input.GetKey(CustomInput.INPUT_KEY.ATTACK_SECONDARY) == CustomInput.INPUT_STATE.DOWNED)

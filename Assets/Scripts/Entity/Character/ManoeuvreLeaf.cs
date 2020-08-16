@@ -24,9 +24,21 @@ public class ManoeuvreLeaf : ScriptableObject
     private string m_animationString = "";
 
     [Header("Manoeuvre Details")]
+    [Tooltip("Will this attack be affected by gravity")]
     public bool m_useGravity = true;
+    [Tooltip("Translation data from start of attack, positive will move character forwards")]
     public AnimationCurve m_translationXCurve = null;
-    public AnimationCurve m_translationYCurve = null;
+
+    [Header("Sequence Data")]
+    [Tooltip("Does this attack come in three parts? Start, Loop and End")]
+    public bool m_sequenceAttack = false;
+    [Header("Sequence completion flags")]
+    [Tooltip("Completed once hitting the ground")]
+    public bool m_groundedFlag = false;
+    [Tooltip("Completed once a peridor of time has passed")]
+    public bool m_timeTraveledFlag = false;
+    [Tooltip("Only used when previous is checked, how long till it ends")]
+    public float m_requiredAttackTime = 0.0f;
 
     [System.Serializable]
     public struct ManoeuvreAction

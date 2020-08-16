@@ -29,7 +29,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1043438756034693328}
+  - {fileID: 8761426766387408320}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -59,78 +59,108 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.06, y: 0.6, z: 0.12}
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!1001 &7197931668391324635
+--- !u!1001 &4389993652936984282
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 6614151285767359285}
     m_Modifications:
-    - target: {fileID: 1744301776695047052, guid: c774b826e898d2b4eb0108204fa5937f,
-        type: 3}
-      propertyPath: m_Name
-      value: Weapon_Katana01
-      objectReference: {fileID: 0}
-    - target: {fileID: 7899096809718227723, guid: c774b826e898d2b4eb0108204fa5937f,
+    - target: {fileID: -4216859302048453862, guid: c5b61a2e18e1320438326b9b5c894638,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 7899096809718227723, guid: c774b826e898d2b4eb0108204fa5937f,
+    - target: {fileID: -4216859302048453862, guid: c5b61a2e18e1320438326b9b5c894638,
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7899096809718227723, guid: c774b826e898d2b4eb0108204fa5937f,
+    - target: {fileID: -4216859302048453862, guid: c5b61a2e18e1320438326b9b5c894638,
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7899096809718227723, guid: c774b826e898d2b4eb0108204fa5937f,
+    - target: {fileID: -4216859302048453862, guid: c5b61a2e18e1320438326b9b5c894638,
         type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7899096809718227723, guid: c774b826e898d2b4eb0108204fa5937f,
+    - target: {fileID: -4216859302048453862, guid: c5b61a2e18e1320438326b9b5c894638,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 7899096809718227723, guid: c774b826e898d2b4eb0108204fa5937f,
+    - target: {fileID: -4216859302048453862, guid: c5b61a2e18e1320438326b9b5c894638,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 7899096809718227723, guid: c774b826e898d2b4eb0108204fa5937f,
+    - target: {fileID: -4216859302048453862, guid: c5b61a2e18e1320438326b9b5c894638,
         type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7899096809718227723, guid: c774b826e898d2b4eb0108204fa5937f,
+    - target: {fileID: -4216859302048453862, guid: c5b61a2e18e1320438326b9b5c894638,
         type: 3}
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7899096809718227723, guid: c774b826e898d2b4eb0108204fa5937f,
+    - target: {fileID: -4216859302048453862, guid: c5b61a2e18e1320438326b9b5c894638,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7899096809718227723, guid: c774b826e898d2b4eb0108204fa5937f,
+    - target: {fileID: -4216859302048453862, guid: c5b61a2e18e1320438326b9b5c894638,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7899096809718227723, guid: c774b826e898d2b4eb0108204fa5937f,
+    - target: {fileID: -4216859302048453862, guid: c5b61a2e18e1320438326b9b5c894638,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: c5b61a2e18e1320438326b9b5c894638,
+        type: 3}
+      propertyPath: m_Name
+      value: Weapon_Katana01_Blurstates01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7561110372842451503, guid: c5b61a2e18e1320438326b9b5c894638,
+        type: 3}
+      propertyPath: m_AABB.m_Center.x
+      value: -0.31444556
+      objectReference: {fileID: 0}
+    - target: {fileID: 7561110372842451503, guid: c5b61a2e18e1320438326b9b5c894638,
+        type: 3}
+      propertyPath: m_AABB.m_Center.y
+      value: 0.48850346
+      objectReference: {fileID: 0}
+    - target: {fileID: 7561110372842451503, guid: c5b61a2e18e1320438326b9b5c894638,
+        type: 3}
+      propertyPath: m_AABB.m_Extent.x
+      value: 0.3621922
+      objectReference: {fileID: 0}
+    - target: {fileID: 7561110372842451503, guid: c5b61a2e18e1320438326b9b5c894638,
+        type: 3}
+      propertyPath: m_AABB.m_Extent.y
+      value: 0.76619625
+      objectReference: {fileID: 0}
+    - target: {fileID: 7561110372842451503, guid: c5b61a2e18e1320438326b9b5c894638,
+        type: 3}
+      propertyPath: m_AABB.m_Extent.z
+      value: 0.030647755
+      objectReference: {fileID: 0}
+    - target: {fileID: 7561110372842451503, guid: c5b61a2e18e1320438326b9b5c894638,
+        type: 3}
+      propertyPath: m_DirtyAABB
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: c774b826e898d2b4eb0108204fa5937f, type: 3}
---- !u!4 &1043438756034693328 stripped
+  m_SourcePrefab: {fileID: 100100000, guid: c5b61a2e18e1320438326b9b5c894638, type: 3}
+--- !u!4 &8761426766387408320 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 7899096809718227723, guid: c774b826e898d2b4eb0108204fa5937f,
+  m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: c5b61a2e18e1320438326b9b5c894638,
     type: 3}
-  m_PrefabInstance: {fileID: 7197931668391324635}
+  m_PrefabInstance: {fileID: 4389993652936984282}
   m_PrefabAsset: {fileID: 0}

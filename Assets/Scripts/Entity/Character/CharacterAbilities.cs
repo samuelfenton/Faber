@@ -9,14 +9,6 @@ public class CharacterAbilities : MonoBehaviour
     [SerializeField]
     private bool[] m_abilityFlags = new bool[(int)ABILITY.ABILITY_COUNT];
 
-    private void Start()
-    {
-        for (int abilityIndex = 0; abilityIndex < (int)ABILITY.ABILITY_COUNT; abilityIndex++)
-        {
-            m_abilityFlags[abilityIndex] = false;
-        }
-    }
-
     /// <summary>
     /// DHas this character had an ability flag
     /// </summary>

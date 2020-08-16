@@ -7,7 +7,8 @@ using UnityEngine;
 public class WeaponManager : MonoBehaviour
 {
     private enum MANOEUVRE_STATE {AWAITING_ATTACK, PERFORMING_ATTACK, COMPLETED_ATTACK}
-    
+    private enum SEQUENCE_STATE { INITIAL, SECTION01, SECTION02}
+
     public GameObject m_primaryWeaponPrefab = null;
     public GameObject m_secondaryWeaponPrefab = null;
 
@@ -15,12 +16,15 @@ public class WeaponManager : MonoBehaviour
     [Header("Ground")]
     public ManoeuvreLeaf m_groundLightManoeuvre = null;
     public ManoeuvreLeaf m_groundHeavyManoeuvre = null;
+
     [Header("In Air")]
     public ManoeuvreLeaf m_inAirLightManoeuvre = null;
     public ManoeuvreLeaf m_inAirHeavyManoeuvre = null;
+
     [Header("Sprinting")]
     public ManoeuvreLeaf m_sprintingLightManoeuvre = null;
     public ManoeuvreLeaf m_sprintingHeavyManoeuvre = null;
+
     //Stored varibles
     private ManoeuvreLeaf m_currentManoeuvreLeaf = null;
 
@@ -38,6 +42,9 @@ public class WeaponManager : MonoBehaviour
     private int m_manoeuvreActionIndex = 0;
     private Character.ATTACK_INPUT_STANCE m_nextAttackStance = Character.ATTACK_INPUT_STANCE.NONE;
 
+    //Sequence Attack Variables
+    private SEQUENCE_STATE m_currentSequenceState = SEQUENCE_STATE.INITIAL;
+    private float m_attackTimer = 0.0f;
     /// <summary>
     /// Init manager
     /// </summary>
@@ -195,7 +202,14 @@ public class WeaponManager : MonoBehaviour
     {
         m_nextAttackStance = Character.ATTACK_INPUT_STANCE.NONE;
         m_manoeuvreActionIndex = 0;
+
         m_currentManoeuvreState = MANOEUVRE_STATE.AWAITING_ATTACK;
+        m_currentSequenceState = SEQUENCE_STATE.INITIAL;
+
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.SECTION01_TRANSISTION, false);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.SECTION02_TRANSISTION, false);
+
+        m_attackTimer = 0.0f;
 
         m_customAnimation.PlayAttack(m_currentManoeuvreLeaf);
 
@@ -210,7 +224,22 @@ public class WeaponManager : MonoBehaviour
     /// <returns>True when a manoeuvre is completed</returns>
     public bool UpdateManoeuvre()
     {
+        m_attackTimer += Time.deltaTime; 
+
         float currentPercent = m_customAnimation.GetAnimationPercent(CustomAnimation.LAYER.ATTACK);
+
+        //Running through initial sequence, that is the start of an attack, wait till completed
+        if(m_currentManoeuvreLeaf.m_sequenceAttack && m_currentSequenceState == SEQUENCE_STATE.INITIAL)
+        {
+            if (m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.ATTACK))
+            {
+                m_currentSequenceState = SEQUENCE_STATE.SECTION01;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         if (m_currentManoeuvreState != MANOEUVRE_STATE.COMPLETED_ATTACK)
         {
@@ -246,10 +275,13 @@ public class WeaponManager : MonoBehaviour
                         m_manoeuvreActionIndex++;
 
                         //Update "statemachine"
-                        if (m_manoeuvreActionIndex >= m_currentManoeuvreLeaf.m_manoeuvreActions.Count)
+                        if (CompletedManoeuvre())
+                        {
+                            m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.SECTION02_TRANSISTION, true); //Even if not in use, set anyway
                             m_currentManoeuvreState = MANOEUVRE_STATE.COMPLETED_ATTACK;
+                        }
                         else
-                            m_currentManoeuvreState = MANOEUVRE_STATE.PERFORMING_ATTACK;
+                            m_currentManoeuvreState = MANOEUVRE_STATE.AWAITING_ATTACK;
                     }
                     break;
             }
@@ -277,5 +309,23 @@ public class WeaponManager : MonoBehaviour
             m_primaryWeaponScript.DisableWeaponDamage();
         if (m_secondaryWeaponScript != null)
             m_secondaryWeaponScript.DisableWeaponDamage();
+    }
+
+    public bool CompletedManoeuvre()
+    {
+        if(!m_currentManoeuvreLeaf.m_sequenceAttack) //Not a sequence attack, just return when at end
+        {
+            return m_manoeuvreActionIndex >= m_currentManoeuvreLeaf.m_manoeuvreActions.Count;
+        }
+
+        //Grounded
+        if (m_currentManoeuvreLeaf.m_groundedFlag && !m_character.m_splinePhysics.m_downCollision)
+            return false;
+
+        //Time
+        if (m_currentManoeuvreLeaf.m_timeTraveledFlag && !(m_attackTimer < m_currentManoeuvreLeaf.m_requiredAttackTime))
+            return false;
+
+        return true;
     }
 }
