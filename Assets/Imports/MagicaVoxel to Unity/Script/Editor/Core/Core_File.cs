@@ -29,7 +29,9 @@
 				var meshs = new List<Mesh>();
 				var materialsMap = new Dictionary<Texture2D, Material[]>();
 				Transform[] lodRoots = new Transform[realLodNum];
+				
 				for (int lodIndex = 0; lodIndex < realLodNum; lodIndex++) {
+
 
 					var voxelModel = result.VoxelModels[lodIndex];
 					var model = CreateModelFrom(voxelModel.RootNode, voxelModel.Materials, root, pivot, ref meshs, ref materialsMap, isRig, result.WithAvatar, shaders, shaderKeywords, shaderRemaps, scale);
@@ -228,9 +230,13 @@
 
 
 						// Prefab
+						SetStaticHierarchy(root);
 #if UNITY_4 || UNITY_5 || UNITY_2017 || UNITY_2018_1 || UNITY_2018_2
 						PrefabUtility.ReplacePrefab(root.gameObject, prefab, ReplacePrefabOptions.ReplaceNameBased);
 #else  // 2018.3+
+
+						//Mark all as static by default
+
 						prefab = PrefabUtility.SaveAsPrefabAsset(root.gameObject, path);
 #endif
 
@@ -295,6 +301,21 @@
 
 			EditorApplication.delayCall += VoxelPostprocessor.ClearAsset;
 
+		}
+
+		/// <summary>
+		/// Set entire hierachy to be static
+		/// Will recursivly loop through each child and its children
+		/// </summary>
+		/// <param name="p_root">Root transform to start at</param>
+		private static void SetStaticHierarchy(Transform p_root)
+        {
+			p_root.gameObject.isStatic = true;
+			foreach (Transform childTransform in p_root)
+			{
+				childTransform.gameObject.isStatic = true;
+				SetStaticHierarchy(childTransform);
+			}
 		}
 
 

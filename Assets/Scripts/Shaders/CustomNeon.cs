@@ -11,8 +11,10 @@ public class CustomNeon : MonoBehaviour
     [System.Serializable]
     public struct NEON_SECTION
     {
-        public Color m_neonColor;
         public float m_timeCode;
+        public bool m_emissionEnabled;
+        public Color m_neonColor;
+        public float m_neonIntensity;
     }
 
     [System.Serializable]
@@ -90,14 +92,13 @@ public class CustomNeon : MonoBehaviour
             for (int rendererIndex = 0; rendererIndex < sectionRenderers.Length; rendererIndex++)
             {
                 m_materials[rendererIndex] = Instantiate(sectionRenderers[rendererIndex].material);
-                m_materials[rendererIndex].EnableKeyword("_EMISSION");
                 sectionRenderers[rendererIndex].sharedMaterial = m_materials[rendererIndex];
             }
 
             //Only one change needed so set now and forget
             if(m_neonSequence.Count == 1)
             {
-                SetColour(m_neonSequence[0].m_neonColor);
+                SetColour(m_neonSequence[0].m_emissionEnabled, m_neonSequence[0].m_neonColor, m_neonSequence[0].m_neonIntensity);
 
                 return false;
             }
@@ -126,7 +127,7 @@ public class CustomNeon : MonoBehaviour
         /// </summary>
         private IEnumerator NextSection()
         {
-            SetColour(m_neonSequence[m_currentIndex].m_neonColor);
+            SetColour(m_neonSequence[m_currentIndex].m_emissionEnabled, m_neonSequence[m_currentIndex].m_neonColor, m_neonSequence[m_currentIndex].m_neonIntensity);
 
             if (m_currentIndex == m_neonSequence.Count - 1)
             {
@@ -142,18 +143,39 @@ public class CustomNeon : MonoBehaviour
             m_loopCoroutine = StartCoroutine(NextSection());
         }
 
+
         /// <summary>
         /// Set color for all materials being used
         /// </summary>
+        /// <param name="p_enabled">Is the emission set for this</param>
         /// <param name="p_color">Color to set to</param>
-        private void SetColour(Color p_color)
+        /// <param name="p_intensity"></param>
+        private void SetColour(bool p_enabled, Color p_color, float p_intensity)
         {
             for (int materialIndex = 0; materialIndex < m_materials.Length; materialIndex++)
             {
                 //Assign to all varibles
                 for (int varibleIndex = 0; varibleIndex < m_targetVariables.Length; varibleIndex++)
                 {
-                    m_materials[materialIndex].SetColor(m_targetVariables[varibleIndex], p_color);
+                    if(p_enabled)
+                    {
+                        m_materials[materialIndex].EnableKeyword("_EMISSION");
+
+                        //Answer to generat color intensity found here
+                        //https://forum.unity.com/threads/setting-material-emission-intensity-in-script-to-match-ui-value.661624/
+
+                        float adjustedIntensity = p_intensity - (0.4169F);
+
+                        // redefine the color with intensity factored in - this should result in the UI slider matching the desired value
+                        Color colorWithIntensity = p_color * Mathf.Pow(2.0F, adjustedIntensity);
+                        m_materials[materialIndex].SetColor(m_targetVariables[varibleIndex], colorWithIntensity);
+                    }
+                    else
+                    {
+                        m_materials[materialIndex].SetColor(m_targetVariables[varibleIndex], p_color);
+
+                        m_materials[materialIndex].DisableKeyword("_EMISSION");
+                    }
                 }
             }
         }
@@ -161,9 +183,9 @@ public class CustomNeon : MonoBehaviour
 
     [Header("Settings")]
     public float m_totalTime = 0.0f;
-    public enum NEON_TYPE {COLOR, EMISSION, BOTH}
-    [Tooltip("COLOR: Changes base color, used more for posters/prelit objects, EMISSION: Adds emission to object, used more on neon tube signs, BOTH: Add to both colour and emission, used more for LCD screens")]
-    public NEON_TYPE m_colourType = NEON_TYPE.COLOR;
+    public enum NEON_TYPE {EMISSION, BOTH}
+    [Tooltip("EMISSION: Adds emission to object, used more on neon tube signs, BOTH: Add to both colour and emission, used more for LCD screens")]
+    public NEON_TYPE m_colourType = NEON_TYPE.EMISSION;
 
     [Header("Advanced")]
     [Tooltip("Only change if youre not using the default varible names in the shader, otherwise leave empty")]
@@ -189,10 +211,9 @@ public class CustomNeon : MonoBehaviour
         {
             switch (m_colourType)
             {
-                case NEON_TYPE.COLOR:
                 case NEON_TYPE.EMISSION:
                     variableStrings = new string[1];
-                    variableStrings[0] = m_colourType == NEON_TYPE.COLOR ? COLOR_STRING : EMISSION_STRING;
+                    variableStrings[0] = EMISSION_STRING;
                     break;
                 case NEON_TYPE.BOTH:
                     variableStrings = new string[2];
