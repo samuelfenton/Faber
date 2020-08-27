@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CustomAnimation : MonoBehaviour
 {
+    private const float END_ANIMATION_TIME = 0.95f;
     private const float BLEND_TIME = 0.2f;
     private const string NULL_STRING = "Null";
     private const string END_ATTACK_BLEND_STRING = "EndAttackBlend";
@@ -104,7 +105,7 @@ public class CustomAnimation : MonoBehaviour
         if (m_animator == null || p_layer == LAYER.LAYER_COUNT)
             return false;
 
-        return m_animator.GetCurrentAnimatorStateInfo(m_layerToInt[(int)p_layer]).normalizedTime > 0.99f;
+        return m_animator.GetCurrentAnimatorStateInfo(m_layerToInt[(int)p_layer]).normalizedTime > END_ANIMATION_TIME;
     }
 
     /// <summary>
