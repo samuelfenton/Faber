@@ -68,7 +68,7 @@ public class NPCState_Attack : NPC_State
     {
         base.StateEnd();
 
-        m_customAnimation.EndAttack();
+        m_customAnimation.EndAttack(false);
     }
 
     /// <summary>

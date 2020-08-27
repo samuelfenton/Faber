@@ -28,6 +28,8 @@ public class ManoeuvreLeaf : ScriptableObject
     public bool m_useGravity = true;
     [Tooltip("Translation data from start of attack, positive will move character forwards")]
     public AnimationCurve m_translationXCurve = null;
+    [Tooltip("Will this attack require a sheathing blend? Example most gorund attacks, whereas in air attacks never sheath")]
+    public bool m_requiresSheathingBlend = false;
 
     [Header("Sequence Data")]
     [Tooltip("Does this attack come in three parts? Start, Loop and End")]

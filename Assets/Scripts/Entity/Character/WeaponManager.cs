@@ -45,6 +45,7 @@ public class WeaponManager : MonoBehaviour
     //Sequence Attack Variables
     private SEQUENCE_STATE m_currentSequenceState = SEQUENCE_STATE.INITIAL;
     private float m_attackTimer = 0.0f;
+
     /// <summary>
     /// Init manager
     /// </summary>
@@ -157,22 +158,25 @@ public class WeaponManager : MonoBehaviour
         {
             EndManoeuvre();
 
+            ManoeuvreLeaf nextManoeuvreLeaf;
+
             switch (m_nextAttackStance)
             {
                 case Character.ATTACK_INPUT_STANCE.LIGHT:
-                    m_currentManoeuvreLeaf = m_currentManoeuvreLeaf.m_lightBranch;
+                    nextManoeuvreLeaf = m_currentManoeuvreLeaf.m_lightBranch;
                     break;
                 case Character.ATTACK_INPUT_STANCE.HEAVY:
-                    m_currentManoeuvreLeaf = m_currentManoeuvreLeaf.m_heavyBranch;
+                    nextManoeuvreLeaf = m_currentManoeuvreLeaf.m_heavyBranch;
                     break;
                 case Character.ATTACK_INPUT_STANCE.NONE:
                 default:
-                    m_currentManoeuvreLeaf = null;
+                    nextManoeuvreLeaf = null;
                     break;
             }
 
-            if (m_currentManoeuvreLeaf != null)
+            if (nextManoeuvreLeaf != null)
             {
+                m_currentManoeuvreLeaf = nextManoeuvreLeaf;
                 StartManoeuvre();
             }
             else
@@ -190,9 +194,10 @@ public class WeaponManager : MonoBehaviour
     /// </summary>
     public void EndAttack()
     {
+        if(m_currentManoeuvreLeaf != null)
+            m_customAnimation.EndAttack(m_currentManoeuvreLeaf.m_requiresSheathingBlend);
+        
         m_currentManoeuvreLeaf = null;
-
-        m_customAnimation.EndAttack();
     }
 
     /// <summary>

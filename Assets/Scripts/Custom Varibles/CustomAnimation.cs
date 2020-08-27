@@ -6,7 +6,7 @@ public class CustomAnimation : MonoBehaviour
 {
     private const float BLEND_TIME = 0.2f;
     private const string NULL_STRING = "Null";
-
+    private const string END_ATTACK_BLEND_STRING = "EndAttackBlend";
     //Used Varibles
     public enum LAYER {BASE = 0, ATTACK, INTERRUPT, LAYER_COUNT}
     private int[] m_layerToInt = new int[(int)LAYER.LAYER_COUNT];
@@ -121,8 +121,12 @@ public class CustomAnimation : MonoBehaviour
     /// <summary>
     /// End of attacking, move back to base animator layer
     /// </summary>
-    public void EndAttack()
+    /// <param name="p_blendSheathing">Does this attack require a sheathing blend</param>
+    public void EndAttack(bool p_blendSheathing)
     {
+        if(p_blendSheathing)
+            m_animator.Play(END_ATTACK_BLEND_STRING, m_layerToInt[(int)LAYER.BASE]);
+
         ChangeLayers(LAYER.BASE, true);
     }
 
