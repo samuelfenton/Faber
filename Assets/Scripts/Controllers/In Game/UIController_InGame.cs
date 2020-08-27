@@ -10,6 +10,8 @@ public class UIController_InGame : UIController
     private enum CURRENT_MENU_STATE {IN_GAME, PAUSE_MENU }
     private CURRENT_MENU_STATE m_currentMenuState = CURRENT_MENU_STATE.IN_GAME;
 
+    private InputAction_Gameplay m_intput = null;
+
     /// <summary>
     /// Setup varibels to be used in UI
     /// </summary>
@@ -27,23 +29,37 @@ public class UIController_InGame : UIController
             return;
         }
 
+        m_intput = new InputAction_Gameplay();
+
+        m_intput.UI.Menu.Enable();
+        m_intput.UI.Menu.started += ctx => ToggleMenu();
+
         ShowInGame();
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if(m_intput!= null)
+            m_intput.UI.Menu.Enable();
+    }
+
+    private void OnDisable()
+    {
+        if (m_intput != null)
+            m_intput.UI.Menu.Disable();
+    }
+
+    private void ToggleMenu()
+    {
+        if (m_currentMenuState == CURRENT_MENU_STATE.IN_GAME)
         {
-            if(m_currentMenuState == CURRENT_MENU_STATE.IN_GAME)
-            {
-                m_currentMenuState = CURRENT_MENU_STATE.PAUSE_MENU;
-                ShowPauseMenu();
-            }
-            else
-            {
-                m_currentMenuState = CURRENT_MENU_STATE.IN_GAME;
-                ShowInGame();
-            }
+            m_currentMenuState = CURRENT_MENU_STATE.PAUSE_MENU;
+            ShowPauseMenu();
+        }
+        else
+        {
+            m_currentMenuState = CURRENT_MENU_STATE.IN_GAME;
+            ShowInGame();
         }
     }
 

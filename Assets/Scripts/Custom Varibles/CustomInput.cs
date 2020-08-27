@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,40 +10,21 @@ public class CustomInput : MonoBehaviour
 
     public bool m_inverted = false;
 
-    public enum INPUT_KEY {JUMP, SPRINT, ATTACK, ATTACK_SECONDARY, USE, SUBMIT, CANCEL, DASH, BLOCK, CAMERA_FLIP, KEY_COUNT };
+    public enum INPUT_KEY {JUMP, SPRINT, DASH, BLOCK, LIGHT_ATTACK, HEAVY_ATTACK, ALT_ATTACK, INTERACT, CAMERA_FLIP, MENU, KEY_COUNT };
     
-    public enum INPUT_STATE { UP, DOWN, UPPED, DOWNED };
+    public enum INPUT_STATE { UP, DOWN, DOWNED };
 
-    public enum INPUT_AXIS { HORIZONTAL, DEPTH, VERTICAL, MOUSE_X, MOUSE_Y, SCROLL, AXIS_COUNT };
-
-    private string[] m_keyStrings = new string[(int)INPUT_KEY.KEY_COUNT];
-    private string[] m_axisStrings = new string[(int)INPUT_AXIS.AXIS_COUNT];
+    public enum INPUT_AXIS { HORIZONTAL, VERTICAL, MOUSE_X, MOUSE_Y, SCROLL, AXIS_COUNT };
 
     //[HideInInspector]
     private INPUT_STATE[] m_keyVal = new INPUT_STATE[(int)INPUT_KEY.KEY_COUNT];
     //[HideInInspector]
     private float[] m_axisVal = new float[(int)INPUT_AXIS.AXIS_COUNT];
 
-    private void Start()
+    private InputAction_Gameplay m_intput = null;
+
+    private void Awake()
     {
-        m_keyStrings[(int)INPUT_KEY.JUMP] = "Jump";
-        m_keyStrings[(int)INPUT_KEY.SPRINT] = "Sprint";
-        m_keyStrings[(int)INPUT_KEY.ATTACK] = "AttackPrimary";
-        m_keyStrings[(int)INPUT_KEY.ATTACK_SECONDARY] = "AttackSecondary";
-        m_keyStrings[(int)INPUT_KEY.USE] = "Use";
-        m_keyStrings[(int)INPUT_KEY.SUBMIT] = "Submit";
-        m_keyStrings[(int)INPUT_KEY.CANCEL] = "Cancel";
-        m_keyStrings[(int)INPUT_KEY.DASH] = "Dash";
-        m_keyStrings[(int)INPUT_KEY.BLOCK] = "Block";
-        m_keyStrings[(int)INPUT_KEY.CAMERA_FLIP] = "CameraFlip";
-
-        m_axisStrings[(int)INPUT_AXIS.HORIZONTAL] = "Horizontal";
-        m_axisStrings[(int)INPUT_AXIS.DEPTH] = "Depth";
-        m_axisStrings[(int)INPUT_AXIS.VERTICAL] = "Vertical";
-        m_axisStrings[(int)INPUT_AXIS.MOUSE_X] = "MouseX";
-        m_axisStrings[(int)INPUT_AXIS.MOUSE_Y] = "MouseY";
-        m_axisStrings[(int)INPUT_AXIS.SCROLL] = "Scroll";
-
         for (int i = 0; i < (int)INPUT_KEY.KEY_COUNT; i++)
         {
             m_keyVal[i] = INPUT_STATE.UP;
@@ -52,40 +34,75 @@ public class CustomInput : MonoBehaviour
         {
             m_axisVal[i] = 0.0f;
         }
+
+        m_intput = new InputAction_Gameplay();
     }
+
+    private void OnEnable()
+    {
+        m_intput.Player.Move.Enable();
+
+        m_intput.Player.Jump.Enable();
+        m_intput.Player.Sprint.Enable();
+        m_intput.Player.Dash.Enable();
+        m_intput.Player.Block.Enable();
+        m_intput.Player.LightAttack.Enable();
+        m_intput.Player.HeavyAttack.Enable();
+        m_intput.Player.AltAttack.Enable();
+        m_intput.Player.Interact.Enable();
+        m_intput.Player.CameraFlip.Enable();
+        m_intput.Player.Menu.Enable();
+
+    }
+
+    private void OnDisable()
+    {
+        m_intput.Player.Move.Disable();
+
+        m_intput.Player.Jump.Disable();
+        m_intput.Player.Sprint.Disable();
+        m_intput.Player.Dash.Disable();
+        m_intput.Player.Block.Disable();
+        m_intput.Player.LightAttack.Disable();
+        m_intput.Player.HeavyAttack.Disable();
+        m_intput.Player.AltAttack.Disable();
+        m_intput.Player.Interact.Disable();
+        m_intput.Player.CameraFlip.Disable();
+        m_intput.Player.Menu.Disable();
+    }
+
 
     /// <summary>
     /// Update the inputs of a character
     /// </summary>
     public void UpdateInput()
     {
-        //Keys
-        for (int keyIndex = 0; keyIndex < (int)INPUT_KEY.KEY_COUNT; keyIndex++)
-        {
-            INPUT_STATE currentState = Input.GetAxisRaw(m_keyStrings[keyIndex]) != 0.0f ? INPUT_STATE.DOWN : INPUT_STATE.UP;
-            INPUT_STATE previousState = m_keyVal[keyIndex];
+        m_axisVal[(int)INPUT_AXIS.HORIZONTAL] = m_intput.Player.Move.ReadValue<Vector2>().x;
+        m_axisVal[(int)INPUT_AXIS.VERTICAL] = m_intput.Player.Move.ReadValue<Vector2>().y;
 
-            if(previousState == INPUT_STATE.UP || previousState == INPUT_STATE.UPPED)
-            {
-                if (currentState == INPUT_STATE.UP)
-                    m_keyVal[keyIndex] = INPUT_STATE.UP;
-                else
-                    m_keyVal[keyIndex] = INPUT_STATE.DOWNED;
-            }
-            else if (previousState == INPUT_STATE.DOWN || previousState == INPUT_STATE.DOWNED)
-            {
-                if (currentState == INPUT_STATE.DOWN)
-                    m_keyVal[keyIndex] = INPUT_STATE.DOWN;
-                else
-                    m_keyVal[keyIndex] = INPUT_STATE.UPPED;
-            }
-        }
+        m_keyVal[(int)INPUT_KEY.JUMP] = DetermineState(m_keyVal[(int)INPUT_KEY.JUMP], m_intput.Player.Jump.ReadValue<float>() > 0.0f);
+        m_keyVal[(int)INPUT_KEY.SPRINT] = DetermineState(m_keyVal[(int)INPUT_KEY.SPRINT], m_intput.Player.Sprint.ReadValue<float>() > 0.0f);
+        m_keyVal[(int)INPUT_KEY.DASH] = DetermineState(m_keyVal[(int)INPUT_KEY.DASH], m_intput.Player.Dash.ReadValue<float>() > 0.0f);
+        m_keyVal[(int)INPUT_KEY.BLOCK] = DetermineState(m_keyVal[(int)INPUT_KEY.BLOCK], m_intput.Player.Block.ReadValue<float>() > 0.0f);
+        m_keyVal[(int)INPUT_KEY.LIGHT_ATTACK] = DetermineState(m_keyVal[(int)INPUT_KEY.LIGHT_ATTACK], m_intput.Player.LightAttack.ReadValue<float>() > 0.0f);
+        m_keyVal[(int)INPUT_KEY.HEAVY_ATTACK] = DetermineState(m_keyVal[(int)INPUT_KEY.HEAVY_ATTACK], m_intput.Player.HeavyAttack.ReadValue<float>() > 0.0f);
+        m_keyVal[(int)INPUT_KEY.ALT_ATTACK] = DetermineState(m_keyVal[(int)INPUT_KEY.ALT_ATTACK], m_intput.Player.AltAttack.ReadValue<float>() > 0.0f);
+        m_keyVal[(int)INPUT_KEY.INTERACT] = DetermineState(m_keyVal[(int)INPUT_KEY.INTERACT], m_intput.Player.Interact.ReadValue<float>() > 0.0f);
+        m_keyVal[(int)INPUT_KEY.CAMERA_FLIP] = DetermineState(m_keyVal[(int)INPUT_KEY.CAMERA_FLIP], m_intput.Player.CameraFlip.ReadValue<float>() > 0.0f);
+        m_keyVal[(int)INPUT_KEY.MENU] = DetermineState(m_keyVal[(int)INPUT_KEY.MENU], m_intput.Player.Menu.ReadValue<float>() > 0.0f);
+    }
 
-        //Axis
-        for (int axisIndex = 0; axisIndex < (int)INPUT_AXIS.AXIS_COUNT; axisIndex++)
-        {
-            m_axisVal[axisIndex] = Input.GetAxisRaw(m_axisStrings[axisIndex]);
-        }
+    /// <summary>
+    /// Determine the current input state for a button
+    /// When not pressed at all, assume p_currentValue is false, and so return INPUT_STATE.UP
+    /// If currently pressed(p_currentValue = true), if previously downed, its now down, otherwise its jsut downed
+    /// </summary>
+    /// <param name="p_currentState">Previous state value</param>
+    /// <param name="p_currentValue">Current input value</param>
+    /// <returns>The new INPUT_STATE based off previous rules</returns>
+    private INPUT_STATE DetermineState(INPUT_STATE p_currentState, bool p_currentValue)
+    {
+        return p_currentValue ? p_currentState == INPUT_STATE.DOWNED ? INPUT_STATE.DOWN : INPUT_STATE.DOWNED : INPUT_STATE.UP;
     }
 
     /// <summary>

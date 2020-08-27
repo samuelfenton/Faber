@@ -49,7 +49,7 @@ public class Character_Player : Character
     {
         float relativeDot = Vector3.Dot(transform.forward, p_node.transform.forward);
 
-        float verticalInput = m_input.GetAxis(CustomInput.INPUT_AXIS.DEPTH);
+        float verticalInput = m_input.GetAxis(CustomInput.INPUT_AXIS.VERTICAL);
 
         if(relativeDot >= 0)//Right is positive on vertical, left is negative
         {
@@ -76,9 +76,9 @@ public class Character_Player : Character
     /// <returns>Light,heavy or none based off logic</returns>
     public override ATTACK_INPUT_STANCE DetermineAttackStance()
     {
-        if(m_input.GetKey(CustomInput.INPUT_KEY.ATTACK) == CustomInput.INPUT_STATE.DOWNED)
+        if(m_input.GetKey(CustomInput.INPUT_KEY.LIGHT_ATTACK) == CustomInput.INPUT_STATE.DOWNED)
             return ATTACK_INPUT_STANCE.LIGHT;
-        if (m_input.GetKey(CustomInput.INPUT_KEY.ATTACK_SECONDARY) == CustomInput.INPUT_STATE.DOWNED)
+        if (m_input.GetKey(CustomInput.INPUT_KEY.HEAVY_ATTACK) == CustomInput.INPUT_STATE.DOWNED)
             return ATTACK_INPUT_STANCE.HEAVY;
 
         return ATTACK_INPUT_STANCE.NONE;
