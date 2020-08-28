@@ -22,8 +22,8 @@ public class UIController_InGame : UIController
         
         if (m_inGameUI == null || m_menuUI == null)
         {
-#if UNITY_EDITOR
-            Debug.Log(name + " does not have its assigned InGame and Menu UI objects");
+#if UNITY_EDITOR || DEVELOPMENT_BUILD 
+            Debug.LogWarning(name + " does not have its assigned InGame and Menu UI objects");
 #endif
             Destroy(gameObject);
             return;

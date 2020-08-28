@@ -28,8 +28,8 @@ public class Weapon : MonoBehaviour
         }
         else
         {
-#if UNITY_EDITOR
-            Debug.Log("No collider found on " + gameObject.name + ", this weapon will be ignored");
+#if UNITY_EDITOR|| DEVELOPMENT_BUILD
+            Debug.LogWarning("No collider found on " + gameObject.name + ", this weapon will be ignored");
 #endif
             Destroy(gameObject);
         }    

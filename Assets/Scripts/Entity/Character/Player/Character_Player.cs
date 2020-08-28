@@ -49,7 +49,7 @@ public class Character_Player : Character
     {
         float relativeDot = Vector3.Dot(transform.forward, p_node.transform.forward);
 
-        float verticalInput = m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
+        float verticalInput = m_customInput.GetAxis(CustomInput.INPUT_AXIS.VERTICAL);
 
         if (relativeDot >= 0)//Right is positive on vertical, left is negative
         {

@@ -31,7 +31,7 @@ public class CustomNeon : MonoBehaviour
         {
             if (m_neonObject == null)
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
                 Debug.LogWarning("One or more of the sections has no designated neon gameobjects");
 #endif
                 return false;
@@ -39,7 +39,7 @@ public class CustomNeon : MonoBehaviour
 
             if (m_neonSequence.Count == 0)
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
                 Debug.LogWarning(m_neonObject.name + " has no assigned sequence, and will be ignored");
 #endif
                 return false;
@@ -79,7 +79,7 @@ public class CustomNeon : MonoBehaviour
 
             if (sectionRenderers.Length == 0)
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
                 Debug.LogWarning(m_neonObject.name + " has no attached mesh renderers");
 #endif
                 return false;

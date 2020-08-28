@@ -25,8 +25,8 @@ public class Entity : MonoBehaviour
 
         if (m_splinePhysics == null)
         {
-#if UNITY_EDITOR
-            Debug.Log(name + " has no spline physics attached, considering adding the spline physcis");
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.LogError(name + " has no spline physics attached, considering adding the spline physcis");
 #endif
             Destroy(this);
             return;

@@ -54,7 +54,7 @@ public class PlayerState_InAir : State_Player
         {
             case IN_AIR_STATE.INITIAL:
                 //Double Jump
-                if (m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.JUMP))
+                if (m_player.m_customInput.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
                 {
                     m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, true);
 

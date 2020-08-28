@@ -41,16 +41,16 @@ public class SplinePhysics : MonoBehaviour
 
         if (m_parentEntity == null)
         {
-#if UNITY_EDITOR
-            Debug.Log(name + " has no entity attached, considering removing the spline physcis, or add one");
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.LogWarning(name + " has no entity attached, considering removing the spline physcis, or add one");
 #endif
             return;
         }
 
         if (m_nodeA == null || m_nodeB == null)
         {
-#if UNITY_EDITOR
-            Debug.Log(name + " doesnt have both nodes set in the inspector");
+#if UNITY_EDITOR|| DEVELOPMENT_BUILD
+            Debug.LogWarning(name + " doesnt have both nodes set in the inspector");
 #endif
             return;
         }
@@ -59,8 +59,8 @@ public class SplinePhysics : MonoBehaviour
 
         if (splinePosition == Pathing_Spline.SPLINE_POSITION.MAX_LENGTH)
         {
-#if UNITY_EDITOR
-            Debug.Log(name + " nodes are invalid");
+#if UNITY_EDITOR|| DEVELOPMENT_BUILD
+            Debug.LogWarning(name + " nodes are invalid");
 #endif
             return;
         }
@@ -68,9 +68,9 @@ public class SplinePhysics : MonoBehaviour
         m_currentSpline = m_nodeA.m_pathingSplines[(int)splinePosition];
 
         if (m_currentSpline == null)
-        { 
-#if UNITY_EDITOR
-            Debug.Log(name + " spline is invalid");
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.LogWarning(name + " spline is invalid");
 #endif
             return;
         }
@@ -120,6 +120,7 @@ public class SplinePhysics : MonoBehaviour
 
         //Setup transform
         Vector3 newPosition = m_currentSpline.GetPosition(m_currentSplinePercent); //Spline position with no y considered
+
         newPosition.y = transform.position.y + m_parentEntity.m_localVelocity.y * Time.deltaTime; //Adding in y value
 
         float distanceToGround = GetSplineDistance();

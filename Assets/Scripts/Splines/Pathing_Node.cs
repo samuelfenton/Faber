@@ -84,6 +84,8 @@ public class Pathing_Node : MonoBehaviour
         m_planeForwardVector = transform.forward;
         m_planeForwardVector.y = 0;
         m_planeForwardVector = m_planeForwardVector.normalized;
+
+        VerifySplineConnections();
     }
 
     /// <summary>

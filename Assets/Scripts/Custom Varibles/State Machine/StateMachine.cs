@@ -28,8 +28,8 @@ public class StateMachine : MonoBehaviour
 
         if(m_currentState == null)//Still null, state machine isnt working
         {
-#if UNITY_EDITOR
-            Debug.Log(name + "'s state machine has no assinged states");
+#if UNITY_EDITOR || DEVELOPMENT_BUILD 
+            Debug.LogWarning(name + "'s state machine has no assinged states");
 #endif
             enabled = false;
         }
