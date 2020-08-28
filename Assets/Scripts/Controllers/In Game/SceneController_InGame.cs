@@ -7,6 +7,9 @@ public class SceneController_InGame : SceneController
     private Entity[] m_entities;
     private Pathing_Node[] m_nodes;
 
+    [HideInInspector]
+    public CustomInput m_customInput = null;
+
     /// <summary>
     /// Setup varibels to be used in UI
     /// </summary>
@@ -14,6 +17,8 @@ public class SceneController_InGame : SceneController
     public override void Init(MasterController p_masterController)
     {
         base.Init(p_masterController);
+
+        m_customInput = gameObject.AddComponent<CustomInput>();
 
         m_entities = FindObjectsOfType<Entity>();
         m_nodes = FindObjectsOfType<Pathing_Node>();

@@ -38,7 +38,7 @@ public class PlayerState_Jump : State_Player
         base.StateUpdate();
 
         //Allow player to jump and move
-        float horizontal = m_player.m_input.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
+        float horizontal = m_player.m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
         m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * m_character.m_inAirModifier);
 
         return m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.BASE) || m_entity.m_localVelocity.y <= 0.0f;
@@ -61,7 +61,7 @@ public class PlayerState_Jump : State_Player
     public override bool IsValid()
     {
         //Able to jump while jump key is pressed, grounded, and no collision above
-        return m_player.m_input.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED
+        return m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.JUMP)
             && m_entity.m_splinePhysics.m_downCollision && 
             !m_entity.m_splinePhysics.m_upCollision;
     }

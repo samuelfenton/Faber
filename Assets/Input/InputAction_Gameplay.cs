@@ -56,7 +56,15 @@ public class @InputAction_Gameplay : IInputActionCollection, IDisposable
                     ""id"": ""d369dcfc-0e7b-4d80-bc62-001e58f359fc"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Hold""
+                },
+                {
+                    ""name"": ""Parry"",
+                    ""type"": ""Button"",
+                    ""id"": ""3b533fd0-166f-4f05-b944-851d8b9722ad"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Tap""
                 },
                 {
                     ""name"": ""LightAttack"",
@@ -393,46 +401,36 @@ public class @InputAction_Gameplay : IInputActionCollection, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7014b0e4-0e5b-4af4-8dd7-db88e1f56cee"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Parry"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6145d6c5-2082-43be-9910-a765297f0db7"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Parry"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
         {
             ""name"": ""UI"",
             ""id"": ""c92c76da-63f6-4c94-bbfc-d5cd9dfa483e"",
-            ""actions"": [
-                {
-                    ""name"": ""Menu"",
-                    ""type"": ""Button"",
-                    ""id"": ""9c2600d5-ddce-4c29-85c6-d1bbb7f270c6"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""48293099-2525-4317-9d09-527376dd3449"",
-                    ""path"": ""<Keyboard>/escape"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Menu"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""86a4b3c2-1b4a-4405-a827-62865f6579b6"",
-                    ""path"": ""<Gamepad>/start"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Controller"",
-                    ""action"": ""Menu"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
+            ""actions"": [],
+            ""bindings"": []
         }
     ],
     ""controlSchemes"": [
@@ -472,6 +470,7 @@ public class @InputAction_Gameplay : IInputActionCollection, IDisposable
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_Block = m_Player.FindAction("Block", throwIfNotFound: true);
+        m_Player_Parry = m_Player.FindAction("Parry", throwIfNotFound: true);
         m_Player_LightAttack = m_Player.FindAction("LightAttack", throwIfNotFound: true);
         m_Player_HeavyAttack = m_Player.FindAction("HeavyAttack", throwIfNotFound: true);
         m_Player_AltAttack = m_Player.FindAction("AltAttack", throwIfNotFound: true);
@@ -480,7 +479,6 @@ public class @InputAction_Gameplay : IInputActionCollection, IDisposable
         m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
-        m_UI_Menu = m_UI.FindAction("Menu", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -535,6 +533,7 @@ public class @InputAction_Gameplay : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_Block;
+    private readonly InputAction m_Player_Parry;
     private readonly InputAction m_Player_LightAttack;
     private readonly InputAction m_Player_HeavyAttack;
     private readonly InputAction m_Player_AltAttack;
@@ -550,6 +549,7 @@ public class @InputAction_Gameplay : IInputActionCollection, IDisposable
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputAction @Block => m_Wrapper.m_Player_Block;
+        public InputAction @Parry => m_Wrapper.m_Player_Parry;
         public InputAction @LightAttack => m_Wrapper.m_Player_LightAttack;
         public InputAction @HeavyAttack => m_Wrapper.m_Player_HeavyAttack;
         public InputAction @AltAttack => m_Wrapper.m_Player_AltAttack;
@@ -580,6 +580,9 @@ public class @InputAction_Gameplay : IInputActionCollection, IDisposable
                 @Block.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBlock;
                 @Block.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBlock;
                 @Block.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnBlock;
+                @Parry.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnParry;
+                @Parry.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnParry;
+                @Parry.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnParry;
                 @LightAttack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLightAttack;
                 @LightAttack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLightAttack;
                 @LightAttack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLightAttack;
@@ -617,6 +620,9 @@ public class @InputAction_Gameplay : IInputActionCollection, IDisposable
                 @Block.started += instance.OnBlock;
                 @Block.performed += instance.OnBlock;
                 @Block.canceled += instance.OnBlock;
+                @Parry.started += instance.OnParry;
+                @Parry.performed += instance.OnParry;
+                @Parry.canceled += instance.OnParry;
                 @LightAttack.started += instance.OnLightAttack;
                 @LightAttack.performed += instance.OnLightAttack;
                 @LightAttack.canceled += instance.OnLightAttack;
@@ -643,12 +649,10 @@ public class @InputAction_Gameplay : IInputActionCollection, IDisposable
     // UI
     private readonly InputActionMap m_UI;
     private IUIActions m_UIActionsCallbackInterface;
-    private readonly InputAction m_UI_Menu;
     public struct UIActions
     {
         private @InputAction_Gameplay m_Wrapper;
         public UIActions(@InputAction_Gameplay wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Menu => m_Wrapper.m_UI_Menu;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -658,16 +662,10 @@ public class @InputAction_Gameplay : IInputActionCollection, IDisposable
         {
             if (m_Wrapper.m_UIActionsCallbackInterface != null)
             {
-                @Menu.started -= m_Wrapper.m_UIActionsCallbackInterface.OnMenu;
-                @Menu.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnMenu;
-                @Menu.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnMenu;
             }
             m_Wrapper.m_UIActionsCallbackInterface = instance;
             if (instance != null)
             {
-                @Menu.started += instance.OnMenu;
-                @Menu.performed += instance.OnMenu;
-                @Menu.canceled += instance.OnMenu;
             }
         }
     }
@@ -697,6 +695,7 @@ public class @InputAction_Gameplay : IInputActionCollection, IDisposable
         void OnSprint(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
         void OnBlock(InputAction.CallbackContext context);
+        void OnParry(InputAction.CallbackContext context);
         void OnLightAttack(InputAction.CallbackContext context);
         void OnHeavyAttack(InputAction.CallbackContext context);
         void OnAltAttack(InputAction.CallbackContext context);
@@ -706,6 +705,5 @@ public class @InputAction_Gameplay : IInputActionCollection, IDisposable
     }
     public interface IUIActions
     {
-        void OnMenu(InputAction.CallbackContext context);
     }
 }

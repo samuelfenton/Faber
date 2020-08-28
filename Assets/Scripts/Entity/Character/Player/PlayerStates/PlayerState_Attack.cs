@@ -30,7 +30,7 @@ public class PlayerState_Attack : State_Player
         ManoeuvreLeaf.MANOEUVRE_TYPE currentType = m_character.m_splinePhysics.m_downCollision ? m_character.m_localVelocity.z > m_character.m_groundRunVel ? ManoeuvreLeaf.MANOEUVRE_TYPE.SPRINT : ManoeuvreLeaf.MANOEUVRE_TYPE.GROUND : ManoeuvreLeaf.MANOEUVRE_TYPE.INAIR;
         ManoeuvreLeaf.MANOEUVRE_STANCE currentStance = ManoeuvreLeaf.MANOEUVRE_STANCE.LIGHT;
 
-        if (m_player.m_input.GetKey(CustomInput.INPUT_KEY.HEAVY_ATTACK) == CustomInput.INPUT_STATE.DOWNED)
+        if (m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.HEAVY_ATTACK))
         {
             currentStance = ManoeuvreLeaf.MANOEUVRE_STANCE.HEAVY;
         }
@@ -61,6 +61,6 @@ public class PlayerState_Attack : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_player.m_input.GetKey(CustomInput.INPUT_KEY.LIGHT_ATTACK) == CustomInput.INPUT_STATE.DOWNED || m_player.m_input.GetKey(CustomInput.INPUT_KEY.HEAVY_ATTACK) == CustomInput.INPUT_STATE.DOWNED;
+        return m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.LIGHT_ATTACK) || m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.HEAVY_ATTACK);
     }
 }

@@ -84,8 +84,6 @@ public class Pathing_Node : MonoBehaviour
         m_planeForwardVector = transform.forward;
         m_planeForwardVector.y = 0;
         m_planeForwardVector = m_planeForwardVector.normalized;
-
-        RebuildSplines();
     }
 
     /// <summary>
@@ -238,6 +236,11 @@ public class Pathing_Node : MonoBehaviour
 
     private void OnValidate()
     {
+        VerifySplineConnections();
+    }
+
+    private void VerifySplineConnections()
+    {
         for (int splineDetailsIndex = 0; splineDetailsIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineDetailsIndex++)
         {
             Spline_Details currentDetails = m_pathingSplineDetails[splineDetailsIndex];
@@ -252,9 +255,19 @@ public class Pathing_Node : MonoBehaviour
 
                 CreateSpline(currentDetails, (Pathing_Spline.SPLINE_POSITION)splineDetailsIndex);
             }
-            else if(m_pathingSplines[splineDetailsIndex] != null) //Invalid setup, but spline exists
+            else if (m_pathingSplines[splineDetailsIndex] != null) //Invalid setup, but spline exists
             {
                 m_pathingSplines[splineDetailsIndex].SplineRemoved();
+            }
+        }
+
+        //Add to adjacent list
+        m_adjacentSplines.Clear();
+        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
+        {
+            if (m_pathingSplines[splineIndex] != null)
+            {
+                m_adjacentSplines.Add(m_pathingSplines[splineIndex]);
             }
         }
     }
@@ -283,6 +296,7 @@ public class Pathing_Node : MonoBehaviour
 
             return newPathingSpline;
         }
+
 
         return false;
 
@@ -318,29 +332,6 @@ public class Pathing_Node : MonoBehaviour
             m_pathingSplines[(int)p_position] = p_spline;
         }
     }
-
-    /// <summary>
-    /// Used to rebuild all spline connections based off the spline details given
-    /// </summary>
-    private void RebuildSplines()
-    {
-        //Build all the splines
-        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
-        {
-            CreateSpline(m_pathingSplineDetails[splineIndex], (Pathing_Spline.SPLINE_POSITION)splineIndex);
-        }
-
-        //Add to adjacent list
-        m_adjacentSplines.Clear();
-        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
-        {
-            if (m_pathingSplines[splineIndex] != null)
-            {
-                m_adjacentSplines.Add(m_pathingSplines[splineIndex]);
-            }
-        }
-    }
-
 
     #region Editor Specific
     #if UNITY_EDITOR

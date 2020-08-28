@@ -5,8 +5,10 @@ using UnityEngine;
 public class Character_Player : Character
 {
     protected StateMachine_Player m_playerStateMachine = null;
+
     [HideInInspector]
-    public CustomInput m_input = null;
+    public CustomInput m_customInput = null;
+
     /// <summary>
     /// Initiliase the entity
     /// setup varible/physics
@@ -15,7 +17,7 @@ public class Character_Player : Character
     {
         base.InitEntity();
 
-        m_input = gameObject.AddComponent<CustomInput>();
+        m_customInput = ((SceneController_InGame)MasterController.Instance.m_currentSceneController).m_customInput;
 
         //Init
         m_playerStateMachine = gameObject.AddComponent<StateMachine_Player>();
@@ -27,11 +29,9 @@ public class Character_Player : Character
     {
         base.Update();
 
-        m_input.UpdateInput();
-
         m_playerStateMachine.UpdateStateMachine();
 
-        if(m_input.GetKey(CustomInput.INPUT_KEY.CAMERA_FLIP)== CustomInput.INPUT_STATE.DOWNED) //Flip camera
+        if(m_customInput.GetKey(CustomInput.INPUT_KEY.CAMERA_FLIP) == CustomInput.INPUT_STATE.DOWNED) //Flip camera
         {
             transform.rotation *= Quaternion.Euler(0.0f, 180.0f, 0.0f);
             m_characterModel.transform.rotation *= Quaternion.Euler(0.0f, 180.0f, 0.0f);
@@ -49,9 +49,9 @@ public class Character_Player : Character
     {
         float relativeDot = Vector3.Dot(transform.forward, p_node.transform.forward);
 
-        float verticalInput = m_input.GetAxis(CustomInput.INPUT_AXIS.VERTICAL);
+        float verticalInput = m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
 
-        if(relativeDot >= 0)//Right is positive on vertical, left is negative
+        if (relativeDot >= 0)//Right is positive on vertical, left is negative
         {
             if (verticalInput < 0)
                 return TURNING_DIR.RIGHT;
@@ -76,9 +76,9 @@ public class Character_Player : Character
     /// <returns>Light,heavy or none based off logic</returns>
     public override ATTACK_INPUT_STANCE DetermineAttackStance()
     {
-        if(m_input.GetKey(CustomInput.INPUT_KEY.LIGHT_ATTACK) == CustomInput.INPUT_STATE.DOWNED)
+        if(m_customInput.GetKeyBool(CustomInput.INPUT_KEY.LIGHT_ATTACK))
             return ATTACK_INPUT_STANCE.LIGHT;
-        if (m_input.GetKey(CustomInput.INPUT_KEY.HEAVY_ATTACK) == CustomInput.INPUT_STATE.DOWNED)
+        if (m_customInput.GetKeyBool(CustomInput.INPUT_KEY.HEAVY_ATTACK))
             return ATTACK_INPUT_STANCE.HEAVY;
 
         return ATTACK_INPUT_STANCE.NONE;

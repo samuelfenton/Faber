@@ -53,6 +53,6 @@ public class PlayerState_Block : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_entity.m_splinePhysics.m_downCollision && m_player.m_input.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
+        return m_entity.m_splinePhysics.m_downCollision && m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
     }
 }

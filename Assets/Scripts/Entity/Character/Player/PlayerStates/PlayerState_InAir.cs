@@ -47,14 +47,14 @@ public class PlayerState_InAir : State_Player
         base.StateUpdate();
 
         //Allow player to move in air
-        float horizontal = m_player.m_input.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
+        float horizontal = m_player.m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
         m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * m_character.m_inAirModifier);
 
         switch (m_inAirState)
         {
             case IN_AIR_STATE.INITIAL:
                 //Double Jump
-                if (m_player.m_input.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
+                if (m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.JUMP))
                 {
                     m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, true);
 

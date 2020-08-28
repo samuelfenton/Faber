@@ -43,7 +43,15 @@
                     "id": "d369dcfc-0e7b-4d80-bc62-001e58f359fc",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "Hold"
+                },
+                {
+                    "name": "Parry",
+                    "type": "Button",
+                    "id": "3b533fd0-166f-4f05-b944-851d8b9722ad",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Tap"
                 },
                 {
                     "name": "LightAttack",
@@ -380,46 +388,36 @@
                     "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7014b0e4-0e5b-4af4-8dd7-db88e1f56cee",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Parry",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6145d6c5-2082-43be-9910-a765297f0db7",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Controller",
+                    "action": "Parry",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
         {
             "name": "UI",
             "id": "c92c76da-63f6-4c94-bbfc-d5cd9dfa483e",
-            "actions": [
-                {
-                    "name": "Menu",
-                    "type": "Button",
-                    "id": "9c2600d5-ddce-4c29-85c6-d1bbb7f270c6",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                }
-            ],
-            "bindings": [
-                {
-                    "name": "",
-                    "id": "48293099-2525-4317-9d09-527376dd3449",
-                    "path": "<Keyboard>/escape",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Menu",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "86a4b3c2-1b4a-4405-a827-62865f6579b6",
-                    "path": "<Gamepad>/start",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Controller",
-                    "action": "Menu",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                }
-            ]
+            "actions": [],
+            "bindings": []
         }
     ],
     "controlSchemes": [

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class Character : Entity
 {
     public enum FACING_DIR {RIGHT, LEFT}

@@ -31,9 +31,9 @@ public class PlayerState_Locomotion : State_Player
         base.StateUpdate();
 
         //Movement
-        float horizontal = m_player.m_input.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
+        float horizontal = m_player.m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
 
-        if(m_player.m_input.GetKeyBool(CustomInput.INPUT_KEY.SPRINT))
+        if (m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.SPRINT))
         {
             m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * Character.SPRINT_MODIFIER);
         }
@@ -57,6 +57,6 @@ public class PlayerState_Locomotion : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_entity.m_splinePhysics.m_downCollision && !m_player.m_input.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
+        return m_entity.m_splinePhysics.m_downCollision && !m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
     }
 }

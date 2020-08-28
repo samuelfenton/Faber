@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+[ExecuteAlways]
 public class SplinePhysics : MonoBehaviour
 {
     public const float MIN_SPLINE_PERCENT = -0.05f;
@@ -76,6 +77,19 @@ public class SplinePhysics : MonoBehaviour
 
         transform.position = m_currentSpline.GetPosition(m_currentSplinePercent);
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if(m_nodeA!= null && m_nodeB !=null)
+        {
+            Pathing_Spline.SPLINE_POSITION splinePosition = m_nodeA.DetermineNodePosition(m_nodeB);
+            m_currentSpline = m_nodeA.m_pathingSplines[(int)splinePosition];
+            if(m_currentSpline != null)
+                transform.position = m_currentSpline.GetPosition(m_currentSplinePercent);
+        }
+    }
+#endif
 
     /// <summary>
     /// Updates characters physics
@@ -197,8 +211,6 @@ public class SplinePhysics : MonoBehaviour
     /// <returns>True when any collisions occur</returns>
     public bool CollidingHorizontal(Vector3 p_direction, Vector3 p_centerPos)
     {
-        Debug.DrawLine(p_centerPos + transform.up * m_colliderExtents.y, p_centerPos + transform.up * m_colliderExtents.y + p_direction * (m_colliderExtents.z + m_collisionDetection));
-
         //Top raycast
         if (Physics.Raycast(p_centerPos + transform.up * m_colliderExtents.y, p_direction, m_colliderExtents.z + m_collisionDetection, CustomLayers.m_enviroment))
             return true; //Early breakout

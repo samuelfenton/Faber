@@ -10,7 +10,7 @@ public class CustomInput : MonoBehaviour
 
     public bool m_inverted = false;
 
-    public enum INPUT_KEY {JUMP, SPRINT, DASH, BLOCK, LIGHT_ATTACK, HEAVY_ATTACK, ALT_ATTACK, INTERACT, CAMERA_FLIP, MENU, KEY_COUNT };
+    public enum INPUT_KEY {JUMP, SPRINT, DASH, BLOCK, PARRY, LIGHT_ATTACK, HEAVY_ATTACK, ALT_ATTACK, INTERACT, CAMERA_FLIP, MENU, KEY_COUNT };
     
     public enum INPUT_STATE { UP, DOWN, DOWNED };
 
@@ -46,13 +46,13 @@ public class CustomInput : MonoBehaviour
         m_intput.Player.Sprint.Enable();
         m_intput.Player.Dash.Enable();
         m_intput.Player.Block.Enable();
+        m_intput.Player.Parry.Enable();
         m_intput.Player.LightAttack.Enable();
         m_intput.Player.HeavyAttack.Enable();
         m_intput.Player.AltAttack.Enable();
         m_intput.Player.Interact.Enable();
         m_intput.Player.CameraFlip.Enable();
         m_intput.Player.Menu.Enable();
-
     }
 
     private void OnDisable()
@@ -63,6 +63,7 @@ public class CustomInput : MonoBehaviour
         m_intput.Player.Sprint.Disable();
         m_intput.Player.Dash.Disable();
         m_intput.Player.Block.Disable();
+        m_intput.Player.Parry.Disable();
         m_intput.Player.LightAttack.Disable();
         m_intput.Player.HeavyAttack.Disable();
         m_intput.Player.AltAttack.Disable();
@@ -75,34 +76,40 @@ public class CustomInput : MonoBehaviour
     /// <summary>
     /// Update the inputs of a character
     /// </summary>
-    public void UpdateInput()
+    private void Update()
     {
         m_axisVal[(int)INPUT_AXIS.HORIZONTAL] = m_intput.Player.Move.ReadValue<Vector2>().x;
         m_axisVal[(int)INPUT_AXIS.VERTICAL] = m_intput.Player.Move.ReadValue<Vector2>().y;
 
-        m_keyVal[(int)INPUT_KEY.JUMP] = DetermineState(m_keyVal[(int)INPUT_KEY.JUMP], m_intput.Player.Jump.ReadValue<float>() > 0.0f);
-        m_keyVal[(int)INPUT_KEY.SPRINT] = DetermineState(m_keyVal[(int)INPUT_KEY.SPRINT], m_intput.Player.Sprint.ReadValue<float>() > 0.0f);
-        m_keyVal[(int)INPUT_KEY.DASH] = DetermineState(m_keyVal[(int)INPUT_KEY.DASH], m_intput.Player.Dash.ReadValue<float>() > 0.0f);
-        m_keyVal[(int)INPUT_KEY.BLOCK] = DetermineState(m_keyVal[(int)INPUT_KEY.BLOCK], m_intput.Player.Block.ReadValue<float>() > 0.0f);
-        m_keyVal[(int)INPUT_KEY.LIGHT_ATTACK] = DetermineState(m_keyVal[(int)INPUT_KEY.LIGHT_ATTACK], m_intput.Player.LightAttack.ReadValue<float>() > 0.0f);
-        m_keyVal[(int)INPUT_KEY.HEAVY_ATTACK] = DetermineState(m_keyVal[(int)INPUT_KEY.HEAVY_ATTACK], m_intput.Player.HeavyAttack.ReadValue<float>() > 0.0f);
-        m_keyVal[(int)INPUT_KEY.ALT_ATTACK] = DetermineState(m_keyVal[(int)INPUT_KEY.ALT_ATTACK], m_intput.Player.AltAttack.ReadValue<float>() > 0.0f);
-        m_keyVal[(int)INPUT_KEY.INTERACT] = DetermineState(m_keyVal[(int)INPUT_KEY.INTERACT], m_intput.Player.Interact.ReadValue<float>() > 0.0f);
-        m_keyVal[(int)INPUT_KEY.CAMERA_FLIP] = DetermineState(m_keyVal[(int)INPUT_KEY.CAMERA_FLIP], m_intput.Player.CameraFlip.ReadValue<float>() > 0.0f);
-        m_keyVal[(int)INPUT_KEY.MENU] = DetermineState(m_keyVal[(int)INPUT_KEY.MENU], m_intput.Player.Menu.ReadValue<float>() > 0.0f);
+        m_keyVal[(int)INPUT_KEY.JUMP] = DetermineInputState(m_intput.Player.Jump.triggered, m_intput.Player.Jump.ReadValue<float>());
+        m_keyVal[(int)INPUT_KEY.SPRINT] = DetermineInputState(m_intput.Player.Sprint.triggered, m_intput.Player.Sprint.ReadValue<float>());
+        m_keyVal[(int)INPUT_KEY.DASH] = DetermineInputState(m_intput.Player.Dash.triggered, m_intput.Player.Dash.ReadValue<float>());
+        m_keyVal[(int)INPUT_KEY.BLOCK] = DetermineInputState(m_intput.Player.Block.triggered, m_intput.Player.Block.ReadValue<float>());
+        m_keyVal[(int)INPUT_KEY.PARRY] = DetermineInputState(m_intput.Player.Parry.triggered, m_intput.Player.Parry.ReadValue<float>());
+        m_keyVal[(int)INPUT_KEY.LIGHT_ATTACK] = DetermineInputState(m_intput.Player.LightAttack.triggered, m_intput.Player.LightAttack.ReadValue<float>());
+        m_keyVal[(int)INPUT_KEY.HEAVY_ATTACK] = DetermineInputState(m_intput.Player.HeavyAttack.triggered, m_intput.Player.HeavyAttack.ReadValue<float>());
+        m_keyVal[(int)INPUT_KEY.ALT_ATTACK] = DetermineInputState(m_intput.Player.AltAttack.triggered, m_intput.Player.AltAttack.ReadValue<float>());
+        m_keyVal[(int)INPUT_KEY.INTERACT] = DetermineInputState(m_intput.Player.Interact.triggered, m_intput.Player.Interact.ReadValue<float>());
+        m_keyVal[(int)INPUT_KEY.CAMERA_FLIP] = DetermineInputState(m_intput.Player.CameraFlip.triggered, m_intput.Player.CameraFlip.ReadValue<float>());
+        m_keyVal[(int)INPUT_KEY.MENU] = DetermineInputState(m_intput.Player.Menu.triggered, m_intput.Player.Menu.ReadValue<float>());
     }
 
     /// <summary>
-    /// Determine the current input state for a button
-    /// When not pressed at all, assume p_currentValue is false, and so return INPUT_STATE.UP
-    /// If currently pressed(p_currentValue = true), if previously downed, its now down, otherwise its jsut downed
+    /// Determine the next state for a given key
+    /// If trigger frame, always DOWNED
+    /// If postive value and not trigger, then DOWN
+    /// Default UP
     /// </summary>
-    /// <param name="p_currentState">Previous state value</param>
-    /// <param name="p_currentValue">Current input value</param>
-    /// <returns>The new INPUT_STATE based off previous rules</returns>
-    private INPUT_STATE DetermineState(INPUT_STATE p_currentState, bool p_currentValue)
+    /// <param name="p_isTriggerFrame">All inputs will have trigger when input is in the same frame</param>
+    /// <param name="p_currentVal">Current value for an input</param>
+    /// <returns>Current input state based off above rules</returns>
+    private INPUT_STATE DetermineInputState(bool p_isTriggerFrame, float p_currentVal)
     {
-        return p_currentValue ? p_currentState == INPUT_STATE.DOWNED ? INPUT_STATE.DOWN : INPUT_STATE.DOWNED : INPUT_STATE.UP;
+        if (p_isTriggerFrame)
+            return INPUT_STATE.DOWNED;
+        if (p_currentVal > 0.0f)
+            return INPUT_STATE.DOWN;
+        return INPUT_STATE.UP;
     }
 
     /// <summary>
