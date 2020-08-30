@@ -10,7 +10,7 @@ public class SplinePhysics : MonoBehaviour
     public const float MAX_SPLINE_PERCENT = 1.05f;
 
     protected const float GROUND_DETECTION = 0.5f;
-    public const float GRAVITY = -9.8f;
+    public const float GRAVITY = -24.0f;
 
     [Header("Spline settings")]
     public Pathing_Node m_nodeA = null;
@@ -99,6 +99,11 @@ public class SplinePhysics : MonoBehaviour
     /// </summary>
     public void UpdatePhysics()
     {
+        //Apply Gravity
+        if (m_parentEntity.m_gravity)
+            m_parentEntity.m_localVelocity.y += GRAVITY * Time.deltaTime;
+
+        //check for collisions and modify velocity as needed
         UpdateCollisions();
 
         //Setup forwards direction
@@ -128,7 +133,7 @@ public class SplinePhysics : MonoBehaviour
         //Override down collision dependant on spline collision
         m_downCollision = m_downCollision || distanceToGround < GROUND_DETECTION;
 
-        if (m_parentEntity.m_localVelocity.y <= 0 && distanceToGround <= 0)
+        if (m_parentEntity.m_localVelocity.y <= 0.0f && distanceToGround <= 0.0f)
         {
             //Set y-pos
             newPosition.y = transform.position.y - distanceToGround;

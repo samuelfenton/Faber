@@ -37,10 +37,6 @@ public class Entity : MonoBehaviour
 
     protected virtual void Update()
     {
-        //Apply Velocity
-        if(m_gravity) 
-            m_localVelocity.y += SplinePhysics.GRAVITY * Time.deltaTime;
-
         //Stop colliding with objects
         m_splinePhysics.UpdatePhysics();
     }
