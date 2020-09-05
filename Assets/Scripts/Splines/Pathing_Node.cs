@@ -1,67 +1,57 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
 
-[ExecuteAlways]
 public class Pathing_Node : MonoBehaviour
 {
     [System.Serializable]
     public struct Spline_Details
     {
+        [SerializeField]
         public Pathing_Spline.SPLINE_POSITION m_splinePosition;
 
-        public Pathing_Node m_conjoinedNode;
+        [SerializeField]
+        public Pathing_Node m_nodePrimary;
+        [SerializeField]
+        public Pathing_Node m_nodeSecondary;
 
+        [SerializeField]
         public Pathing_Spline.SPLINE_TYPE m_splineType;
-
-        [Header("Circle values")]
+        [SerializeField]
         public Pathing_Spline.CIRCLE_DIR m_circleDir;
+        [SerializeField]
         public float m_circleAngle;
-
-        [Header("Bezier Settings")]
+        [SerializeField]
         public float m_bezierStrength;
+        [SerializeField]
+        public bool m_createdFlag;
 
-        /// <summary>
-        /// Pass details form one node to another
-        /// </summary>
-        /// <param name="p_otherSplinePosition">What position is this spline on other node</param>
-        /// <param name="p_details">Spline details from copied node</param>
-        public void CopyDetails(Pathing_Spline.SPLINE_POSITION p_otherSplinePosition, Spline_Details p_details)
+        public Spline_Details(Pathing_Spline.SPLINE_POSITION p_splinePosition)
         {
-            m_splineType = p_details.m_splineType;
-
-            //Determine Dir 
-            bool isForwardNode = m_splinePosition == Pathing_Spline.SPLINE_POSITION.FOWARD || m_splinePosition == Pathing_Spline.SPLINE_POSITION.FORWARD_RIGHT || m_splinePosition == Pathing_Spline.SPLINE_POSITION.FORWARD_LEFT;
-            bool isOtherForwardNode = p_otherSplinePosition == Pathing_Spline.SPLINE_POSITION.FOWARD || p_otherSplinePosition == Pathing_Spline.SPLINE_POSITION.FORWARD_RIGHT || p_otherSplinePosition == Pathing_Spline.SPLINE_POSITION.FORWARD_LEFT;
-
-            if (isForwardNode != isOtherForwardNode) //Spline positions are opposite, same circleDir
-            {
-                m_circleDir = p_details.m_circleDir;
-            }
-            else
-            {
-                m_circleDir = p_details.m_circleDir == Pathing_Spline.CIRCLE_DIR.CLOCKWISE ? Pathing_Spline.CIRCLE_DIR.COUNTER_CLOCKWISE : Pathing_Spline.CIRCLE_DIR.CLOCKWISE;
-            }
-
-            m_circleAngle = p_details.m_circleAngle;
-            m_bezierStrength = p_details.m_bezierStrength;
+            m_splinePosition = p_splinePosition;
+            m_nodePrimary = null;
+            m_nodeSecondary = null;
+            m_splineType = Pathing_Spline.SPLINE_TYPE.NOT_IN_USE;
+            m_circleDir = Pathing_Spline.CIRCLE_DIR.CLOCKWISE;
+            m_circleAngle = 0.0f;
+            m_bezierStrength = 0.0f;
+            m_createdFlag = false;
         }
 
         /// <summary>
         /// Does the current spline have both 
         /// </summary>
-        /// <param name="p_currentNode"></param>
         /// <returns></returns>
-        public bool IsValidSpline(Pathing_Node p_currentNode)
+        public bool IsValidSpline()
         {
-            return m_conjoinedNode != null && m_conjoinedNode.ContainsConjoinedNode(p_currentNode);
+            return m_nodePrimary != null && m_nodeSecondary != null && m_splinePosition != Pathing_Spline.SPLINE_POSITION.MAX_LENGTH && m_splineType != Pathing_Spline.SPLINE_TYPE.NOT_IN_USE;
         }
     };
 
     public enum TRIGGER_DIRECTION { FORWARDS, BACKWARDS }
 
-    [SerializeField]
+    [HideInInspector]
     public Spline_Details[] m_pathingSplineDetails = new Spline_Details[(int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH];
 
     [HideInInspector]
@@ -85,7 +75,24 @@ public class Pathing_Node : MonoBehaviour
         m_planeForwardVector.y = 0;
         m_planeForwardVector = m_planeForwardVector.normalized;
 
-        VerifySplineConnections();
+        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
+        {
+            if (m_pathingSplines[splineIndex] != null)
+                m_adjacentSplines.Add(m_pathingSplines[splineIndex]);
+        }
+    }
+
+    /// <summary>
+    /// USed to set starting values
+    /// </summary>
+    private void Reset()
+    {
+        m_pathingSplineDetails = new Spline_Details[(int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH];
+        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
+        {
+            //Forced assignment 
+            m_pathingSplineDetails[splineIndex].m_splinePosition = (Pathing_Spline.SPLINE_POSITION)splineIndex;
+        }
     }
 
     /// <summary>
@@ -234,92 +241,33 @@ public class Pathing_Node : MonoBehaviour
             && (m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD] != null || m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD_RIGHT] != null|| m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD_LEFT] != null));
     }
 
-    #region Spline building stuff
-
-    private void OnValidate()
-    {
-        VerifySplineConnections();
-    }
-
-    private void VerifySplineConnections()
-    {
-        for (int splineDetailsIndex = 0; splineDetailsIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineDetailsIndex++)
-        {
-            Spline_Details currentDetails = m_pathingSplineDetails[splineDetailsIndex];
-
-            if (currentDetails.IsValidSpline(this))
-            {
-                Pathing_Node conjoinedNode = currentDetails.m_conjoinedNode;
-
-                Pathing_Spline.SPLINE_POSITION nodeBPosition = conjoinedNode.DetermineNodePosition(this);
-
-                conjoinedNode.m_pathingSplineDetails[(int)nodeBPosition].CopyDetails((Pathing_Spline.SPLINE_POSITION)splineDetailsIndex, currentDetails);
-
-                CreateSpline(currentDetails, (Pathing_Spline.SPLINE_POSITION)splineDetailsIndex);
-            }
-            else if (m_pathingSplines[splineDetailsIndex] != null) //Invalid setup, but spline exists
-            {
-                m_pathingSplines[splineDetailsIndex].SplineRemoved();
-            }
-        }
-
-        //Add to adjacent list
-        m_adjacentSplines.Clear();
-        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
-        {
-            if (m_pathingSplines[splineIndex] != null)
-            {
-                m_adjacentSplines.Add(m_pathingSplines[splineIndex]);
-            }
-        }
-    }
-
-    private bool CreateSpline(Spline_Details p_relavantSplineDetails, Pathing_Spline.SPLINE_POSITION p_desiredPosition)
-    {
-        if (p_relavantSplineDetails.IsValidSpline(this))//Vaild spline details, attempt to make spline and ensure is valid
-        {
-            if(m_pathingSplines[(int)p_desiredPosition] != null)
-            {
-                DestroyImmediate(m_pathingSplines[(int)p_desiredPosition]);
-            }
-
-            Pathing_Spline newPathingSpline = ScriptableObject.CreateInstance("Pathing_Spline") as Pathing_Spline;
-
-            Pathing_Node nodeA = this;
-            Pathing_Node nodeB = p_relavantSplineDetails.m_conjoinedNode;
-
-            Pathing_Spline.SPLINE_POSITION nodeAPosition = DetermineNodePosition(nodeB);
-            Pathing_Spline.SPLINE_POSITION nodeBPosition = nodeB.DetermineNodePosition(nodeA);
-
-            newPathingSpline.InitVaribles(nodeA, nodeAPosition, nodeB, nodeBPosition, p_relavantSplineDetails.m_splineType, p_relavantSplineDetails.m_circleDir, p_relavantSplineDetails.m_circleAngle, p_relavantSplineDetails.m_bezierStrength);
-
-            m_pathingSplines[(int)p_desiredPosition] = newPathingSpline;
-            nodeB.AssignSpline(newPathingSpline, nodeBPosition);
-
-            return newPathingSpline;
-        }
-
-
-        return false;
-
-    }
-
+    /// <summary>
+    /// Given a conjoined node, get its position in this node
+    /// </summary>
+    /// <param name="p_node">Node to look for</param>
+    /// <returns>Node position in the spline details, otherwise default to MAX_LENGTH</returns>
     public Pathing_Spline.SPLINE_POSITION DetermineNodePosition(Pathing_Node p_node)
     {
         for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
         {
-            if (m_pathingSplineDetails[splineIndex].m_conjoinedNode == p_node)
+            if (m_pathingSplineDetails[splineIndex].m_nodePrimary == p_node || m_pathingSplineDetails[splineIndex].m_nodeSecondary == p_node)
                 return (Pathing_Spline.SPLINE_POSITION)splineIndex;
         }
 
         return Pathing_Spline.SPLINE_POSITION.MAX_LENGTH;
     }
 
-    public bool ContainsConjoinedNode(Pathing_Node p_conjoinedNode)
+    /// <summary>
+    /// Does this node, also have link to coinjoined node
+    /// That is any of the ndoe details has this node
+    /// </summary>
+    /// <param name="p_node">Ndoe ot test against</param>
+    /// <returns>true when any spline details contains this p_conjoinedNode</returns>
+    public bool ContainsConjoinedNode(Pathing_Node p_node)
     {
         for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
         {
-            if(m_pathingSplineDetails[splineIndex].m_conjoinedNode == p_conjoinedNode)
+            if (m_pathingSplineDetails[splineIndex].m_nodePrimary == p_node || m_pathingSplineDetails[splineIndex].m_nodeSecondary == p_node)
             {
                 return true;
             }
@@ -327,53 +275,99 @@ public class Pathing_Node : MonoBehaviour
         return false;
     }
 
-    public void AssignSpline(Pathing_Spline p_spline, Pathing_Spline.SPLINE_POSITION p_position)
+    /// <summary>
+    /// Does this pathing node, contain a link to a given spline
+    /// That is, is any spline in m_pathingSplines the given spline
+    /// </summary>
+    /// <param name="p_spline">Spline to test for</param>
+    /// <returns>True when theres at least one instance of the given spline</returns>
+    public bool ContainsSpline(Pathing_Spline p_spline)
     {
-        if (p_position != Pathing_Spline.SPLINE_POSITION.MAX_LENGTH && p_spline != null)
+        if (p_spline == null)
+            return false;
+
+        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
         {
-            m_pathingSplines[(int)p_position] = p_spline;
+            if (m_pathingSplines[splineIndex] == p_spline)
+                return true;
         }
+
+        return false;
     }
 
     #region Editor Specific
-    #if UNITY_EDITOR
     private const int SPLINE_STEPS = 10;
 
     private void OnDrawGizmos()
     {
         for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
         {
-            if (m_pathingSplines[splineIndex] != null)
-                DrawSpline(splineIndex);
+            DrawSpline(m_pathingSplineDetails[splineIndex]);
         }
     }
 
     /// <summary>
     /// Draw a spline
     /// </summary>
-    /// <param name="p_pathingSplineIndex">Index of spline to draw</param>
-    private void DrawSpline(int p_pathingSplineIndex)
+    /// <param name="p_splineDetails">Details describing the spline</param>
+    private void DrawSpline(Spline_Details p_splineDetails)
     {
-        if (!m_pathingSplineDetails[p_pathingSplineIndex].IsValidSpline(this)) //Invalid setup, but spline exists
-        {
-            m_pathingSplines[p_pathingSplineIndex].SplineRemoved();
-
+        if (!p_splineDetails.IsValidSpline()) //Validate Data
             return;
-        }
-
-        Pathing_Spline splineToDraw = m_pathingSplines[p_pathingSplineIndex];
 
         Gizmos.color = Color.blue;
 
+        //Setup spline variables
+        float length = 0.0f;
+
+        //Straight
+        Vector3 straightDir = Vector3.zero;
+
+        //Bezier
+        Vector3 bezierPointA = Vector3.zero;
+        Vector3 bezierPointB = Vector3.zero;
+        Vector3 bezierControlA = Vector3.zero;
+        Vector3 bezierControlB = Vector3.zero;
+
+        //Circle
+        float circleHeight = 0.0f;
+        Vector3 circleCenter = Vector3.zero;
+        Vector3 centerADir = Vector3.zero;
+
+        switch(p_splineDetails.m_splineType)
+        {
+            case Pathing_Spline.SPLINE_TYPE.STRAIGHT:
+                Pathing_Spline.RebuildStraight(p_splineDetails.m_nodePrimary, p_splineDetails.m_nodeSecondary, out straightDir, out length);
+                break;
+            case Pathing_Spline.SPLINE_TYPE.BEZIER:
+                Pathing_Spline.RebuildBezier(p_splineDetails.m_nodePrimary, p_splineDetails.m_nodeSecondary, p_splineDetails.m_bezierStrength, out bezierPointA, out bezierPointB, out bezierControlA, out bezierControlB, out length);
+                break;
+            case Pathing_Spline.SPLINE_TYPE.CIRCLE:
+                Pathing_Spline.RebuildCircle(p_splineDetails.m_nodePrimary, p_splineDetails.m_nodeSecondary, p_splineDetails.m_circleDir, p_splineDetails.m_circleAngle, out circleHeight, out circleCenter, out centerADir, out length);
+                break;
+        }
+        
         float percentStep = 1.0f / SPLINE_STEPS;
         float currentPercent = percentStep;
-
-        Vector3 previous = splineToDraw.m_nodeA.transform.position;
+        
+        Vector3 previous = p_splineDetails.m_nodePrimary.transform.position;
+        Vector3 next = Vector3.zero; 
 
         //Loop through approximating circle, every (m_totalDegrees / DEBUG_STEPS) degrees
         for (int i = 1; i <= SPLINE_STEPS; i++)
         {
-            Vector3 next = splineToDraw.GetPosition(currentPercent);
+            switch (p_splineDetails.m_splineType)
+            {
+                case Pathing_Spline.SPLINE_TYPE.STRAIGHT:
+                    next = Pathing_Spline.GetStraightPosition(currentPercent, p_splineDetails.m_nodePrimary, straightDir);
+                    break;
+                case Pathing_Spline.SPLINE_TYPE.BEZIER:
+                    next = Pathing_Spline.GetBezierPosition(currentPercent, bezierPointA, bezierPointB, bezierControlA, bezierControlB);
+                    break;
+                case Pathing_Spline.SPLINE_TYPE.CIRCLE:
+                    next = Pathing_Spline.GetCirclePosition(currentPercent, p_splineDetails.m_circleDir, p_splineDetails.m_circleAngle, circleHeight, circleCenter, centerADir);
+                    break;
+            }
 
             Gizmos.DrawLine(previous, next);
 
@@ -381,8 +375,5 @@ public class Pathing_Node : MonoBehaviour
             currentPercent += percentStep;
         }
     }
-#endif
-    #endregion
-
     #endregion
 }

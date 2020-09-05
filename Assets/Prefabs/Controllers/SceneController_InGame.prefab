@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1857eb2a97d3b6f4f81a79109dd1cd08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_customInput: {fileID: 0}
 --- !u!114 &8911391010960711172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56,5 +57,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ab578c293b3064aba0dac1d2a177f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_hitMarkerPrefab: {fileID: 0}
-  m_hitmarkerCount: 0
+  m_hitMarkerPrefab: {fileID: 9014336776971578765, guid: 28dad3c4c069fd04bb25928f51f796b2,
+    type: 3}
+  m_hitmarkerCount: 10

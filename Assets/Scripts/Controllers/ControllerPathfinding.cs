@@ -79,17 +79,17 @@ public class ControllerPathfinding : MonoBehaviour
     {
         HashSet<Pathing_Spline> adjacentSplines = new HashSet<Pathing_Spline>();//Unique list
 
-        if (p_currentNode.m_nodeSpline.m_nodeA != null)//add start of spline adjacent splines if start exists
+        if (p_currentNode.m_nodeSpline.m_nodePrimary != null)//add start of spline adjacent splines if start exists
         {
-            foreach (Pathing_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_nodeA.m_adjacentSplines)
+            foreach (Pathing_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_nodePrimary.m_adjacentSplines)
             {
                 adjacentSplines.Add(adjacentSpline);
             }
         }
 
-        if (p_currentNode.m_nodeSpline.m_nodeB != null) //add end of spline adjacent splines if start exists
+        if (p_currentNode.m_nodeSpline.m_nodeSecondary != null) //add end of spline adjacent splines if start exists
         {
-            foreach (Pathing_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_nodeB.m_adjacentSplines)
+            foreach (Pathing_Spline adjacentSpline in p_currentNode.m_nodeSpline.m_nodeSecondary.m_adjacentSplines)
             {
                 adjacentSplines.Add(adjacentSpline);
             }

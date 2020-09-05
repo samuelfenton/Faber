@@ -183,7 +183,7 @@ public class NPC_State : State_Character
     {
         Pathing_Spline currentSpline = m_entity.m_splinePhysics.m_currentSpline;
 
-        if (currentSpline.m_nodeA.m_adjacentSplines.Contains(p_goalSpline))
+        if (currentSpline.m_nodePrimary.m_adjacentSplines.Contains(p_goalSpline))
             return 0.0f;
         return 1.0f;
     }
