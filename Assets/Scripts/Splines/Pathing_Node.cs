@@ -98,7 +98,7 @@ public class Pathing_Node : MonoBehaviour
         {
             for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
             {
-                if(m_pathingSplineDetails[splineIndex].m_createdFlag && m_pathingSplineDetails[splineIndex].m_nodePrimary == this && m_pathingSplineDetails[splineIndex].IsValidSpline())
+                if(m_pathingSplines[splineIndex] == null && m_pathingSplineDetails[splineIndex].m_createdFlag && m_pathingSplineDetails[splineIndex].m_nodePrimary == this && m_pathingSplineDetails[splineIndex].IsValidSpline())
                 {
                     GameObject newSpline = Instantiate(p_splinePrefab);
 

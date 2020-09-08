@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="ParameterPreset" id="{0c4d51f6-3f1f-44f9-b336-b49a877c76f2}">
+		<property name="name">
+			<value>Enviroment</value>
+		</property>
+		<relationship name="folder">
+			<destination>{56addcaf-5d4f-451d-95eb-ecdc0fa3bc9e}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{87b264ee-6a41-4430-a588-741bb2e77066}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{87b264ee-6a41-4430-a588-741bb2e77066}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>6</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>CyberpunkGeneric</value>
+			<value>CyberpunkClub</value>
+			<value>CyberpunkIndustrial</value>
+			<value>Expanse</value>
+			<value>Shogun</value>
+			<value>Industrial</value>
+		</property>
+		<property name="isGlobal">
+			<value>true</value>
+		</property>
+		<property name="isReadOnly">
+			<value>true</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+		<property name="isExposedRecursively">
+			<value>false</value>
+		</property>
+	</object>
+</objects>
