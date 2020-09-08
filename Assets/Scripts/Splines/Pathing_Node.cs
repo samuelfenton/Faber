@@ -9,9 +9,6 @@ public class Pathing_Node : MonoBehaviour
     public struct Spline_Details
     {
         [SerializeField]
-        public Pathing_Spline.SPLINE_POSITION m_splinePosition;
-
-        [SerializeField]
         public Pathing_Node m_nodePrimary;
         [SerializeField]
         public Pathing_Node m_nodeSecondary;
@@ -27,16 +24,38 @@ public class Pathing_Node : MonoBehaviour
         [SerializeField]
         public bool m_createdFlag;
 
-        public Spline_Details(Pathing_Spline.SPLINE_POSITION p_splinePosition)
+        public Spline_Details(bool p_createdFlag = false)
         {
-            m_splinePosition = p_splinePosition;
             m_nodePrimary = null;
             m_nodeSecondary = null;
             m_splineType = Pathing_Spline.SPLINE_TYPE.NOT_IN_USE;
             m_circleDir = Pathing_Spline.CIRCLE_DIR.CLOCKWISE;
             m_circleAngle = 0.0f;
             m_bezierStrength = 0.0f;
-            m_createdFlag = false;
+            m_createdFlag = p_createdFlag;
+        }
+
+        public Spline_Details(Pathing_Node p_nodeA, Pathing_Node p_nodeB, Spline_Details p_oldDetails)
+        {
+            float nodeAPositiveAlignment = MOARMaths.GetPositiveAlignment(p_nodeA.transform.position);
+            float nodeBPositiveAlignment = MOARMaths.GetPositiveAlignment(p_nodeB.transform.position);
+
+            if (nodeAPositiveAlignment >= nodeBPositiveAlignment)
+            {
+                m_nodePrimary = p_nodeA;
+                m_nodeSecondary = p_nodeB;
+            }
+            else
+            {
+                m_nodePrimary = p_nodeB;
+                m_nodeSecondary = p_nodeA;
+            }
+
+            m_splineType = p_oldDetails.m_splineType;
+            m_circleDir = p_oldDetails.m_circleDir;
+            m_circleAngle = p_oldDetails.m_circleAngle;
+            m_bezierStrength = p_oldDetails.m_bezierStrength;
+            m_createdFlag = true;
         }
 
         /// <summary>
@@ -45,54 +64,71 @@ public class Pathing_Node : MonoBehaviour
         /// <returns></returns>
         public bool IsValidSpline()
         {
-            return m_nodePrimary != null && m_nodeSecondary != null && m_splinePosition != Pathing_Spline.SPLINE_POSITION.MAX_LENGTH && m_splineType != Pathing_Spline.SPLINE_TYPE.NOT_IN_USE;
+            return m_nodePrimary != null && m_nodeSecondary != null && m_splineType != Pathing_Spline.SPLINE_TYPE.NOT_IN_USE;
         }
     };
 
     public enum TRIGGER_DIRECTION { FORWARDS, BACKWARDS }
 
-    [HideInInspector]
+    //Splines
+    [SerializeField]
     public Spline_Details[] m_pathingSplineDetails = new Spline_Details[(int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH];
-
-    [HideInInspector]
     public Pathing_Spline[] m_pathingSplines = new Pathing_Spline[(int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH];
-
-    [HideInInspector]
     public List<Pathing_Spline> m_adjacentSplines = new List<Pathing_Spline>();
 
-    [HideInInspector]
-    public Dictionary<Entity, TRIGGER_DIRECTION> m_activeColliders = new Dictionary<Entity, TRIGGER_DIRECTION>();
+    //Used in editor
+    [SerializeField]
+    public Pathing_Node[] m_conjoinedNodes = new Pathing_Node[(int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH];
+    [SerializeField] 
+    public Pathing_Spline.SPLINE_POSITION[] m_conjoinedPosition = new Pathing_Spline.SPLINE_POSITION[(int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH];
 
+    //Collisions
+    public Dictionary<Entity, TRIGGER_DIRECTION> m_activeColliders = new Dictionary<Entity, TRIGGER_DIRECTION>();
     //Plane Equations
     private Vector3 m_planeForwardVector = Vector3.zero;
 
     /// <summary>
     /// Setup colision plane
-    /// </summary>
-    public void InitNode()
+    /// Setup splines/// </summary>
+    /// <param name="p_splinePrefab">Prefab to use to create splines</param>
+    public void InitNode(GameObject p_splinePrefab)
     {
+        //Build Splines
+        if(p_splinePrefab != null)
+        {
+            for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
+            {
+                if(m_pathingSplineDetails[splineIndex].m_createdFlag && m_pathingSplineDetails[splineIndex].m_nodePrimary == this && m_pathingSplineDetails[splineIndex].IsValidSpline())
+                {
+                    GameObject newSpline = Instantiate(p_splinePrefab);
+
+                    Pathing_Spline newSplineScript = newSpline.GetComponent<Pathing_Spline>();
+                    newSplineScript.InitVaribles(m_pathingSplineDetails[splineIndex]);
+                }
+            }
+        }
+#if UNITY_EDITOR
+        else
+        {
+            Debug.LogError("SceneController_InGame, has now assigned spline prefab, no splines will be created");
+        }
+#endif
+
         m_planeForwardVector = transform.forward;
         m_planeForwardVector.y = 0;
         m_planeForwardVector = m_planeForwardVector.normalized;
-
-        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
-        {
-            if (m_pathingSplines[splineIndex] != null)
-                m_adjacentSplines.Add(m_pathingSplines[splineIndex]);
-        }
     }
 
     /// <summary>
-    /// USed to set starting values
+    /// Add a spline to a node
+    /// Assign to spline array, and adjacent splines
     /// </summary>
-    private void Reset()
+    /// <param name="p_spline">Spline being added</param>
+    /// <param name="p_position">Position to add to</param>
+    public void AddSpline(Pathing_Spline p_spline, Pathing_Spline.SPLINE_POSITION p_position)
     {
-        m_pathingSplineDetails = new Spline_Details[(int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH];
-        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
-        {
-            //Forced assignment 
-            m_pathingSplineDetails[splineIndex].m_splinePosition = (Pathing_Spline.SPLINE_POSITION)splineIndex;
-        }
+        m_pathingSplines[(int)p_position] = p_spline;
+        m_adjacentSplines.Add(p_spline);
     }
 
     /// <summary>
@@ -123,7 +159,7 @@ public class Pathing_Node : MonoBehaviour
 
                     if (currentDirection == TRIGGER_DIRECTION.FORWARDS) //Previously on backside side, entering forwards splines
                     {
-                        nextSpline = GetTransferSpline(desiredTurnignDir, m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FOWARD], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_RIGHT], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_LEFT]);
+                        nextSpline = GetTransferSpline(desiredTurnignDir, m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_RIGHT], m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_LEFT]);
                     }
                     else //Previously on forward side, entering backwards splines
                     {
@@ -237,7 +273,7 @@ public class Pathing_Node : MonoBehaviour
     /// <returns>true when above is valid</returns>
     public bool ValidNode()
     {
-        return (m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FOWARD] != null || m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_RIGHT] != null || (m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_LEFT] != null)
+        return (m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD] != null || m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_RIGHT] != null || (m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.FORWARD_LEFT] != null)
             && (m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD] != null || m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD_RIGHT] != null|| m_pathingSplines[(int)Pathing_Spline.SPLINE_POSITION.BACKWARD_LEFT] != null));
     }
 
@@ -298,6 +334,45 @@ public class Pathing_Node : MonoBehaviour
     #region Editor Specific
     private const int SPLINE_STEPS = 10;
 
+    /// <summary>
+    /// Remove the nodes conjoined details
+    /// Includes the details in m_pathingSplineDetails/m_conjoinedPosition/m_conjoinedNodes
+    /// Will attempt to remove data in conjoined node when applicable
+    /// </summary>
+    /// <param name="p_position">Position to remove from</param>
+    public void RemoveDetailsAt(Pathing_Spline.SPLINE_POSITION p_position)
+    {
+        if (p_position == Pathing_Spline.SPLINE_POSITION.MAX_LENGTH)
+            return;
+
+        if(m_pathingSplineDetails[(int)p_position].m_createdFlag)//Spline already created, remove the details
+        {
+            Pathing_Node otherNode = null;
+            if (m_pathingSplineDetails[(int)p_position].m_nodePrimary == this)
+            {
+                otherNode = m_pathingSplineDetails[(int)p_position].m_nodeSecondary;
+            }
+            else
+            {
+                otherNode = m_pathingSplineDetails[(int)p_position].m_nodePrimary;
+            }
+
+            Pathing_Spline.SPLINE_POSITION otherPosition = otherNode.DetermineNodePosition(this);
+
+            if(otherPosition != Pathing_Spline.SPLINE_POSITION.MAX_LENGTH)
+            {
+                //Clear up other data
+                otherNode.m_pathingSplineDetails[(int)otherPosition] = new Spline_Details();
+                otherNode.m_conjoinedPosition[(int)otherPosition] = Pathing_Spline.SPLINE_POSITION.FORWARD;
+                otherNode.m_conjoinedNodes[(int)otherPosition] = null;
+            }
+        }
+        //Clear up this data
+        m_pathingSplineDetails[(int)p_position] = new Spline_Details();
+        m_conjoinedPosition[(int)p_position] = Pathing_Spline.SPLINE_POSITION.FORWARD;
+        m_conjoinedNodes[(int)p_position] = null;
+    }
+
     private void OnDrawGizmos()
     {
         for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
@@ -312,7 +387,7 @@ public class Pathing_Node : MonoBehaviour
     /// <param name="p_splineDetails">Details describing the spline</param>
     private void DrawSpline(Spline_Details p_splineDetails)
     {
-        if (!p_splineDetails.IsValidSpline()) //Validate Data
+        if (!p_splineDetails.IsValidSpline() || p_splineDetails.m_nodeSecondary == this) //Validate Data
             return;
 
         Gizmos.color = Color.blue;

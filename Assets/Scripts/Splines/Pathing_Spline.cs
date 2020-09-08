@@ -6,7 +6,7 @@ public class Pathing_Spline : MonoBehaviour
 {
     public enum SPLINE_TYPE { STRAIGHT, BEZIER, CIRCLE, NOT_IN_USE}
     public enum CIRCLE_DIR { CLOCKWISE, COUNTER_CLOCKWISE }
-    public enum SPLINE_POSITION {FOWARD = 0, FORWARD_RIGHT, FORWARD_LEFT, BACKWARD, BACKWARD_RIGHT, BACKWARD_LEFT, MAX_LENGTH} //Where on a node is the spline
+    public enum SPLINE_POSITION {FORWARD = 0, FORWARD_RIGHT, FORWARD_LEFT, BACKWARD, BACKWARD_RIGHT, BACKWARD_LEFT, MAX_LENGTH} //Where on a node is the spline
 
     //Assigned from editor
     [HideInInspector]
@@ -47,45 +47,27 @@ public class Pathing_Spline : MonoBehaviour
 
     /// <summary>
     /// Assigne all varibles to a spline
+    /// Applies spline to relavant nodes
     /// </summary>
-    /// <param name="p_nodeA"></param>
-    /// <param name="p_nodeB"></param>
-    /// <param name="p_splineType"></param>
-    /// <param name="p_circleDir"></param>
-    /// <param name="p_circleAngle"></param>
-    /// <param name="p_bezierStrength"></param>
-    public void InitVaribles(Pathing_Node p_nodeA, SPLINE_POSITION p_nodePositionA, Pathing_Node p_nodeB, SPLINE_POSITION p_nodePositionB)
+    /// <param name="p_details">Details to base spline off</param>
+    public void InitVaribles(Pathing_Node.Spline_Details p_details)
     {
-        float nodeAPositiveAlignment = MOARMaths.GetPositiveAlignment(p_nodeA.transform.position);
-        float nodeBPositiveAlignment = MOARMaths.GetPositiveAlignment(p_nodeB.transform.position);
+        m_nodePrimary = p_details.m_nodePrimary;
+        m_nodeSecondary = p_details.m_nodeSecondary;
+        m_nodePositionPrimary = m_nodePrimary.DetermineNodePosition(m_nodeSecondary);
+        m_nodePositionSecondary = m_nodeSecondary.DetermineNodePosition(m_nodePrimary); ;
 
-        if(nodeAPositiveAlignment >= nodeBPositiveAlignment)
-        {
-            m_nodePrimary = p_nodeA;
-            m_nodePositionPrimary = p_nodePositionA;
-            m_nodeSecondary = p_nodeB;
-            m_nodePositionSecondary = p_nodePositionB;
-        }
-        else
-        {
-            m_nodePrimary = p_nodeB;
-            m_nodePositionPrimary = p_nodePositionB;
-            m_nodeSecondary = p_nodeA;
-            m_nodePositionSecondary = p_nodePositionA;
-        }
+        m_splineType = p_details.m_splineType;
+        m_circleDir = p_details.m_circleDir;
+        m_circleAngle = p_details.m_circleAngle;
+        m_bezierStrength = p_details.m_bezierStrength;
 
-
-        Pathing_Node.Spline_Details splineDetails = m_nodePrimary.m_pathingSplineDetails[(int)m_nodePositionPrimary];
-
-        m_splineType = splineDetails.m_splineType;
-        m_circleDir = splineDetails.m_circleDir;
-        m_circleAngle = splineDetails.m_circleAngle;
-        m_bezierStrength = splineDetails.m_bezierStrength;
-
-        m_nodePrimary.m_pathingSplines[(int)m_nodePositionPrimary] = this;
-        m_nodeSecondary.m_pathingSplines[(int)m_nodePositionSecondary] = this;
+        m_nodePrimary.AddSpline(this, m_nodePositionPrimary);
+        m_nodeSecondary.AddSpline(this, m_nodePositionSecondary);
 
         SetupSpline();
+
+        transform.position = GetPosition(0.5f);
     }
 
     /// <summary>

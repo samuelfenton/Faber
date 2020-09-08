@@ -1,10 +1,11 @@
-﻿using JetBrains.Annotations;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SceneController_InGame : SceneController
 {
+    public GameObject m_splinePrefab = null;
+
     private Entity[] m_entities;
 
     [HideInInspector]
@@ -25,6 +26,13 @@ public class SceneController_InGame : SceneController
         for (int entityIndex = 0; entityIndex < m_entities.Length; entityIndex++)
         {
             m_entities[entityIndex].InitEntity();
+        }
+
+        Pathing_Node[] pathingNodes = FindObjectsOfType<Pathing_Node>();
+
+        for (int nodeIndex = 0; nodeIndex < pathingNodes.Length; nodeIndex++)
+        {
+            pathingNodes[nodeIndex].InitNode(m_splinePrefab);
         }
     }
 }
