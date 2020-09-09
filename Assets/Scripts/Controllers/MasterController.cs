@@ -61,10 +61,10 @@ public class MasterController : MonoBehaviour
         m_currentUIController = FindObjectOfType<UIController>();
 
         if (m_currentSceneController != null)
-            m_currentSceneController.Init(this);
+            m_currentSceneController.Init();
 
         if (m_currentUIController != null)
-            m_currentUIController.Init(this);
+            m_currentUIController.Init();
     }
 
     /// <summary>
@@ -92,7 +92,8 @@ public class MasterController : MonoBehaviour
     /// Will automatically swap to loading screen
     /// </summary>
     /// <param name="p_scene">Scene to attempted to load</param>
-    public void LoadScene(SCENE p_scene)
+    /// <param name="p_useLoadingScreen">Should we use the loading screen? In cases such as loading credits or main menu, theres no need to wait</param>
+    public void LoadScene(SCENE p_scene, bool p_useLoadingScreen)
     {
         if (p_scene == SCENE.SCENE_COUNT || p_scene == SCENE.LOADING)
             return;
@@ -100,7 +101,14 @@ public class MasterController : MonoBehaviour
         if (!MOARMaths.DoesSceneExist(m_sceneStrings[(int)p_scene]))//No scene found, or not in load list
             return;
 
-        StartCoroutine(LoadSceneAsync(p_scene));
+        if(p_useLoadingScreen)
+        {
+            StartCoroutine(LoadSceneAsync(p_scene));
+        }
+        else
+        {
+            SceneManager.LoadScene(m_sceneStrings[(int)p_scene]);
+        }
     }
 
 
@@ -110,13 +118,13 @@ public class MasterController : MonoBehaviour
     /// <param name="p_scene">Scene to attempted to load, pre checked for validity</param>
     private IEnumerator LoadSceneAsync(SCENE p_scene)
     {
-        SceneManager.LoadSceneAsync(m_sceneStrings[(int)SCENE.LOADING]);
-
-        yield return null;
+        SceneManager.LoadSceneAsync(m_sceneStrings[(int)SCENE.LOADING], LoadSceneMode.Single);
         
         //Setup async loading
-        m_asyncSceneLoading = SceneManager.LoadSceneAsync(m_sceneStrings[(int)p_scene]);
+        m_asyncSceneLoading = SceneManager.LoadSceneAsync(m_sceneStrings[(int)p_scene], LoadSceneMode.Additive);
         m_asyncSceneLoading.allowSceneActivation = false;
+        
+        yield return null;
     }
 
     /// <summary>
@@ -126,6 +134,6 @@ public class MasterController : MonoBehaviour
     {
         SceneManager.UnloadSceneAsync(m_sceneStrings[(int)SCENE.LOADING]);
 
-        m_asyncSceneLoading.allowSceneActivation = true;
+        m_currentUIController.ToggleEventSystem(true);
     }
 }

@@ -15,10 +15,9 @@ public class UIController_InGame : UIController
     /// <summary>
     /// Setup variables to be used in UI
     /// </summary>
-    /// <param name="p_masterController">Master controller</param>
-    public override void Init(MasterController p_masterController)
+    public override void Init()
     {
-        base.Init(p_masterController);
+        base.Init();
         
         if (m_inGameUI == null || m_menuUI == null)
         {
@@ -36,7 +35,7 @@ public class UIController_InGame : UIController
 
     private void Update()
     {
-        if(m_customInput.GetKey(CustomInput.INPUT_KEY.MENU) == CustomInput.INPUT_STATE.DOWNED)
+        if(m_customInput!= null && m_customInput.GetKey(CustomInput.INPUT_KEY.MENU) == CustomInput.INPUT_STATE.DOWNED)
         {
             ToggleMenu();
         }
@@ -55,6 +54,10 @@ public class UIController_InGame : UIController
     }
 
     #region Menu Management
+    /// <summary>
+    /// Show the in game UI
+    /// Revert time scale to 1
+    /// </summary>
     private void ShowInGame()
     {
         m_currentMenuState = CURRENT_MENU_STATE.IN_GAME;
@@ -65,6 +68,10 @@ public class UIController_InGame : UIController
         Time.timeScale = 1.0f;
     }
 
+    /// <summary>
+    /// Show the pause menu
+    /// reverts time scale to 0
+    /// </summary>
     private void ShowPauseMenu()
     {
         m_currentMenuState = CURRENT_MENU_STATE.PAUSE_MENU;
@@ -81,14 +88,28 @@ public class UIController_InGame : UIController
     #endregion
 
     #region Pause Menu Management
-    public void BtnReturnToGame()
+    /// <summary>
+    /// Button to return back to game
+    /// </summary>
+    public void Btn_ReturnToGame()
     {
         ShowInGame();
     }
 
-    public void BtnQuit()
+    /// <summary>
+    /// Button to change basic options
+    /// </summary>
+    public void Btn_Options()
+    { 
+    
+    }
+
+    /// <summary>
+    /// Button to return to main menu
+    /// </summary>
+    public void Btn_Quit()
     {
-        Application.Quit();
+        MasterController.Instance.LoadScene(MasterController.SCENE.MAIN_MENU, false);
     }
     #endregion
 }

@@ -9,12 +9,11 @@ public class UIController_MainMenu : UIController
     /// <summary>
     /// Setup variables to be used in UI
     /// </summary>
-    /// <param name="p_masterController">Master controller</param>
-    public override void Init(MasterController p_masterController)
+    public override void Init()
     {
-        base.Init(p_masterController);
+        base.Init();
 
-        m_mainMenuSceneController = (SceneController_MainMenu)p_masterController.m_currentSceneController;
+        m_mainMenuSceneController = (SceneController_MainMenu)(MasterController.Instance.m_currentSceneController);
         
         if (m_mainMenuSceneController == null)
         {
@@ -27,9 +26,42 @@ public class UIController_MainMenu : UIController
 
     }
 
+    /// <summary>
+    /// Button to load game
+    /// </summary>
+    public void Btn_LoadGame()
+    {
+        //TODO, actually load game
+        m_mainMenuSceneController.LoadFirstLevel();
+    }
+
+    /// <summary>
+    /// Button to start new game
+    /// </summary>
     public void Btn_NewGame()
     {
         m_mainMenuSceneController.LoadFirstLevel();
     }
 
+    /// <summary>
+    /// Button to change settings
+    /// </summary>
+    public void Btn_Options()
+    {
+    }
+
+    /// <summary>
+    /// Button to view credits
+    /// </summary>
+    public void Btn_Credits()
+    {
+    }
+
+    /// <summary>
+    /// Button to quit to desktop
+    /// </summary>
+    public void Btn_Quit()
+    {
+        Application.Quit();
+    }
 }

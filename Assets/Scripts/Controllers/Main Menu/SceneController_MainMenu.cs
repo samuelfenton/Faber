@@ -9,10 +9,9 @@ public class SceneController_MainMenu : SceneController
     /// <summary>
     /// Setup variables to be used in UI
     /// </summary>
-    /// <param name="p_masterController">Master controller</param>
-    public override void Init(MasterController p_masterController)
+    public override void Init()
     {
-        base.Init(p_masterController);
+        base.Init();
     }
 
     /// <summary>
@@ -30,6 +29,6 @@ public class SceneController_MainMenu : SceneController
     /// </summary>
     public void LoadFirstLevel()
     {
-        MasterController.Instance.LoadScene(m_firstScene);
+        MasterController.Instance.LoadScene(m_firstScene, true);
     }
 }

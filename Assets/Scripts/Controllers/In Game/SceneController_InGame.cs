@@ -14,10 +14,9 @@ public class SceneController_InGame : SceneController
     /// <summary>
     /// Setup variables to be used in UI
     /// </summary>
-    /// <param name="p_masterController">Master controller</param>
-    public override void Init(MasterController p_masterController)
+    public override void Init()
     {
-        base.Init(p_masterController);
+        base.Init();
 
         m_customInput = gameObject.AddComponent<CustomInput>();
 
