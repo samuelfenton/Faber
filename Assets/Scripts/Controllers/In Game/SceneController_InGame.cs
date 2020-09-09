@@ -12,7 +12,7 @@ public class SceneController_InGame : SceneController
     public CustomInput m_customInput = null;
 
     /// <summary>
-    /// Setup varibels to be used in UI
+    /// Setup variables to be used in UI
     /// </summary>
     /// <param name="p_masterController">Master controller</param>
     public override void Init(MasterController p_masterController)
@@ -21,18 +21,18 @@ public class SceneController_InGame : SceneController
 
         m_customInput = gameObject.AddComponent<CustomInput>();
 
-        m_entities = FindObjectsOfType<Entity>();
-
-        for (int entityIndex = 0; entityIndex < m_entities.Length; entityIndex++)
-        {
-            m_entities[entityIndex].InitEntity();
-        }
-
         Pathing_Node[] pathingNodes = FindObjectsOfType<Pathing_Node>();
 
         for (int nodeIndex = 0; nodeIndex < pathingNodes.Length; nodeIndex++)
         {
             pathingNodes[nodeIndex].InitNode(m_splinePrefab);
+        }
+
+        m_entities = FindObjectsOfType<Entity>();
+
+        for (int entityIndex = 0; entityIndex < m_entities.Length; entityIndex++)
+        {
+            m_entities[entityIndex].InitEntity();
         }
     }
 }

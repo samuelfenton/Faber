@@ -13,7 +13,7 @@ public class UIController_InGame : UIController
     private CustomInput m_customInput = null;
 
     /// <summary>
-    /// Setup varibels to be used in UI
+    /// Setup variables to be used in UI
     /// </summary>
     /// <param name="p_masterController">Master controller</param>
     public override void Init(MasterController p_masterController)

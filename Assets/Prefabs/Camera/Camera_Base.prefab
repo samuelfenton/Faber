@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6912546211480013805}
   - component: {fileID: 8863684002579745686}
   - component: {fileID: 6500662557870154991}
-  - component: {fileID: 7849002998716083220}
   - component: {fileID: 440812478}
   - component: {fileID: 440812479}
   m_Layer: 0
@@ -153,23 +152,6 @@ MonoBehaviour:
   m_AfterStackBundles:
   - assemblyQualifiedName: EdgeDetect_AfterStack, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &7849002998716083220
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6247016968694201427}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sharedProfile: {fileID: 11400000, guid: fa0dd1939b0320d43b1c853c730384d7, type: 2}
-  isGlobal: 1
-  blendDistance: 0
-  weight: 1
-  priority: 0
 --- !u!114 &440812478
 MonoBehaviour:
   m_ObjectHideFlags: 0

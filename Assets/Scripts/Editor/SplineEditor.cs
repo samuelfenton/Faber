@@ -98,6 +98,7 @@ public class SplineEditor : Editor
                             conjoinedNode.RemoveDetailsAt(conjoinedPosition);
                         }
 
+                        EditorUtility.SetDirty(m_pathingNodeScript);
                         EditorUtility.SetDirty(conjoinedNode);
                     }
                 }
@@ -124,6 +125,9 @@ public class SplineEditor : Editor
 
                         m_pathingNodeScript.m_pathingSplineDetails[splineIndex] = newDetails;
                         conjoinedNode.m_pathingSplineDetails[(int)conjoinedPosition] = newDetails;
+
+                        EditorUtility.SetDirty(m_pathingNodeScript);
+                        EditorUtility.SetDirty(conjoinedNode);
                     }
                 }
             }

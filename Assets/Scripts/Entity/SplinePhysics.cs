@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[ExecuteAlways]
 public class SplinePhysics : MonoBehaviour
 {
     public const float MIN_SPLINE_PERCENT = -0.05f;
@@ -77,19 +76,6 @@ public class SplinePhysics : MonoBehaviour
 
         transform.position = m_currentSpline.GetPosition(m_currentSplinePercent);
     }
-
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-        if(m_nodeA!= null && m_nodeB !=null)
-        {
-            Pathing_Spline.SPLINE_POSITION splinePosition = m_nodeA.DetermineNodePosition(m_nodeB);
-            m_currentSpline = m_nodeA.m_pathingSplines[(int)splinePosition];
-            if(m_currentSpline != null)
-                transform.position = m_currentSpline.GetPosition(m_currentSplinePercent);
-        }
-    }
-#endif
 
     /// <summary>
     /// Updates characters physics
