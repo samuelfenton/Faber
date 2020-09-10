@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_Locomotion : State_Player
+public class PlayerState_Idle : State_Player
 {
+    //NOTE
+    //Although player state runs on the interupt animation layer, it does not behave like a interrupt state
+
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
@@ -20,6 +23,9 @@ public class PlayerState_Locomotion : State_Player
     public override void StateStart()
     {
         base.StateStart();
+
+        m_character.GetRandomIdlePose();
+        m_customAnimation.PlayInterrupt(CustomAnimation.INTERRUPT_BOOL.IDLE_EMOTE);
     }
 
     /// <summary>
@@ -30,28 +36,7 @@ public class PlayerState_Locomotion : State_Player
     {
         base.StateUpdate();
 
-        //TODO, could probaly make this better, but for now it works
-        if(m_player.m_customInput.AnyInput())
-        {
-            m_character.m_idleDelayTimer = 0.0f;
-        }
-        else
-        {
-            m_character.m_idleDelayTimer += Time.deltaTime;
-        }
-
-
-        //Movement
-        float horizontal = m_player.m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
-
-        if (m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.SPRINT))
-        {
-            m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * Character.SPRINT_MODIFIER);
-        }
-        else
-            m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel);
-
-        return false;
+        return m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.INTERRUPT) || m_player.m_customInput.AnyInput();
     }
 
     /// <summary>
@@ -60,6 +45,8 @@ public class PlayerState_Locomotion : State_Player
     public override void StateEnd()
     {
         base.StateEnd();
+        m_character.m_idleDelayTimer = 0.0f;
+        m_customAnimation.EndInterrupt();
     }
 
     /// <summary>
@@ -68,6 +55,6 @@ public class PlayerState_Locomotion : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_entity.m_splinePhysics.m_downCollision && !m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
+        return m_player.m_idleDelayTimer >= m_player.m_idleDelayTime;
     }
 }

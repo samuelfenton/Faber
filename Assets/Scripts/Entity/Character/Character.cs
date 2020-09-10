@@ -44,15 +44,27 @@ public class Character : Entity
     [Header("Dash Stats")]
     public float m_dashVelocity = 12.0f;
 
-    private string m_animRandomIdle = "";
+    [Header("Animation Variables")]
+    [Tooltip("How many idle poses have been assigned to the animator")]
+    [Range(1, 100)]
+    public int m_idlePoseCount = 1;
+    [Tooltip("The average time between no input and idle animations")]
+    [Range(1.0f, 100.0f)]
+    public float m_idleDelayTime = 5.0f;
+    [HideInInspector]
+    public float m_idleDelayTimer = 0.0f;
 
     //Velocity stuff
     private float m_desiredVelocity = 0.0f;
 
     //Flags
+    [HideInInspector]
     public bool m_blockingFlag = false;
+    [HideInInspector]
     public bool m_knockbackFlag = false;
+    [HideInInspector]
     public bool m_recoilFlag = false;
+    [HideInInspector]
     public bool m_deathFlag = false;
 
     //Stored references
@@ -263,6 +275,12 @@ public class Character : Entity
         m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.CURRENT_VELOCITY, m_localVelocity.x / m_groundRunVel);
         m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.DESIRED_VELOCITY, m_desiredVelocity / m_groundRunVel);
         m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_localVelocity.x / m_groundRunVel));
+    }
+
+    public void GetRandomIdlePose()
+    {
+        int randomPose = Random.Range(0, m_idlePoseCount);
+        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.RANDOM_IDLE, randomPose);
     }
 
     #region WEAPON FUNCTIONS - OVERRIDE

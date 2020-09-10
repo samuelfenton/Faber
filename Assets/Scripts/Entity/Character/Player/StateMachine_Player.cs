@@ -16,6 +16,7 @@ public class StateMachine_Player : StateMachine
         PlayerState_Knockback knockback = NewInterruptState<PlayerState_Knockback>();
         PlayerState_Recoil recoil = NewInterruptState<PlayerState_Recoil>();
 
+        
         PlayerState_Locomotion loco = NewNextState<PlayerState_Locomotion>();
         PlayerState_Jump jump = NewNextState<PlayerState_Jump>();
         PlayerState_InAir inAir = NewNextState<PlayerState_InAir>();
@@ -25,6 +26,8 @@ public class StateMachine_Player : StateMachine
 
         PlayerState_Attack attack = NewNextState<PlayerState_Attack>();
 
+        PlayerState_Idle idle = NewNextState<PlayerState_Idle>();
+        
         //Init all 
         death.StateInit(true, p_character);
         knockback.StateInit(false, p_character);
@@ -36,6 +39,7 @@ public class StateMachine_Player : StateMachine
         land.StateInit(false, p_character);
         dash.StateInit(false, p_character);
         block.StateInit(true, p_character);
+        idle.StateInit(false, p_character);
 
         attack.StateInit(false, p_character);
 
@@ -44,12 +48,15 @@ public class StateMachine_Player : StateMachine
         knockback.AddNextState(attack);
         knockback.AddNextState(inAir);
         knockback.AddNextState(block);
+        knockback.AddNextState(jump);
         knockback.AddNextState(loco);
 
         recoil.AddNextState(attack);
         recoil.AddNextState(inAir);
         recoil.AddNextState(dash);
+        recoil.AddNextState(jump);
         recoil.AddNextState(loco);
+
 
         //Normal
         loco.AddNextState(inAir);
@@ -57,6 +64,7 @@ public class StateMachine_Player : StateMachine
         loco.AddNextState(dash);
         loco.AddNextState(block);
         loco.AddNextState(jump);
+        loco.AddNextState(idle);
 
         block.AddNextState(attack);
         block.AddNextState(jump);
@@ -73,7 +81,17 @@ public class StateMachine_Player : StateMachine
         inAir.AddNextState(land);
         inAir.AddNextState(attack);
 
+        land.AddNextState(inAir);
+        land.AddNextState(attack);
+        land.AddNextState(dash);
+        land.AddNextState(block);
+        land.AddNextState(jump);
         land.AddNextState(loco);
+
+        idle.AddNextState(attack);
+        idle.AddNextState(inAir);
+        idle.AddNextState(jump);
+        idle.AddNextState(loco);
 
         attack.AddNextState(inAir);
         attack.AddNextState(block);

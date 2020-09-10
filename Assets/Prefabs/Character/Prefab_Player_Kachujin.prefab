@@ -133,6 +133,7 @@ MonoBehaviour:
   m_localVelocity: {x: 0, y: 0, z: 0}
   m_gravity: 1
   m_splinePhysics: {fileID: 0}
+  m_sceneController: {fileID: 0}
   m_characterModel: {fileID: 7633926807805041317}
   m_primaryAnchor: {fileID: 1392919925366981228}
   m_secondaryAnchor: {fileID: 6678754843817201293}
@@ -150,12 +151,15 @@ MonoBehaviour:
   m_wallJumpHorizontalSpeed: 2
   m_wallJumpInputDelay: 0.1
   m_dashVelocity: 12
+  m_idlePoseCount: 2
+  m_idleDelayTime: 5
+  m_idleDelayTimer: 0
   m_blockingFlag: 0
   m_knockbackFlag: 0
   m_recoilFlag: 0
   m_deathFlag: 0
   m_abilities: {fileID: 0}
-  m_input: {fileID: 0}
+  m_customInput: {fileID: 0}
 --- !u!114 &8533570605815633378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -210,7 +214,6 @@ MonoBehaviour:
   m_voxeliserType: 2
   m_performOverFrames: 0
   m_objectWithMesh: {fileID: 1923960976811222904}
-  m_delayedInitialisation: 0
   m_totalMeshCount: 2
   m_vertType: 0
   m_saveStaticMesh: 0

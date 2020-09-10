@@ -179,4 +179,17 @@ public class CustomInput : MonoBehaviour
             return m_axisVal[(int)p_input];
         return 0.0f;
     }
+
+    /// <summary>
+    /// Checks for any input that might be used
+    /// All excluding camera flip and menu
+    /// </summary>
+    /// <returns>If any value is positive</returns>
+    public bool AnyInput()
+    {
+        return GetAxisBool(INPUT_AXIS.HORIZONTAL) || GetAxisBool(INPUT_AXIS.VERTICAL) || GetKeyBool(INPUT_KEY.JUMP) || 
+            GetKeyBool(INPUT_KEY.SPRINT) || GetKeyBool(INPUT_KEY.DASH) || GetKeyBool(INPUT_KEY.BLOCK) || 
+            GetKeyBool(INPUT_KEY.PARRY) || GetKeyBool(INPUT_KEY.LIGHT_ATTACK) || GetKeyBool(INPUT_KEY.HEAVY_ATTACK) || 
+            GetKeyBool(INPUT_KEY.ALT_ATTACK) || GetKeyBool(INPUT_KEY.INTERACT);
+    }
 }

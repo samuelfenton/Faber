@@ -17,7 +17,7 @@ public class CustomAnimation : MonoBehaviour
     public enum VARIBLE_BOOL {BLOCK, DASH, JUMP, IN_AIR, LAND, SECTION01_TRANSISTION, SECTION02_TRANSISTION, BOOL_COUNT }
     private string[] m_varibleBoolToString = new string[(int)VARIBLE_BOOL.BOOL_COUNT];
 
-    public enum INTERRUPT_BOOL {RECOIL, KNOCKBACK, DEATH, INTERRUPT_COUNT}
+    public enum INTERRUPT_BOOL {RECOIL, KNOCKBACK, DEATH, IDLE_EMOTE, INTERRUPT_COUNT}
     private string[] m_interruptToString = new string[(int)INTERRUPT_BOOL.INTERRUPT_COUNT];
 
     private Animator m_animator = null;
@@ -44,7 +44,7 @@ public class CustomAnimation : MonoBehaviour
         m_varibleFloatToString[(int)VARIBLE_FLOAT.DESIRED_VELOCITY] = "Desired Velocity";
         m_varibleFloatToString[(int)VARIBLE_FLOAT.ABSOLUTE_VELOCITY] = "Absolute Velocity";
         m_varibleFloatToString[(int)VARIBLE_FLOAT.VERTICAL_VELOCITY] ="Vertical Velocity";
-        m_varibleFloatToString[(int)VARIBLE_FLOAT.RANDOM_IDLE] = "RandomIdle";
+        m_varibleFloatToString[(int)VARIBLE_FLOAT.RANDOM_IDLE] = "Random Idle";
 
         m_varibleBoolToString[(int)VARIBLE_BOOL.BLOCK] = "Block";
         m_varibleBoolToString[(int)VARIBLE_BOOL.DASH] = "Dash";
@@ -57,6 +57,7 @@ public class CustomAnimation : MonoBehaviour
         m_interruptToString[(int)INTERRUPT_BOOL.RECOIL]="Recoil";
         m_interruptToString[(int)INTERRUPT_BOOL.KNOCKBACK] = "Knockback";
         m_interruptToString[(int)INTERRUPT_BOOL.DEATH] = "Death";
+        m_interruptToString[(int)INTERRUPT_BOOL.IDLE_EMOTE] = "Idle Emote";
     }
 
     /// <summary>
