@@ -42,8 +42,6 @@ public class Voxeliser_Burst : MonoBehaviour
     [Header("Advanced Settings")]
     [Tooltip("Gameobject which holds the mesh for the voxeliser, with none assigned, assumption is mesh is on script gameobject")]
     public GameObject m_objectWithMesh = null;
-    [Tooltip("Should this wait until end of frame")]
-    public bool m_delayedInitialisation = false;
     [Tooltip("How many meshes should exist, used for large meshes")]
     public int m_totalMeshCount = 1;
     public enum VERT_TYPE{HARD_EDGE, SOFT_EDGE}
@@ -73,7 +71,7 @@ public class Voxeliser_Burst : MonoBehaviour
     private SkinnedMeshRenderer m_skinnedRenderer = null;
     private Material[] m_orginalMats = new Material[0];
 
-    private void Start()
+    private void Awake()
     {
         if (Application.IsPlaying(gameObject))
         {
@@ -148,10 +146,7 @@ public class Voxeliser_Burst : MonoBehaviour
     /// </summary>
     public IEnumerator InitVoxeliser()
     {
-        if (m_delayedInitialisation)
-        {
-            yield return null;
-        }
+        yield return null;
 
         m_storedIsHardEdge = m_vertType == VERT_TYPE.HARD_EDGE;
         m_storedTotalMeshCount = Mathf.Max(1, m_totalMeshCount);
