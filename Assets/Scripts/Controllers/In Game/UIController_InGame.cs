@@ -11,6 +11,7 @@ public class UIController_InGame : UIController
     private CURRENT_MENU_STATE m_currentMenuState = CURRENT_MENU_STATE.IN_GAME;
 
     private CustomInput m_customInput = null;
+    private SceneController_InGame m_sceneController = null;
 
     /// <summary>
     /// Setup variables to be used in UI
@@ -27,8 +28,8 @@ public class UIController_InGame : UIController
             Destroy(gameObject);
             return;
         }
-
-        m_customInput = ((SceneController_InGame)MasterController.Instance.m_currentSceneController).m_customInput;
+        m_sceneController = (SceneController_InGame)MasterController.Instance.m_currentSceneController;
+        m_customInput = m_sceneController.m_customInput;
 
         ShowInGame();
     }
@@ -66,6 +67,7 @@ public class UIController_InGame : UIController
         m_menuUI.SetActive(false);
 
         Time.timeScale = 1.0f;
+        m_sceneController.InGameState = SceneController_InGame.INGAME_STATE.IN_GAME;
     }
 
     /// <summary>
@@ -80,6 +82,7 @@ public class UIController_InGame : UIController
         m_menuUI.SetActive(true);
 
         Time.timeScale = 0.0f;
+        m_sceneController.InGameState = SceneController_InGame.INGAME_STATE.PAUSED;
     }
     #endregion
 

@@ -74,9 +74,9 @@ public class CustomInput : MonoBehaviour
 
 
     /// <summary>
-    /// Update the inputs of a character
+    /// Update the inputs
     /// </summary>
-    private void Update()
+    public void UpdateInput()
     {
         m_axisVal[(int)INPUT_AXIS.HORIZONTAL] = m_intput.Player.Move.ReadValue<Vector2>().x;
         m_axisVal[(int)INPUT_AXIS.VERTICAL] = m_intput.Player.Move.ReadValue<Vector2>().y;
@@ -92,6 +92,20 @@ public class CustomInput : MonoBehaviour
         m_keyVal[(int)INPUT_KEY.INTERACT] = DetermineInputState(m_intput.Player.Interact.triggered, m_intput.Player.Interact.ReadValue<float>());
         m_keyVal[(int)INPUT_KEY.CAMERA_FLIP] = DetermineInputState(m_intput.Player.CameraFlip.triggered, m_intput.Player.CameraFlip.ReadValue<float>());
         m_keyVal[(int)INPUT_KEY.MENU] = DetermineInputState(m_intput.Player.Menu.triggered, m_intput.Player.Menu.ReadValue<float>());
+    }
+
+    //Reset each input to Keystate up, and set axis values to 0.0f
+    public void ResetInput()
+    {
+        for (int i = 0; i < (int)INPUT_KEY.KEY_COUNT; i++)
+        {
+            m_keyVal[i] = INPUT_STATE.UP;
+        }
+
+        for (int i = 0; i < (int)INPUT_AXIS.AXIS_COUNT; i++)
+        {
+            m_axisVal[i] = 0.0f;
+        }
     }
 
     /// <summary>

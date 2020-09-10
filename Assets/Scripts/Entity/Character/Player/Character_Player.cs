@@ -25,9 +25,13 @@ public class Character_Player : Character
         m_playerStateMachine.InitStateMachine(this);//Run first as animation depends on states being created
     }
 
-    protected override void Update()
+    /// <summary>
+    /// Update an entity, this should be called from scene controller
+    /// Used to handle different scene state, pause vs in game etc
+    /// </summary>
+    public override void UpdateEntity()
     {
-        base.Update();
+        base.UpdateEntity();
 
         m_playerStateMachine.UpdateStateMachine();
 
@@ -37,7 +41,6 @@ public class Character_Player : Character
             m_characterModel.transform.rotation *= Quaternion.Euler(0.0f, 180.0f, 0.0f);
             m_localVelocity.x *= -1;
         }
-
     }
 
     /// <summary>

@@ -15,6 +15,8 @@ public class Entity : MonoBehaviour
     [HideInInspector]
     public SplinePhysics m_splinePhysics = null;
 
+    public SceneController_InGame m_sceneController = null;
+
     /// <summary>
     /// Initiliase the entity
     /// setup varible/physics
@@ -22,6 +24,7 @@ public class Entity : MonoBehaviour
     public virtual void InitEntity()
     {
         m_splinePhysics = GetComponent<SplinePhysics>();
+        m_sceneController = (SceneController_InGame)MasterController.Instance.m_currentSceneController;
 
         if (m_splinePhysics == null)
         {
@@ -35,7 +38,11 @@ public class Entity : MonoBehaviour
         m_splinePhysics.Init();
     }
 
-    protected virtual void Update()
+    /// <summary>
+    /// Update an entity, this should be called from scene controller
+    /// Used to handle different scene state, pause vs in game etc
+    /// </summary>
+    public virtual void UpdateEntity()
     {
         //Stop colliding with objects
         m_splinePhysics.UpdatePhysics();

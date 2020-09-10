@@ -88,10 +88,35 @@ public class Character : Entity
         m_currentHealth = m_maxHealth;
     }
 
-    protected override void Update()
+    /// <summary>
+    /// Update an entity, this should be called from scene controller
+    /// Used to handle different scene state, pause vs in game etc
+    /// </summary>
+    public override void UpdateEntity()
     {
-        base.Update();
+        base.UpdateEntity();
 
+        UpdateVelocity();
+
+        UpdateAnimationLocomotion();
+
+        //Setup rotation on game model, completly aesthetic based
+        if (m_localVelocity.x > 0.1f)
+        {
+            FaceDirection(FACING_DIR.RIGHT);
+        }
+        else if (m_localVelocity.x < -0.1f)
+        {
+            FaceDirection(FACING_DIR.LEFT);
+        }
+    }
+
+    /// <summary>
+    /// Update the characters velocity
+    /// Takes into account collisions and desired velocity
+    /// </summary>
+    private void UpdateVelocity()
+    {
         Vector3 newVelocity = m_localVelocity;
 
         float accel = m_splinePhysics.m_downCollision ? m_groundAccel : m_groundAccel * m_inAirModifier;
@@ -117,7 +142,7 @@ public class Character : Entity
             else
                 newVelocity.x += newVelocity.x < 0 ? deltaSpeed : -deltaSpeed;//Still have high velocity, just slow down
         }
-        else if(m_desiredVelocity > 0.0f) //Run forwards
+        else if (m_desiredVelocity > 0.0f) //Run forwards
         {
             float deltaSpeed = m_localVelocity.x > m_desiredVelocity || m_localVelocity.x < 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // how much speed will change?
 
@@ -138,18 +163,6 @@ public class Character : Entity
         }
 
         m_localVelocity = newVelocity;
-
-        UpdateAnimationLocomotion();
-
-        //Setup rotation on game model, completly aesthetic based
-        if (m_localVelocity.x > 0.1f)
-        {
-            FaceDirection(FACING_DIR.RIGHT);
-        }
-        else if (m_localVelocity.x < -0.1f)
-        {
-            FaceDirection(FACING_DIR.LEFT);
-        }
     }
 
     /// <summary>

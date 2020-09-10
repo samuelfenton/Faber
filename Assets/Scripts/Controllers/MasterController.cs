@@ -133,7 +133,5 @@ public class MasterController : MonoBehaviour
     public void SceneLoaded()
     {
         SceneManager.UnloadSceneAsync(m_sceneStrings[(int)SCENE.LOADING]);
-
-        m_currentUIController.ToggleEventSystem(true);
     }
 }

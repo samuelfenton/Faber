@@ -38,9 +38,13 @@ public class NPC_Character : Character
         m_attackState = GetComponent<NPCState_Attack>();
     }
 
-    protected override void Update()
+    /// <summary>
+    /// Update an entity, this should be called from scene controller
+    /// Used to handle different scene state, pause vs in game etc
+    /// </summary>
+    public override void UpdateEntity()
     {
-        base.Update();
+        base.UpdateEntity();
 
         m_NPCStateMachine.UpdateStateMachine();
     }
