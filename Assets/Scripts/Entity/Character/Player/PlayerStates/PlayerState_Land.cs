@@ -48,6 +48,8 @@ public class PlayerState_Land : State_Player
         base.StateEnd();
 
         m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.LAND, false);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, false);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, false);
     }
 
     /// <summary>

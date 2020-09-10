@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_Jump : State_Player
+public class PlayerState_InAirDash : State_Player
 {
-    private float m_jumpVelocity = 10.0f;
+    private float m_dashVelocity = 0.0f;
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -14,7 +14,6 @@ public class PlayerState_Jump : State_Player
     public override void StateInit(bool p_loopedState, Entity p_entity)
     {
         base.StateInit(p_loopedState, p_entity);
-        m_jumpVelocity = m_character.m_jumpVelocity;
     }
 
     /// <summary>
@@ -24,9 +23,22 @@ public class PlayerState_Jump : State_Player
     {
         base.StateStart();
 
-        m_character.HardSetUpwardsVelocity(m_jumpVelocity);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.DASH, true);
+        m_character.m_gravity = false;
+        m_character.HardSetUpwardsVelocity(0.0f);
 
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, true);
+        //Determine direction of velocity
+        if (m_character.GetFacingDir() == Character.FACING_DIR.RIGHT)
+        {
+            m_dashVelocity = m_player.m_dashVelocity;
+        }
+        else
+        {
+            m_dashVelocity = -m_player.m_dashVelocity;
+        }
+
+        m_character.SetDesiredVelocity(m_dashVelocity);
+        m_character.HardSetVelocity(m_dashVelocity);
     }
 
     /// <summary>
@@ -37,11 +49,11 @@ public class PlayerState_Jump : State_Player
     {
         base.StateUpdate();
 
-        //Allow player to jump and move
-        float horizontal = m_player.m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
-        m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * m_character.m_inAirModifier);
+        //Update continously to avoid friction
+        m_character.SetDesiredVelocity(m_dashVelocity);
+        m_character.HardSetVelocity(m_dashVelocity);
 
-        return m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.BASE) || m_entity.m_localVelocity.y <= 0.0f;
+        return m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.BASE);
     }
 
     /// <summary>
@@ -51,10 +63,11 @@ public class PlayerState_Jump : State_Player
     {
         base.StateEnd();
 
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, false);
+        m_character.SetDesiredVelocity(0.0f);
+        m_character.HardSetVelocity(0.0f);
 
-        m_character.m_doubleJumpFlag = m_character.m_abilities.HasAbility(CharacterAbilities.ABILITY.DOUBLE_JUMP);
-        m_character.m_inAirDashFlag = m_character.m_abilities.HasAbility(CharacterAbilities.ABILITY.IN_AIR_DASH);
+        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.DASH, false);
+        m_character.m_gravity = true;
     }
 
     /// <summary>
@@ -63,9 +76,6 @@ public class PlayerState_Jump : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        //Able to jump while jump key is pressed, grounded, and no collision above
-        return m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.JUMP)
-            && m_entity.m_splinePhysics.m_downCollision && 
-            !m_entity.m_splinePhysics.m_upCollision;
+        return m_character.m_inAirDashFlag && !m_entity.m_splinePhysics.m_downCollision && m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.DASH);
     }
 }

@@ -59,6 +59,10 @@ public class Character : Entity
 
     //Flags
     [HideInInspector]
+    public bool m_doubleJumpFlag = false;
+    [HideInInspector]
+    public bool m_inAirDashFlag = false;
+    [HideInInspector]
     public bool m_blockingFlag = false;
     [HideInInspector]
     public bool m_knockbackFlag = false;

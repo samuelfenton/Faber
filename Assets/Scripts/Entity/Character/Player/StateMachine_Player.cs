@@ -22,6 +22,7 @@ public class StateMachine_Player : StateMachine
         PlayerState_InAir inAir = NewNextState<PlayerState_InAir>();
         PlayerState_Land land = NewNextState<PlayerState_Land>();
         PlayerState_Dash dash = NewNextState<PlayerState_Dash>();
+        PlayerState_InAirDash inAirDash = NewNextState<PlayerState_InAirDash>();
         PlayerState_Block block = NewNextState<PlayerState_Block>();
 
         PlayerState_Attack attack = NewNextState<PlayerState_Attack>();
@@ -38,6 +39,7 @@ public class StateMachine_Player : StateMachine
         inAir.StateInit(true, p_character);
         land.StateInit(false, p_character);
         dash.StateInit(false, p_character);
+        inAirDash.StateInit(false, p_character);
         block.StateInit(true, p_character);
         idle.StateInit(false, p_character);
 
@@ -57,7 +59,6 @@ public class StateMachine_Player : StateMachine
         recoil.AddNextState(jump);
         recoil.AddNextState(loco);
 
-
         //Normal
         loco.AddNextState(inAir);
         loco.AddNextState(attack);
@@ -74,12 +75,16 @@ public class StateMachine_Player : StateMachine
         dash.AddNextState(inAir);
         dash.AddNextState(loco);
 
+        inAirDash.AddNextState(inAir);
+        inAirDash.AddNextState(land);
+
         jump.AddNextState(inAir);
         jump.AddNextState(land);
         jump.AddNextState(loco);
 
         inAir.AddNextState(land);
         inAir.AddNextState(attack);
+        inAir.AddNextState(inAirDash);
 
         land.AddNextState(inAir);
         land.AddNextState(attack);

@@ -9,8 +9,8 @@ public class PlayerState_InAir : State_Player
 
     private float m_doubleJumpSpeed = 6.0f;
 
-    private enum IN_AIR_STATE {INITIAL, SECOND_JUMP, FINAL }
-    private IN_AIR_STATE m_inAirState = IN_AIR_STATE.INITIAL;
+    private enum IN_AIR_STATE {IN_AIR, SECOND_JUMP}
+    private IN_AIR_STATE m_inAirState = IN_AIR_STATE.IN_AIR;
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -33,8 +33,8 @@ public class PlayerState_InAir : State_Player
     {
         base.StateStart();
 
-        m_inAirState = m_character.m_abilities.HasAbility(CharacterAbilities.ABILITY.DOUBLE_JUMP) ? IN_AIR_STATE.INITIAL : IN_AIR_STATE.FINAL;
-
+        m_inAirState = IN_AIR_STATE.IN_AIR;
+        
         m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, true);
     }
 
@@ -52,16 +52,18 @@ public class PlayerState_InAir : State_Player
 
         switch (m_inAirState)
         {
-            case IN_AIR_STATE.INITIAL:
+            case IN_AIR_STATE.IN_AIR:
                 //Double Jump
-                if (m_player.m_customInput.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
+                if (m_character.m_doubleJumpFlag && m_player.m_customInput.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
                 {
                     m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, true);
 
                     Vector3 newVelocity = m_entity.m_localVelocity;
                     newVelocity.y = m_doubleJumpSpeed;
                     m_entity.m_localVelocity = newVelocity;
-                    
+
+                    m_character.m_doubleJumpFlag = false;
+
                     m_inAirState = IN_AIR_STATE.SECOND_JUMP;
                 }
                 break;
@@ -70,11 +72,9 @@ public class PlayerState_InAir : State_Player
                 {
                     m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, false);
                     
-                    m_inAirState = IN_AIR_STATE.FINAL;
+                    m_inAirState = IN_AIR_STATE.IN_AIR;
                     m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, true);
                 }
-                break;
-            case IN_AIR_STATE.FINAL:
                 break;
             default:
                 break;
