@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerState_Attack : State_Player
 {
+    private enum ATTACK_STATE {INITIAL, FINISHED }
+    private ATTACK_STATE m_currentState = ATTACK_STATE.INITIAL;
     private WeaponManager m_weaponManager = null;
 
     /// <summary>
@@ -36,6 +38,8 @@ public class PlayerState_Attack : State_Player
         }
 
         m_weaponManager.StartAttack(currentType, currentStance);
+
+        m_currentState = ATTACK_STATE.INITIAL;
     }
 
     /// <summary>
@@ -44,7 +48,18 @@ public class PlayerState_Attack : State_Player
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true</returns>
     public override bool StateUpdate()
     {
-        return m_weaponManager.UpdateAttack();
+        switch (m_currentState)
+        {
+            case ATTACK_STATE.INITIAL:
+                if(m_weaponManager.UpdateAttack())
+                {
+                    m_currentState = ATTACK_STATE.FINISHED;
+                }
+                break;
+            case ATTACK_STATE.FINISHED:
+                return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE);
+        }
+        return false;
     }
 
     /// <summary>

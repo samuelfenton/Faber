@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
 public class MasterController : MonoBehaviour
 {
     //Naming scheme for levels excluding main menu and loading should follow the following "LEVEL_THEME_AREA"
@@ -44,9 +45,6 @@ public class MasterController : MonoBehaviour
         DontDestroyOnLoad(topObject);
 
         BuildSceneStrings();
-        
-        //Setup loading on new scene
-        SceneManager.sceneLoaded += OnSceneLoaded;
 
         InitSceneControllers();
     }
@@ -67,12 +65,13 @@ public class MasterController : MonoBehaviour
             m_currentUIController.Init();
     }
 
-    /// <summary>
-    /// On a scene load, this is called. Setup all scene dependant varibles
-    /// </summary>
-    public void OnSceneLoaded(Scene aScene, LoadSceneMode aMode)
+    private void Update()
     {
-        InitSceneControllers();
+        if (m_currentSceneController != null)
+            m_currentSceneController.UpdateSceneController();
+
+        if (m_currentUIController != null)
+            m_currentUIController.UpdateUIController();
     }
 
     /// <summary>
@@ -107,8 +106,19 @@ public class MasterController : MonoBehaviour
         }
         else
         {
-            SceneManager.LoadScene(m_sceneStrings[(int)p_scene]);
+            StartCoroutine(LoadSceneImmediatly(p_scene));
         }
+    }
+
+    /// <summary>
+    /// Load a scene immediatly
+    /// </summary>
+    /// <param name="p_scene">Scene to attempt to load</param>
+    private IEnumerator LoadSceneImmediatly(SCENE p_scene)
+    {
+        SceneManager.LoadScene(m_sceneStrings[(int)p_scene]);
+        yield return null;
+        InitSceneControllers();
     }
 
 
@@ -118,13 +128,17 @@ public class MasterController : MonoBehaviour
     /// <param name="p_scene">Scene to attempted to load, pre checked for validity</param>
     private IEnumerator LoadSceneAsync(SCENE p_scene)
     {
-        SceneManager.LoadSceneAsync(m_sceneStrings[(int)SCENE.LOADING], LoadSceneMode.Single);
-        
+        AsyncOperation loadingAsync = SceneManager.LoadSceneAsync(m_sceneStrings[(int)SCENE.LOADING], LoadSceneMode.Single);
+
         //Setup async loading
         m_asyncSceneLoading = SceneManager.LoadSceneAsync(m_sceneStrings[(int)p_scene], LoadSceneMode.Additive);
         m_asyncSceneLoading.allowSceneActivation = false;
-        
-        yield return null;
+
+        while(!loadingAsync.isDone)
+        {
+            yield return null;
+        }
+        InitSceneControllers();
     }
 
     /// <summary>
@@ -132,6 +146,21 @@ public class MasterController : MonoBehaviour
     /// </summary>
     public void SceneLoaded()
     {
-        SceneManager.UnloadSceneAsync(m_sceneStrings[(int)SCENE.LOADING]);
+        StartCoroutine(SceneLoadedAsync());
+    }
+
+    /// <summary>
+    /// Used to asyc unload the loading screen
+    /// </summary>
+    public IEnumerator SceneLoadedAsync()
+    {
+        AsyncOperation unloading = SceneManager.UnloadSceneAsync(m_sceneStrings[(int)SCENE.LOADING]);
+
+        while (!unloading.isDone)
+        {
+            yield return null;
+        }
+
+        InitSceneControllers();
     }
 }

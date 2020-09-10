@@ -13,4 +13,13 @@ public class UIController : MonoBehaviour
     {
 
     }
+
+    /// <summary>
+    /// Update the UI controller as needed
+    /// should be called form master controller
+    /// </summary>
+    public virtual void UpdateUIController()
+    {
+
+    }
 }

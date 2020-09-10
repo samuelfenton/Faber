@@ -28,13 +28,18 @@ public class UIController_InGame : UIController
             Destroy(gameObject);
             return;
         }
+
         m_sceneController = (SceneController_InGame)MasterController.Instance.m_currentSceneController;
         m_customInput = m_sceneController.m_customInput;
 
         ShowInGame();
     }
 
-    private void Update()
+    /// <summary>
+    /// Update the UI controller as needed
+    /// should be called form master controller
+    /// </summary>
+    public override void UpdateUIController()
     {
         if(m_customInput!= null && m_customInput.GetKey(CustomInput.INPUT_KEY.MENU) == CustomInput.INPUT_STATE.DOWNED)
         {

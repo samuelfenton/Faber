@@ -10,4 +10,13 @@ public class SceneController : MonoBehaviour
     public virtual void Init()
     {
     }
+
+    /// <summary>
+    /// Update the scene controller as needed
+    /// should be called form master controller
+    /// </summary>
+    public virtual void UpdateSceneController()
+    {
+
+    }
 }

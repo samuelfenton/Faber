@@ -27,6 +27,9 @@ public class PlayerState_Jump : State_Player
         m_character.HardSetUpwardsVelocity(m_jumpVelocity);
 
         m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.JUMP);
+
+        m_character.m_doubleJumpFlag = m_character.m_abilities.HasAbility(CharacterAbilities.ABILITY.DOUBLE_JUMP);
+        m_character.m_inAirDashFlag = m_character.m_abilities.HasAbility(CharacterAbilities.ABILITY.IN_AIR_DASH);
     }
 
     /// <summary>
@@ -50,9 +53,6 @@ public class PlayerState_Jump : State_Player
     public override void StateEnd()
     {
         base.StateEnd();
-
-        m_character.m_doubleJumpFlag = m_character.m_abilities.HasAbility(CharacterAbilities.ABILITY.DOUBLE_JUMP);
-        m_character.m_inAirDashFlag = m_character.m_abilities.HasAbility(CharacterAbilities.ABILITY.IN_AIR_DASH);
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ public class PlayerState_Jump : State_Player
     public override bool IsValid()
     {
         //Able to jump while jump key is pressed, grounded, and no collision above
-        return m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.JUMP)
+        return m_player.m_customInput.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED
             && m_entity.m_splinePhysics.m_downCollision && 
             !m_entity.m_splinePhysics.m_upCollision;
     }

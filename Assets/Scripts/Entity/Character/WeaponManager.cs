@@ -213,6 +213,12 @@ public class WeaponManager : MonoBehaviour
 
         m_attackTimer = 0.0f;
 
+        m_character.m_gravity = m_currentManoeuvreLeaf.m_useGravity;
+        if(!m_currentManoeuvreLeaf.m_useGravity)
+        {
+            m_character.HardSetUpwardsVelocity(0.0f);
+        }
+
         m_customAnimation.PlayAttack(m_currentManoeuvreLeaf);
 
         if (m_currentManoeuvreLeaf.m_manoeuvreActions.Count == 0) //Early stop 
@@ -301,7 +307,7 @@ public class WeaponManager : MonoBehaviour
             }
         }
 
-        if(m_nextAttackStance == Character.ATTACK_INPUT_STANCE.NONE && currentPercent > 0.1f) //Get next input
+        if(m_nextAttackStance == Character.ATTACK_INPUT_STANCE.NONE && currentPercent > 0.3f) //Get next input
         {
             Character.ATTACK_INPUT_STANCE nextAttackStance = m_character.DetermineAttackStance();
 
@@ -323,6 +329,8 @@ public class WeaponManager : MonoBehaviour
             m_primaryWeaponScript.DisableWeaponDamage();
         if (m_secondaryWeaponScript != null)
             m_secondaryWeaponScript.DisableWeaponDamage();
+
+        m_character.m_gravity = true;
     }
 
     public bool CompletedManoeuvre()

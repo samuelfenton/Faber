@@ -77,14 +77,14 @@ MonoBehaviour:
   Path: event:/Music
   guid: 01ecc881179c8c4e853bde9ed016db83
   Banks:
-  - {fileID: -4586054048214443813}
-  IsStream: 0
+  - {fileID: 2125891208116727250}
+  IsStream: 1
   Is3D: 0
   IsOneShot: 1
   Parameters: []
   MinDistance: 0
   MaxDistance: 0
-  Length: 0
+  Length: 149658
 --- !u!114 &-6326809907850438397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,7 +140,7 @@ MonoBehaviour:
   lastModified: 637351772092982877
   LoadResult: 0
   FileSizes: []
-  Exists: 1
+  Exists: 0
 --- !u!114 &-3668189988803419862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,16 +211,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EditorBanks:
   - {fileID: 8664496723792942952}
-  - {fileID: -4586054048214443813}
+  - {fileID: 2125891208116727250}
   EditorEvents:
   - {fileID: -7696898776894078276}
-  - {fileID: 8560905285150513930}
   EditorParameters: []
   MasterBanks:
-  - {fileID: -4586054048214443813}
+  - {fileID: 2125891208116727250}
   StringsBanks:
   - {fileID: 8664496723792942952}
-  stringsBankWriteTime: 637351772093022761
+  stringsBankWriteTime: 637353486527551295
   cacheVersion: 3
 --- !u!114 &641750123502256868
 MonoBehaviour:
@@ -237,6 +236,24 @@ MonoBehaviour:
   Path: Assets/Audio/FMODProject_Faber/Build/Desktop/Master.bank
   SubDir: 
   lastModified: 637351703395606185
+  LoadResult: 0
+  FileSizes: []
+  Exists: 1
+--- !u!114 &2125891208116727250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Master.bank
+  m_EditorClassIdentifier: 
+  Path: FMOD Projects/FMODProject_Faber/Build/Desktop/Master.bank
+  SubDir: 
+  lastModified: 637353486527510656
   LoadResult: 0
   FileSizes: []
   Exists: 1
@@ -330,8 +347,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Path: event:/ChillCyber
   guid: cbf8b1c7dfedfc408a0f30aec9667419
-  Banks:
-  - {fileID: -4586054048214443813}
+  Banks: []
   IsStream: 1
   Is3D: 0
   IsOneShot: 1
@@ -353,9 +369,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Path: FMOD Projects/FMODProject_Faber/Build/Desktop/Master.strings.bank
   SubDir: 
-  lastModified: 637351772093022761
+  lastModified: 637353486527551295
   LoadResult: 0
   FileSizes:
   - Name: Desktop
-    Value: 736
+    Value: 682
   Exists: 1

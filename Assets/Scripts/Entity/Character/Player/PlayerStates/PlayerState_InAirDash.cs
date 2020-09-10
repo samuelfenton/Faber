@@ -67,6 +67,7 @@ public class PlayerState_InAirDash : State_Player
         m_character.SetDesiredVelocity(0.0f);
         m_character.HardSetVelocity(0.0f);
 
+        m_character.m_inAirDashFlag = false;
         m_character.m_gravity = true;
     }
 

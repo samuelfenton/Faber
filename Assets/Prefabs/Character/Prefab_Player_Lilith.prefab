@@ -36,7 +36,7 @@ GameObject:
   - component: {fileID: 6699006804917322363}
   - component: {fileID: 1149895070}
   m_Layer: 0
-  m_Name: Prefab_Player_Kachujin
+  m_Name: Prefab_Player_Lilith
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -112,7 +112,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_nodeA: {fileID: 0}
   m_nodeB: {fileID: 0}
-  m_currentSplinePercent: 0
+  m_currentSplinePercent: 0.995
   m_upCollision: 0
   m_downCollision: 0
   m_forwardCollision: 0
@@ -143,10 +143,10 @@ MonoBehaviour:
   m_groundRunVel: 8
   m_groundAccel: 12
   m_groundedDeaccel: 30
-  m_jumpVelocity: 6
+  m_jumpVelocity: 10
   m_landingDistance: 1
   m_inAirModifier: 0.6
-  m_doubleJumpSpeed: 6
+  m_doubleJumpSpeed: 8
   m_wallJumpVerticalSpeed: 5
   m_wallJumpHorizontalSpeed: 2
   m_wallJumpInputDelay: 0.1
@@ -154,6 +154,9 @@ MonoBehaviour:
   m_idlePoseCount: 2
   m_idleDelayTime: 5
   m_idleDelayTimer: 0
+  m_desiredVelocity: 0
+  m_doubleJumpFlag: 0
+  m_inAirDashFlag: 0
   m_blockingFlag: 0
   m_knockbackFlag: 0
   m_recoilFlag: 0
@@ -197,7 +200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec20688e8b2528547aa5cc07fc5abd19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_abilityFlags: 00
+  m_abilityFlags: 01
 --- !u!114 &1149895070
 MonoBehaviour:
   m_ObjectHideFlags: 0

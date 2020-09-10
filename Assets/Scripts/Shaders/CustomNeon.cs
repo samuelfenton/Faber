@@ -15,6 +15,14 @@ public class CustomNeon : MonoBehaviour
         public bool m_emissionEnabled;
         public Color m_neonColor;
         public float m_neonIntensity;
+
+        public NEON_SECTION(float p_timeCode = 0.0f)
+        {
+            m_timeCode = p_timeCode;
+            m_emissionEnabled = false;
+            m_neonColor = Color.white;
+            m_neonIntensity = 1;
+        }
     }
 
     [System.Serializable]

@@ -14,14 +14,6 @@ public class SceneController_MainMenu : SceneController
         base.Init();
     }
 
-    /// <summary>
-    /// Update of main menu
-    /// Camera should just slowly pan around
-    /// </summary>
-    private void Update()
-    {
-
-    }
 
     /// <summary>
     /// Should be called from UI button

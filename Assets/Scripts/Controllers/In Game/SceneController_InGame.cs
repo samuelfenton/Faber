@@ -50,8 +50,15 @@ public class SceneController_InGame : SceneController
         }
     }
 
-    private void Update()
+    /// <summary>
+    /// Update the scene controller as needed
+    /// should be called form master controller
+    /// </summary>
+    public override void UpdateSceneController()
     {
+        if (m_customInput == null)
+            return;
+
         m_customInput.UpdateInput();
         if(m_inGameState == INGAME_STATE.IN_GAME)
         {
