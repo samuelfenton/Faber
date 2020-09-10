@@ -23,7 +23,8 @@ public class PlayerState_InAirDash : State_Player
     {
         base.StateStart();
 
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.DASH, true);
+        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.INAIR_DASH);
+
         m_character.m_gravity = false;
         m_character.HardSetUpwardsVelocity(0.0f);
 
@@ -53,7 +54,7 @@ public class PlayerState_InAirDash : State_Player
         m_character.SetDesiredVelocity(m_dashVelocity);
         m_character.HardSetVelocity(m_dashVelocity);
 
-        return m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.BASE);
+        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE);
     }
 
     /// <summary>
@@ -66,7 +67,6 @@ public class PlayerState_InAirDash : State_Player
         m_character.SetDesiredVelocity(0.0f);
         m_character.HardSetVelocity(0.0f);
 
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.DASH, false);
         m_character.m_gravity = true;
     }
 

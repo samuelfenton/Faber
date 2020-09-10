@@ -31,7 +31,7 @@ public class NPCState_Waiting : NPC_State
 
         if (m_currentWaitingState == WAITING_STATUS.IDLE)
         {
-            m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.DESIRED_VELOCITY, 0.0f);
+            m_customAnimator.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.DESIRED_VELOCITY, 0.0f);
 
             m_character.SetDesiredVelocity(0.0f);
         }
@@ -58,7 +58,7 @@ public class NPCState_Waiting : NPC_State
 
         if (m_currentWaitingState == WAITING_STATUS.IDLE)
         {
-            return m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.BASE) || (m_NPCCharacter.m_targetCharacter != null && SmartTargetWithinRange(m_NPCCharacter.m_targetCharacter, m_NPCCharacter.m_detectionDistance));
+            return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE) || (m_NPCCharacter.m_targetCharacter != null && SmartTargetWithinRange(m_NPCCharacter.m_targetCharacter, m_NPCCharacter.m_detectionDistance));
         }
         else //Patrol
         {

@@ -21,7 +21,7 @@ public class NPCState_Recoil : NPCState_Interrupt
     {
         base.StateStart();
 
-        m_customAnimation.PlayInterrupt(CustomAnimation.INTERRUPT_BOOL.RECOIL);
+        m_customAnimator.PlayInterrupt(CustomAnimation.INTERRUPT_DEFINES.RECOIL);
     }
 
     /// <summary>
@@ -32,7 +32,7 @@ public class NPCState_Recoil : NPCState_Interrupt
     {
         base.StateUpdate();
 
-        return m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.INTERRUPT);
+        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.INTERRUPT);
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public class NPCState_Recoil : NPCState_Interrupt
         base.StateEnd();
 
         m_character.m_recoilFlag = false; // Reset flag
-        m_customAnimation.EndInterrupt();
+        m_customAnimator.EndInterrupt();
     }
 
     /// <summary>

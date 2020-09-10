@@ -6,19 +6,23 @@ public class CustomAnimation : MonoBehaviour
 {
     private const float END_ANIMATION_TIME = 0.95f;
     private const float BLEND_TIME = 0.2f;
+
     private const string NULL_STRING = "Null";
-    private const string END_ATTACK_BLEND_STRING = "EndAttackBlend";
+
+    private const string SECTION01_STRING = "_Section01";
+    private const string SECTION02_STRING = "_Section02";
+
     //Used Varibles
     public enum LAYER {BASE = 0, ATTACK, INTERRUPT, LAYER_COUNT}
     private int[] m_layerToInt = new int[(int)LAYER.LAYER_COUNT];
 
     public enum VARIBLE_FLOAT { CURRENT_VELOCITY, DESIRED_VELOCITY, ABSOLUTE_VELOCITY, VERTICAL_VELOCITY, RANDOM_IDLE, FLOAT_COUNT}
-    private string[] m_varibleFloatToString = new string[(int)VARIBLE_FLOAT.FLOAT_COUNT];
-    public enum VARIBLE_BOOL {BLOCK, DASH, JUMP, IN_AIR, LAND, SECTION01_TRANSISTION, SECTION02_TRANSISTION, BOOL_COUNT }
-    private string[] m_varibleBoolToString = new string[(int)VARIBLE_BOOL.BOOL_COUNT];
+    private string[] m_floatToString = new string[(int)VARIBLE_FLOAT.FLOAT_COUNT];
+    public enum BASE_DEFINES {LOCOMOTION, SPRINT, RUN_TO_SPRINT, DASH, JUMP, INAIR, DOUBLE_JUMP, INAIR_DASH, LANDING_TO_IDLE, LANDING_TO_RUN, BLOCK, BLOCK_FROM_IDLE, BLOCK_TO_IDLE, END_ATTACK_BLEND, BASE_COUNT }
+    private string[] m_baseToString = new string[(int)BASE_DEFINES.BASE_COUNT];
 
-    public enum INTERRUPT_BOOL {RECOIL, KNOCKBACK, DEATH, IDLE_EMOTE, INTERRUPT_COUNT}
-    private string[] m_interruptToString = new string[(int)INTERRUPT_BOOL.INTERRUPT_COUNT];
+    public enum INTERRUPT_DEFINES {RECOIL, KNOCKBACK, DEATH, IDLE_EMOTE, INTERRUPT_COUNT}
+    private string[] m_interruptToString = new string[(int)INTERRUPT_DEFINES.INTERRUPT_COUNT];
 
     private Animator m_animator = null;
 
@@ -40,24 +44,31 @@ public class CustomAnimation : MonoBehaviour
         m_layerToInt[(int)LAYER.ATTACK] = m_animator.GetLayerIndex("AttackLayer");
         m_layerToInt[(int)LAYER.INTERRUPT] = m_animator.GetLayerIndex("InterruptLayer");
 
-        m_varibleFloatToString[(int)VARIBLE_FLOAT.CURRENT_VELOCITY] ="Current Velocity";
-        m_varibleFloatToString[(int)VARIBLE_FLOAT.DESIRED_VELOCITY] = "Desired Velocity";
-        m_varibleFloatToString[(int)VARIBLE_FLOAT.ABSOLUTE_VELOCITY] = "Absolute Velocity";
-        m_varibleFloatToString[(int)VARIBLE_FLOAT.VERTICAL_VELOCITY] ="Vertical Velocity";
-        m_varibleFloatToString[(int)VARIBLE_FLOAT.RANDOM_IDLE] = "Random Idle";
+        m_floatToString[(int)VARIBLE_FLOAT.CURRENT_VELOCITY] ="Current Velocity";
+        m_floatToString[(int)VARIBLE_FLOAT.DESIRED_VELOCITY] = "Desired Velocity";
+        m_floatToString[(int)VARIBLE_FLOAT.ABSOLUTE_VELOCITY] = "Absolute Velocity";
+        m_floatToString[(int)VARIBLE_FLOAT.VERTICAL_VELOCITY] ="Vertical Velocity";
+        m_floatToString[(int)VARIBLE_FLOAT.RANDOM_IDLE] = "Random Idle";
 
-        m_varibleBoolToString[(int)VARIBLE_BOOL.BLOCK] = "Block";
-        m_varibleBoolToString[(int)VARIBLE_BOOL.DASH] = "Dash";
-        m_varibleBoolToString[(int)VARIBLE_BOOL.JUMP] = "Jump";
-        m_varibleBoolToString[(int)VARIBLE_BOOL.IN_AIR] = "In Air";
-        m_varibleBoolToString[(int)VARIBLE_BOOL.LAND] = "Land";
-        m_varibleBoolToString[(int)VARIBLE_BOOL.SECTION01_TRANSISTION] = "Section01 Transistion";
-        m_varibleBoolToString[(int)VARIBLE_BOOL.SECTION02_TRANSISTION] = "Section02 Transistion";
+        m_baseToString[(int)BASE_DEFINES.LOCOMOTION] = "Locomotion";
+        m_baseToString[(int)BASE_DEFINES.SPRINT] = "Sprint";
+        m_baseToString[(int)BASE_DEFINES.RUN_TO_SPRINT] = "RunToSprint";
+        m_baseToString[(int)BASE_DEFINES.DASH] = "Dash";
+        m_baseToString[(int)BASE_DEFINES.JUMP] = "Jump";
+        m_baseToString[(int)BASE_DEFINES.INAIR] = "InAir";
+        m_baseToString[(int)BASE_DEFINES.DOUBLE_JUMP] = "DoubleJump";
+        m_baseToString[(int)BASE_DEFINES.INAIR_DASH] = "InAirDash";
+        m_baseToString[(int)BASE_DEFINES.LANDING_TO_IDLE] = "LandingToIdle";
+        m_baseToString[(int)BASE_DEFINES.LANDING_TO_RUN] = "LandingToRun";
+        m_baseToString[(int)BASE_DEFINES.BLOCK] = "Block";
+        m_baseToString[(int)BASE_DEFINES.BLOCK_FROM_IDLE] = "BlockFromIdle";
+        m_baseToString[(int)BASE_DEFINES.BLOCK_TO_IDLE] = "BlockToIdle";
+        m_baseToString[(int)BASE_DEFINES.END_ATTACK_BLEND] = "EndAttackBlend";
 
-        m_interruptToString[(int)INTERRUPT_BOOL.RECOIL]="Recoil";
-        m_interruptToString[(int)INTERRUPT_BOOL.KNOCKBACK] = "Knockback";
-        m_interruptToString[(int)INTERRUPT_BOOL.DEATH] = "Death";
-        m_interruptToString[(int)INTERRUPT_BOOL.IDLE_EMOTE] = "Idle Emote";
+        m_interruptToString[(int)INTERRUPT_DEFINES.RECOIL]="Recoil";
+        m_interruptToString[(int)INTERRUPT_DEFINES.KNOCKBACK] = "Knockback";
+        m_interruptToString[(int)INTERRUPT_DEFINES.DEATH] = "Death";
+        m_interruptToString[(int)INTERRUPT_DEFINES.IDLE_EMOTE] = "Idle Emote";
     }
 
     /// <summary>
@@ -68,20 +79,8 @@ public class CustomAnimation : MonoBehaviour
     public void SetVaribleFloat(VARIBLE_FLOAT p_floatVarible, float p_value)
     {
         if(p_floatVarible != VARIBLE_FLOAT.FLOAT_COUNT)
-            m_animator.SetFloat(m_varibleFloatToString[(int)p_floatVarible], p_value);
+            m_animator.SetFloat(m_floatToString[(int)p_floatVarible], p_value);
     }
-
-    /// <summary>
-    /// Set the varible value 
-    /// </summary>
-    /// <param name="p_boolVarible">Varible to set</param>
-    /// <param name="p_value">Value of varible to set to</param>
-    public void SetVaribleBool(VARIBLE_BOOL p_boolVarible, bool p_value)
-    {
-        if (p_boolVarible != VARIBLE_BOOL.BOOL_COUNT)
-            m_animator.SetBool(m_varibleBoolToString[(int)p_boolVarible], p_value);
-    }
-
 
     /// <summary>
     /// Get the current normalized time of the animation
@@ -109,6 +108,11 @@ public class CustomAnimation : MonoBehaviour
         return m_animator.GetCurrentAnimatorStateInfo(m_layerToInt[(int)p_layer]).normalizedTime > END_ANIMATION_TIME;
     }
 
+    public void PlayBase(BASE_DEFINES p_anim)
+    {
+        m_animator.CrossFade(m_baseToString[(int)p_anim], BLEND_TIME, m_layerToInt[(int)LAYER.BASE]);
+    }
+
     /// <summary>
     /// Play a given attack animation
     /// </summary>
@@ -121,13 +125,31 @@ public class CustomAnimation : MonoBehaviour
     }
 
     /// <summary>
+    /// Play section 1 of an attack
+    /// </summary>
+    /// <param name="p_attackLeaf">Attack leaf containg all relavant animation data</param>
+    public void PlayAttackSection01(ManoeuvreLeaf p_attackLeaf)
+    {
+        m_animator.CrossFade(p_attackLeaf.GetAnimationString() + SECTION01_STRING, BLEND_TIME, m_layerToInt[(int)LAYER.ATTACK]);
+    }
+
+    /// <summary>
+    /// Play section 2 of an attack
+    /// </summary>
+    /// <param name="p_attackLeaf">Attack leaf containg all relavant animation data</param>
+    public void PlayAttackSection02(ManoeuvreLeaf p_attackLeaf)
+    {
+        m_animator.CrossFade(p_attackLeaf.GetAnimationString() + SECTION02_STRING, BLEND_TIME, m_layerToInt[(int)LAYER.ATTACK]);
+    }
+
+    /// <summary>
     /// End of attacking, move back to base animator layer
     /// </summary>
     /// <param name="p_blendSheathing">Does this attack require a sheathing blend</param>
     public void EndAttack(bool p_blendSheathing)
     {
         if(p_blendSheathing)
-            m_animator.Play(END_ATTACK_BLEND_STRING, m_layerToInt[(int)LAYER.BASE]);
+            m_animator.Play(m_baseToString[(int)BASE_DEFINES.END_ATTACK_BLEND], m_layerToInt[(int)LAYER.BASE]);
 
         ChangeLayers(LAYER.BASE, true);
     }
@@ -137,9 +159,9 @@ public class CustomAnimation : MonoBehaviour
     /// Sets layer weight
     /// </summary>
     /// <param name="p_interrupt">Interrupt to set</param>
-    public void PlayInterrupt(INTERRUPT_BOOL p_interrupt)
+    public void PlayInterrupt(INTERRUPT_DEFINES p_interrupt)
     {
-        if (p_interrupt != INTERRUPT_BOOL.INTERRUPT_COUNT)
+        if (p_interrupt != INTERRUPT_DEFINES.INTERRUPT_COUNT)
         {
             ChangeLayers(LAYER.INTERRUPT, false);
 

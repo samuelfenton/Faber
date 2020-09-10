@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class State_Character : State
 {
-    protected CustomAnimation m_customAnimation = null;
+    protected CustomAnimation m_customAnimator = null;
     protected Character m_character = null;
 
     /// <summary>
@@ -16,6 +16,6 @@ public class State_Character : State
     {
         base.StateInit(p_loopedState, p_entity);
         m_character = (Character)p_entity;
-        m_customAnimation = m_character.GetComponent<CustomAnimation>();
+        m_customAnimator = m_character.GetComponent<CustomAnimation>();
     }
 }

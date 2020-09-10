@@ -55,7 +55,8 @@ public class Character : Entity
     public float m_idleDelayTimer = 0.0f;
 
     //Velocity stuff
-    private float m_desiredVelocity = 0.0f;
+    [HideInInspector]
+    public float m_desiredVelocity = 0.0f;
 
     //Flags
     [HideInInspector]

@@ -34,8 +34,8 @@ public class PlayerState_InAir : State_Player
         base.StateStart();
 
         m_inAirState = IN_AIR_STATE.IN_AIR;
-        
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, true);
+
+        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.INAIR);
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ public class PlayerState_InAir : State_Player
                 //Double Jump
                 if (m_character.m_doubleJumpFlag && m_player.m_customInput.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
                 {
-                    m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, true);
+                    m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.DOUBLE_JUMP);
 
                     Vector3 newVelocity = m_entity.m_localVelocity;
                     newVelocity.y = m_doubleJumpSpeed;
@@ -68,12 +68,11 @@ public class PlayerState_InAir : State_Player
                 }
                 break;
             case IN_AIR_STATE.SECOND_JUMP:
-                if(m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.BASE))
+                if(m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE))
                 {
-                    m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, false);
-                    
+                    m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.INAIR);
+
                     m_inAirState = IN_AIR_STATE.IN_AIR;
-                    m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, true);
                 }
                 break;
             default:
@@ -89,8 +88,6 @@ public class PlayerState_InAir : State_Player
     public override void StateEnd()
     {
         base.StateEnd();
-
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, false);
     }
 
     /// <summary>

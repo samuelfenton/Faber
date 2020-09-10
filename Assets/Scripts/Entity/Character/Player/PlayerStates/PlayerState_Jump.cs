@@ -26,7 +26,7 @@ public class PlayerState_Jump : State_Player
 
         m_character.HardSetUpwardsVelocity(m_jumpVelocity);
 
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, true);
+        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.JUMP);
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public class PlayerState_Jump : State_Player
         float horizontal = m_player.m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
         m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * m_character.m_inAirModifier);
 
-        return m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.BASE) || m_entity.m_localVelocity.y <= 0.0f;
+        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE) || m_entity.m_localVelocity.y <= 0.0f;
     }
 
     /// <summary>
@@ -50,8 +50,6 @@ public class PlayerState_Jump : State_Player
     public override void StateEnd()
     {
         base.StateEnd();
-
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, false);
 
         m_character.m_doubleJumpFlag = m_character.m_abilities.HasAbility(CharacterAbilities.ABILITY.DOUBLE_JUMP);
         m_character.m_inAirDashFlag = m_character.m_abilities.HasAbility(CharacterAbilities.ABILITY.IN_AIR_DASH);

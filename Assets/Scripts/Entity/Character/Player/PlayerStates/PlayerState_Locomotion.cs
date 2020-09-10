@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerState_Locomotion : State_Player
 {
+    private enum LOCOMOTION_STATE {IDLING, LOCOMOTION, LOCOMOTION_TO_SPRINT, SPRINT }
+    private LOCOMOTION_STATE m_currentState = LOCOMOTION_STATE.LOCOMOTION;
+
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
@@ -20,6 +23,11 @@ public class PlayerState_Locomotion : State_Player
     public override void StateStart()
     {
         base.StateStart();
+
+        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LOCOMOTION);
+        m_currentState = LOCOMOTION_STATE.LOCOMOTION;
+
+        m_character.m_idleDelayTimer = 0.0f;
     }
 
     /// <summary>
@@ -30,17 +38,6 @@ public class PlayerState_Locomotion : State_Player
     {
         base.StateUpdate();
 
-        //TODO, could probaly make this better, but for now it works
-        if(m_player.m_customInput.AnyInput())
-        {
-            m_character.m_idleDelayTimer = 0.0f;
-        }
-        else
-        {
-            m_character.m_idleDelayTimer += Time.deltaTime;
-        }
-
-
         //Movement
         float horizontal = m_player.m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
 
@@ -49,7 +46,54 @@ public class PlayerState_Locomotion : State_Player
             m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * Character.SPRINT_MODIFIER);
         }
         else
+        {
             m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel);
+        }
+
+        //Animation
+        switch (m_currentState)
+        {
+            case LOCOMOTION_STATE.IDLING:
+                m_character.m_idleDelayTimer += Time.deltaTime;
+
+                if(m_player.m_customInput.AnyInput())
+                {
+                    m_currentState = LOCOMOTION_STATE.LOCOMOTION;
+                    m_character.m_idleDelayTimer = 0.0f;
+                }
+                break;
+            case LOCOMOTION_STATE.LOCOMOTION:
+                if(Mathf.Abs(m_character.m_localVelocity.x) > m_character.m_groundRunVel) //Character is sprinting
+                {
+                    m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.RUN_TO_SPRINT);
+                    m_currentState = LOCOMOTION_STATE.LOCOMOTION_TO_SPRINT;
+                }
+                break;
+            case LOCOMOTION_STATE.LOCOMOTION_TO_SPRINT:
+                if (m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE))
+                {
+                    if (Mathf.Abs(m_character.m_localVelocity.x) > m_character.m_groundRunVel)//Still sprinting
+                    {
+                        m_currentState = LOCOMOTION_STATE.SPRINT;
+                        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.SPRINT);
+                    }
+                    else //Slow downed during animation
+                    {
+                        m_currentState = LOCOMOTION_STATE.LOCOMOTION;
+                        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LOCOMOTION);
+                    }
+                }
+                break;
+            case LOCOMOTION_STATE.SPRINT:
+                if (Mathf.Abs(m_character.m_localVelocity.x) <= m_character.m_groundRunVel) //Character is no longer sprinting
+                {
+                    m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LOCOMOTION);
+                    m_currentState = LOCOMOTION_STATE.LOCOMOTION;
+                }
+                break;
+            default:
+                break;
+        }
 
         return false;
     }

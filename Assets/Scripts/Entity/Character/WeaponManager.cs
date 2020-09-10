@@ -7,7 +7,7 @@ using UnityEngine;
 public class WeaponManager : MonoBehaviour
 {
     private enum MANOEUVRE_STATE {AWAITING_ATTACK, PERFORMING_ATTACK, COMPLETED_ATTACK}
-    private enum SEQUENCE_STATE { INITIAL, SECTION01, SECTION02}
+    private enum SEQUENCE_STATE { INITIAL, ATTACK, END}
 
     public GameObject m_primaryWeaponPrefab = null;
     public GameObject m_secondaryWeaponPrefab = null;
@@ -211,9 +211,6 @@ public class WeaponManager : MonoBehaviour
         m_currentManoeuvreState = MANOEUVRE_STATE.AWAITING_ATTACK;
         m_currentSequenceState = SEQUENCE_STATE.INITIAL;
 
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.SECTION01_TRANSISTION, false);
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.SECTION02_TRANSISTION, false);
-
         m_attackTimer = 0.0f;
 
         m_customAnimation.PlayAttack(m_currentManoeuvreLeaf);
@@ -234,15 +231,28 @@ public class WeaponManager : MonoBehaviour
         float currentPercent = m_customAnimation.GetAnimationPercent(CustomAnimation.LAYER.ATTACK);
 
         //Running through initial sequence, that is the start of an attack, wait till completed
-        if(m_currentManoeuvreLeaf.m_sequenceAttack && m_currentSequenceState == SEQUENCE_STATE.INITIAL)
+        if(m_currentManoeuvreLeaf.m_sequenceAttack)
         {
-            if (m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.ATTACK))
+            switch (m_currentSequenceState)
             {
-                m_currentSequenceState = SEQUENCE_STATE.SECTION01;
-            }
-            else
-            {
-                return false;
+                case SEQUENCE_STATE.INITIAL:
+                    if (m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.ATTACK))
+                    {
+                        m_currentSequenceState = SEQUENCE_STATE.ATTACK;
+                        m_customAnimation.PlayAttackSection01(m_currentManoeuvreLeaf);
+                    }
+                    break;
+                case SEQUENCE_STATE.ATTACK:
+                    if (CompletedManoeuvre())
+                    {
+                        m_currentSequenceState = SEQUENCE_STATE.END;
+                        m_customAnimation.PlayAttackSection02(m_currentManoeuvreLeaf);
+                    }
+                    break;
+                case SEQUENCE_STATE.END:
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -282,7 +292,6 @@ public class WeaponManager : MonoBehaviour
                         //Update "statemachine"
                         if (CompletedManoeuvre())
                         {
-                            m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.SECTION02_TRANSISTION, true); //Even if not in use, set anyway
                             m_currentManoeuvreState = MANOEUVRE_STATE.COMPLETED_ATTACK;
                         }
                         else

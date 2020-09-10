@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerState_Block : State_Player
 {
+    private enum BLOCK_STATE {START, BLOCKING, END }
+    private BLOCK_STATE m_currentState = BLOCK_STATE.START;
+
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
@@ -21,8 +24,8 @@ public class PlayerState_Block : State_Player
     {
         base.StateStart();
 
-        m_character.m_blockingFlag = true;
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.BLOCK, true);
+        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.BLOCK_FROM_IDLE);
+        m_currentState = BLOCK_STATE.START;
     }
 
     /// <summary>
@@ -33,6 +36,38 @@ public class PlayerState_Block : State_Player
     {
         base.StateUpdate();
 
+        switch (m_currentState)
+        {
+            case BLOCK_STATE.START:
+                if(m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE))
+                {
+                    m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.BLOCK);
+
+                    m_currentState = BLOCK_STATE.BLOCKING;
+                    m_character.m_blockingFlag = true;
+                }
+                break;
+            case BLOCK_STATE.BLOCKING:
+                if(!m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.BLOCK))
+                {
+                    m_character.m_blockingFlag = false;
+
+                    m_currentState = BLOCK_STATE.END;
+                    m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.BLOCK_TO_IDLE);
+                }
+                if(!m_entity.m_splinePhysics.m_downCollision)
+                {
+                    return true;
+                }
+                break;
+            case BLOCK_STATE.END:
+                if (m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE))
+                {
+                    return true;
+                }
+                break;
+        }
+
         return false;
     }
 
@@ -42,9 +77,6 @@ public class PlayerState_Block : State_Player
     public override void StateEnd()
     {
         base.StateEnd();
-
-        m_character.m_blockingFlag = false;
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.BLOCK, false);
     }
 
     /// <summary>

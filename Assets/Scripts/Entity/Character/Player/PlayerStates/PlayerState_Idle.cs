@@ -25,7 +25,7 @@ public class PlayerState_Idle : State_Player
         base.StateStart();
 
         m_character.GetRandomIdlePose();
-        m_customAnimation.PlayInterrupt(CustomAnimation.INTERRUPT_BOOL.IDLE_EMOTE);
+        m_customAnimator.PlayInterrupt(CustomAnimation.INTERRUPT_DEFINES.IDLE_EMOTE);
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ public class PlayerState_Idle : State_Player
     {
         base.StateUpdate();
 
-        return m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.INTERRUPT) || m_player.m_customInput.AnyInput();
+        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.INTERRUPT) || m_player.m_customInput.AnyInput();
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ public class PlayerState_Idle : State_Player
     {
         base.StateEnd();
         m_character.m_idleDelayTimer = 0.0f;
-        m_customAnimation.EndInterrupt();
+        m_customAnimator.EndInterrupt();
     }
 
     /// <summary>

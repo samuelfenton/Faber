@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerState_Dash : State_Player
 {
+    private float m_dashVelocity = 0.0f;
+
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
@@ -21,19 +23,22 @@ public class PlayerState_Dash : State_Player
     {
         base.StateStart();
 
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.DASH, true);
+        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.DASH);
+
+        m_character.HardSetUpwardsVelocity(0.0f);
 
         //Determine direction of velocity
-        if(m_character.GetFacingDir() == Character.FACING_DIR.RIGHT)
+        if (m_character.GetFacingDir() == Character.FACING_DIR.RIGHT)
         {
-            m_character.SetDesiredVelocity(m_player.m_dashVelocity);
-            m_character.HardSetVelocity(m_player.m_dashVelocity);
+            m_dashVelocity = m_player.m_dashVelocity;
         }
         else
         {
-            m_character.SetDesiredVelocity(-m_player.m_dashVelocity);
-            m_character.HardSetVelocity(-m_player.m_dashVelocity);
+            m_dashVelocity = -m_player.m_dashVelocity;
         }
+
+        m_character.SetDesiredVelocity(m_dashVelocity);
+        m_character.HardSetVelocity(m_dashVelocity);
     }
 
     /// <summary>
@@ -44,7 +49,11 @@ public class PlayerState_Dash : State_Player
     {
         base.StateUpdate();
 
-        return m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.BASE);
+        //Update continously to avoid friction
+        m_character.SetDesiredVelocity(m_dashVelocity);
+        m_character.HardSetVelocity(m_dashVelocity);
+
+        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE);
     }
 
     /// <summary>
@@ -56,8 +65,6 @@ public class PlayerState_Dash : State_Player
 
         m_character.SetDesiredVelocity(0.0f);
         m_character.HardSetVelocity(0.0f);
-
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.DASH, false);
     }
 
     /// <summary>

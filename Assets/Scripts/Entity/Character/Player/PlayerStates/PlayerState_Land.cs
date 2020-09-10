@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerState_Land : State_Player
 {
+    private const float SPEED_FOR_ROLLING_LANDING = 0.6f;
+
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
@@ -21,8 +23,14 @@ public class PlayerState_Land : State_Player
     {
         base.StateStart();
 
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, false);
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.LAND, true);
+        if(Mathf.Abs(m_character.m_localVelocity.x) / m_character.m_groundRunVel > SPEED_FOR_ROLLING_LANDING) //players moving fast enough to need to roll
+        {
+            m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LANDING_TO_RUN);
+        }
+        else
+        {
+            m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LANDING_TO_IDLE);
+        }
     }
 
     /// <summary>
@@ -37,7 +45,7 @@ public class PlayerState_Land : State_Player
         float horizontal = m_player.m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
         m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * m_character.m_inAirModifier);
 
-        return m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.BASE);
+        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE);
     }
 
     /// <summary>
@@ -46,10 +54,6 @@ public class PlayerState_Land : State_Player
     public override void StateEnd()
     {
         base.StateEnd();
-
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.LAND, false);
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.JUMP, false);
-        m_customAnimation.SetVaribleBool(CustomAnimation.VARIBLE_BOOL.IN_AIR, false);
     }
 
     /// <summary>
