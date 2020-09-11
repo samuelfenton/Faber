@@ -41,8 +41,7 @@ public class PlayerState_Jump : State_Player
         base.StateUpdate();
 
         //Allow player to jump and move
-        float horizontal = m_player.m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
-        m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * m_character.m_inAirModifier);
+        m_player.ApplyHorizontalMovement(true);
 
         return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE) || m_entity.m_localVelocity.y <= 0.0f;
     }

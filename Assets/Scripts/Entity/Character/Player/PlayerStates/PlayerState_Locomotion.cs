@@ -39,16 +39,7 @@ public class PlayerState_Locomotion : State_Player
         base.StateUpdate();
 
         //Movement
-        float horizontal = m_player.m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL);
-
-        if (m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.SPRINT))
-        {
-            m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel * Character.SPRINT_MODIFIER);
-        }
-        else
-        {
-            m_character.SetDesiredVelocity(horizontal * m_character.m_groundRunVel);
-        }
+        m_player.ApplyHorizontalMovement(true);
 
         //Animation
         switch (m_currentState)

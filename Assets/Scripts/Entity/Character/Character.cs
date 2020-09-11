@@ -33,7 +33,7 @@ public class Character : Entity
     public float m_landingDistance = 1.0f;
 
     [Header("In Air Stats")]
-    public float m_inAirModifier = 0.5f;
+    public float m_inAirAccelModifier = 0.5f;
     public float m_doubleJumpSpeed = 6.0f;
 
     [Header("Wall Jump Stats")]
@@ -136,8 +136,8 @@ public class Character : Entity
     {
         Vector3 newVelocity = m_localVelocity;
 
-        float accel = m_splinePhysics.m_downCollision ? m_groundAccel : m_groundAccel * m_inAirModifier;
-        float deaccel = m_splinePhysics.m_downCollision ? m_groundedDeaccel : m_groundedDeaccel * m_inAirModifier;
+        float accel = m_splinePhysics.m_downCollision ? m_groundAccel : m_groundAccel * m_inAirAccelModifier;
+        float deaccel = m_splinePhysics.m_downCollision ? m_groundedDeaccel : m_groundedDeaccel * m_inAirAccelModifier;
 
         //Update velocity
         //Check for walls
@@ -161,7 +161,7 @@ public class Character : Entity
         }
         else if (m_desiredVelocity > 0.0f) //Run forwards
         {
-            float deltaSpeed = m_localVelocity.x > m_desiredVelocity || m_localVelocity.x < 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // how much speed will change?
+            float deltaSpeed = m_localVelocity.x > m_desiredVelocity || m_localVelocity.x < 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
 
             if (deltaSpeed > Mathf.Abs(newVelocity.x - m_desiredVelocity))
                 newVelocity.x = m_desiredVelocity;
@@ -171,7 +171,7 @@ public class Character : Entity
         }
         else //Run backwards
         {
-            float deltaSpeed = m_localVelocity.x < m_desiredVelocity || m_localVelocity.x > 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // how much speed will change?
+            float deltaSpeed = m_localVelocity.x < m_desiredVelocity || m_localVelocity.x > 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
 
             if (deltaSpeed > Mathf.Abs(newVelocity.x - m_desiredVelocity))
                 newVelocity.x = m_desiredVelocity;
