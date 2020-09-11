@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CharacterAbilities : MonoBehaviour
 {
-    public enum ABILITY {DOUBLE_JUMP = 0, IN_AIR_DASH, ABILITY_COUNT}
+    public enum ABILITY {DOUBLE_JUMP = 0, IN_AIR_DASH, RANGED_ABILITY, ABILITY_COUNT}
 
     [SerializeField]
     private bool[] m_abilityFlags = new bool[(int)ABILITY.ABILITY_COUNT];
