@@ -8,7 +8,7 @@ public class UIController_MainMenu : UIController
 {
     public struct OptionVariables
     {
-        public OptionVariables(int p_masterVolume = 100, int p_musicVolume = 100, int p_SFXVolume = 100, int p_voiceVolume = 100, bool p_subtitles = true, int p_performanceIndex = 2, int p_resolutionIndex = 3, int p_customResolutionX = 640, int p_customResolutionY = 640)
+        public OptionVariables(int p_masterVolume = 100, int p_musicVolume = 100, int p_SFXVolume = 100, int p_voiceVolume = 100, bool p_subtitles = true, int p_performanceIndex = 2, int p_resolutionIndex = 3, int p_windowModeIndex = 1, int p_customResolutionX = 640, int p_customResolutionY = 640)
         {
             m_masterVolume = p_masterVolume;
             m_musicVolume = p_musicVolume;
@@ -19,9 +19,11 @@ public class UIController_MainMenu : UIController
 
             m_performanceIndex = p_performanceIndex;
             m_resolutionIndex = p_resolutionIndex;
+            m_windowModeIndex = p_windowModeIndex;
             m_customResolutionX = p_customResolutionX;
             m_customResolutionY = p_customResolutionY;
         }
+
         public int m_masterVolume;
         public int m_musicVolume;
         public int m_SFXVolume;
@@ -29,19 +31,21 @@ public class UIController_MainMenu : UIController
 
         public bool m_subtitles;
 
-        public int m_performanceIndex;
-        
+        public int m_performanceIndex;  
         public int m_resolutionIndex;
+        public int m_windowModeIndex;
         public int m_customResolutionX;
         public int m_customResolutionY;
     }
 
     public OptionVariables m_optionsVariables;
 
-
-    private const int CUSTOM_RESOLUTION_INDEX = 13;
+    private const int CUSTOM_RESOLUTION_INDEX = 12;
     private const int MIN_RESOLUTION_VAL = 640;
     private const int MAX_RESOLUTION_VAL = 7680;
+
+    //NOTE: Needs to match up with what the drop down has
+    private int[,] m_availableResolutions = new int[,] { { 1280, 720 }, { 1920, 1080 }, { 2560, 1440 }, { 3840, 2160 }, { 800, 600 }, { 1024, 768 }, { 1440, 1080 }, { 1920, 1440 }, { 1280, 800 }, { 1440, 900 }, { 1920, 1200 }, { 2560, 1600 } };
 
     private static Color INTERACTIVE_UI_COLOR = Color.white;
     private static Color NON_INTERACTIVE_UI_COLOR = new Color(0.4f, 0.4f, 0.4f, 1.0f);
@@ -61,6 +65,8 @@ public class UIController_MainMenu : UIController
 
     public TMP_Dropdown m_performanceDropdown = null;
     public TMP_Dropdown m_resolutionDropdown = null;
+    public TMP_Dropdown m_windowModeDropdown = null;
+
 
     public TMP_InputField m_customResXInput = null;
     public TMP_InputField m_customResYInput = null;
@@ -99,7 +105,7 @@ public class UIController_MainMenu : UIController
 
         if (m_masterVolumeSlider == null || m_musicVolumeSlider == null || m_SFXVolumeSlider == null || m_voiceVolumeSlider == null ||
             m_subtitleToggle == null || 
-            m_performanceDropdown == null || m_resolutionDropdown == null || m_customResXInput == null || m_customResYInput == null || 
+            m_performanceDropdown == null || m_resolutionDropdown == null || m_windowModeDropdown == null || m_customResXInput == null || m_customResYInput == null || 
             m_customResXLabel == null || m_customResYLabel == null)
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD 
@@ -120,6 +126,9 @@ public class UIController_MainMenu : UIController
         //Call in start to set defaults after loading data
         OnChange_Resolution();
         OnChange_CustomResolution();
+
+        //Setup graphics
+        UpdateGraphicsSettings();
     }
 
     /// <summary>
@@ -136,8 +145,27 @@ public class UIController_MainMenu : UIController
 
         m_performanceDropdown.value = m_optionsVariables.m_performanceIndex;
         m_resolutionDropdown.value = m_optionsVariables.m_resolutionIndex;
+        m_windowModeDropdown.value = m_optionsVariables.m_windowModeIndex;
+
         m_customResXInput.text = m_optionsVariables.m_customResolutionX.ToString();
         m_customResYInput.text = m_optionsVariables.m_customResolutionY.ToString();
+    }
+
+    /// <summary>
+    /// Update the grahps to reflect the settings
+    /// TODO add in actual graphics settings 
+    /// </summary>
+    public void UpdateGraphicsSettings()
+    {
+        int xResolution = m_optionsVariables.m_resolutionIndex == CUSTOM_RESOLUTION_INDEX ? m_optionsVariables.m_customResolutionX : m_availableResolutions[m_optionsVariables.m_resolutionIndex, 0];
+        int yResolution = m_optionsVariables.m_resolutionIndex == CUSTOM_RESOLUTION_INDEX ? m_optionsVariables.m_customResolutionY : m_availableResolutions[m_optionsVariables.m_resolutionIndex, 1];
+
+        //0 = Windowed
+        //1 = Borderless Windown
+        //2 = fullscreen
+        FullScreenMode screenMode = m_optionsVariables.m_windowModeIndex == 0 ? FullScreenMode.Windowed : m_optionsVariables.m_windowModeIndex == 1 ? FullScreenMode.FullScreenWindow : FullScreenMode.ExclusiveFullScreen;
+
+        Screen.SetResolution(xResolution, yResolution, screenMode);
     }
 
     #region Option on change
@@ -282,13 +310,16 @@ public class UIController_MainMenu : UIController
         m_optionsVariables.m_SFXVolume = Mathf.FloorToInt(m_SFXVolumeSlider.value);
         m_optionsVariables.m_voiceVolume = Mathf.FloorToInt(m_voiceVolumeSlider.value);
         m_optionsVariables.m_subtitles = m_subtitleToggle;
+
         m_optionsVariables.m_performanceIndex = m_performanceDropdown.value;
         m_optionsVariables.m_resolutionIndex = m_resolutionDropdown.value;
+        m_optionsVariables.m_windowModeIndex = m_windowModeDropdown.value;
         m_optionsVariables.m_customResolutionX = ValidateCustomResolution(m_customResXInput);
         m_optionsVariables.m_customResolutionY = ValidateCustomResolution(m_customResYInput);
 
         //Save
         DataController.SaveOptionsData(m_optionsVariables);
+        UpdateGraphicsSettings();
 
         Btn_ReturnToMainMenu();
     }

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class DataController
 {
-    public enum PLAYER_PREF_VARIABLES {MASTER_VOLUME, MUSIC_VOLUME, SFX_VOLUME, VOICE_VOLUME, SUBTITLES, PERFORMANCE_INDEX, RESOLUTION_INDEX, CUSTOM_RESOLUTION_X, CUSTOM_RESOLUTION_Y}
+    public enum PLAYER_PREF_VARIABLES {MASTER_VOLUME, MUSIC_VOLUME, SFX_VOLUME, VOICE_VOLUME, SUBTITLES, PERFORMANCE_INDEX, RESOLUTION_INDEX, WINDOW_MODE, CUSTOM_RESOLUTION_X, CUSTOM_RESOLUTION_Y}
 
-    public static string[] m_prefsToStrings = new string[] { "Master_Volume", "Music_Volume", "SFX_Volume", "Voice_Volume", "Subtitles", "Performance_Index", "Resolution_Index", "Custom_Resolution_X", "Custom_Resolution_Y" };
+    public static string[] m_prefsToStrings = new string[] { "Master_Volume", "Music_Volume", "SFX_Volume", "Voice_Volume", "Subtitles", "Performance_Index", "Resolution_Index", "FullScreen_Windowed", "Custom_Resolution_X", "Custom_Resolution_Y" };
 
     /// <summary>
     /// Initialise the data used in game. 
@@ -40,6 +40,8 @@ public class DataController
             optionVariables.m_performanceIndex = PlayerPrefs.GetInt(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.PERFORMANCE_INDEX]);
         if (PlayerPrefs.HasKey(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.RESOLUTION_INDEX]))
             optionVariables.m_resolutionIndex = PlayerPrefs.GetInt(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.RESOLUTION_INDEX]);
+        if (PlayerPrefs.HasKey(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.WINDOW_MODE]))
+            optionVariables.m_windowModeIndex = PlayerPrefs.GetInt(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.WINDOW_MODE]);
         if (PlayerPrefs.HasKey(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.CUSTOM_RESOLUTION_X]))
             optionVariables.m_customResolutionX = PlayerPrefs.GetInt(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.CUSTOM_RESOLUTION_X]);
         if (PlayerPrefs.HasKey(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.CUSTOM_RESOLUTION_Y]))
@@ -61,6 +63,7 @@ public class DataController
         PlayerPrefs.SetInt(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.SUBTITLES], p_data.m_subtitles ? 1 : 0);
         PlayerPrefs.SetInt(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.PERFORMANCE_INDEX], p_data.m_performanceIndex);
         PlayerPrefs.SetInt(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.RESOLUTION_INDEX], p_data.m_resolutionIndex);
+        PlayerPrefs.SetInt(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.WINDOW_MODE], p_data.m_windowModeIndex);
         PlayerPrefs.SetInt(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.CUSTOM_RESOLUTION_X], p_data.m_customResolutionX);
         PlayerPrefs.SetInt(m_prefsToStrings[(int)PLAYER_PREF_VARIABLES.CUSTOM_RESOLUTION_Y], p_data.m_customResolutionY);
 
