@@ -14,6 +14,14 @@ public class SceneController_MainMenu : SceneController
         base.Init();
     }
 
+    /// <summary>
+    /// Should be called from UI button
+    /// Will attempt to load the game
+    /// </summary>
+    public void LoadGame()
+    {
+        MasterController.Instance.LoadGame();
+    }
 
     /// <summary>
     /// Should be called from UI button

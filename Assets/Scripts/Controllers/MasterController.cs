@@ -17,10 +17,11 @@ public class MasterController : MonoBehaviour
     public SceneController m_currentSceneController = null;
     [HideInInspector]
     public UIController m_currentUIController = null;
-    [HideInInspector]
-    public DataController m_dataController = null;
 
     public AsyncOperation m_asyncSceneLoading = null;
+
+    public DataController.InGameSaveData m_lastInGameSaveData;
+    public SCENE m_currentScene = SCENE.SCENE_COUNT;
 
     /// <summary>
     /// Setup singleton functionality for the master controller
@@ -38,9 +39,6 @@ public class MasterController : MonoBehaviour
         GameObject topObject = gameObject;
         while (topObject.transform.parent != null)
             topObject = topObject.transform.parent.gameObject;
-
-        m_dataController = new DataController();
-        m_dataController.Init();
 
         DontDestroyOnLoad(topObject);
 
@@ -87,6 +85,38 @@ public class MasterController : MonoBehaviour
     }
 
     /// <summary>
+    /// Convert scene name to scene enum
+    /// </summary>
+    /// <param name="p_sceneString">String to attempt to find</param>
+    /// <returns>Scene enum, defaulted to SCENE_COUNT, when not found</returns>
+    public SCENE GetSceneEnum(string p_sceneString)
+    {
+        for (int sceneIndex = 0; sceneIndex < (int)SCENE.SCENE_COUNT; sceneIndex++)
+        {
+            if (m_sceneStrings[sceneIndex] == p_sceneString)
+                return (SCENE)sceneIndex;
+        }
+
+        return SCENE.SCENE_COUNT;
+    }
+
+
+    /// <summary>
+    /// Used to load the games based off last save
+    /// </summary>
+    public void LoadGame()
+    {
+        if(DataController.LoadCharacterLevelData() && m_lastInGameSaveData.m_saveSceneIndex < (int)SCENE.SCENE_COUNT) //Valid level
+        {
+            LoadScene(SCENE.SCENE_COUNT, true);
+        }
+        else //No saved file or invalid save
+        {
+            LoadScene(SCENE.LEVEL_TUTORIAL, true);
+        }
+    }
+
+    /// <summary>
     /// Attempted to load scene
     /// Will automatically swap to loading screen
     /// </summary>
@@ -118,12 +148,13 @@ public class MasterController : MonoBehaviour
     {
         SceneManager.LoadScene(m_sceneStrings[(int)p_scene]);
         yield return null;
+        m_currentScene = p_scene;
         InitSceneControllers();
     }
 
 
     /// <summary>
-    /// Datat is validated, use coroutein to load asyncly
+    /// Data is validated, use coroutein to load asyncly
     /// </summary>
     /// <param name="p_scene">Scene to attempted to load, pre checked for validity</param>
     private IEnumerator LoadSceneAsync(SCENE p_scene)
@@ -138,14 +169,18 @@ public class MasterController : MonoBehaviour
         {
             yield return null;
         }
-        InitSceneControllers();
+
+        m_currentScene = p_scene;
+        InitSceneControllers();//initialising the loading scene
     }
 
     /// <summary>
     /// Scene has been loaded, ensure loading scene is removed and scene to be loaded is activated
     /// </summary>
-    public void SceneLoaded()
+    public void SceneHasLoaded()
     {
+        m_asyncSceneLoading.allowSceneActivation = true;
+
         StartCoroutine(SceneLoadedAsync());
     }
 
@@ -154,6 +189,11 @@ public class MasterController : MonoBehaviour
     /// </summary>
     public IEnumerator SceneLoadedAsync()
     {
+        while(!m_asyncSceneLoading.isDone) //Go form 0.9 to 1.0 due to holding activation
+        {
+            yield return null;
+        }
+
         AsyncOperation unloading = SceneManager.UnloadSceneAsync(m_sceneStrings[(int)SCENE.LOADING]);
 
         while (!unloading.isDone)

@@ -28,8 +28,8 @@ public class PlayerState_Jump : State_Player
 
         m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.JUMP);
 
-        m_character.m_doubleJumpFlag = m_character.m_abilities.HasAbility(CharacterAbilities.ABILITY.DOUBLE_JUMP);
-        m_character.m_inAirDashFlag = m_character.m_abilities.HasAbility(CharacterAbilities.ABILITY.IN_AIR_DASH);
+        m_character.m_doubleJumpFlag = m_character.m_abilities.HasAbility(CharacterStatistics.ABILITY.DOUBLE_JUMP);
+        m_character.m_inAirDashFlag = m_character.m_abilities.HasAbility(CharacterStatistics.ABILITY.IN_AIR_DASH);
     }
 
     /// <summary>

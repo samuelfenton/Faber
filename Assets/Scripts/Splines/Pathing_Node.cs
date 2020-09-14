@@ -367,6 +367,7 @@ public class Pathing_Node : MonoBehaviour
                 otherNode.m_conjoinedNodes[(int)otherPosition] = null;
             }
         }
+        
         //Clear up this data
         m_pathingSplineDetails[(int)p_position] = new Spline_Details();
         m_conjoinedPosition[(int)p_position] = Pathing_Spline.SPLINE_POSITION.FORWARD;
@@ -392,62 +393,21 @@ public class Pathing_Node : MonoBehaviour
 
         Gizmos.color = Color.blue;
 
-        //Setup spline variables
-        float length = 0.0f;
-
-        //Straight
-        Vector3 straightDir = Vector3.zero;
-
-        //Bezier
-        Vector3 bezierPointA = Vector3.zero;
-        Vector3 bezierPointB = Vector3.zero;
-        Vector3 bezierControlA = Vector3.zero;
-        Vector3 bezierControlB = Vector3.zero;
-
-        //Circle
-        float circleHeight = 0.0f;
-        Vector3 circleCenter = Vector3.zero;
-        Vector3 centerADir = Vector3.zero;
-
-        switch(p_splineDetails.m_splineType)
-        {
-            case Pathing_Spline.SPLINE_TYPE.STRAIGHT:
-                Pathing_Spline.RebuildStraight(p_splineDetails.m_nodePrimary, p_splineDetails.m_nodeSecondary, out straightDir, out length);
-                break;
-            case Pathing_Spline.SPLINE_TYPE.BEZIER:
-                Pathing_Spline.RebuildBezier(p_splineDetails.m_nodePrimary, p_splineDetails.m_nodeSecondary, p_splineDetails.m_bezierStrength, out bezierPointA, out bezierPointB, out bezierControlA, out bezierControlB, out length);
-                break;
-            case Pathing_Spline.SPLINE_TYPE.CIRCLE:
-                Pathing_Spline.RebuildCircle(p_splineDetails.m_nodePrimary, p_splineDetails.m_nodeSecondary, p_splineDetails.m_circleDir, p_splineDetails.m_circleAngle, out circleHeight, out circleCenter, out centerADir, out length);
-                break;
-        }
-        
         float percentStep = 1.0f / SPLINE_STEPS;
         float currentPercent = percentStep;
         
         Vector3 previous = p_splineDetails.m_nodePrimary.transform.position;
-        Vector3 next = Vector3.zero; 
 
         //Loop through approximating circle, every (m_totalDegrees / DEBUG_STEPS) degrees
         for (int i = 1; i <= SPLINE_STEPS; i++)
         {
-            switch (p_splineDetails.m_splineType)
+            if(MOARDebugging.GetSplinePosition(p_splineDetails.m_nodePrimary, p_splineDetails.m_nodeSecondary, currentPercent, out Vector3 position))
             {
-                case Pathing_Spline.SPLINE_TYPE.STRAIGHT:
-                    next = Pathing_Spline.GetStraightPosition(currentPercent, p_splineDetails.m_nodePrimary, straightDir);
-                    break;
-                case Pathing_Spline.SPLINE_TYPE.BEZIER:
-                    next = Pathing_Spline.GetBezierPosition(currentPercent, bezierPointA, bezierPointB, bezierControlA, bezierControlB);
-                    break;
-                case Pathing_Spline.SPLINE_TYPE.CIRCLE:
-                    next = Pathing_Spline.GetCirclePosition(currentPercent, p_splineDetails.m_circleDir, p_splineDetails.m_circleAngle, circleHeight, circleCenter, centerADir);
-                    break;
+                Gizmos.DrawLine(previous, position);
+
+                previous = position;
+                currentPercent += percentStep;
             }
-
-            Gizmos.DrawLine(previous, next);
-
-            previous = next;
-            currentPercent += percentStep;
         }
     }
     #endregion

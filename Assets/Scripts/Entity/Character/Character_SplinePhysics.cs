@@ -17,4 +17,12 @@ public class Character_SplinePhysics : SplinePhysics
 
         m_colliderExtents = collider.bounds.extents;
     }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (MOARDebugging.GetSplinePosition(m_nodeA, m_nodeB, m_currentSplinePercent, out Vector3 position))
+        {
+            transform.position = position;
+        }
+    }
 }

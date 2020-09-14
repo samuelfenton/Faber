@@ -1,20 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using UnityEngine.SceneManagement;
 
 public class DataController
 {
-    public enum PLAYER_PREF_VARIABLES {MASTER_VOLUME, MUSIC_VOLUME, SFX_VOLUME, VOICE_VOLUME, SUBTITLES, PERFORMANCE_INDEX, RESOLUTION_INDEX, WINDOW_MODE, CUSTOM_RESOLUTION_X, CUSTOM_RESOLUTION_Y}
+    [SerializeField]
+    public struct InGameSaveData
+    {
+        public InGameSaveData(int p_savePointID, int p_saveSceneIndex)
+        {
+            m_savePointID = p_savePointID;
+            m_saveSceneIndex = p_saveSceneIndex;
+        }
+
+        public int m_savePointID;
+        public int m_saveSceneIndex; //Not defined by build index but the enum equivalent found in MasterController.SCENE
+    }
+
+    public enum PLAYER_PREF_VARIABLES { MASTER_VOLUME, MUSIC_VOLUME, SFX_VOLUME, VOICE_VOLUME, SUBTITLES, PERFORMANCE_INDEX, RESOLUTION_INDEX, WINDOW_MODE, CUSTOM_RESOLUTION_X, CUSTOM_RESOLUTION_Y }
 
     public static string[] m_prefsToStrings = new string[] { "Master_Volume", "Music_Volume", "SFX_Volume", "Voice_Volume", "Subtitles", "Performance_Index", "Resolution_Index", "FullScreen_Windowed", "Custom_Resolution_X", "Custom_Resolution_Y" };
-
-    /// <summary>
-    /// Initialise the data used in game. 
-    /// </summary>
-    public void Init()
-    {
-
-    }
 
     /// <summary>
     /// Fill struct with saved data if available
@@ -70,4 +77,106 @@ public class DataController
         PlayerPrefs.Save();
     }
 
+    /// <summary>
+    /// Save the characters stats
+    /// </summary>
+    /// <param name="p_stats">Stats to be saved</param>
+    public static void SaveCharacterStats(CharacterStatistics p_stats)
+    {
+        string savePath = Application.persistentDataPath + "/saves/";
+        if (!Directory.Exists(savePath))
+        {
+            Directory.CreateDirectory(savePath);
+        }
+
+        //TODO add in multiple save files
+        string saveFile = "PlayerData_Save" + 0;
+
+        string filePath = savePath + saveFile + ".json";
+
+        string result = JsonUtility.ToJson(p_stats);
+
+        File.WriteAllText(filePath, result);
+    }
+
+    /// <summary>
+    /// Load the stas where possibnle for the character
+    /// </summary>
+    /// <param name="p_stats">Where to save stats to, when no save data is present will use default/param>
+    public static void LoadCharacterStats(CharacterStatistics p_statistics)
+    {
+        string loadPath = Application.persistentDataPath + "/saves/";
+        if (!Directory.Exists(loadPath))
+        {
+            return;
+        }
+
+        //TODO add in multiple save files
+        string loadFile = "PlayerData_Save" + 0;
+
+        string filePath = loadPath + loadFile + ".json";
+
+        if (!File.Exists(filePath))
+        {
+            return;
+        }
+
+        string dataAsJson = File.ReadAllText(filePath);
+
+        JsonUtility.FromJsonOverwrite(dataAsJson, p_statistics);
+    }
+
+    /// <summary>
+    /// Load up the chaarcters level data, 
+    /// </summary>
+    /// <returns>true when able to load</returns>
+    public static bool LoadCharacterLevelData()
+    {
+        string loadPath = Application.persistentDataPath + "/saves/";
+        if (!Directory.Exists(loadPath))
+        {
+            return false;
+        }
+
+        //TODO add in multiple save files
+        string loadFile = "LevelData_Save" + 0;
+
+        string filePath = loadPath + loadFile + ".json";
+
+        if (!File.Exists(filePath))
+        {
+            return false;
+        }
+
+        string dataAsJson = File.ReadAllText(filePath);
+
+        JsonUtility.FromJsonOverwrite(dataAsJson, MasterController.Instance.m_lastInGameSaveData);
+
+        return true;
+    }
+
+    /// <summary>
+    /// Save the current load point
+    /// Will auto update master controller
+    /// </summary>
+    /// <param name="p_newSavePoint">Point to use</param>
+    public static void SaveLevelData(LevelSavePoint p_newSavePoint)
+    {
+        MasterController.Instance.m_lastInGameSaveData = new InGameSaveData(p_newSavePoint.m_uniqueID, (int)MasterController.Instance.m_currentScene);
+
+        string savePath = Application.persistentDataPath + "/saves/";
+        if (!Directory.Exists(savePath))
+        {
+            Directory.CreateDirectory(savePath);
+        }
+
+        //TODO add in multiple save files
+        string saveFile = "LevelData_Save" + 0;
+
+        string filePath = savePath + saveFile + ".json";
+
+        string result = JsonUtility.ToJson(MasterController.Instance.m_lastInGameSaveData);
+
+        File.WriteAllText(filePath, result);
+    }
 }

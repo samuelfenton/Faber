@@ -233,8 +233,7 @@ public class UIController_MainMenu : UIController
     /// </summary>
     public void Btn_LoadGame()
     {
-        //TODO, actually load game
-        m_mainMenuSceneController.LoadFirstLevel();
+        m_mainMenuSceneController.LoadGame();
     }
 
     /// <summary>

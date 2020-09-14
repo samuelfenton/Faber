@@ -67,11 +67,7 @@ public class UIController_Loading : UIController
             case LOADING_STATE.AWAITING_PLAYER_READY:
                 break;
             case LOADING_STATE.AWAITING_SCENE_ACTIVATION:
-                if(m_asyncSceneLoading.isDone)
-                {
-                    MasterController.Instance.SceneLoaded();
-                }
-                break;
+                yield break;
             default:
                 break;
         }
@@ -84,7 +80,7 @@ public class UIController_Loading : UIController
     /// </summary>
     public void Btn_ReadyToPlay()
     {
-        m_asyncSceneLoading.allowSceneActivation = true;
         m_currentLoadingState = LOADING_STATE.AWAITING_SCENE_ACTIVATION;
+        MasterController.Instance.SceneHasLoaded();
     }
 }

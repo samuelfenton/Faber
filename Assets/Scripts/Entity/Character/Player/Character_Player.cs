@@ -6,6 +6,8 @@ public class Character_Player : Character
 {
     protected StateMachine_Player m_playerStateMachine = null;
 
+    [Header("Saving")]
+    public LevelSavePoint m_lastSavePoint = null;
     [HideInInspector]
     public CustomInput m_customInput = null;
 
