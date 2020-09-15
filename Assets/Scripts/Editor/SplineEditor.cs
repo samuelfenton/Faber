@@ -40,8 +40,6 @@ public class SplineEditor : Editor
             //Has this spline already been created?
             if (createdFlagSO.boolValue)
             {
-                EditorGUI.BeginChangeCheck();
-
                 EditorGUILayout.LabelField("Primary Node: " + m_pathingNodeScript.m_pathingSplineDetails[splineIndex].m_nodePrimary);
                 EditorGUILayout.LabelField("Secondary Node: " + m_pathingNodeScript.m_pathingSplineDetails[splineIndex].m_nodeSecondary);
 
@@ -68,39 +66,36 @@ public class SplineEditor : Editor
                         break;
                 }
 
-                if (EditorGUI.EndChangeCheck()) //Only update when theres been a change
+                //Apply to other node
+                Pathing_Node conjoinedNode = null;
+                if (m_pathingNodeScript.m_pathingSplineDetails[splineIndex].m_nodePrimary == m_pathingNodeScript)
                 {
-                    //Apply to other node
-                    Pathing_Node conjoinedNode = null;
-                    if (m_pathingNodeScript.m_pathingSplineDetails[splineIndex].m_nodePrimary == m_pathingNodeScript)
-                    {
-                        conjoinedNode = m_pathingNodeScript.m_pathingSplineDetails[splineIndex].m_nodeSecondary;
-                    }
-                    else
-                    {
-                        conjoinedNode = m_pathingNodeScript.m_pathingSplineDetails[splineIndex].m_nodePrimary;
-                    }
+                    conjoinedNode = m_pathingNodeScript.m_pathingSplineDetails[splineIndex].m_nodeSecondary;
+                }
+                else
+                {
+                    conjoinedNode = m_pathingNodeScript.m_pathingSplineDetails[splineIndex].m_nodePrimary;
+                }
 
-                    //Something broke
-                    if(conjoinedNode == null || conjoinedNode.DetermineNodePosition(m_pathingNodeScript) == Pathing_Spline.SPLINE_POSITION.MAX_LENGTH)
+                //Something broke
+                if(conjoinedNode == null || conjoinedNode.DetermineNodePosition(m_pathingNodeScript) == Pathing_Spline.SPLINE_POSITION.MAX_LENGTH)
+                {
+                    m_pathingNodeScript.RemoveDetailsAt((Pathing_Spline.SPLINE_POSITION)splineIndex);
+                }
+                else
+                {
+                    Pathing_Spline.SPLINE_POSITION conjoinedPosition = conjoinedNode.DetermineNodePosition(m_pathingNodeScript);
+
+                    conjoinedNode.m_pathingSplineDetails[(int)conjoinedPosition] = m_pathingNodeScript.m_pathingSplineDetails[splineIndex];
+
+                    if (GUILayout.Button("Remove Spline"))
                     {
                         m_pathingNodeScript.RemoveDetailsAt((Pathing_Spline.SPLINE_POSITION)splineIndex);
+                        conjoinedNode.RemoveDetailsAt(conjoinedPosition);
                     }
-                    else
-                    {
-                        Pathing_Spline.SPLINE_POSITION conjoinedPosition = conjoinedNode.DetermineNodePosition(m_pathingNodeScript);
 
-                        conjoinedNode.m_pathingSplineDetails[(int)conjoinedPosition] = m_pathingNodeScript.m_pathingSplineDetails[splineIndex];
-
-                        if (GUILayout.Button("Remove Spline"))
-                        {
-                            m_pathingNodeScript.RemoveDetailsAt((Pathing_Spline.SPLINE_POSITION)splineIndex);
-                            conjoinedNode.RemoveDetailsAt(conjoinedPosition);
-                        }
-
-                        EditorUtility.SetDirty(m_pathingNodeScript);
-                        EditorUtility.SetDirty(conjoinedNode);
-                    }
+                    EditorUtility.SetDirty(m_pathingNodeScript);
+                    EditorUtility.SetDirty(conjoinedNode);
                 }
             }
             else

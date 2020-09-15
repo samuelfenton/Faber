@@ -3127,6 +3127,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cc3825c4b1c3f214281372314f137bbf, type: 3}
+--- !u!114 &731615401 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+    type: 3}
+  m_PrefabInstance: {fileID: 1448135597}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df5216a8a23a9294e9b24de6cba418c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &731615403 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
+    type: 3}
+  m_PrefabInstance: {fileID: 1448135597}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &770954711
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4878,7 +4896,7 @@ PrefabInstance:
     - target: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 114.8
+      value: 115
       objectReference: {fileID: 0}
     - target: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
         type: 3}
@@ -4929,21 +4947,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_conjoinedNodes.Array.data[3]
       value: 
-      objectReference: {fileID: 1666794287}
+      objectReference: {fileID: 0}
     - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
         type: 3}
       propertyPath: m_pathingSplineDetails.Array.data[0].m_nodePrimary
       value: 
-      objectReference: {fileID: 2084684021}
+      objectReference: {fileID: 731615401}
     - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
         type: 3}
       propertyPath: m_pathingSplineDetails.Array.data[0].m_nodeSecondary
       value: 
-      objectReference: {fileID: 1666794287}
+      objectReference: {fileID: 2084684021}
     - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
         type: 3}
       propertyPath: m_pathingSplineDetails.Array.data[0].m_splineType
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
         type: 3}
@@ -4953,7 +4971,37 @@ PrefabInstance:
     - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
         type: 3}
       propertyPath: m_pathingSplineDetails.Array.data[0].m_bezierStrength
-      value: 3.64
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[3].m_nodePrimary
+      value: 
+      objectReference: {fileID: 2084684021}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[3].m_nodeSecondary
+      value: 
+      objectReference: {fileID: 1666794287}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[3].m_createdFlag
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_conjoinedNodes.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[0].m_circleAngle
+      value: 76
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[0].m_circleDir
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1a37441be013b4f4c91762672d306836, type: 3}
@@ -5086,6 +5134,7 @@ Transform:
   m_Children:
   - {fileID: 1666794289}
   - {fileID: 2084684020}
+  - {fileID: 731615403}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6155,6 +6204,135 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1438043022}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1448135597
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1260602804}
+    m_Modifications:
+    - target: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 118
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 3879580058755396583, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905744926297580387, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_Name
+      value: Prefab_Node (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_conjoinedNodes.Array.data[3]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[0].m_nodePrimary
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[0].m_nodeSecondary
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[0].m_splineType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[0].m_createdFlag
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[0].m_bezierStrength
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[3].m_nodePrimary
+      value: 
+      objectReference: {fileID: 731615401}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[3].m_nodeSecondary
+      value: 
+      objectReference: {fileID: 2084684021}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[3].m_createdFlag
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[3].m_splineType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[3].m_circleAngle
+      value: 76
+      objectReference: {fileID: 0}
+    - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
+        type: 3}
+      propertyPath: m_pathingSplineDetails.Array.data[3].m_circleDir
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1a37441be013b4f4c91762672d306836, type: 3}
 --- !u!1001 &1473348702
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8209,7 +8387,7 @@ PrefabInstance:
     - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
         type: 3}
       propertyPath: m_pathingSplineDetails.Array.data[0].m_bezierStrength
-      value: 3.64
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5625241742665454165, guid: 1a37441be013b4f4c91762672d306836,
         type: 3}
