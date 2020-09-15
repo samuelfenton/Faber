@@ -22,6 +22,8 @@ public class MasterController : MonoBehaviour
     public AsyncOperation m_asyncSceneLoading = null;
     [HideInInspector]
     public DataController.InGameSaveData m_inGameSaveData;
+    [HideInInspector]
+    public DataController.PlayerPreferences m_playerPrefs;
 
     public int m_currentSaveSlot = -1;
 

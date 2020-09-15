@@ -8,40 +8,6 @@ public class UIController_MainMenu : UIController
 {
     public const string DELETE_OLD_GAME_PROMPT = "Are you sure you want to delete your old save?"; 
 
-    public struct OptionVariables
-    {
-        public OptionVariables(int p_masterVolume = 100, int p_musicVolume = 100, int p_SFXVolume = 100, int p_voiceVolume = 100, bool p_subtitles = true, int p_performanceIndex = 2, int p_resolutionIndex = 3, int p_windowModeIndex = 1, int p_customResolutionX = 640, int p_customResolutionY = 640)
-        {
-            m_masterVolume = p_masterVolume;
-            m_musicVolume = p_musicVolume;
-            m_SFXVolume = p_SFXVolume;
-            m_voiceVolume = p_voiceVolume;
-
-            m_subtitles = p_subtitles;
-
-            m_performanceIndex = p_performanceIndex;
-            m_resolutionIndex = p_resolutionIndex;
-            m_windowModeIndex = p_windowModeIndex;
-            m_customResolutionX = p_customResolutionX;
-            m_customResolutionY = p_customResolutionY;
-        }
-
-        public int m_masterVolume;
-        public int m_musicVolume;
-        public int m_SFXVolume;
-        public int m_voiceVolume;
-
-        public bool m_subtitles;
-
-        public int m_performanceIndex;  
-        public int m_resolutionIndex;
-        public int m_windowModeIndex;
-        public int m_customResolutionX;
-        public int m_customResolutionY;
-    }
-
-    public OptionVariables m_optionsVariables;
-
     private const int CUSTOM_RESOLUTION_INDEX = 12;
     private const int MIN_RESOLUTION_VAL = 640;
     private const int MAX_RESOLUTION_VAL = 7680;
@@ -151,7 +117,7 @@ public class UIController_MainMenu : UIController
             {
                 string savefile = "LevelData_Save" + saveSlotIndex + ".dat";
 
-                if (DataController.SaveFileExist(savePath, savefile))
+                if (DataController.DoesFileExist(savePath, savefile))
                 {
                     anySaves = true;
                     break;
@@ -181,10 +147,10 @@ public class UIController_MainMenu : UIController
 
     public void DisplayMainMenu()
     {
-        DataController.LoadCharacterLevelData();
+        DataController.LoadGameSavingPoint();
 
         //Fill data
-        m_optionsVariables = DataController.GetOptionsData();
+        MasterController.Instance.m_playerPrefs = DataController.LoadPlayerPrefs();
         RebuildOptionUIVariables();
 
         m_UIObjectSaveSlots.SetActive(false);
@@ -211,19 +177,21 @@ public class UIController_MainMenu : UIController
     /// </summary>
     public void RebuildOptionUIVariables()
     {
-        m_masterVolumeSlider.value = m_optionsVariables.m_masterVolume;
-        m_musicVolumeSlider.value = m_optionsVariables.m_musicVolume;
-        m_SFXVolumeSlider.value = m_optionsVariables.m_SFXVolume;
-        m_voiceVolumeSlider.value = m_optionsVariables.m_voiceVolume;
+        DataController.PlayerPreferences playerPrefs = MasterController.Instance.m_playerPrefs;
 
-        m_subtitleToggle.isOn = m_optionsVariables.m_subtitles;
+        m_masterVolumeSlider.value = playerPrefs.m_masterVolume;
+        m_musicVolumeSlider.value = playerPrefs.m_musicVolume;
+        m_SFXVolumeSlider.value = playerPrefs.m_SFXVolume;
+        m_voiceVolumeSlider.value = playerPrefs.m_voiceVolume;
 
-        m_performanceDropdown.value = m_optionsVariables.m_performanceIndex;
-        m_resolutionDropdown.value = m_optionsVariables.m_resolutionIndex;
-        m_windowModeDropdown.value = m_optionsVariables.m_windowModeIndex;
+        m_subtitleToggle.isOn = playerPrefs.m_subtitles;
 
-        m_customResXInput.text = m_optionsVariables.m_customResolutionX.ToString();
-        m_customResYInput.text = m_optionsVariables.m_customResolutionY.ToString();
+        m_performanceDropdown.value = playerPrefs.m_performanceIndex;
+        m_resolutionDropdown.value = playerPrefs.m_resolutionIndex;
+        m_windowModeDropdown.value = playerPrefs.m_windowModeIndex;
+
+        m_customResXInput.text = playerPrefs.m_customResolutionX.ToString();
+        m_customResYInput.text = playerPrefs.m_customResolutionY.ToString();
     }
 
     /// <summary>
@@ -232,13 +200,15 @@ public class UIController_MainMenu : UIController
     /// </summary>
     public void UpdateGraphicsSettings()
     {
-        int xResolution = m_optionsVariables.m_resolutionIndex == CUSTOM_RESOLUTION_INDEX ? m_optionsVariables.m_customResolutionX : m_availableResolutions[m_optionsVariables.m_resolutionIndex, 0];
-        int yResolution = m_optionsVariables.m_resolutionIndex == CUSTOM_RESOLUTION_INDEX ? m_optionsVariables.m_customResolutionY : m_availableResolutions[m_optionsVariables.m_resolutionIndex, 1];
+        DataController.PlayerPreferences playerPrefs = MasterController.Instance.m_playerPrefs;
+
+        int xResolution = playerPrefs.m_resolutionIndex == CUSTOM_RESOLUTION_INDEX ? playerPrefs.m_customResolutionX : m_availableResolutions[playerPrefs.m_resolutionIndex, 0];
+        int yResolution = playerPrefs.m_resolutionIndex == CUSTOM_RESOLUTION_INDEX ? playerPrefs.m_customResolutionY : m_availableResolutions[playerPrefs.m_resolutionIndex, 1];
 
         //0 = Windowed
         //1 = Borderless Windown
         //2 = fullscreen
-        FullScreenMode screenMode = m_optionsVariables.m_windowModeIndex == 0 ? FullScreenMode.Windowed : m_optionsVariables.m_windowModeIndex == 1 ? FullScreenMode.FullScreenWindow : FullScreenMode.ExclusiveFullScreen;
+        FullScreenMode screenMode = playerPrefs.m_windowModeIndex == 0 ? FullScreenMode.Windowed : playerPrefs.m_windowModeIndex == 1 ? FullScreenMode.FullScreenWindow : FullScreenMode.ExclusiveFullScreen;
 
         Screen.SetResolution(xResolution, yResolution, screenMode);
     }
@@ -423,21 +393,25 @@ public class UIController_MainMenu : UIController
     /// </summary>
     public void Btn_ApplyChanges()
     {
-        //Apply changes to stuct
-        m_optionsVariables.m_masterVolume = Mathf.FloorToInt(m_masterVolumeSlider.value);
-        m_optionsVariables.m_musicVolume = Mathf.FloorToInt(m_musicVolumeSlider.value);
-        m_optionsVariables.m_SFXVolume = Mathf.FloorToInt(m_SFXVolumeSlider.value);
-        m_optionsVariables.m_voiceVolume = Mathf.FloorToInt(m_voiceVolumeSlider.value);
-        m_optionsVariables.m_subtitles = m_subtitleToggle;
+        DataController.PlayerPreferences playerPrefs = MasterController.Instance.m_playerPrefs;
 
-        m_optionsVariables.m_performanceIndex = m_performanceDropdown.value;
-        m_optionsVariables.m_resolutionIndex = m_resolutionDropdown.value;
-        m_optionsVariables.m_windowModeIndex = m_windowModeDropdown.value;
-        m_optionsVariables.m_customResolutionX = ValidateCustomResolution(m_customResXInput);
-        m_optionsVariables.m_customResolutionY = ValidateCustomResolution(m_customResYInput);
+        //Apply changes to stuct
+        playerPrefs.m_masterVolume = Mathf.FloorToInt(m_masterVolumeSlider.value);
+        playerPrefs.m_musicVolume = Mathf.FloorToInt(m_musicVolumeSlider.value);
+        playerPrefs.m_SFXVolume = Mathf.FloorToInt(m_SFXVolumeSlider.value);
+        playerPrefs.m_voiceVolume = Mathf.FloorToInt(m_voiceVolumeSlider.value);
+        playerPrefs.m_subtitles = m_subtitleToggle;
+
+        playerPrefs.m_performanceIndex = m_performanceDropdown.value;
+        playerPrefs.m_resolutionIndex = m_resolutionDropdown.value;
+        playerPrefs.m_windowModeIndex = m_windowModeDropdown.value;
+        playerPrefs.m_customResolutionX = ValidateCustomResolution(m_customResXInput);
+        playerPrefs.m_customResolutionY = ValidateCustomResolution(m_customResYInput);
+
+        MasterController.Instance.m_playerPrefs = playerPrefs;
 
         //Save
-        DataController.SaveOptionsData(m_optionsVariables);
+        DataController.SavePlayerPrefs(playerPrefs);
         UpdateGraphicsSettings();
 
         Btn_ReturnToMainMenu();

@@ -58,7 +58,7 @@ public class SceneController_InGame : SceneController
         if (MasterController.Instance.m_currentSaveSlot == -1)//Load slot 0 as default when debugging
         {
             MasterController.Instance.m_currentSaveSlot = 0;
-            DataController.LoadCharacterLevelData();
+            DataController.LoadGameSavingPoint();
         }
 #endif
 

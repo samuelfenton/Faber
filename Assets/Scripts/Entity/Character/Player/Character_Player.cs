@@ -19,7 +19,7 @@ public class Character_Player : Character
     {
         base.InitEntity();
 
-        DataController.LoadCharacterStats(m_characterStatistics);
+        DataController.LoadCharacterStatistics(m_characterStatistics);
 
         m_customInput = ((SceneController_InGame)MasterController.Instance.m_currentSceneController).m_customInput;
 

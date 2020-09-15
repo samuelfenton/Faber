@@ -53,8 +53,8 @@ public class Interactable_SavePoint : Interactable
     {
         base.Interact();
 
-        DataController.SaveLevelData(this);
-        DataController.SaveCharacterStats(m_playerCharacter.m_characterStatistics);
+        DataController.SaveSavingPoint(this);
+        DataController.SaveCharacterStatistics(m_playerCharacter.m_characterStatistics);
 
         if (m_currentState == SAVEPOINT_STATE.UNLIT)
         {
