@@ -170,7 +170,7 @@ public class UIController_InGame : UIController
         if (m_currentPromptState == PROMPT_STATE.PROMPT_ACCECPTED) //Accept prompt
         {
             ShowInGame();
-            m_sceneController.RespawnPlayer();
+            m_sceneController.RespawnPlayer(false);
         }
         else //Declined prompt
         {

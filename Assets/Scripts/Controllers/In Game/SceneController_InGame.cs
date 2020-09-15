@@ -94,7 +94,7 @@ public class SceneController_InGame : SceneController
             m_interactables[interactableIndex].InitInteractable(m_playerCharacter);
         }
 
-        RespawnPlayer();
+        RespawnPlayer(true) ;
     }
 
     /// <summary>
@@ -122,10 +122,13 @@ public class SceneController_InGame : SceneController
     }
 
     /// <summary>
-    /// Player has died and will respawn
-    /// if avalible use last save point, if not valid, use default spawn point, if not valid, return to main menu
+    /// Player can respanw in three cases
+    /// On death
+    /// On respawn
+    /// On load of scene
     /// </summary>
-    public void RespawnPlayer()
+    /// <param name="p_snapCamera">Should the camera snap into place?</param>
+    public void RespawnPlayer(bool p_snapCamera)
     {
         //Attempt to place player
         DataController.InGameSaveData m_inGameSaveData = MasterController.Instance.m_inGameSaveData;
@@ -146,6 +149,14 @@ public class SceneController_InGame : SceneController
                             m_playerCharacter.m_splinePhysics.m_nodeA = savePoint.m_nodeA;
                             m_playerCharacter.m_splinePhysics.m_nodeB = savePoint.m_nodeB;
                             m_playerCharacter.m_splinePhysics.m_currentSplinePercent = savePoint.m_splinePercent;
+
+                            //force updatye of player position so camera will follow
+                            m_playerCharacter.transform.position = m_playerCharacter.m_splinePhysics.m_currentSpline.GetPosition(m_playerCharacter.m_splinePhysics.m_currentSplinePercent);
+
+                            if (p_snapCamera)
+                            {
+                                m_playerCharacter.m_followCamera.ForceSnap();
+                            }
                         }
                     }
                 }
