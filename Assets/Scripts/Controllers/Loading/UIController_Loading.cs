@@ -6,7 +6,6 @@ using TMPro;
 
 public class UIController_Loading : UIController
 {
-
     [Header("UI Variables")]
     public GameObject m_readyButton = null;
     public TextMeshProUGUI m_textLoadingPercentage = null;

@@ -6,6 +6,8 @@ using TMPro;
 
 public class UIController_MainMenu : UIController
 {
+    public const string DELETE_OLD_GAME_PROMPT = "Are you sure you want to delete your old save?"; 
+
     public struct OptionVariables
     {
         public OptionVariables(int p_masterVolume = 100, int p_musicVolume = 100, int p_SFXVolume = 100, int p_voiceVolume = 100, bool p_subtitles = true, int p_performanceIndex = 2, int p_resolutionIndex = 3, int p_windowModeIndex = 1, int p_customResolutionX = 640, int p_customResolutionY = 640)
@@ -50,7 +52,7 @@ public class UIController_MainMenu : UIController
     private static Color INTERACTIVE_UI_COLOR = Color.white;
     private static Color NON_INTERACTIVE_UI_COLOR = new Color(0.4f, 0.4f, 0.4f, 1.0f);
 
-    [Header("Assigned Variables")]
+    [Header("Canvas Variables")]
     public GameObject m_UIObjectSaveSlots = null;
     public GameObject m_UIObjectMainMenu = null;
     public GameObject m_UIObjectOptions = null;
@@ -78,9 +80,6 @@ public class UIController_MainMenu : UIController
 
     public TextMeshProUGUI m_customResXLabel = null;
     public TextMeshProUGUI m_customResYLabel = null;
-
-    [Header("Prompt Variables")]
-    public TextMeshProUGUI m_promptText = null;
 
     private SceneController_MainMenu m_mainMenuSceneController = null;
 
@@ -346,6 +345,8 @@ public class UIController_MainMenu : UIController
         m_UIObjectPrompt.SetActive(true);
         m_UIObjectMainMenu.SetActive(false);
 
+        m_promptText.text = DELETE_OLD_GAME_PROMPT;
+
         m_currentPromptState = PROMPT_STATE.AWAITING_INPUT;
 
         while (m_currentPromptState == PROMPT_STATE.AWAITING_INPUT)
@@ -442,20 +443,5 @@ public class UIController_MainMenu : UIController
         Btn_ReturnToMainMenu();
     }
 
-    #endregion
-
-    #region Prompt Functions
-    private enum PROMPT_STATE { AWAITING_INPUT, PROMPT_ACCECPTED, PROMPT_DECLINED }
-    private PROMPT_STATE m_currentPromptState = PROMPT_STATE.AWAITING_INPUT;
-
-    public void Btn_PromptAccept()
-    {
-        m_currentPromptState = PROMPT_STATE.PROMPT_ACCECPTED;
-    }
-
-    public void Btn_PromptDecline()
-    {
-        m_currentPromptState = PROMPT_STATE.PROMPT_DECLINED;
-    }
     #endregion
 }

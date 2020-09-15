@@ -1,11 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class UIController_InGame : UIController
 {
-    public GameObject m_inGameUI = null;
-    public GameObject m_menuUI = null;
+    public const string RETURN_TO_SHIRINE_PROMPT = "Are you sure you want to delete your old save?";
+
+    [Header("Canvas Variables")]
+    public GameObject m_UIObjectInGame = null;
+    public GameObject m_UIObjectPause = null;
+    public GameObject m_UIObjectPrompt = null;
+
+    [Header("Pause Menu Variables")]
+    public Button m_returnToShrineButton = null;
+
 
     private enum CURRENT_MENU_STATE {IN_GAME, PAUSE_MENU }
     private CURRENT_MENU_STATE m_currentMenuState = CURRENT_MENU_STATE.IN_GAME;
@@ -20,10 +30,28 @@ public class UIController_InGame : UIController
     {
         base.Init();
         
-        if (m_inGameUI == null || m_menuUI == null)
+        if (m_UIObjectInGame == null || m_UIObjectPause == null || m_UIObjectPrompt == null)
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD 
-            Debug.LogWarning(name + " does not have its assigned InGame and Menu UI objects");
+            Debug.LogWarning(name + " does not have its assigned objects");
+#endif
+            Destroy(gameObject);
+            return;
+        }
+
+        if (m_promptText == null)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD 
+            Debug.LogWarning(name + " does not have all its required prompt variables assigned");
+#endif
+            Destroy(gameObject);
+            return;
+        }
+
+        if (m_returnToShrineButton == null)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD 
+            Debug.LogWarning(name + " does not have all its required pause menu variables assigned");
 #endif
             Destroy(gameObject);
             return;
@@ -68,8 +96,9 @@ public class UIController_InGame : UIController
     {
         m_currentMenuState = CURRENT_MENU_STATE.IN_GAME;
 
-        m_inGameUI.SetActive(true);
-        m_menuUI.SetActive(false);
+        m_UIObjectInGame.SetActive(true);
+        m_UIObjectPause.SetActive(false);
+        m_UIObjectPrompt.SetActive(false);
 
         Time.timeScale = 1.0f;
         m_sceneController.InGameState = SceneController_InGame.INGAME_STATE.IN_GAME;
@@ -83,8 +112,10 @@ public class UIController_InGame : UIController
     {
         m_currentMenuState = CURRENT_MENU_STATE.PAUSE_MENU;
 
-        m_inGameUI.SetActive(false);
-        m_menuUI.SetActive(true);
+        m_UIObjectInGame.SetActive(false);
+        m_UIObjectPause.SetActive(true);
+
+        m_returnToShrineButton.interactable = MasterController.Instance.m_inGameSaveData.IsValid();
 
         Time.timeScale = 0.0f;
         m_sceneController.InGameState = SceneController_InGame.INGAME_STATE.PAUSED;
@@ -105,7 +136,50 @@ public class UIController_InGame : UIController
     }
 
     /// <summary>
+    /// display the skill tree
+    /// </summary>
+    public void Btn_Skills()
+    {
+
+    }
+
+    /// <summary>
+    /// Respawn at last shrine
+    /// </summary>
+    public void Btn_ReturnToLastShrine()
+    {
+        StartCoroutine(ReturnToShrinePrompt());
+    }
+
+    /// <summary>
+    /// Use prompt to ensure player wants to return to shrine
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator ReturnToShrinePrompt()
+    {
+        m_promptText.text = RETURN_TO_SHIRINE_PROMPT;
+
+        m_UIObjectPrompt.SetActive(true);
+        m_UIObjectPause.SetActive(false);
+
+        m_currentPromptState = PROMPT_STATE.AWAITING_INPUT;
+
+        while (m_currentPromptState == PROMPT_STATE.AWAITING_INPUT)
+            yield return null;
+
+        if (m_currentPromptState == PROMPT_STATE.PROMPT_ACCECPTED) //Accept prompt
+        {
+            ShowInGame();
+            m_sceneController.RespawnPlayer();
+        }
+        else //Declined prompt
+        {
+            ShowInGame();
+        }
+    }
     /// Button to change basic options
+
+    /// <summary>
     /// </summary>
     public void Btn_Options()
     { 
@@ -117,6 +191,7 @@ public class UIController_InGame : UIController
     /// </summary>
     public void Btn_Quit()
     {
+        Time.timeScale = 1.0f;
         MasterController.Instance.LoadScene(MasterController.SCENE.MAIN_MENU, false);
     }
     #endregion

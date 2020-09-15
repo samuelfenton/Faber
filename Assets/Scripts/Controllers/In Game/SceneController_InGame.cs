@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class SceneController_InGame : SceneController
 {
-    [Header("Assigned Variables")]
     [Tooltip("Prefab used to define a spline")]
     public GameObject m_splinePrefab = null;
     public Interactable_SavePoint m_defaultSavePoint = null;
@@ -18,6 +17,7 @@ public class SceneController_InGame : SceneController
     [HideInInspector]
     public CustomInput m_customInput = null;
 
+    [HideInInspector]
     public enum INGAME_STATE {IN_GAME, PAUSED}
     private INGAME_STATE m_inGameState = INGAME_STATE.IN_GAME;
 
@@ -50,11 +50,24 @@ public class SceneController_InGame : SceneController
         if (m_defaultSavePoint == null)
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Debug.LogError(name + " doesnt have an assigned default spawn point, dying will result in returning to main menu");
+            Debug.LogWarning(name + " doesnt have an assigned default spawn point, dying will result in returning to main menu");
 #endif
         }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (MasterController.Instance.m_currentSaveSlot == -1)//Load slot 0 as default when debugging
+        {
+            MasterController.Instance.m_currentSaveSlot = 0;
+            DataController.LoadCharacterLevelData();
+        }
+#endif
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (m_sceneDefine == MasterController.SCENE.MAIN_MENU || m_sceneDefine == MasterController.SCENE.LOADING)//Load slot 0 as default when debugging
+        {
+            Debug.LogWarning(name + " Has its scene defined, but as loading or main menu, this is incorrect");
+        }
+#endif
         m_customInput = gameObject.AddComponent<CustomInput>();
         m_playerCharacter = FindObjectOfType<Character_Player>();
 
@@ -81,26 +94,7 @@ public class SceneController_InGame : SceneController
             m_interactables[interactableIndex].InitInteractable(m_playerCharacter);
         }
 
-        //Attempt to place player
-        DataController.InGameSaveData m_inGameSaveData = MasterController.Instance.m_inGameSaveData;
-        if (m_inGameSaveData.m_saveSceneIndex == (int)MasterController.Instance.m_currentScene)//correct scene
-        {
-            //Attempt to find level save point
-            for (int interactableIndex = 0; interactableIndex < m_interactables.Length; interactableIndex++)
-            {
-                if (m_interactables[interactableIndex].m_uniqueID == m_inGameSaveData.m_savePointID)
-                {
-                    Interactable_SavePoint savePoint = (Interactable_SavePoint)m_interactables[interactableIndex];
-
-                    if (savePoint != null)
-                    {
-                        m_playerCharacter.m_splinePhysics.m_nodeA = savePoint.m_nodeA;
-                        m_playerCharacter.m_splinePhysics.m_nodeB = savePoint.m_nodeB;
-                        m_playerCharacter.m_splinePhysics.m_currentSplinePercent = savePoint.m_splinePercent;
-                    }
-                }
-            }
-        }
+        RespawnPlayer();
     }
 
     /// <summary>
@@ -131,12 +125,35 @@ public class SceneController_InGame : SceneController
     /// Player has died and will respawn
     /// if avalible use last save point, if not valid, use default spawn point, if not valid, return to main menu
     /// </summary>
-    public void RespanwPlayer()
-    { 
-        if(MasterController.Instance.m_inGameSaveData.m_saveSceneIndex < (int)MasterController.SCENE.SCENE_COUNT)
-        {
+    public void RespawnPlayer()
+    {
+        //Attempt to place player
+        DataController.InGameSaveData m_inGameSaveData = MasterController.Instance.m_inGameSaveData;
 
+        if(m_inGameSaveData.IsValid())
+        {
+            if (m_inGameSaveData.m_saveSceneIndex == (int)m_sceneDefine)//correct scene, teleport to
+            {
+                //Attempt to find level save point
+                for (int interactableIndex = 0; interactableIndex < m_interactables.Length; interactableIndex++)
+                {
+                    if (m_interactables[interactableIndex].m_uniqueID == m_inGameSaveData.m_savePointID)
+                    {
+                        Interactable_SavePoint savePoint = (Interactable_SavePoint)m_interactables[interactableIndex];
+
+                        if (savePoint != null)
+                        {
+                            m_playerCharacter.m_splinePhysics.m_nodeA = savePoint.m_nodeA;
+                            m_playerCharacter.m_splinePhysics.m_nodeB = savePoint.m_nodeB;
+                            m_playerCharacter.m_splinePhysics.m_currentSplinePercent = savePoint.m_splinePercent;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                MasterController.Instance.LoadScene((MasterController.SCENE)m_inGameSaveData.m_saveSceneIndex, true);
+            }
         }
     }
-
 }

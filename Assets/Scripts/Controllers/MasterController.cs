@@ -22,8 +22,6 @@ public class MasterController : MonoBehaviour
     public AsyncOperation m_asyncSceneLoading = null;
     [HideInInspector]
     public DataController.InGameSaveData m_inGameSaveData;
-    [HideInInspector]
-    public SCENE m_currentScene = SCENE.SCENE_COUNT;
 
     public int m_currentSaveSlot = -1;
 
@@ -138,7 +136,7 @@ public class MasterController : MonoBehaviour
     {
         SceneManager.LoadScene(m_sceneStrings[(int)p_scene]);
         yield return null;
-        m_currentScene = p_scene;
+
         InitSceneControllers();
     }
 
@@ -160,7 +158,6 @@ public class MasterController : MonoBehaviour
             yield return null;
         }
 
-        m_currentScene = p_scene;
         InitSceneControllers();//initialising the loading scene
     }
 

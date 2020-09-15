@@ -131,7 +131,7 @@ public class DataController
     /// <param name="p_newSavePoint">Point to use</param>
     public static void SaveLevelData(Interactable_SavePoint p_newSavePoint)
     {
-        MasterController.Instance.m_inGameSaveData = new InGameSaveData(p_newSavePoint.m_uniqueID, (int)MasterController.Instance.m_currentScene);
+        MasterController.Instance.m_inGameSaveData = new InGameSaveData(p_newSavePoint.m_uniqueID, (int)MasterController.Instance.m_currentSceneController.m_sceneDefine);
 
         string savePath = Application.persistentDataPath + "/saves/";
         string savefile = "LevelData_Save" + MasterController.Instance.m_currentSaveSlot + ".dat";

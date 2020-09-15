@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_activationDistance: 2
   m_interactText: {fileID: 8300236050162996427}
-  m_uniqueID: 0
-  m_effectObjectOnLit: {fileID: 9055978264721971097}
+  m_uniqueID: -1
+  m_effectObjectOnLit: {fileID: 0}
   m_nodeA: {fileID: 0}
   m_nodeB: {fileID: 0}
   m_splinePercent: 0.873
@@ -83,12 +83,6 @@ GameObject:
 --- !u!1 &8300236050162996427 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7845735180730173028, guid: af7344d9a5b5c63468f4be290ce9dcff,
-    type: 3}
-  m_PrefabInstance: {fileID: 2292888709662397103}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &9055978264721971097 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7096747646236689718, guid: af7344d9a5b5c63468f4be290ce9dcff,
     type: 3}
   m_PrefabInstance: {fileID: 2292888709662397103}
   m_PrefabAsset: {fileID: 0}

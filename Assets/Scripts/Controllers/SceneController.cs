@@ -4,11 +4,20 @@ using UnityEngine;
 
 public class SceneController : MonoBehaviour
 {
+    [Header("Assigned Variables")]
+    public MasterController.SCENE m_sceneDefine = MasterController.SCENE.SCENE_COUNT;
+
     /// <summary>
     /// Setup variables to be used in UI
     /// </summary>
     public virtual void Init()
     {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (m_sceneDefine == MasterController.SCENE.SCENE_COUNT)//Load slot 0 as default when debugging
+        {
+            Debug.LogWarning(name + " hasnt had its scene defined");
+        }
+#endif
     }
 
     /// <summary>
