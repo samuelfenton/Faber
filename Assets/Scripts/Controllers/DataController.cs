@@ -3,16 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using UnityEngine.SceneManagement;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class DataController
 {
-    [SerializeField]
+    [System.Serializable]
     public struct InGameSaveData
     {
+        public static InGameSaveData Invalid() { return new InGameSaveData(-1, (int)MasterController.SCENE.SCENE_COUNT); }
+
         public InGameSaveData(int p_savePointID, int p_saveSceneIndex)
         {
             m_savePointID = p_savePointID;
             m_saveSceneIndex = p_saveSceneIndex;
+        }
+
+        /// <summary>
+        /// Is this a valid save data?
+        /// Values should fall within defined constraints
+        /// </summary>
+        /// <returns>True when all constraints are met</returns>
+        public bool IsValid()
+        {
+            return m_savePointID > -1 && m_saveSceneIndex > 0 && m_saveSceneIndex < (int)MasterController.SCENE.SCENE_COUNT;
         }
 
         public int m_savePointID;
@@ -84,19 +97,12 @@ public class DataController
     public static void SaveCharacterStats(CharacterStatistics p_stats)
     {
         string savePath = Application.persistentDataPath + "/saves/";
-        if (!Directory.Exists(savePath))
-        {
-            Directory.CreateDirectory(savePath);
-        }
-
-        //TODO add in multiple save files
-        string saveFile = "PlayerData_Save" + 0;
-
-        string filePath = savePath + saveFile + ".json";
+        string savefile = "PlayerData_Save" + MasterController.Instance.m_currentSaveSlot + ".json";
 
         string result = JsonUtility.ToJson(p_stats);
 
-        File.WriteAllText(filePath, result);
+        File.WriteAllText(savePath + savefile, result);
+
     }
 
     /// <summary>
@@ -105,25 +111,44 @@ public class DataController
     /// <param name="p_stats">Where to save stats to, when no save data is present will use default/param>
     public static void LoadCharacterStats(CharacterStatistics p_statistics)
     {
-        string loadPath = Application.persistentDataPath + "/saves/";
-        if (!Directory.Exists(loadPath))
+        string savePath = Application.persistentDataPath + "/saves/";
+        string savefile = "PlayerData_Save" + MasterController.Instance.m_currentSaveSlot + ".json";
+
+        if (!SaveFileExist(savePath, savefile))
         {
             return;
         }
 
-        //TODO add in multiple save files
-        string loadFile = "PlayerData_Save" + 0;
-
-        string filePath = loadPath + loadFile + ".json";
-
-        if (!File.Exists(filePath))
-        {
-            return;
-        }
-
-        string dataAsJson = File.ReadAllText(filePath);
+        string dataAsJson = File.ReadAllText(savePath + savefile);
 
         JsonUtility.FromJsonOverwrite(dataAsJson, p_statistics);
+    }
+
+    /// <summary>
+    /// Save the current load point
+    /// Will auto update master controller
+    /// </summary>
+    /// <param name="p_newSavePoint">Point to use</param>
+    public static void SaveLevelData(Interactable_SavePoint p_newSavePoint)
+    {
+        MasterController.Instance.m_inGameSaveData = new InGameSaveData(p_newSavePoint.m_uniqueID, (int)MasterController.Instance.m_currentScene);
+
+        string savePath = Application.persistentDataPath + "/saves/";
+        string savefile = "LevelData_Save" + MasterController.Instance.m_currentSaveSlot + ".dat";
+
+        BinaryFormatter bf = new BinaryFormatter();
+        if (SaveFileExist(savePath, savefile))
+        {
+            FileStream existingFile = File.Open(savePath + savefile, FileMode.Open);
+            bf.Serialize(existingFile, MasterController.Instance.m_inGameSaveData);
+            existingFile.Close();
+        }
+        else
+        {
+            FileStream newFile = File.Create(savePath + savefile);
+            bf.Serialize(newFile, MasterController.Instance.m_inGameSaveData);
+            newFile.Close();
+        }
     }
 
     /// <summary>
@@ -132,51 +157,64 @@ public class DataController
     /// <returns>true when able to load</returns>
     public static bool LoadCharacterLevelData()
     {
-        string loadPath = Application.persistentDataPath + "/saves/";
-        if (!Directory.Exists(loadPath))
+        string savePath = Application.persistentDataPath + "/saves/";
+        string savefile = "LevelData_Save" + MasterController.Instance.m_currentSaveSlot + ".dat";
+
+        if (SaveFileExist(savePath, savefile))
         {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream file = File.Open(savePath + savefile, FileMode.Open);
+            InGameSaveData results = (InGameSaveData)bf.Deserialize(file);
+            file.Close();
+
+            MasterController.Instance.m_inGameSaveData = results;
+        }
+        else
+        {
+            MasterController.Instance.m_inGameSaveData = InGameSaveData.Invalid();
+
             return false;
         }
-
-        //TODO add in multiple save files
-        string loadFile = "LevelData_Save" + 0;
-
-        string filePath = loadPath + loadFile + ".json";
-
-        if (!File.Exists(filePath))
-        {
-            return false;
-        }
-
-        string dataAsJson = File.ReadAllText(filePath);
-
-        JsonUtility.FromJsonOverwrite(dataAsJson, MasterController.Instance.m_lastInGameSaveData);
 
         return true;
     }
 
     /// <summary>
-    /// Save the current load point
-    /// Will auto update master controller
+    /// Does a given file exist on the system?
     /// </summary>
-    /// <param name="p_newSavePoint">Point to use</param>
-    public static void SaveLevelData(LevelSavePoint p_newSavePoint)
+    /// <param name="p_path">Path to file</param>
+    /// <param name="p_fileName">File name including extension</param>
+    /// <returns>true when file is found</returns>
+    public static bool SaveFileExist(string p_path, string p_fileName)
     {
-        MasterController.Instance.m_lastInGameSaveData = new InGameSaveData(p_newSavePoint.m_uniqueID, (int)MasterController.Instance.m_currentScene);
-
-        string savePath = Application.persistentDataPath + "/saves/";
-        if (!Directory.Exists(savePath))
+        if (!Directory.Exists(p_path))
         {
-            Directory.CreateDirectory(savePath);
+            Directory.CreateDirectory(p_path);
         }
 
-        //TODO add in multiple save files
-        string saveFile = "LevelData_Save" + 0;
+        string filePath = p_path + p_fileName;
 
-        string filePath = savePath + saveFile + ".json";
+        return File.Exists(filePath);
+    }
 
-        string result = JsonUtility.ToJson(MasterController.Instance.m_lastInGameSaveData);
+    /// <summary>
+    /// Delete saves files as needed
+    /// </summary>
+    public static void RemoveSaveFiles()
+    {
+        string savePath = Application.persistentDataPath + "/saves/";
+        string levelDataSavefile = "LevelData_Save" + MasterController.Instance.m_currentSaveSlot + ".dat";
+        string characterDataSavefile = "PlayerData_Save" + MasterController.Instance.m_currentSaveSlot + ".json";
 
-        File.WriteAllText(filePath, result);
+        if (SaveFileExist(savePath, levelDataSavefile))
+        {
+            File.Delete(savePath + levelDataSavefile);
+        }
+        if (SaveFileExist(savePath, characterDataSavefile))
+        {
+            File.Delete(savePath + characterDataSavefile);
+        }
+
+        MasterController.Instance.m_inGameSaveData = InGameSaveData.Invalid();
     }
 }

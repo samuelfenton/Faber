@@ -5,11 +5,16 @@ using UnityEngine;
 [ExecuteAlways]
 public class Interactable : MonoBehaviour
 {
+    [Header("Assigned Variables")]
+    public float m_activationDistance = 2.0f;
+    public GameObject m_interactText = null;
+    private float m_sqrActivationDistance = 4.0f;
+
+    [Header("Auto generated")]
     public int m_uniqueID = -1;
 
-    public float m_activationDistance = 2.0f;
-    private float m_sqrActivationDistance = 4.0f;
     protected Character_Player m_playerCharacter = null;
+    private bool m_interactableFlag = false;
 
     /// <summary>
     /// Setup a unique id for every interactable
@@ -37,6 +42,10 @@ public class Interactable : MonoBehaviour
         m_playerCharacter = p_player;
 
         m_sqrActivationDistance = m_activationDistance * m_activationDistance;
+        m_interactableFlag = false;
+
+        if (m_interactText != null)
+            m_interactText.SetActive(false);
     }
 
     /// <summary>
@@ -45,11 +54,36 @@ public class Interactable : MonoBehaviour
     /// </summary>
     public virtual void UpdateInteractable()
     {
-        if(MOARMaths.SqrDistance(m_playerCharacter.transform.position, transform.position) < m_sqrActivationDistance && m_playerCharacter.m_customInput.GetKey(CustomInput.INPUT_KEY.INTERACT) == CustomInput.INPUT_STATE.DOWNED)
+        if(m_interactableFlag)
         {
-            Debug.Log("Can interact)");
-            Interact();
+            if(!ValidInteraction())
+            {
+                InteractEnd();
+                m_interactableFlag = false;
+
+            }
+            else if(m_playerCharacter.m_customInput.GetKey(CustomInput.INPUT_KEY.INTERACT) == CustomInput.INPUT_STATE.DOWNED)
+            {
+                Interact();
+            }
         }
+        else
+        {
+            if (ValidInteraction())
+            {
+                InteractStart();
+                m_interactableFlag = true;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Player first can interact
+    /// </summary>
+    public virtual void InteractStart()
+    {
+        if (m_interactText != null)
+            m_interactText.SetActive(true);
     }
 
     /// <summary>
@@ -58,6 +92,25 @@ public class Interactable : MonoBehaviour
     public virtual void Interact()
     { 
     
+    }
+    
+    /// <summary>
+    /// Player can no longer intereact, moved out of distance
+    /// </summary>
+    public virtual void InteractEnd()
+    {
+        if (m_interactText != null)
+            m_interactText.SetActive(false);
+    }
+
+    /// <summary>
+    /// Can the player interact with this interactable?
+    /// Will be contstantly checked
+    /// </summary>
+    /// <returns>true when able to interact</returns>
+    public virtual bool ValidInteraction()
+    {
+        return MOARMaths.SqrDistance(m_playerCharacter.transform.position, transform.position) < m_sqrActivationDistance;
     }
 
 }

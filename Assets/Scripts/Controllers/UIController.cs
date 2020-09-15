@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 
 public class UIController : MonoBehaviour
 {
+
     /// <summary>
     /// Setup varibels to be used in UI
     /// </summary>

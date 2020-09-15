@@ -51,9 +51,14 @@ public class UIController_MainMenu : UIController
     private static Color NON_INTERACTIVE_UI_COLOR = new Color(0.4f, 0.4f, 0.4f, 1.0f);
 
     [Header("Assigned Variables")]
+    public GameObject m_UIObjectSaveSlots = null;
     public GameObject m_UIObjectMainMenu = null;
     public GameObject m_UIObjectOptions = null;
     public GameObject m_UIObjectCredits = null;
+    public GameObject m_UIObjectPrompt = null;
+
+    [Header("Main Menu Variables")]
+    public Button m_loadGameButton = null;
 
     [Header("Options Variables")]
     public Slider m_masterVolumeSlider = null;
@@ -73,6 +78,9 @@ public class UIController_MainMenu : UIController
 
     public TextMeshProUGUI m_customResXLabel = null;
     public TextMeshProUGUI m_customResYLabel = null;
+
+    [Header("Prompt Variables")]
+    public TextMeshProUGUI m_promptText = null;
 
     private SceneController_MainMenu m_mainMenuSceneController = null;
 
@@ -94,10 +102,19 @@ public class UIController_MainMenu : UIController
             return;
         }
 
-        if (m_UIObjectMainMenu == null || m_UIObjectOptions == null || m_UIObjectCredits == null)
+        if (m_UIObjectSaveSlots == null || m_UIObjectMainMenu == null || m_UIObjectOptions == null || m_UIObjectCredits == null || m_UIObjectPrompt == null)
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD 
             Debug.LogWarning(name + " does not have all its required variables assigned");
+#endif
+            Destroy(gameObject);
+            return;
+        }
+
+        if (m_loadGameButton == null)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD 
+            Debug.LogWarning(name + " does not have all its required main menu variables assigned");
 #endif
             Destroy(gameObject);
             return;
@@ -115,13 +132,67 @@ public class UIController_MainMenu : UIController
             return;
         }
 
+        if (m_promptText == null)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD 
+            Debug.LogWarning(name + " does not have all its required prompt variables assigned");
+#endif
+            Destroy(gameObject);
+            return;
+        }
+
+        if (MasterController.Instance.m_currentSaveSlot == -1)
+        {
+            //Determnine save slot
+            bool anySaves = false;
+
+            string savePath = Application.persistentDataPath + "/saves/";
+
+            for (int saveSlotIndex = 0; saveSlotIndex < 3; saveSlotIndex++)
+            {
+                string savefile = "LevelData_Save" + saveSlotIndex + ".dat";
+
+                if (DataController.SaveFileExist(savePath, savefile))
+                {
+                    anySaves = true;
+                    break;
+                }
+            }
+
+            if (anySaves) //At least one save slot
+            {
+                m_UIObjectSaveSlots.SetActive(true);
+                m_UIObjectMainMenu.SetActive(false);
+                m_UIObjectOptions.SetActive(false);
+                m_UIObjectCredits.SetActive(false);
+                m_UIObjectPrompt.SetActive(false);
+            }
+            else //No save slots, use first
+            {
+                MasterController.Instance.m_currentSaveSlot = 0;
+                DisplayMainMenu();
+            }
+        }
+        else
+        {
+            MasterController.Instance.m_currentSaveSlot = 0;
+            DisplayMainMenu();
+        }
+    }
+
+    public void DisplayMainMenu()
+    {
+        DataController.LoadCharacterLevelData();
+
         //Fill data
         m_optionsVariables = DataController.GetOptionsData();
         RebuildOptionUIVariables();
 
+        m_UIObjectSaveSlots.SetActive(false);
         m_UIObjectMainMenu.SetActive(true);
         m_UIObjectOptions.SetActive(false);
         m_UIObjectCredits.SetActive(false);
+        m_UIObjectPrompt.SetActive(false);
 
         //Call in start to set defaults after loading data
         OnChange_Resolution();
@@ -129,6 +200,11 @@ public class UIController_MainMenu : UIController
 
         //Setup graphics
         UpdateGraphicsSettings();
+
+        if (!MasterController.Instance.m_inGameSaveData.IsValid())
+        {
+            m_loadGameButton.gameObject.SetActive(false);
+        }
     }
 
     /// <summary>
@@ -226,6 +302,20 @@ public class UIController_MainMenu : UIController
 
     #endregion
 
+    #region Save Selection
+
+    /// <summary>
+    /// New save slot is selected, in the case of already having 
+    /// </summary>
+    /// <param name="p_saveSlot">Slot to be selected, range should be between 0 and 2 inclusive</param>
+    public void Btn_SaveSlotSelected(int p_saveSlot)
+    {
+        MasterController.Instance.m_currentSaveSlot = p_saveSlot;
+        DisplayMainMenu();
+    }
+
+    #endregion
+
     #region Main menu Buttons
 
     /// <summary>
@@ -241,7 +331,36 @@ public class UIController_MainMenu : UIController
     /// </summary>
     public void Btn_NewGame()
     {
-        m_mainMenuSceneController.LoadFirstLevel();
+        if(MasterController.Instance.m_inGameSaveData.IsValid())//Already a save file, should we overwrite?
+        {
+            StartCoroutine(NewGamePrompt());
+        }
+        else
+        {
+            m_mainMenuSceneController.LoadFirstLevel();
+        }
+    }
+
+    private IEnumerator NewGamePrompt()
+    {
+        m_UIObjectPrompt.SetActive(true);
+        m_UIObjectMainMenu.SetActive(false);
+
+        m_currentPromptState = PROMPT_STATE.AWAITING_INPUT;
+
+        while (m_currentPromptState == PROMPT_STATE.AWAITING_INPUT)
+            yield return null;
+
+        if(m_currentPromptState == PROMPT_STATE.PROMPT_ACCECPTED) //Accept prompt
+        {
+            DataController.RemoveSaveFiles();
+            m_mainMenuSceneController.LoadFirstLevel();
+        }
+        else //Declined prompt
+        {
+            m_UIObjectPrompt.SetActive(false);
+            m_UIObjectMainMenu.SetActive(true);
+        }
     }
 
     /// <summary>
@@ -323,5 +442,20 @@ public class UIController_MainMenu : UIController
         Btn_ReturnToMainMenu();
     }
 
+    #endregion
+
+    #region Prompt Functions
+    private enum PROMPT_STATE { AWAITING_INPUT, PROMPT_ACCECPTED, PROMPT_DECLINED }
+    private PROMPT_STATE m_currentPromptState = PROMPT_STATE.AWAITING_INPUT;
+
+    public void Btn_PromptAccept()
+    {
+        m_currentPromptState = PROMPT_STATE.PROMPT_ACCECPTED;
+    }
+
+    public void Btn_PromptDecline()
+    {
+        m_currentPromptState = PROMPT_STATE.PROMPT_DECLINED;
+    }
     #endregion
 }

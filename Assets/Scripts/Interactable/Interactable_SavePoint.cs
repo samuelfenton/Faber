@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [ExecuteAlways]
-public class LevelSavePoint : Interactable
+public class Interactable_SavePoint : Interactable
 {
+    [Header("Assigned Variables")]
+    public GameObject m_effectObjectOnLit = null;
+    [Header("Respawn Point")]
     public Pathing_Node m_nodeA = null;
     public Pathing_Node m_nodeB = null;
     [Range(0.0f, 1.0f)]
     public float m_splinePercent = 0.0f;
+
+    public enum SAVEPOINT_STATE {LIT, UNLIT}
+    public SAVEPOINT_STATE m_currentState = SAVEPOINT_STATE.UNLIT;
 
     /// <summary>
     /// Setup a unique id for every interactable
@@ -34,15 +40,11 @@ public class LevelSavePoint : Interactable
     public override void InitInteractable(Character_Player p_player)
     {
         base.InitInteractable(p_player);
+
+        m_currentState = SAVEPOINT_STATE.UNLIT;
+        m_effectObjectOnLit.SetActive(false);
     }
 
-    /// <summary>
-    /// Used rather than update
-    /// </summary>
-    public override void UpdateInteractable()
-    {
-        base.UpdateInteractable();
-    }
 
     /// <summary>
     /// Called when player tries to interact
@@ -52,5 +54,12 @@ public class LevelSavePoint : Interactable
         base.Interact();
 
         DataController.SaveLevelData(this);
+        DataController.SaveCharacterStats(m_playerCharacter.m_characterStatistics);
+
+        if (m_currentState == SAVEPOINT_STATE.UNLIT)
+        {
+            m_currentState = SAVEPOINT_STATE.LIT;
+            m_effectObjectOnLit.SetActive(true);
+        }
     }
 }

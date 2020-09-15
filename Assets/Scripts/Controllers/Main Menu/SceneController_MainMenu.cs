@@ -16,11 +16,12 @@ public class SceneController_MainMenu : SceneController
 
     /// <summary>
     /// Should be called from UI button
+    /// Button should only be clickable after checking that load game is valid
     /// Will attempt to load the game
     /// </summary>
     public void LoadGame()
     {
-        MasterController.Instance.LoadGame();
+        MasterController.Instance.LoadScene((MasterController.SCENE)MasterController.Instance.m_inGameSaveData.m_saveSceneIndex, true);
     }
 
     /// <summary>

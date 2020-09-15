@@ -12,11 +12,6 @@ public class CharacterStatistics : MonoBehaviour
     public int[] m_statLevel = new int[(int)STATS.STAT_COUNT];
     public bool[] m_abilityFlags = new bool[(int)ABILITY.ABILITY_COUNT];
 
-    private void Awake()
-    {
-        DataController.LoadCharacterStats(this);
-    }
-
     /// <summary>
     /// Get the players current level
     /// </summary>

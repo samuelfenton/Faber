@@ -7,7 +7,7 @@ public class Character_Player : Character
     protected StateMachine_Player m_playerStateMachine = null;
 
     [Header("Saving")]
-    public LevelSavePoint m_lastSavePoint = null;
+    public Interactable_SavePoint m_lastSavePoint = null;
     [HideInInspector]
     public CustomInput m_customInput = null;
 
@@ -18,6 +18,8 @@ public class Character_Player : Character
     public override void InitEntity()
     {
         base.InitEntity();
+
+        DataController.LoadCharacterStats(m_characterStatistics);
 
         m_customInput = ((SceneController_InGame)MasterController.Instance.m_currentSceneController).m_customInput;
 

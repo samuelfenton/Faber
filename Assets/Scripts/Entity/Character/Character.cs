@@ -79,7 +79,7 @@ public class Character : Entity
     protected ObjectPoolManager_InGame m_objectPoolingManger = null;
 
     [HideInInspector]
-    public CharacterStatistics m_abilities = null;
+    public CharacterStatistics m_characterStatistics = null;
 
     /// <summary>
     /// Initiliase the entity
@@ -90,7 +90,7 @@ public class Character : Entity
         base.InitEntity();
 
         //Get references
-        m_abilities = GetComponent<CharacterStatistics>();
+        m_characterStatistics = GetComponent<CharacterStatistics>();
         m_weaponManager = GetComponent<WeaponManager>();
         m_animator = m_characterModel.GetComponent<Animator>();
 

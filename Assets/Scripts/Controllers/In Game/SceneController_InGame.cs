@@ -5,7 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class SceneController_InGame : SceneController
 {
+    [Header("Assigned Variables")]
+    [Tooltip("Prefab used to define a spline")]
     public GameObject m_splinePrefab = null;
+    public Interactable_SavePoint m_defaultSavePoint = null;
+
     private Character_Player m_playerCharacter = null;
 
     private Entity[] m_entities;
@@ -36,29 +40,59 @@ public class SceneController_InGame : SceneController
     {
         base.Init();
 
+        if(m_splinePrefab == null)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.LogError(name + " has no assigned spline prefab");
+#endif
+            Destroy(this);
+        }
+        if (m_defaultSavePoint == null)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.LogError(name + " doesnt have an assigned default spawn point, dying will result in returning to main menu");
+#endif
+        }
+
+
         m_customInput = gameObject.AddComponent<CustomInput>();
         m_playerCharacter = FindObjectOfType<Character_Player>();
 
+        m_interactables = FindObjectsOfType<Interactable>();
+        m_entities = FindObjectsOfType<Entity>();
+        
         //Pathing
         Pathing_Node[] pathingNodes = FindObjectsOfType<Pathing_Node>();
-
         for (int nodeIndex = 0; nodeIndex < pathingNodes.Length; nodeIndex++)
         {
             pathingNodes[nodeIndex].InitNode(m_splinePrefab);
         }
 
+        //Entities
+        for (int entityIndex = 0; entityIndex < m_entities.Length; entityIndex++)
+        {
+            m_entities[entityIndex].InitEntity();
+        }
+
+
+        //Interactables
+        for (int interactableIndex = 0; interactableIndex < m_interactables.Length; interactableIndex++)
+        {
+            m_interactables[interactableIndex].InitInteractable(m_playerCharacter);
+        }
+
         //Attempt to place player
-        DataController.InGameSaveData m_inGameSaveData = MasterController.Instance.m_lastInGameSaveData;
-        if(m_inGameSaveData.m_saveSceneIndex == (int)MasterController.Instance.m_currentScene)//correct scene
+        DataController.InGameSaveData m_inGameSaveData = MasterController.Instance.m_inGameSaveData;
+        if (m_inGameSaveData.m_saveSceneIndex == (int)MasterController.Instance.m_currentScene)//correct scene
         {
             //Attempt to find level save point
             for (int interactableIndex = 0; interactableIndex < m_interactables.Length; interactableIndex++)
             {
-                if(m_interactables[interactableIndex].m_uniqueID == m_inGameSaveData.m_savePointID)
+                if (m_interactables[interactableIndex].m_uniqueID == m_inGameSaveData.m_savePointID)
                 {
-                    LevelSavePoint savePoint = (LevelSavePoint)m_interactables[interactableIndex];
+                    Interactable_SavePoint savePoint = (Interactable_SavePoint)m_interactables[interactableIndex];
 
-                    if(savePoint!=null)
+                    if (savePoint != null)
                     {
                         m_playerCharacter.m_splinePhysics.m_nodeA = savePoint.m_nodeA;
                         m_playerCharacter.m_splinePhysics.m_nodeB = savePoint.m_nodeB;
@@ -67,24 +101,6 @@ public class SceneController_InGame : SceneController
                 }
             }
         }
-
-        //Entities
-        m_entities = FindObjectsOfType<Entity>();
-
-        for (int entityIndex = 0; entityIndex < m_entities.Length; entityIndex++)
-        {
-            m_entities[entityIndex].InitEntity();
-        }
-
-
-        //Interactables
-        m_interactables = FindObjectsOfType<Interactable>();
-
-        for (int interactableIndex = 0; interactableIndex < m_interactables.Length; interactableIndex++)
-        {
-            m_interactables[interactableIndex].InitInteractable(m_playerCharacter);
-        }
-
     }
 
     /// <summary>
@@ -110,4 +126,17 @@ public class SceneController_InGame : SceneController
             }
         }
     }
+
+    /// <summary>
+    /// Player has died and will respawn
+    /// if avalible use last save point, if not valid, use default spawn point, if not valid, return to main menu
+    /// </summary>
+    public void RespanwPlayer()
+    { 
+        if(MasterController.Instance.m_inGameSaveData.m_saveSceneIndex < (int)MasterController.SCENE.SCENE_COUNT)
+        {
+
+        }
+    }
+
 }
