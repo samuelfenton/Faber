@@ -21,15 +21,12 @@ public class Interactable : MonoBehaviour
     /// </summary>
     protected virtual void Awake()
     {
-        if (m_uniqueID == -1) //Get new uniqueID, TODO make better
+        m_uniqueID = 0;
+        Interactable[] allInteractables = FindObjectsOfType<Interactable>();
+        for (int interactableIndex = 0; interactableIndex < allInteractables.Length; interactableIndex++)
         {
-            m_uniqueID = 0;
-            Interactable[] allInteractables = FindObjectsOfType<Interactable>();
-            for (int interactableIndex = 0; interactableIndex < allInteractables.Length; interactableIndex++)
-            {
-                if (allInteractables[interactableIndex] != this && allInteractables[interactableIndex].m_uniqueID >= m_uniqueID)
-                    m_uniqueID = allInteractables[interactableIndex].m_uniqueID + 1;
-            }
+            if (allInteractables[interactableIndex] != this && allInteractables[interactableIndex].m_uniqueID >= m_uniqueID)
+                m_uniqueID = allInteractables[interactableIndex].m_uniqueID + 1;
         }
     }
 
