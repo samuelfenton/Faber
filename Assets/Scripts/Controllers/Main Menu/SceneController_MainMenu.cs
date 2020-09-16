@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SceneController_MainMenu : SceneController
 {
-    public MasterController.SCENE m_firstScene = MasterController.SCENE.LEVEL_TUTORIAL;
+    public MasterController.SCENE m_firstScene = MasterController.SCENE.LEVEL_PROTOTYPE_TUTORIAL;
 
     /// <summary>
     /// Setup variables to be used in UI

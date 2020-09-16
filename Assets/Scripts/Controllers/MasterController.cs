@@ -6,9 +6,9 @@ using UnityEngine.SceneManagement;
 public class MasterController : MonoBehaviour
 {
     //Naming scheme for levels excluding main menu and loading should follow the following "LEVEL_THEME_AREA"
-    //THEME - Where it is, cycber city, industrial, shogun, etc
+    //THEME - Where it is, PROTOTYPE, CHILDHOOD, SLUMS, CYBERCITY, INDUSTRIAL, EDO
     //AREA - Where within the theme is it? opening, waterfront etc
-    public enum SCENE {MAIN_MENU, LOADING, LEVEL_TUTORIAL, LEVEL_CYBERCITY_PLAYERHUB, LEVEL_INDUSTRIAL_OPENING, SCENE_COUNT}
+    public enum SCENE {MAIN_MENU, LOADING, LEVEL_PROTOTYPE_TUTORIAL, LEVEL_CYBERCITY_PLAYERHUB, LEVEL_INDUSTRIAL_OPENING, SCENE_COUNT}
     private string[] m_sceneStrings = new string[(int)SCENE.SCENE_COUNT];
     public static MasterController Instance { get; private set; }
 
@@ -85,7 +85,7 @@ public class MasterController : MonoBehaviour
     {
         m_sceneStrings[(int)SCENE.MAIN_MENU] = "MainMenu";
         m_sceneStrings[(int)SCENE.LOADING] = "Loading";
-        m_sceneStrings[(int)SCENE.LEVEL_TUTORIAL] = "Level_Tutorial";
+        m_sceneStrings[(int)SCENE.LEVEL_PROTOTYPE_TUTORIAL] = "Level_Tutorial";
         m_sceneStrings[(int)SCENE.LEVEL_INDUSTRIAL_OPENING] = "Level_Industrial_Opening";
         m_sceneStrings[(int)SCENE.LEVEL_CYBERCITY_PLAYERHUB] = "Level_Cybercity_PlayerHub";
     }
