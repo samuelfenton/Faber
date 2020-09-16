@@ -1,11 +1,14 @@
 fileFormatVersion: 2
-guid: 0608b57486a527845845e8e5679233cd
+guid: 7c31dcd0197b80d40982ca53adef31dc
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable:
   - first:
-      74: -4516799772856361862
-    second: Anim_Lilith_Katana_InAir_Heavy4_Section02
+      74: 8078196535081161014
+    second: Character_Lilith_fallingLandRoll
+  - first:
+      74: -5646436938365627208
+    second: Anim_Lilith_Katana_Land_RunBlend
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -25,7 +28,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
-    importConstraints: 1
+    importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -35,11 +38,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Anim_Lilith_Katana_InAir_Heavy4_Section02
-      takeName: Character_Lilith_InAirHeavyAttackIdleToIdle
+      name: Anim_Lilith_Katana_Land_RunBlend
+      takeName: Character_Lilith_fallinglandRoll
       internalID: 0
-      firstFrame: 50
-      lastFrame: 64
+      firstFrame: 1
+      lastFrame: 13
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

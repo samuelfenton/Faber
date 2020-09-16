@@ -1,14 +1,11 @@
 fileFormatVersion: 2
-guid: 7c31dcd0197b80d40982ca53adef31dc
+guid: 5215ef8a986f9ab44801a7ee49a34920
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable:
   - first:
-      74: 8078196535081161014
-    second: Character_Lilith_fallingLandRoll
-  - first:
-      74: -5646436938365627208
-    second: Anim_Lilith_Katana_Landing_RunBlend
+      74: -203655887218126122
+    second: Anim_YBot_Unarmed_InAir
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -38,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Anim_Lilith_Katana_Landing_RunBlend
-      takeName: Character_Lilith_fallinglandRoll
+      name: Anim_YBot_Unarmed_InAir
+      takeName: mixamo.com
       internalID: 0
-      firstFrame: 1
-      lastFrame: 13
+      firstFrame: 0
+      lastFrame: 21
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -116,11 +113,11 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     globalScale: 1
-    rootMotionBoneName: Character_Lilith_Base_JNT
+    rootMotionBoneName: mixamorig:Hips
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 595c49e6023f363429de1b36ff08178e,
     type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2

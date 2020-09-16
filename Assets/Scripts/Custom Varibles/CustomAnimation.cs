@@ -9,8 +9,8 @@ public class CustomAnimation : MonoBehaviour
 
     private const string NULL_STRING = "Null";
 
-    private const string SECTION01_STRING = "_Section01";
-    private const string SECTION02_STRING = "_Section02";
+    private const string SECTION01_STRING = "_Section1";
+    private const string SECTION02_STRING = "_Section2";
 
     //Used Varibles
     public enum LAYER {BASE = 0, ATTACK, INTERRUPT, LAYER_COUNT}
