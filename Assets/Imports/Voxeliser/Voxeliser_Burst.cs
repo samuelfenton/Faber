@@ -1,239 +1,167 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
+﻿#if VOXELISER_MATHEMATICS_ENABLED && VOXELISER_BURST_ENABLED && VOXELISER_COLLECTIONS_ENABLED
 
-#if VOXELISER_MATHEMATICS_ENABLED && VOXELISER_BURST_ENABLED && VOXELISER_COLLECTIONS_ENABLED
-using Unity.Collections;
+using System.Collections;
+using UnityEngine;
 using Unity.Jobs;
 using UnityEngine.Jobs;
 using Unity.Burst;
 using Unity.Mathematics;
-#endif
+using Unity.Collections;
 
-[ExecuteAlways]
 public class Voxeliser_Burst : MonoBehaviour
 {
-#if VOXELISER_MATHEMATICS_ENABLED && VOXELISER_BURST_ENABLED && VOXELISER_COLLECTIONS_ENABLED
+    //Building Voxel stuff
+    private const int MAX_VERTS_PER_MESH_COUNT = 65535; //Mesh can have 65535 verts
 
-    private const int MAX_MESH_COUNT = 65535; //Mesh can have 65535 verts
+    private const int VERTS_PER_VOXEL_HARDEDGE = 24; //How many verts on a single voxel for a hard edge
+    private const int VERTS_PER_VOXEL_SOFTEDGE = 8; //How many verts on a single voxel for a soft edge
 
-    private const int HARDEDGE_VERTS_PER_VOXEL = 24; //How many verts on a single voxel for a hard edge
-    private const int SOFTEDGE_VERTS_PER_VOXEL = 8; //How many verts on a single voxel for a soft edge
+    private const int VOXELS_PER_MESH_HARDEDGE = MAX_VERTS_PER_MESH_COUNT / VERTS_PER_VOXEL_HARDEDGE;
+    private const int VOXELS_PER_MESH_SOFTEDGE = MAX_VERTS_PER_MESH_COUNT / VERTS_PER_VOXEL_SOFTEDGE;
 
-    private const int MAX_MESH_VOXEL_HARDEDGE = MAX_MESH_COUNT/ HARDEDGE_VERTS_PER_VOXEL;
-    private const int MAX_MESH_VOXEL_SOFTEDGE = MAX_MESH_COUNT/ SOFTEDGE_VERTS_PER_VOXEL;
+    private const int MAX_VOXEL_COUNT = 1000000; //Smaller is better, keep below int32.maxvalue
 
-    private bool m_runFlag = false;
-    private bool m_processingFlag = false;
-
-    [Header("Settings")]
-    [Tooltip("Size of each voxel")]
-    public float m_voxelSize = 0.5f;
+    private const int TRIS_PER_VOXEL = 36;
 
     [SerializeField]
-    public enum VOXELISER_TYPE { SOLID, DYNAMIC_SOLID, ANIMATED, STATIC };
+    public enum VOXELISER_TYPE {SOLID, STATIC, ANIMATED};
     [Tooltip("SOLID = no animation, snaps voxels to grid DYNAMIC_SOLID = solid mesh that will have its vertices modified during runtime ANIMATED = full animation STATIC = converted to single mesh, wont snap at all")]
     public VOXELISER_TYPE m_voxeliserType = VOXELISER_TYPE.SOLID;
-    [Tooltip("Perform calculations over as many frames as needed")]
-    public bool m_performOverFrames = false;
-
-    //Advanced Settings
-    [Header("Advanced Settings")]
-    [Tooltip("Gameobject which holds the mesh for the voxeliser, with none assigned, assumption is mesh is on script gameobject")]
-    public GameObject m_objectWithMesh = null;
-    [Tooltip("How many meshes should exist, used for large meshes")]
-    public int m_totalMeshCount = 1;
-    public enum VERT_TYPE{HARD_EDGE, SOFT_EDGE}
+    public enum VERT_TYPE { HARD_EDGE, SOFT_EDGE }
     [Tooltip("What kind of verts will be used?")]
     public VERT_TYPE m_vertType = VERT_TYPE.HARD_EDGE;
 
-    //Stored variblesdue to this neededing to be intialised at start.
     private bool m_storedIsHardEdge = true;
-    private int m_storedTotalMeshCount = 0; 
-    private int m_storedMeshVoxelCount = 0; 
-    private int m_storedVertPerVoxel = 0;
-    
-    private int m_storedMaxVoxels = 0;
+    private float m_storedVoxelSize = 0.0f;
+    //End
 
-    [Header("Specific Settings")]
-    [Tooltip("Allow user to save static mesh at runtime in editor")]
-    public bool m_saveStaticMesh = false;
-    [Tooltip("Should the rotation be reset when saving?")]
-    public bool m_resetRotation = false;
+    //Editor
+    [Tooltip("How large each voxel is")]
+    public float m_voxelSize = 1.0f;
+    [Tooltip("Where can we find the mesh desired to be voxelised, if on the same object as the script, this can be ignored")]
+    public GameObject m_objectWithMesh = null;
+    [Header("Advanced")]
+    [Range(1,100)]
+    [Tooltip("How many meshes should exist, used for large meshes")]
+    public int m_meshesToUse = 1;
 
-    private GameObject m_parentVoxelObject = null;
-    private GameObject[] m_voxelObjects = new GameObject[0];
+    private bool m_editorBeenChangedFlag = true;
+    //End
+
+
+    //Native Job system 
+    private struct PassThroughData
+    {
+        public int3 m_position;
+        public double2 m_UV;
+
+        public PassThroughData(int3? p_nullPosition, double2? p_nullUV = null)
+        {
+            m_position = p_nullPosition == null ? int3.zero : p_nullPosition.Value;
+            m_UV = p_nullUV == null ? double2.zero : p_nullUV.Value;
+        }
+    }
+
+    private struct VoxelData
+    {
+        public int3 m_position;
+        public double2 m_UV;
+
+        public VoxelData(int3? p_nullPosition, double2? p_nullUV = null)
+        {
+            m_position = p_nullPosition == null ? int3.zero : p_nullPosition.Value;
+            m_UV = p_nullUV == null ? double2.zero : p_nullUV.Value;
+        }
+
+        public void SetVoxelData(int3? p_nullPosition, double2? p_nullUV)
+        {
+            m_position = p_nullPosition == null ? int3.zero : p_nullPosition.Value;
+            m_UV = p_nullUV == null ? double2.zero : p_nullUV.Value;
+        }
+    }
+
+    private NativeHashMap<int3, double2> m_nativePassThroughTriData;
+
+    private NativeArray<double3> m_nativeReturnVerts;
+    private NativeArray<int> m_nativeReturnTris;
+    private NativeArray<double2> m_nativeReturnUVs;
+
+    private NativeArray<double3> m_nativeVerts;
+    private NativeArray<int> m_nativeTris;
+    private NativeArray<double2> m_nativeUVs;
+
+    private JobHandle m_calcTrisJobHandle;
+    private JobHandle m_buildMeshJobHandle;
+    //End
+
+    //Mesh stuff
+    private GameObject m_voxelisedObject = null;
     private Mesh m_originalMesh = null;
-    private Mesh[] m_voxelMeshs = new Mesh[0];
 
-    //Animated
-    private SkinnedMeshRenderer m_skinnedRenderer = null;
-    private Material[] m_orginalMats = new Material[0];
+    private SkinnedMeshRenderer m_skinnedMeshRenderer = null;
 
-    private void Awake()
+    private Mesh[] m_voxelisedMeshes;
+
+    //End
+    private void Start()
     {
-        if (Application.IsPlaying(gameObject))
-        {
-            StartCoroutine(InitVoxeliser());
-        }
-    }
-
-    /// <summary>
-    /// Handles awake of object, only should restart if already running
-    /// </summary>
-    private void OnEnable()
-    {
-        if (Application.IsPlaying(gameObject))
-        {
-            if(m_runFlag)
-            {
-                if(m_parentVoxelObject!=null)
-                    m_parentVoxelObject.SetActive(true);
-
-                switch (m_voxeliserType)
-                {
-                    case VOXELISER_TYPE.SOLID:
-                        StartCoroutine(VoxeliserSolid());
-                        break;
-                    case VOXELISER_TYPE.DYNAMIC_SOLID:
-                        StartCoroutine(VoxeliserDynamicSolid());
-                        break;
-                    case VOXELISER_TYPE.ANIMATED:
-                        StartCoroutine(VoxeliserAnimated());
-                        break;
-                    case VOXELISER_TYPE.STATIC:
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Clean up any jobs, disable voxel object
-    /// </summary>
-    private void OnDisable()
-    {
-        StopAllCoroutines();
-
-        m_buildTriJobHandle.Complete();
-        m_convertedMeshJobHandle.Complete();
-
-        if (m_parentVoxelObject != null)
-            m_parentVoxelObject.SetActive(false);
-    }
-
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-        if (!Application.IsPlaying(gameObject))
-        {
-            if (m_saveStaticMesh && !m_processingFlag)
-            {
-                m_saveStaticMesh = false;
-                m_processingFlag = true;
-                StartCoroutine(SaveMesh());
-            }
-        }
-    }
-#endif
-
-    /// <summary>
-    /// Setup of the Voxeliser
-    /// Ensure object has all required components atached
-    /// Setup required varibles
-    /// </summary>
-    public IEnumerator InitVoxeliser()
-    {
-        yield return null;
-
-        m_storedIsHardEdge = m_vertType == VERT_TYPE.HARD_EDGE;
-        m_storedTotalMeshCount = Mathf.Max(1, m_totalMeshCount);
-        m_storedMeshVoxelCount = m_vertType == VERT_TYPE.HARD_EDGE ? MAX_MESH_VOXEL_HARDEDGE : MAX_MESH_VOXEL_SOFTEDGE;
-        m_storedVertPerVoxel = m_vertType == VERT_TYPE.HARD_EDGE ? HARDEDGE_VERTS_PER_VOXEL : SOFTEDGE_VERTS_PER_VOXEL;
-
-        m_storedMaxVoxels = m_storedMeshVoxelCount * m_storedTotalMeshCount;
-
-        //Setup voxel mesh object
-        //Original Object
         if (m_objectWithMesh == null)
             m_objectWithMesh = gameObject;
 
-        m_voxelObjects = new GameObject[m_storedTotalMeshCount];
-        m_voxelMeshs = new Mesh[m_storedTotalMeshCount];
+        m_originalMesh = GetMesh(m_objectWithMesh);
 
-        m_parentVoxelObject = new GameObject(name + " Voxel Mesh Holder");
-
-        for (int meshIndex = 0; meshIndex < m_storedTotalMeshCount; meshIndex++)
+        if (m_originalMesh == null)
         {
-            m_voxelObjects[meshIndex] = new GameObject("Mesh Section: " + meshIndex);
-            m_voxelObjects[meshIndex].transform.SetParent(m_parentVoxelObject.transform);
-
-            MeshFilter meshFilter = m_voxelObjects[meshIndex].AddComponent<MeshFilter>();
-            meshFilter.mesh = new Mesh();
-            m_voxelMeshs[meshIndex] = meshFilter.sharedMesh;
-            m_voxelObjects[meshIndex].AddComponent<MeshRenderer>();
-            MeshRenderer voxelMeshRenderer = m_voxelObjects[meshIndex].GetComponent<MeshRenderer>();
-            voxelMeshRenderer.material = GetMaterial(m_objectWithMesh);
+            Destroy(this);
+            return;
         }
 
-        if (!VerifyVaribles())
-            yield break;
+        //Build mesh stuff
+        Vector3[] verts = m_originalMesh.vertices;
+        int[] tris = m_originalMesh.triangles;
+        Vector2[] UVs = m_originalMesh.uv;
 
-        //Natives Constrution/ Assigning
-        m_orginalVerts = new NativeArray<Vector3>(m_originalMesh.vertexCount, Allocator.Persistent);
-        m_originalUVs = new NativeArray<float2>(m_originalMesh.vertexCount, Allocator.Persistent);
+        m_voxelisedMeshes = new Mesh[m_meshesToUse];
+        m_voxelisedObject = new GameObject(gameObject.name + "-Voxelised");
+        Material material = GetMaterial(m_objectWithMesh);
 
-        for (int i = 0; i < m_originalMesh.uv.Length; i++)
+        for (int meshIndex = 0; meshIndex < m_meshesToUse; meshIndex++)
         {
-            m_originalUVs[i] = m_originalMesh.uv[i];
-        }
-       
-        m_originalTris = new NativeArray<int>(m_originalMesh.triangles, Allocator.Persistent);
-        
-        m_orginalVerts.CopyFrom(m_originalMesh.vertices);
+            GameObject meshObject = new GameObject(m_voxelisedObject.name + "(meshObject" + meshIndex + ")");
+            meshObject.transform.SetParent(m_voxelisedObject.transform);
 
-        m_voxelDetails = new NativeHashMap<int3, float2>(m_storedTotalMeshCount * m_storedMeshVoxelCount, Allocator.Persistent);
-        m_ABPoints = new NativeQueue<int3>(Allocator.Persistent);
-        m_ABUVs = new NativeQueue<float2>(Allocator.Persistent);
+            MeshFilter newFilter = meshObject.AddComponent<MeshFilter>();
+            Mesh newMesh = new Mesh();
+            m_voxelisedMeshes[meshIndex] = newMesh;
+            newFilter.mesh = newMesh;
 
-        m_meshVoxelCount = new NativeArray<int>(1, Allocator.Persistent);
-
-        m_convertedVerts = new NativeArray<float4>(m_storedTotalMeshCount * m_storedMeshVoxelCount * m_storedVertPerVoxel, Allocator.Persistent);
-        m_convertedUVs = new NativeArray<float2>(m_storedTotalMeshCount * m_storedMeshVoxelCount * m_storedVertPerVoxel, Allocator.Persistent);
-        m_convertedTris = new NativeArray<int>(m_storedTotalMeshCount * m_storedMeshVoxelCount * 36, Allocator.Persistent);
-
-        MeshRenderer meshRenderer = m_objectWithMesh.GetComponent<MeshRenderer>();
-        if (meshRenderer != null)
-        {
-            m_orginalMats = meshRenderer.sharedMaterials;
-
-        }
-        else
-        {
-            SkinnedMeshRenderer skinnedMeshRenderer = m_objectWithMesh.GetComponent<SkinnedMeshRenderer>();
-            if (skinnedMeshRenderer != null)
-            {
-                m_orginalMats = skinnedMeshRenderer.sharedMaterials;
-
-            }
+            MeshRenderer newMeshRenderer = meshObject.AddComponent<MeshRenderer>();
+            newMeshRenderer.material = material;
         }
 
-        //Running of voxeliser
+        //Setup Natives
+        m_nativeVerts = new NativeArray<double3>(verts.Length, Allocator.Persistent);
+        m_nativeTris = new NativeArray<int>(tris.Length, Allocator.Persistent);
+        m_nativeUVs = new NativeArray<double2>(UVs.Length, Allocator.Persistent);
+
+        m_nativePassThroughTriData = new NativeHashMap<int3, double2>(MAX_VOXEL_COUNT, Allocator.Persistent);
+
+        Convert(m_nativeVerts, verts);
+        Convert(m_nativeTris, tris);
+        Convert(m_nativeUVs, UVs);
+
+        RebuildVaribles();
+
         switch (m_voxeliserType)
         {
             case VOXELISER_TYPE.SOLID:
                 InitVoxeliserSolid();
                 break;
-            case VOXELISER_TYPE.DYNAMIC_SOLID:
-                InitVoxeliserDynamicSolid();
+            case VOXELISER_TYPE.STATIC:
+                InitVoxeliserSolid();
                 break;
             case VOXELISER_TYPE.ANIMATED:
                 InitVoxeliserAnimated();
-                break;
-            case VOXELISER_TYPE.STATIC:
-                InitVoxeliserStatic();
                 break;
             default:
                 break;
@@ -243,37 +171,23 @@ public class Voxeliser_Burst : MonoBehaviour
     /// <summary>
     /// Intialise the solid version of the object
     /// </summary>
-    public void InitVoxeliserSolid()
+    private void InitVoxeliserSolid()
     {
         ToggleMaterial(m_objectWithMesh, false);
 
-        m_runFlag = true;
-
-        StartCoroutine(VoxeliserSolid());
-    }
-
-    /// <summary>
-    /// Intialise the solid version of the object
-    /// </summary>
-    public void InitVoxeliserDynamicSolid()
-    {
-        ToggleMaterial(m_objectWithMesh, false);
-
-        m_runFlag = true;
-
-        StartCoroutine(VoxeliserDynamicSolid());
+        VoxeliserUpdateSolid();
     }
 
     /// <summary>
     /// Intialise the animated version of the object
     /// </summary>
-    public void InitVoxeliserAnimated()
+    private void InitVoxeliserAnimated()
     {
         ToggleMaterial(m_objectWithMesh, false);
 
-        m_skinnedRenderer = m_objectWithMesh.GetComponent<SkinnedMeshRenderer>();
+        m_skinnedMeshRenderer = m_objectWithMesh.GetComponent<SkinnedMeshRenderer>();
 
-        if (m_skinnedRenderer == null)
+        if (m_skinnedMeshRenderer == null)
         {
 #if UNITY_EDITOR
             Debug.Log("No skinned mesh renderer was found on animating object " + name);
@@ -281,963 +195,672 @@ public class Voxeliser_Burst : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        m_runFlag = true;
-        StartCoroutine(VoxeliserAnimated());
+
+        VoxeliserUpdateAnimated();
     }
 
-    /// <summary>
-    /// Intialise the static version of the object
-    /// </summary>
-    public void InitVoxeliserStatic()
+    private void VoxeliserUpdateSolid()
     {
-        ToggleMaterial(m_objectWithMesh, false);
-
-        StartCoroutine(VoxeliserStatic());
+        //Solid does nothing
+        StartCoroutine(VoxeliserUpdate());
     }
 
-    /// <summary>
-    /// Rather than using Update Voxeliser is Enumerator driven.
-    /// </summary>
-    /// <returns>null, wait for next frame</returns>
-    private IEnumerator VoxeliserSolid()
+    private void VoxeliserUpdateAnimated()
     {
-        if (!VerifyVaribles())
-            yield break;
+        if (m_originalMesh == null)
+            m_originalMesh = new Mesh();
+        m_originalMesh.Clear();
 
-        if (m_performOverFrames)
-        {
-            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
-            yield return convertion;
-        }
-        else
-        {
-            StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
-        }
+        m_skinnedMeshRenderer.BakeMesh(m_originalMesh);
 
-        yield return null;
+        Vector3[] verts = m_originalMesh.vertices;
 
-        StartCoroutine(VoxeliserSolid());
+        Convert(m_nativeVerts, verts);
+
+        StartCoroutine(VoxeliserUpdate());
     }
 
-    /// <summary>
-    /// Rather than using Update Voxeliser is Enumerator driven.
-    /// </summary>
-    /// <returns>null, wait for next frame</returns>
-    private IEnumerator VoxeliserDynamicSolid()
+    private IEnumerator VoxeliserUpdate()
     {
-        if (!VerifyVaribles())
-            yield break;
-
-        //Always need to update
-        m_originalMesh = GetMesh(m_objectWithMesh);
-        m_orginalVerts.CopyFrom(m_originalMesh.vertices);
-
-        if (m_performOverFrames)
+        //Clean up variables
+        if (m_editorBeenChangedFlag) //Rebuild what needs to be
         {
-            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
-            yield return convertion;
-        }
-        else
-        {
-            StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
+            m_editorBeenChangedFlag = false;
+            RebuildVaribles();
         }
 
-        yield return null;
+        m_nativePassThroughTriData.Clear();
 
-        StartCoroutine(VoxeliserDynamicSolid());
-    }
+        Matrix4x4 currentTransform = m_objectWithMesh.transform.localToWorldMatrix;
+        double4x4 nativeCurrentTransform = FloatMatrixToDoubleMatrix(currentTransform);
 
-    /// <summary>
-    /// Rather than using Update Voxeliser is Enumerator driven.
-    /// </summary>
-    /// <returns>null, wait for next frame</returns>
-    private IEnumerator VoxeliserAnimated()
-    {
-        if (!VerifyVaribles())
-            yield break;
-
-        GetBakedVerts();
-
-        m_orginalVerts.CopyFrom(m_originalMesh.vertices);
-
-        if (m_performOverFrames)
+        //Do job stuff
+        IJob_CalulateTris calcTrisJob = new IJob_CalulateTris
         {
-            Coroutine convertion = StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
-            yield return convertion;
-        }
-        else
-        {
-            StartCoroutine(ConvertToVoxels(m_voxelSize, m_performOverFrames));
-        }
-
-        yield return null;
-
-        StartCoroutine(VoxeliserAnimated());
-    }
-
-
-
-    /// <summary>
-    /// Rather than using Update Voxeliser is Enumerator driven.
-    /// </summary>
-    /// <returns>null, wait for next frame</returns>
-    private IEnumerator VoxeliserStatic()
-    {
-        if (!VerifyVaribles())
-            yield break;
-
-        Coroutine convert = StartCoroutine(ConvertToVoxels(m_voxelSize, false));
-        yield return convert;
-
-        foreach (Mesh voxelMesh in m_voxelMeshs)
-        {
-            if(voxelMesh!=null)
-                voxelMesh.Optimize();
-        }
-
-        yield break;
-    }
-
-    /// <summary>
-    /// Get frame voxel positions
-    ///     Get transform matrix without the postion assigned
-    ///     Get voxel positions
-    ///     Get mesh varibles(verts, tris, UVs) 
-    /// </summary>
-    /// <param name="p_voxelSize">stored value of voxel size</param>
-    /// <param name="p_performOverFrames">stored value of if this operation should occur over several frames</param>
-    private IEnumerator ConvertToVoxels(float p_voxelSize, bool p_performOverFrames)
-    {
-        //Reset old details
-        m_voxelDetails.Clear();
-
-        //Varible setup
-        Matrix4x4 localToWorld = BuildGlobalLocalToWorldMat4x4(m_objectWithMesh);
-        float4x4 localToWorldConverted = localToWorld;
-        float voxelSizeRatio = 1.0f / p_voxelSize;
-
-        //Build hashmap of all voxel details
-        BuildTriVoxels triJob = new BuildTriVoxels()
-        {
-            m_voxelSize = p_voxelSize,
-            m_localToWorldTransform = localToWorldConverted,
-            m_tris = m_originalTris,
-            m_verts = m_orginalVerts,
-            m_uvs = m_originalUVs,
-            m_voxelSizeRatio = voxelSizeRatio,
-            m_maxVoxels = m_storedMaxVoxels,
-            m_voxelDetails = m_voxelDetails,
-            m_ABPoints = m_ABPoints,
-            m_ABUVs = m_ABUVs
+            m_passThroughTriData = m_nativePassThroughTriData.AsParallelWriter(),
+            m_nativeVerts = m_nativeVerts,
+            m_nativeTris = m_nativeTris,
+            m_nativeUVs = m_nativeUVs,
+            m_transformMatrix = nativeCurrentTransform,
+            m_voxelSize = m_voxelSize
         };
 
-        m_buildTriJobHandle = triJob.Schedule();
+        m_calcTrisJobHandle = calcTrisJob.Schedule(m_nativeTris.Length / 3, 16);
 
-        GetConvertedMesh convertJob = new GetConvertedMesh()
+        m_calcTrisJobHandle.Complete();
+
+        int voxelCount = m_nativePassThroughTriData.Count();
+        int maxPossibleVoxels = Mathf.Min((m_storedIsHardEdge ? VOXELS_PER_MESH_HARDEDGE : VOXELS_PER_MESH_SOFTEDGE) * m_meshesToUse, voxelCount); //how many we want to do, vs how many we can do
+
+        int voxelsPerMesh = maxPossibleVoxels / m_meshesToUse;
+
+        if (m_nativeReturnVerts.IsCreated)
+            m_nativeReturnVerts.Dispose();
+        if (m_nativeReturnUVs.IsCreated)
+            m_nativeReturnUVs.Dispose();
+        if (m_nativeReturnTris.IsCreated)
+            m_nativeReturnTris.Dispose();
+
+        m_nativeReturnVerts = new NativeArray<double3>(m_storedIsHardEdge ? maxPossibleVoxels * VERTS_PER_VOXEL_HARDEDGE : maxPossibleVoxels * VERTS_PER_VOXEL_SOFTEDGE, Allocator.Persistent);
+        m_nativeReturnUVs = new NativeArray<double2>(m_storedIsHardEdge ? maxPossibleVoxels * VERTS_PER_VOXEL_HARDEDGE : maxPossibleVoxels * VERTS_PER_VOXEL_SOFTEDGE, Allocator.Persistent);
+        m_nativeReturnTris = new NativeArray<int>(maxPossibleVoxels * TRIS_PER_VOXEL, Allocator.Persistent);
+
+        IJob_BuildMeshes buildMeshJob = new IJob_BuildMeshes
         {
-            m_voxelDetails = m_voxelDetails,
-            m_convertedVerts = m_convertedVerts,
-            m_convertedUVs = m_convertedUVs,
-            m_convertedTris = m_convertedTris,
-            m_voxelSize = p_voxelSize,
-            m_totalMeshCount = m_storedTotalMeshCount,
-            m_isHardEdge = m_storedIsHardEdge,
-            m_meshVoxelCount = m_meshVoxelCount
+            m_passThroughTriData = m_nativePassThroughTriData,
+            m_returnVerts = m_nativeReturnVerts,
+            m_returnTris = m_nativeReturnTris,
+            m_returnUVs = m_nativeReturnUVs,
+            m_voxelSize = m_storedVoxelSize,
+            m_hardEdges = m_storedIsHardEdge,
+            m_voxelsPerMesh = voxelsPerMesh,
+            m_meshCount = m_meshesToUse
         };
 
-        m_convertedMeshJobHandle = convertJob.Schedule(m_buildTriJobHandle);
-        if (p_performOverFrames)
+        m_buildMeshJobHandle = buildMeshJob.Schedule();
+
+        m_buildMeshJobHandle.Complete();
+
+        double3[] allDoubleVerts = m_nativeReturnVerts.ToArray();
+        double2[] allDoubleUVs = m_nativeReturnUVs.ToArray();
+        int[] allTris = m_nativeReturnTris.ToArray();
+
+        Vector3[] meshVerts = new Vector3[voxelsPerMesh * (m_storedIsHardEdge ? VERTS_PER_VOXEL_HARDEDGE : VERTS_PER_VOXEL_SOFTEDGE)];
+        Vector2[] meshUVs = new Vector2[voxelsPerMesh * (m_storedIsHardEdge ? VERTS_PER_VOXEL_HARDEDGE : VERTS_PER_VOXEL_SOFTEDGE)];
+        int[] meshTris = new int[voxelsPerMesh * 36];
+
+        int vertsPerVoxel = (m_storedIsHardEdge ? VERTS_PER_VOXEL_HARDEDGE : VERTS_PER_VOXEL_SOFTEDGE);
+        int vertsPerMesh = vertsPerVoxel * voxelsPerMesh;
+        int trisPerMesh = 36 * voxelsPerMesh;
+
+        //Get voxel
+        for (int meshIndex = 0; meshIndex < m_meshesToUse; meshIndex++)
         {
-            //Hard limit of not perfomring over 4 frame
-            int frameCounter = 0;
-            while (!m_buildTriJobHandle.IsCompleted && frameCounter < 3)
+            m_voxelisedMeshes[meshIndex].Clear();
+            
+            int vertStartingIndex = meshIndex * vertsPerMesh;
+            int triStartingIndex = meshIndex * trisPerMesh;
+
+            for (int vertIndex = 0; vertIndex < vertsPerMesh; vertIndex++)
             {
-                frameCounter++;
-                yield return null;
-            }
-            m_buildTriJobHandle.Complete();
-
-            frameCounter = 0;
-            while (!m_convertedMeshJobHandle.IsCompleted && frameCounter < 3)
-            {
-                frameCounter++;
-                yield return null;
-            }
-            m_convertedMeshJobHandle.Complete();
-        }
-        else
-        {
-            m_buildTriJobHandle.Complete();
-            m_convertedMeshJobHandle.Complete();
-        }
-
-        int voxelPerMeshCount = m_meshVoxelCount[0];
-
-        //Build new mesh
-        for (int meshIndex = 0; meshIndex < m_storedTotalMeshCount; meshIndex++)
-        {
-            int vertsCount = voxelPerMeshCount * m_storedVertPerVoxel; //24 verts per voxel
-            int triCount = voxelPerMeshCount * 36; // 36 tris per voxel
-
-            Vector3[] convertedVerts = new Vector3[vertsCount];
-            Vector2[] convertedUVs = new Vector2[vertsCount];
-            int[] convertedTris = new int[triCount];
-
-            //Verts/UVs
-            int initialVoxelIndex = meshIndex * voxelPerMeshCount;
-            int initialVertIndex = initialVoxelIndex * m_storedVertPerVoxel;
-            int initialTriIndex = initialVoxelIndex * 36;
-
-            for (int vertIndex = 0; vertIndex < vertsCount; vertIndex++)
-            {
-                float4 vert = m_convertedVerts[initialVertIndex + vertIndex];
-                float2 UV = m_convertedUVs[initialVertIndex + vertIndex];
-                convertedVerts[vertIndex] = new Vector3(vert.x, vert.y, vert.z);
-                convertedUVs[vertIndex] = new Vector2(UV.x, UV.y);
+                meshVerts[vertIndex] = Convert(allDoubleVerts[vertStartingIndex + vertIndex]);
+                meshUVs[vertIndex] = Convert(allDoubleUVs[vertStartingIndex + vertIndex]);
             }
 
-            //Tris
-            for (int triIndex = 0; triIndex < triCount; triIndex++)
+            for (int triIndex = 0; triIndex < trisPerMesh; triIndex++)
             {
-                convertedTris[triIndex] = m_convertedTris[initialTriIndex + triIndex]; //Use the minus due to "reseting" on new mesh
+                meshTris[triIndex] = allTris[triStartingIndex + triIndex] - vertStartingIndex;
             }
 
-            m_voxelMeshs[meshIndex].Clear(false);
+            m_voxelisedMeshes[meshIndex].vertices = meshVerts;
+            m_voxelisedMeshes[meshIndex].uv = meshUVs;
+            m_voxelisedMeshes[meshIndex].triangles = meshTris;
 
-            m_voxelMeshs[meshIndex].SetVertices(new List<Vector3>(convertedVerts));
-            m_voxelMeshs[meshIndex].SetUVs(0, new List<Vector2>(convertedUVs));
-            m_voxelMeshs[meshIndex].SetTriangles(convertedTris, 0);
-
-            m_voxelMeshs[meshIndex].Optimize();
-            m_voxelMeshs[meshIndex].RecalculateNormals();
+            m_voxelisedMeshes[meshIndex].RecalculateNormals();
         }
 
-        yield break;
+        yield return null;
+
+#if UNITY_EDITOR
+        if (m_storedVoxelSize != m_voxelSize || m_storedIsHardEdge != (m_vertType == VERT_TYPE.HARD_EDGE))
+            m_editorBeenChangedFlag = true;
+#endif
+
+        switch (m_voxeliserType)
+        {
+            case VOXELISER_TYPE.SOLID:
+                VoxeliserUpdateSolid();
+                break;
+            case VOXELISER_TYPE.STATIC: //Just runs once
+                break;
+            case VOXELISER_TYPE.ANIMATED:
+                VoxeliserUpdateAnimated();
+                break;
+            default:
+                break;
+        }
     }
 
     /// <summary>
-    /// Cleanup of all natives
-    /// Ensure voxelised object is removed too
+    /// Clean up natives
     /// </summary>
     private void OnDestroy()
     {
-        CleanUpNatives();
+        m_calcTrisJobHandle.Complete();
+        m_buildMeshJobHandle.Complete();
+
+        if (m_nativePassThroughTriData.IsCreated)
+            m_nativePassThroughTriData.Dispose();
+
+        if (m_nativeReturnVerts.IsCreated)
+            m_nativeReturnVerts.Dispose();
+        if (m_nativeReturnTris.IsCreated)
+            m_nativeReturnTris.Dispose(); 
+        if (m_nativeReturnUVs.IsCreated)
+            m_nativeReturnUVs.Dispose();
+
+        if (m_nativeVerts.IsCreated)
+            m_nativeVerts.Dispose();
+        if (m_nativeTris.IsCreated)
+            m_nativeTris.Dispose();
+        if (m_nativeUVs.IsCreated)
+            m_nativeUVs.Dispose();
     }
 
     /// <summary>
-    /// Used to ensure all natives are disposed of and jobs are finished
+    /// Rebuild pre calculated varibes and native containers as needed when variables change
     /// </summary>
-    private void CleanUpNatives()
+    private void RebuildVaribles()
     {
-        m_buildTriJobHandle.Complete();
-        m_convertedMeshJobHandle.Complete();
+        if(m_voxelSize <= 0.0f)
+        {
+            m_storedVoxelSize = 1.0f;
+#if UNITY_EDITOR
+            Debug.LogWarning("Voxel size on " + name + " is out of range, should be greater then 0.0f. Defualting to 1.0f");
+#endif
+        }
+        else
+        {
+            m_storedVoxelSize = m_voxelSize;
+        }
 
-        if (m_orginalVerts.IsCreated)
-            m_orginalVerts.Dispose();
-        if (m_originalUVs.IsCreated)
-            m_originalUVs.Dispose();
-        if (m_originalTris.IsCreated)
-            m_originalTris.Dispose();
-
-        if (m_voxelDetails.IsCreated)
-            m_voxelDetails.Dispose();
-        if (m_ABPoints.IsCreated)
-            m_ABPoints.Dispose();
-        if (m_ABUVs.IsCreated)
-            m_ABUVs.Dispose();
-
-        if (m_meshVoxelCount.IsCreated)
-            m_meshVoxelCount.Dispose();
-
-        if (m_convertedVerts.IsCreated)
-            m_convertedVerts.Dispose();
-
-        if (m_convertedUVs.IsCreated)
-            m_convertedUVs.Dispose();
-
-        if (m_convertedTris.IsCreated)
-            m_convertedTris.Dispose();
+        m_storedIsHardEdge = m_vertType == VERT_TYPE.HARD_EDGE;
     }
 
-    #region Job system
-    //Inputs
-    private NativeArray<int> m_originalTris;
-    private NativeArray<Vector3> m_orginalVerts;
-    private NativeArray<float2> m_originalUVs;
+#region Job Systems
+    [BurstCompile]
+    private struct IJob_CalulateTris : IJobParallelFor
+    {
+        public NativeHashMap<int3, double2>.ParallelWriter m_passThroughTriData;
 
-    //Passing Data
-    private NativeHashMap<int3, float2> m_voxelDetails;
-    private NativeQueue<int3> m_ABPoints;
-    private NativeQueue<float2> m_ABUVs;
-    //Outputs
-    private NativeArray<int> m_meshVoxelCount;
-    private NativeArray<float4> m_convertedVerts; // unknown size
-    private NativeArray<float2> m_convertedUVs; //size of verts
-    private NativeArray<int> m_convertedTris; //3 x 12 x the size of positions
+        [ReadOnly]
+        public NativeArray<double3> m_nativeVerts;
+        [ReadOnly]
+        public NativeArray<int> m_nativeTris;
+        [ReadOnly]
+        public NativeArray<double2> m_nativeUVs;
+        [ReadOnly]
+        public double4x4 m_transformMatrix;
+        [ReadOnly]
+        public double m_voxelSize;
 
-    private JobHandle m_buildTriJobHandle;
-    private JobHandle m_convertedMeshJobHandle;
+        public void Execute(int index)
+        {
+            //Setup transform matrix
+            double4 vertA = math.mul(m_transformMatrix, new double4(m_nativeVerts[m_nativeTris[index * 3]], 1.0f));
+            double4 vertB = math.mul(m_transformMatrix, new double4(m_nativeVerts[m_nativeTris[index * 3 + 1]], 1.0f));
+            double4 vertC = math.mul(m_transformMatrix, new double4(m_nativeVerts[m_nativeTris[index * 3 + 2]], 1.0f));
+
+            vertA = SnapToIncrement(vertA);
+            vertB = SnapToIncrement(vertB);
+            vertC = SnapToIncrement(vertC);
+
+            double2 UVA = m_nativeUVs[m_nativeTris[index * 3]];
+            double2 UVB = m_nativeUVs[m_nativeTris[index * 3 + 1]];
+            double2 UVC = m_nativeUVs[m_nativeTris[index * 3 + 2]];
+
+            int3 vertAGridPos = PositionToGridPosition(vertA);
+            int3 vertBGridPos = PositionToGridPosition(vertB);
+            int3 vertCGridPos = PositionToGridPosition(vertC);
+
+            //Build line from Vert A to Vert B, as verts on line are found, build line from line vert to Vert C
+            int3 ABVector = new int3(vertBGridPos.x - vertAGridPos.x, vertBGridPos.y - vertAGridPos.y, vertBGridPos.z - vertAGridPos.z);
+
+            if (ABVector.x == 0 && ABVector.y == 0 && ABVector.z == 0)
+            {
+                m_passThroughTriData.TryAdd(vertAGridPos, UVA);
+                return;
+            }
+
+            int3 absABVector = math.abs(ABVector);
+
+            int steps = absABVector.x > absABVector.y ? (absABVector.x > absABVector.z ? absABVector.x : absABVector.z) : (absABVector.y > absABVector.z ? absABVector.y : absABVector.z); //Get largest out of 3 values
+            int3 currentPathOnABVector = int3.zero;
+
+            int3 signedABVector = new int3(ABVector.x >= 0 ? 1 : -1, ABVector.y >= 0 ? 1 : -1, ABVector.z >= 0 ? 1 : -1);
+            double3 increaseThreshold = new double3((double)absABVector.x / steps, (double)absABVector.y / steps, (double)absABVector.z / steps);
+            double3 currentThreshold = new double3(0.5, 0.5, 0.5); //Added in 0.5 as voxel should be placed in center of grid
+
+            BuildVertOnLineToVertCEdge(vertAGridPos, vertCGridPos, UVA, UVC);
+
+            //Move along the line
+            //Steps will move on "grid" every time
+            //Use threshold to dertermine when youve translated to next grid square
+            for (int alongGridIndex = 1; alongGridIndex < steps; alongGridIndex++)
+            {
+                currentThreshold.x += increaseThreshold.x;
+                if (currentThreshold.x >= 1)
+                {
+                    currentPathOnABVector.x += signedABVector.x;
+                    currentThreshold.x -= 1.0;
+                }
+
+                currentThreshold.y += increaseThreshold.y;
+                if (currentThreshold.y >= 1)
+                {
+                    currentPathOnABVector.y += signedABVector.y;
+                    currentThreshold.y -= 1.0;
+                }
+
+                currentThreshold.z += increaseThreshold.z;
+                if (currentThreshold.z >= 1)
+                {
+                    currentPathOnABVector.z += signedABVector.z;
+                    currentThreshold.z -= 1.0;
+                }
+
+                BuildVertOnLineToVertCEdge(vertAGridPos + currentPathOnABVector, vertCGridPos, MergeUV(UVA, UVB, (double)alongGridIndex / steps), UVC);
+            }
+        }
+
+        /// <summary>
+        /// Build a queue for the line form VertA to vertB
+        /// </summary>
+        /// <param name="p_vertOnLine">Vert found on line</param>
+        /// <param name="p_vertC">VertC</param>
+        /// <param name="p_voxelSize">Size of a voxel</param>
+        private void BuildVertOnLineToVertCEdge(int3 p_vertOnLine, int3 p_vertC, double2 p_vertOnLineUV, double2 p_vertCUV)
+        {
+            //Build line from Vert A to Vert B, as verts on line are found, build line from line vert to Vert C
+            int3 lineToCVector = new int3(p_vertC.x - p_vertOnLine.x, p_vertC.y - p_vertOnLine.y, p_vertC.z - p_vertOnLine.z);
+
+            if (lineToCVector.x == 0 && lineToCVector.y == 0 && lineToCVector.z == 0)
+            {
+                m_passThroughTriData.TryAdd(p_vertOnLine, p_vertOnLineUV);
+                return;
+            }
+
+            int3 absLineToCVector = math.abs(lineToCVector);
+
+            int steps = absLineToCVector.x > absLineToCVector.y ? (absLineToCVector.x > absLineToCVector.z ? absLineToCVector.x : absLineToCVector.z) : (absLineToCVector.y > absLineToCVector.z ? absLineToCVector.y : absLineToCVector.z); //Get largest out of 3 values
+            int3 currentPathOnLineToCVector = int3.zero;
+
+            int3 signedLineToCVector = new int3(lineToCVector.x >= 0 ? 1 : -1, lineToCVector.y >= 0 ? 1 : -1, lineToCVector.z >= 0 ? 1 : -1);
+            double3 increaseThreshold = new double3((double)absLineToCVector.x / steps, (double)absLineToCVector.y / steps, (double)absLineToCVector.z / steps);
+            double3 currentThreshold = new double3(0.5, 0.5, 0.5); //Added in 0.5 as voxel should be placed in center of grid
+
+            m_passThroughTriData.TryAdd(p_vertOnLine, p_vertOnLineUV);
+            
+            //Move along the line
+            //Steps will move on "grid" every time
+            //Use threshold to dertermine when youve translated to next grid square
+            for (int alongGridIndex = 1; alongGridIndex < steps; alongGridIndex++)
+            {
+                currentThreshold.x += increaseThreshold.x;
+                if (currentThreshold.x >= 1)
+                {
+                    currentPathOnLineToCVector.x += signedLineToCVector.x ;
+                    currentThreshold.x -= 1.0;
+                }
+
+                currentThreshold.y += increaseThreshold.y;
+                if (currentThreshold.y >= 1)
+                {
+                    currentPathOnLineToCVector.y += signedLineToCVector.y;
+                    currentThreshold.y -= 1.0;
+                }
+
+                currentThreshold.z += increaseThreshold.z;
+                if (currentThreshold.z >= 1)
+                {
+                    currentPathOnLineToCVector.z += signedLineToCVector.z;
+                    currentThreshold.z -= 1.0;
+                }
+
+                m_passThroughTriData.TryAdd(p_vertOnLine + currentPathOnLineToCVector, MergeUV(p_vertOnLineUV, p_vertCUV, (double)alongGridIndex / steps));
+            }
+        }
+
+        /// <summary>
+        /// Convert a world position into a grid position
+        /// This new position acts in two ways
+        /// 1: It allows for better storage of varibles, doubles in hashmap, although the same may have slight variations, int3 wont have this issue.
+        /// 2: Builds a clear and defined grid for the voxels to work on
+        /// </summary>
+        /// <param name="p_point">Point to convert</param>
+        /// <returns>Int3 value</returns>
+        private int3 PositionToGridPosition(double4 p_point)
+        {
+            return new int3((int)(p_point.x / m_voxelSize), (int)(p_point.y / m_voxelSize), (int)(p_point.z / m_voxelSize));
+        }
+
+        /// <summary>
+        /// Merge two given UVs based off how much one is from another
+        /// </summary>
+        /// <param name="p_UVA">UV for vertA</param>
+        /// <param name="p_UVB">UV for vertB</param>
+        /// <param name="p_percent">Percent through towards UVB</param>
+        /// <returns></returns>
+        private double2 MergeUV(double2 p_UVA, double2 p_UVB, double p_percent)
+        {
+            double2 UVVector = p_UVB - p_UVA;
+
+            return p_UVA + UVVector * p_percent;
+        }
+
+        /// <summary>
+        /// Snap a value to an increment
+        /// 1.5 of an increment of 0.2 will be 1.4
+        /// -0.1 of an incrment of 0.2 wil be -0.2
+        /// </summary>
+        /// <param name="p_val">Value to snap</param>
+        /// <returns>Snapped value</returns>
+        private double4 SnapToIncrement(double4 p_val)
+        {
+            p_val.x = p_val.x - (p_val.x >= 0.0f ? p_val.x % m_voxelSize : p_val.x % m_voxelSize + m_voxelSize);
+            p_val.y = p_val.y - (p_val.y >= 0.0f ? p_val.y % m_voxelSize : p_val.y % m_voxelSize + m_voxelSize);
+            p_val.z = p_val.z - (p_val.z >= 0.0f ? p_val.z % m_voxelSize : p_val.z % m_voxelSize + m_voxelSize);
+
+            return p_val;
+        }
+    }
 
     [BurstCompile]
-    private struct BuildTriVoxels : IJob
+    private struct IJob_BuildMeshes : IJob
     {
+        public NativeArray<double3> m_returnVerts;
+        public NativeArray<double2> m_returnUVs;
+        public NativeArray<int> m_returnTris;
+        
         [ReadOnly]
-        public float m_voxelSize;
-        [ReadOnly]
-        public float4x4 m_localToWorldTransform;
-        [ReadOnly]
-        public NativeArray<int> m_tris;
-        [ReadOnly]
-        public NativeArray<Vector3> m_verts;
-        [ReadOnly]
-        public NativeArray<float2> m_uvs;
+        public NativeHashMap<int3, double2> m_passThroughTriData;
 
         [ReadOnly]
-        public float m_voxelSizeRatio;
+        public double m_voxelSize;
         [ReadOnly]
-        public int m_maxVoxels;
+        public bool m_hardEdges;
+        [ReadOnly]
+        public int m_voxelsPerMesh;
+        [ReadOnly]
+        public int m_meshCount;
 
-        public NativeHashMap<int3, float2> m_voxelDetails;
-        public NativeQueue<int3> m_ABPoints;
-        public NativeQueue<float2> m_ABUVs;
+        private double3 m_rightVector;
+        private double3 m_upVector;
+        private double3 m_forwardVector;
 
-        /// <summary>
-        /// Build the voxel plavcment based off 3 tris
-        /// Uses the Bresenham's line algorithum to find points from vert A to vert B
-        /// Using the same approach points are calculated from thje previously found points to vert C
-        /// </summary>
         public void Execute()
         {
-            for (int triIndex = 0; triIndex < m_tris.Length/3; triIndex++)
+            m_rightVector = new double3(m_voxelSize / 2.0, 0.0, 0.0);
+            m_upVector = new double3(0.0, m_voxelSize / 2.0, 0.0);
+            m_forwardVector = new double3(0.0, 0.0, m_voxelSize / 2.0);
+
+            //Convert queue into unique array
+            NativeArray<int3> uniqueVoxelPositions = m_passThroughTriData.GetKeyArray(Allocator.Temp);
+            NativeArray<double2> uniqueVoxelUV = m_passThroughTriData.GetValueArray(Allocator.Temp);
+
+            int meshVoxelIndex = 0;
+            for (int meshIndex = 0; meshIndex < m_meshCount; meshIndex++)
             {
-                if(m_voxelDetails.Count() >= m_maxVoxels)
-                    return;
 
-                //Float 4 varients due to matrix math
-                float4 localVertA = math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[triIndex * 3]], 1.0f)) * m_voxelSizeRatio;
-                float4 localVertB = math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[triIndex * 3 + 1]], 1.0f)) * m_voxelSizeRatio;
-                float4 localVertC = math.mul(m_localToWorldTransform, new float4(m_verts[m_tris[triIndex * 3 + 2]], 1.0f)) * m_voxelSizeRatio;
-
-                int3 vertA = GetSnappedInt3(new float3(localVertA.x, localVertA.y, localVertA.z));
-                int3 vertB = GetSnappedInt3(new float3(localVertB.x, localVertB.y, localVertB.z));
-                int3 vertC = GetSnappedInt3(new float3(localVertC.x, localVertC.y, localVertC.z));
-
-                //Has UV's been set?
-                float2 vertAUV = new float2(0, 0);
-                float2 vertBUV = vertAUV;
-                float2 vertCUV = vertAUV;
-
-                if (m_uvs.Length != 0)
+                for (int voxelIndex = 0; voxelIndex < m_voxelsPerMesh; voxelIndex++, meshVoxelIndex++)
                 {
-                    vertAUV = m_uvs[m_tris[triIndex * 3]];
-                    vertBUV = m_uvs[m_tris[triIndex * 3 + 1]];
-                    vertCUV = m_uvs[m_tris[triIndex * 3 + 2]];
-                }
+                    if (meshVoxelIndex >= uniqueVoxelPositions.Length)
+                        break;
 
-                //Initial line
-                BresenhamDrawEachPoint(vertA, vertB, vertAUV, vertBUV, true);
-
-                while(m_ABPoints.Count > 0)
-                {
-                    int3 ABPos = m_ABPoints.Dequeue();
-                    float2 ABUV = m_ABUVs.Dequeue();
-                    
-                    BresenhamDrawEachPoint(ABPos, vertC, ABUV, vertCUV, false);
+                    BuildVoxel(uniqueVoxelPositions[meshVoxelIndex], uniqueVoxelUV[meshVoxelIndex], voxelIndex, meshIndex);
                 }
             }
         }
 
         /// <summary>
-        /// Build line of voxels
-        /// Using Bresenham's line algorithum draw a line of voxels
-        /// Example found here "https://www.mathworks.com/matlabcentral/fileexchange/21057-3d-bresenham-s-line-generation"
+        /// Build the mesh verts/tri/UV data as needed per voxel
         /// </summary>
-        /// <param name="p_startingPoint">Tri vert A</param>
-        /// <param name="p_finalPoint">Tri vert B</param>
-        /// <param name="p_startingUV">UV of point A</param>
-        /// <param name="p_finalUV">UV of point B</param>
-        /// <param name="p_shouldTempStore">Is this line for temp calc or final</param>
-        private void BresenhamDrawEachPoint(int3 p_startingPoint, int3 p_finalPoint, float2 p_startingUV, float2 p_finalUV, bool p_shouldTempStore)
+        /// <param name="p_position">Voxel grid position</param>
+        /// <param name="p_UV">Voxel UV</param>
+        /// <param name="voxelIndex">Current voxelIndex</param>
+        /// <param name="p_meshIndex">meshIndex, used in assigning to multihashmap</param>
+        private void BuildVoxel(double3 p_position, double2 p_UV, int voxelIndex, int p_meshIndex)
         {
-            float3 vector = p_finalPoint - p_startingPoint;
-            float3 vectorAbs = new float3(math.abs(vector.x), math.abs(vector.y), math.abs(vector.z));
-            float3 vectorNorm = math.normalize(vector);
-            float3 currentPoint = p_startingPoint;
+            double3 voxelPos = p_position;
+            voxelPos *= m_voxelSize;
 
-            for (int loopCount = 0; loopCount < MAX_MESH_COUNT; loopCount++)
+            int vertsPerVoxel = (m_hardEdges ? VERTS_PER_VOXEL_HARDEDGE : VERTS_PER_VOXEL_SOFTEDGE);
+
+            int vertStartingIndex = p_meshIndex * m_voxelsPerMesh * vertsPerVoxel + voxelIndex * vertsPerVoxel;
+            int triStartingIndex = p_meshIndex * m_voxelsPerMesh * 36  + voxelIndex * 36;
+
+            if (m_hardEdges)
             {
-                float x_next = math.round(currentPoint.x) + (vector.x == 0.0f ? 0.0f : vector.x > 0.0f ? 1 : -1);
-                float y_next = math.round(currentPoint.y) + (vector.y == 0.0f ? 0.0f : vector.y > 0.0f ? 1 : -1);
-                float z_next = math.round(currentPoint.z) + (vector.z == 0.0f ? 0.0f : vector.z > 0.0f ? 1 : -1);
+                //build verts, looking at face, start bottom left and move up, right, down. => Bottom Left, Top Left, Top Right, Bottom Right
+                //Front face
+                m_returnVerts[vertStartingIndex + 0] = voxelPos + (m_rightVector - m_upVector + m_forwardVector);
+                m_returnVerts[vertStartingIndex + 1] = voxelPos + (m_rightVector + m_upVector + m_forwardVector);
+                m_returnVerts[vertStartingIndex + 2] = voxelPos + (-m_rightVector + m_upVector + m_forwardVector);
+                m_returnVerts[vertStartingIndex + 3] = voxelPos + (-m_rightVector - m_upVector + m_forwardVector);
 
-                float x_diff = currentPoint.x - x_next;
-                float y_diff = currentPoint.y - y_next;
-                float z_diff = currentPoint.z - z_next;
+                //Back 
+                m_returnVerts[vertStartingIndex + 4] = voxelPos + (-m_rightVector - m_upVector - m_forwardVector);
+                m_returnVerts[vertStartingIndex + 5] = voxelPos + (-m_rightVector + m_upVector - m_forwardVector);
+                m_returnVerts[vertStartingIndex + 6] = voxelPos + (m_rightVector + m_upVector - m_forwardVector);
+                m_returnVerts[vertStartingIndex + 7] = voxelPos + (m_rightVector - m_upVector - m_forwardVector);
 
-                float x_diffAbs = x_diff == 0.0f || float.IsNaN(x_diff) ? float.PositiveInfinity : Mathf.Abs(x_diff);
-                float y_diffAbs = y_diff == 0.0f || float.IsNaN(y_diff) ? float.PositiveInfinity : Mathf.Abs(y_diff);
-                float z_diffAbs = z_diff == 0.0f || float.IsNaN(z_diff) ? float.PositiveInfinity : Mathf.Abs(z_diff);
+                //Right face
+                m_returnVerts[vertStartingIndex + 8] = voxelPos + (m_rightVector - m_upVector - m_forwardVector);
+                m_returnVerts[vertStartingIndex + 9] = voxelPos + (m_rightVector + m_upVector - m_forwardVector);
+                m_returnVerts[vertStartingIndex + 10] = voxelPos + (m_rightVector + m_upVector + m_forwardVector);
+                m_returnVerts[vertStartingIndex + 11] = voxelPos + (m_rightVector - m_upVector + m_forwardVector);
 
-                if (float.IsInfinity(x_diffAbs) && float.IsInfinity(y_diffAbs) && float.IsInfinity(z_diffAbs))
+                //Left face        
+                m_returnVerts[vertStartingIndex + 12] = voxelPos + (-m_rightVector - m_upVector + m_forwardVector);
+                m_returnVerts[vertStartingIndex + 13] = voxelPos + (-m_rightVector + m_upVector + m_forwardVector);
+                m_returnVerts[vertStartingIndex + 14] = voxelPos + (-m_rightVector + m_upVector - m_forwardVector);
+                m_returnVerts[vertStartingIndex + 15] = voxelPos + (-m_rightVector - m_upVector - m_forwardVector);
+
+                //Top face    
+                m_returnVerts[vertStartingIndex + 16] = voxelPos + (-m_rightVector + m_upVector - m_forwardVector);
+                m_returnVerts[vertStartingIndex + 17] = voxelPos + (-m_rightVector + m_upVector + m_forwardVector);
+                m_returnVerts[vertStartingIndex + 18] = voxelPos + (m_rightVector + m_upVector + m_forwardVector);
+                m_returnVerts[vertStartingIndex + 19] = voxelPos + (m_rightVector + m_upVector - m_forwardVector);
+
+                //Bottom face      
+                m_returnVerts[vertStartingIndex + 20] = voxelPos + (-m_rightVector - m_upVector + m_forwardVector);
+                m_returnVerts[vertStartingIndex + 21] = voxelPos + (-m_rightVector - m_upVector - m_forwardVector);
+                m_returnVerts[vertStartingIndex + 22] = voxelPos + (m_rightVector - m_upVector - m_forwardVector);
+                m_returnVerts[vertStartingIndex + 23] = voxelPos + (m_rightVector - m_upVector + m_forwardVector);
+
+                //Tris, Goes Bottom left, Top Left, Top Right : Bottom Left, Top Right, Bottom Right
+                //Front
+                m_returnTris[triStartingIndex + 0] = vertStartingIndex + 0;
+                m_returnTris[triStartingIndex + 1] = vertStartingIndex + 1;
+                m_returnTris[triStartingIndex + 2] = vertStartingIndex + 2;
+                                              
+                m_returnTris[triStartingIndex + 3] = vertStartingIndex + 0;
+                m_returnTris[triStartingIndex + 4] = vertStartingIndex + 2;
+                m_returnTris[triStartingIndex + 5] = vertStartingIndex + 3;
+                //Back                        
+                m_returnTris[triStartingIndex + 6] = vertStartingIndex + 4;
+                m_returnTris[triStartingIndex + 7] = vertStartingIndex + 5;
+                m_returnTris[triStartingIndex + 8] = vertStartingIndex + 6;
+
+                m_returnTris[triStartingIndex + 9] = vertStartingIndex + 4;
+                m_returnTris[triStartingIndex + 10] = vertStartingIndex + 6;
+                m_returnTris[triStartingIndex + 11] = vertStartingIndex + 7;
+                //Right                       
+                m_returnTris[triStartingIndex + 12] = vertStartingIndex + 8;
+                m_returnTris[triStartingIndex + 13] = vertStartingIndex + 9;
+                m_returnTris[triStartingIndex + 14] = vertStartingIndex + 10;
+
+                m_returnTris[triStartingIndex + 15] = vertStartingIndex + 8;
+                m_returnTris[triStartingIndex + 16] = vertStartingIndex + 10;
+                m_returnTris[triStartingIndex + 17] = vertStartingIndex + 11;
+                //Left                        
+                m_returnTris[triStartingIndex + 18] = vertStartingIndex + 12;
+                m_returnTris[triStartingIndex + 19] = vertStartingIndex + 13;
+                m_returnTris[triStartingIndex + 20] = vertStartingIndex + 14;
+
+                m_returnTris[triStartingIndex + 21] = vertStartingIndex + 12;
+                m_returnTris[triStartingIndex + 22] = vertStartingIndex + 14;
+                m_returnTris[triStartingIndex + 23] = vertStartingIndex + 15;
+                //Top                         
+                m_returnTris[triStartingIndex + 24] = vertStartingIndex + 16;
+                m_returnTris[triStartingIndex + 25] = vertStartingIndex + 17;
+                m_returnTris[triStartingIndex + 26] = vertStartingIndex + 18;
+
+                m_returnTris[triStartingIndex + 27] = vertStartingIndex + 16;
+                m_returnTris[triStartingIndex + 28] = vertStartingIndex + 18;
+                m_returnTris[triStartingIndex + 29] = vertStartingIndex + 19;
+                //Bottom                      
+                m_returnTris[triStartingIndex + 30] = vertStartingIndex + 20;
+                m_returnTris[triStartingIndex + 31] = vertStartingIndex + 21;
+                m_returnTris[triStartingIndex + 32] = vertStartingIndex + 22;
+
+                m_returnTris[triStartingIndex + 33] = vertStartingIndex + 20;
+                m_returnTris[triStartingIndex + 34] = vertStartingIndex + 22;
+                m_returnTris[triStartingIndex + 35] = vertStartingIndex + 23;
+
+                //UVS
+                for (int vertIndex = 0; vertIndex < VERTS_PER_VOXEL_HARDEDGE; vertIndex++)
                 {
-                    break;
+                    m_returnUVs[vertStartingIndex + vertIndex] = p_UV;
                 }
-
-                AddPoint(p_startingPoint, vector, currentPoint, p_startingUV, p_finalUV, p_shouldTempStore);
-
-                float movementMagnitude = 0.0f;
-                float dominateAbs = GetLowest(x_diffAbs, y_diffAbs, z_diffAbs);
-                int dominateAxis = dominateAbs == x_diffAbs ? 0 : dominateAbs == y_diffAbs ? 1 : 2; //Get dominate axis 0 = x-axis, 1 = y-axis, 2 = z-axis
-
-                //Setup intial values
-                switch (dominateAxis)
-                {
-                    case 0: //movnig along x-axis
-                        movementMagnitude = x_diffAbs / vectorAbs.x;
-                        currentPoint += vectorNorm * movementMagnitude;
-                        break;
-                    case 1://movnig along y-axis
-                        movementMagnitude = y_diffAbs / vectorAbs.y;
-                        currentPoint += vectorNorm * movementMagnitude;
-                        break;
-                    case 2://movnig along z-axis
-                        movementMagnitude = z_diffAbs / vectorAbs.z;
-                        currentPoint += vectorNorm * movementMagnitude;
-                        break;
-                }
-
-                if (GetPercent(p_startingPoint, vector, currentPoint) >= 1.0f)
-                {
-                    break;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Add a point into voxel details
-        /// </summary>
-        /// <param name="p_startPoint">Starting point of line</param>
-        /// <param name="p_vector">Direciton of line with magnitude</param>
-        /// <param name="p_currentPoint">Current position on line</param>
-        /// <param name="p_startUV">Starting UV</param>
-        /// <param name="p_endUV">Ending UV</param>
-        private void AddPoint(float3 p_startPoint, float3 p_vector, float3 p_currentPoint, float2 p_startUV, float2 p_endUV, bool p_shouldTempStore)
-        {
-            if (m_voxelDetails.Count() >= m_maxVoxels)
-                return;
-
-            float a2bPercent = GetPercent(p_startPoint, p_vector, p_currentPoint);
-
-            float2 UV = MergeUVs(p_startUV, p_endUV, a2bPercent);
-
-            if(p_shouldTempStore)
-            {
-                m_ABPoints.Enqueue(GetSnappedInt3(p_currentPoint));
-                m_ABUVs.Enqueue(UV);
             }
             else
             {
-                m_voxelDetails.TryAdd(GetSnappedInt3(p_currentPoint), UV);
-            }
-        }
+                //build verts, looking at Front then back face, start bottom left and move up, right, down. => Bottom Left, Top Left, Top Right, Bottom Right
+                m_returnVerts[vertStartingIndex + 0] = voxelPos + (m_rightVector - m_upVector + m_forwardVector);
+                m_returnVerts[vertStartingIndex + 1] = voxelPos + (m_rightVector + m_upVector + m_forwardVector);
+                m_returnVerts[vertStartingIndex + 2] = voxelPos + (-m_rightVector + m_upVector + m_forwardVector);
+                m_returnVerts[vertStartingIndex + 3] = voxelPos + (-m_rightVector - m_upVector + m_forwardVector);
 
+                m_returnVerts[vertStartingIndex + 4] = voxelPos + (-m_rightVector - m_upVector - m_forwardVector);
+                m_returnVerts[vertStartingIndex + 5] = voxelPos + (-m_rightVector + m_upVector - m_forwardVector);
+                m_returnVerts[vertStartingIndex + 6] = voxelPos + (m_rightVector + m_upVector - m_forwardVector);
+                m_returnVerts[vertStartingIndex + 7] = voxelPos + (m_rightVector - m_upVector - m_forwardVector);
 
-    #region Supporting Fuctions
-        /// <summary>
-        /// Get a Vector3Int that has been rounded to closest, not down
-        /// </summary>
-        /// <param name="p_vector">Vector to round to Vector3Int</param>
-        /// <returns>final Vector3Int</returns>
-        private int3 GetSnappedInt3(float3 p_vector)
-        {
-            return new int3((int)math.round(p_vector.x), (int)math.round(p_vector.y), (int)math.round(p_vector.z));
-        }
+                //Tris, Goes Bottom left, Top Left, Top Right : Bottom Left, Top Right, Bottom Right
+                //Front
+                m_returnTris[triStartingIndex + 0] = vertStartingIndex + 0;
+                m_returnTris[triStartingIndex + 1] = vertStartingIndex + 1;
+                m_returnTris[triStartingIndex + 2] = vertStartingIndex + 2;
+                                              
+                m_returnTris[triStartingIndex + 3] = vertStartingIndex + 0;
+                m_returnTris[triStartingIndex + 4] = vertStartingIndex + 2;
+                m_returnTris[triStartingIndex + 5] = vertStartingIndex + 3;
 
-        /// <summary>
-        /// Lerp between two UVs
-        /// </summary>
-        /// <param name="p_UVA">First UV</param>
-        /// <param name="p_UVB">Second UV</param>
-        /// <param name="p_percent">How far from UV1 to UV2</param>
-        /// <returns>new merged UV</returns>
-        private float2 MergeUVs(float2 p_UVA, float2 p_UVB, float p_percent)
-        {
-            return p_UVB * p_percent + p_UVA * (1 - p_percent);
-        }
+                //Back
+                m_returnTris[triStartingIndex + 6] = vertStartingIndex + 4;
+                m_returnTris[triStartingIndex + 7] = vertStartingIndex + 5;
+                m_returnTris[triStartingIndex + 8] = vertStartingIndex + 6;
 
-        /// <summary>
-        /// Get lowest of 3 values
-        /// </summary>
-        /// <param name="p_val1">First to compare with</param>
-        /// <param name="p_val2">Second to compare with</param>
-        /// <param name="p_val3">Third to compare with</param>
-        /// <returns>Lowest of the three values</returns>
-        private float GetLowest(float p_val1, float p_val2, float p_val3)
-        {
-            //current lowest = p_val2 > p_val3 ? p_val2 : p_val3
-            return p_val1 < (p_val2 < p_val3 ? p_val2 : p_val3) ? p_val1 : (p_val2 < p_val3 ? p_val2 : p_val3);
-        }
+                m_returnTris[triStartingIndex + 9] = vertStartingIndex + 4;
+                m_returnTris[triStartingIndex + 10] = vertStartingIndex + 6;
+                m_returnTris[triStartingIndex + 11] = vertStartingIndex + 7;
+                //Right                               
+                m_returnTris[triStartingIndex + 12] = vertStartingIndex + 7;
+                m_returnTris[triStartingIndex + 13] = vertStartingIndex + 6;
+                m_returnTris[triStartingIndex + 14] = vertStartingIndex + 1;
+                                                      
+                m_returnTris[triStartingIndex + 15] = vertStartingIndex + 7;
+                m_returnTris[triStartingIndex + 16] = vertStartingIndex + 1;
+                m_returnTris[triStartingIndex + 17] = vertStartingIndex + 0;
+                //Left                                
+                m_returnTris[triStartingIndex + 18] = vertStartingIndex + 3;
+                m_returnTris[triStartingIndex + 19] = vertStartingIndex + 2;
+                m_returnTris[triStartingIndex + 20] = vertStartingIndex + 5;
+                                                      
+                m_returnTris[triStartingIndex + 21] = vertStartingIndex + 3;
+                m_returnTris[triStartingIndex + 22] = vertStartingIndex + 5;
+                m_returnTris[triStartingIndex + 23] = vertStartingIndex + 4;
+                //Top                    
+                m_returnTris[triStartingIndex + 24] = vertStartingIndex + 5;
+                m_returnTris[triStartingIndex + 25] = vertStartingIndex + 2;
+                m_returnTris[triStartingIndex + 26] = vertStartingIndex + 1;
 
-        /// <summary>
-        /// Get lowest of 3 values
-        /// </summary>
-        /// <param name="p_startPoint">Starting point of vector</param>
-        /// <param name="p_vector">Vector</param>
-        /// <param name="p_currentPoint">What current value is</param>
-        /// <returns>How far the current point is from start, 0 = 0%, 1 = 100%</returns>
-        private float GetPercent(float3 p_startPoint, float3 p_vector, float3 p_currentPoint)
-        {
-            float3 currentVector = p_currentPoint - p_startPoint;
-            return GetFloat3Mag(currentVector) / GetFloat3Mag(p_vector);
-        }
+                m_returnTris[triStartingIndex + 27] = vertStartingIndex + 5;
+                m_returnTris[triStartingIndex + 28] = vertStartingIndex + 1;
+                m_returnTris[triStartingIndex + 29] = vertStartingIndex + 6;
+                                                      
+                //Bottom                              
+                m_returnTris[triStartingIndex + 30] = vertStartingIndex + 3;
+                m_returnTris[triStartingIndex + 31] = vertStartingIndex + 4;
+                m_returnTris[triStartingIndex + 32] = vertStartingIndex + 7;
+                                                      
+                m_returnTris[triStartingIndex + 33] = vertStartingIndex + 3;
+                m_returnTris[triStartingIndex + 34] = vertStartingIndex + 7;
+                m_returnTris[triStartingIndex + 35] = vertStartingIndex + 0;
 
-        /// <summary>
-        /// Get magnitude of a float3
-        /// </summary>
-        /// <param name="p_val">Float 3 to bet magnitde of</param>
-        /// <returns>Magnitude of a float 3</returns>
-        private float GetFloat3Mag(float3 p_val)
-        {
-            return math.sqrt(p_val.x * p_val.x + p_val.y * p_val.y + p_val.z * p_val.z);
-        }
-    #endregion
-    }
-
-    [BurstCompile]
-    private struct GetConvertedMesh : IJob
-    {
-        [ReadOnly]
-        public float m_voxelSize;
-        [ReadOnly]
-        public int m_totalMeshCount;
-        [ReadOnly]
-        public bool m_isHardEdge;
-
-        public NativeHashMap<int3, float2> m_voxelDetails;
-
-        [WriteOnly]
-        public NativeArray<float4> m_convertedVerts;
-        [WriteOnly]
-        public NativeArray<float2> m_convertedUVs; //size of verts
-        [WriteOnly]
-        public NativeArray<int> m_convertedTris; //3 x 12 x the size of positions
-        [WriteOnly]
-        public NativeArray<int> m_meshVoxelCount;
-        /// <summary>
-        /// Converting of a single point where the voxel is, into the 8 points of a cube
-        /// Vertices will overlap, this is ensure each "Voxel" has its own flat colour
-        /// </summary>
-        public void Execute()
-        {
-            //Get all unique
-            NativeArray<int3> uniquePositions = m_voxelDetails.GetKeyArray(Allocator.Temp);
-            NativeArray<float2> uniqueUVs = m_voxelDetails.GetValueArray(Allocator.Temp);
-
-            int voxelPerMeshCount = uniquePositions.Length / m_totalMeshCount;
-            m_meshVoxelCount[0] = voxelPerMeshCount;
-
-            for (int meshIndex = 0; meshIndex < m_totalMeshCount; meshIndex++)
-            {
-                int firstVoxelIndex = meshIndex * voxelPerMeshCount;
-
-                for (int voxelIndex = 0; voxelIndex < voxelPerMeshCount; voxelIndex++)
+                //UVS
+                for (int vertIndex = 0; vertIndex < VERTS_PER_VOXEL_SOFTEDGE; vertIndex++)
                 {
-                    float4 voxelPos = new float4(uniquePositions[firstVoxelIndex + voxelIndex].x * m_voxelSize, uniquePositions[firstVoxelIndex + voxelIndex].y * m_voxelSize, uniquePositions[firstVoxelIndex + voxelIndex].z * m_voxelSize, 1.0f);
-
-                    float4 right = new float4(m_voxelSize / 2.0f, 0.0f, 0.0f, 0.0f); // r = right l = left
-                    float4 up = new float4(0.0f, m_voxelSize / 2.0f, 0.0f, 0.0f); // u = up, d = down
-                    float4 forward = new float4(0.0f, 0.0f, m_voxelSize / 2.0f, 0.0f); // f = forward b = backward
-
-                    if(m_isHardEdge) //Soft edge, 24 verts in total
-                    {
-                        int currentVertIndex = firstVoxelIndex * 24 + voxelIndex * 24; //24 verts per Voxel
-
-                        //Take each face, and face towards, up being up, or backwards
-                        //start bottom left corner
-                        //Back face
-                        m_convertedVerts[currentVertIndex + 0] = voxelPos + right - up + forward;
-                        m_convertedVerts[currentVertIndex + 1] = voxelPos + right + up + forward;
-                        m_convertedVerts[currentVertIndex + 2] = voxelPos - right + up + forward;
-                        m_convertedVerts[currentVertIndex + 3] = voxelPos - right - up + forward;
-                        //Front - Flip above order
-                        m_convertedVerts[currentVertIndex + 4] = voxelPos - right - up - forward;
-                        m_convertedVerts[currentVertIndex + 5] = voxelPos - right + up - forward;
-                        m_convertedVerts[currentVertIndex + 6] = voxelPos + right + up - forward;
-                        m_convertedVerts[currentVertIndex + 7] = voxelPos + right - up - forward;
-                        //Right face
-                        m_convertedVerts[currentVertIndex + 8] = voxelPos + right - up - forward;
-                        m_convertedVerts[currentVertIndex + 9] = voxelPos + right + up - forward;
-                        m_convertedVerts[currentVertIndex + 10] = voxelPos + right + up + forward;
-                        m_convertedVerts[currentVertIndex + 11] = voxelPos + right - up + forward;
-                        //Left face        
-                        m_convertedVerts[currentVertIndex + 12] = voxelPos - right - up + forward;
-                        m_convertedVerts[currentVertIndex + 13] = voxelPos - right + up + forward;
-                        m_convertedVerts[currentVertIndex + 14] = voxelPos - right + up - forward;
-                        m_convertedVerts[currentVertIndex + 15] = voxelPos - right - up - forward;
-                        //Top face    
-                        m_convertedVerts[currentVertIndex + 16] = voxelPos - right + up - forward;
-                        m_convertedVerts[currentVertIndex + 17] = voxelPos - right + up + forward;
-                        m_convertedVerts[currentVertIndex + 18] = voxelPos + right + up + forward;
-                        m_convertedVerts[currentVertIndex + 19] = voxelPos + right + up - forward;
-                        //Bottom face      
-                        m_convertedVerts[currentVertIndex + 20] = voxelPos + right - up - forward;
-                        m_convertedVerts[currentVertIndex + 21] = voxelPos + right - up + forward;
-                        m_convertedVerts[currentVertIndex + 22] = voxelPos - right - up + forward;
-                        m_convertedVerts[currentVertIndex + 23] = voxelPos - right - up - forward;
-
-                        //UVs Add in 24 for each vert added
-                        float2 UV = uniqueUVs[firstVoxelIndex + voxelIndex];
-                        for (int UVIndex = 0; UVIndex < 24; UVIndex++)
-                        {
-                            m_convertedUVs[currentVertIndex + UVIndex] = UV;
-                        }
-
-                        int startTriIndex = firstVoxelIndex * 36 + voxelIndex * 36; //36 tris per Voxel
-                        int startPreaddedVertIndex = voxelIndex * 24; // Preaddeded as later on it will be split up
-                        //Tris
-                        //Back
-                        m_convertedTris[startTriIndex + 0] = startPreaddedVertIndex + 0;
-                        m_convertedTris[startTriIndex + 1] = startPreaddedVertIndex + 1;
-                        m_convertedTris[startTriIndex + 2] = startPreaddedVertIndex + 2;
-                                                         
-                        m_convertedTris[startTriIndex + 3] = startPreaddedVertIndex + 0;
-                        m_convertedTris[startTriIndex + 4] = startPreaddedVertIndex + 2;
-                        m_convertedTris[startTriIndex + 5] = startPreaddedVertIndex + 3;
-                        //Front                              
-                        m_convertedTris[startTriIndex + 6] = startPreaddedVertIndex + 4;
-                        m_convertedTris[startTriIndex + 7] = startPreaddedVertIndex + 5;
-                        m_convertedTris[startTriIndex + 8] = startPreaddedVertIndex + 6;
-
-                        m_convertedTris[startTriIndex + 9] = startPreaddedVertIndex + 4;
-                        m_convertedTris[startTriIndex + 10] = startPreaddedVertIndex + 6;
-                        m_convertedTris[startTriIndex + 11] = startPreaddedVertIndex + 7;
-                        //Right                               
-                        m_convertedTris[startTriIndex + 12] = startPreaddedVertIndex + 8;
-                        m_convertedTris[startTriIndex + 13] = startPreaddedVertIndex + 9;
-                        m_convertedTris[startTriIndex + 14] = startPreaddedVertIndex + 10;
-                                                          
-                        m_convertedTris[startTriIndex + 15] = startPreaddedVertIndex + 8;
-                        m_convertedTris[startTriIndex + 16] = startPreaddedVertIndex + 10;
-                        m_convertedTris[startTriIndex + 17] = startPreaddedVertIndex + 11;
-                        //Left                                
-                        m_convertedTris[startTriIndex + 18] = startPreaddedVertIndex + 12;
-                        m_convertedTris[startTriIndex + 19] = startPreaddedVertIndex + 13;
-                        m_convertedTris[startTriIndex + 20] = startPreaddedVertIndex + 14;
-                                                          
-                        m_convertedTris[startTriIndex + 21] = startPreaddedVertIndex + 12;
-                        m_convertedTris[startTriIndex + 22] = startPreaddedVertIndex + 14;
-                        m_convertedTris[startTriIndex + 23] = startPreaddedVertIndex + 15;
-                        //Top                                 
-                        m_convertedTris[startTriIndex + 24] = startPreaddedVertIndex + 16;
-                        m_convertedTris[startTriIndex + 25] = startPreaddedVertIndex + 17;
-                        m_convertedTris[startTriIndex + 26] = startPreaddedVertIndex + 18;
-                                                          
-                        m_convertedTris[startTriIndex + 27] = startPreaddedVertIndex + 16;
-                        m_convertedTris[startTriIndex + 28] = startPreaddedVertIndex + 18;
-                        m_convertedTris[startTriIndex + 29] = startPreaddedVertIndex + 19;
-                        //Bottom                              
-                        m_convertedTris[startTriIndex + 30] = startPreaddedVertIndex + 20;
-                        m_convertedTris[startTriIndex + 31] = startPreaddedVertIndex + 21;
-                        m_convertedTris[startTriIndex + 32] = startPreaddedVertIndex + 22;
-                                                          
-                        m_convertedTris[startTriIndex + 33] = startPreaddedVertIndex + 20;
-                        m_convertedTris[startTriIndex + 34] = startPreaddedVertIndex + 22;
-                        m_convertedTris[startTriIndex + 35] = startPreaddedVertIndex + 23;
-                    }
-                    else //Soft edge, 8 verts in total
-                    {
-                        int currentVertIndex = firstVoxelIndex * 8 + voxelIndex * 8; //24 verts per Voxel
-
-                        //Take each face, and face towards, start bottom left corner
-                        //Back face
-                        m_convertedVerts[currentVertIndex + 0] = voxelPos + right - up + forward;
-                        m_convertedVerts[currentVertIndex + 1] = voxelPos + right + up + forward;
-                        m_convertedVerts[currentVertIndex + 2] = voxelPos - right + up + forward;
-                        m_convertedVerts[currentVertIndex + 3] = voxelPos - right - up + forward;
-                        //Front - Flip above order
-                        m_convertedVerts[currentVertIndex + 4] = voxelPos - right - up - forward;
-                        m_convertedVerts[currentVertIndex + 5] = voxelPos - right + up - forward;
-                        m_convertedVerts[currentVertIndex + 6] = voxelPos + right + up - forward;
-                        m_convertedVerts[currentVertIndex + 7] = voxelPos + right - up - forward;
-
-                        //UVs Add in 8 for each vert added
-                        float2 UV = uniqueUVs[firstVoxelIndex + voxelIndex];
-                        for (int UVIndex = 0; UVIndex < 8; UVIndex++)
-                        {
-                            m_convertedUVs[currentVertIndex + UVIndex] = UV;
-                        }
-
-                        int startTriIndex = firstVoxelIndex * 36 + voxelIndex * 36; //36 tris per Voxel
-                        int startPreaddedVertIndex = voxelIndex * 8; // Preaddeded as later on it will be split up
-                        //Tris
-                        //Back
-                        m_convertedTris[startTriIndex + 0] = startPreaddedVertIndex + 0;
-                        m_convertedTris[startTriIndex + 1] = startPreaddedVertIndex + 1;
-                        m_convertedTris[startTriIndex + 2] = startPreaddedVertIndex + 2;
-
-                        m_convertedTris[startTriIndex + 3] = startPreaddedVertIndex + 0;
-                        m_convertedTris[startTriIndex + 4] = startPreaddedVertIndex + 2;
-                        m_convertedTris[startTriIndex + 5] = startPreaddedVertIndex + 3;
-                        //Front                              
-                        m_convertedTris[startTriIndex + 6] = startPreaddedVertIndex + 4;
-                        m_convertedTris[startTriIndex + 7] = startPreaddedVertIndex + 5;
-                        m_convertedTris[startTriIndex + 8] = startPreaddedVertIndex + 6;
-
-                        m_convertedTris[startTriIndex + 9] = startPreaddedVertIndex + 4;
-                        m_convertedTris[startTriIndex + 10] = startPreaddedVertIndex + 6;
-                        m_convertedTris[startTriIndex + 11] = startPreaddedVertIndex + 7;
-                        //Right                               
-                        m_convertedTris[startTriIndex + 12] = startPreaddedVertIndex + 7;
-                        m_convertedTris[startTriIndex + 13] = startPreaddedVertIndex + 6;
-                        m_convertedTris[startTriIndex + 14] = startPreaddedVertIndex + 1;
-
-                        m_convertedTris[startTriIndex + 15] = startPreaddedVertIndex + 7;
-                        m_convertedTris[startTriIndex + 16] = startPreaddedVertIndex + 1;
-                        m_convertedTris[startTriIndex + 17] = startPreaddedVertIndex + 0;
-                        //Left                                
-                        m_convertedTris[startTriIndex + 18] = startPreaddedVertIndex + 3;
-                        m_convertedTris[startTriIndex + 19] = startPreaddedVertIndex + 2;
-                        m_convertedTris[startTriIndex + 20] = startPreaddedVertIndex + 5;
-
-                        m_convertedTris[startTriIndex + 21] = startPreaddedVertIndex + 3;
-                        m_convertedTris[startTriIndex + 22] = startPreaddedVertIndex + 5;
-                        m_convertedTris[startTriIndex + 23] = startPreaddedVertIndex + 4;
-                        //Top                                 
-                        m_convertedTris[startTriIndex + 24] = startPreaddedVertIndex + 5;
-                        m_convertedTris[startTriIndex + 25] = startPreaddedVertIndex + 2;
-                        m_convertedTris[startTriIndex + 26] = startPreaddedVertIndex + 1;
-
-                        m_convertedTris[startTriIndex + 27] = startPreaddedVertIndex + 5;
-                        m_convertedTris[startTriIndex + 28] = startPreaddedVertIndex + 1;
-                        m_convertedTris[startTriIndex + 29] = startPreaddedVertIndex + 3;
-                        //Bottom                              
-                        m_convertedTris[startTriIndex + 30] = startPreaddedVertIndex + 7;
-                        m_convertedTris[startTriIndex + 31] = startPreaddedVertIndex + 0;
-                        m_convertedTris[startTriIndex + 32] = startPreaddedVertIndex + 3;
-
-                        m_convertedTris[startTriIndex + 33] = startPreaddedVertIndex + 7;
-                        m_convertedTris[startTriIndex + 34] = startPreaddedVertIndex + 3;
-                        m_convertedTris[startTriIndex + 35] = startPreaddedVertIndex + 4;
-                    }
-
+                    m_returnUVs[vertStartingIndex + vertIndex] = p_UV;
                 }
             }
         }
     }
-    #endregion
 
+#endregion
 
-    #region Varible Verification/Render Functions
-
+#region Mesh Functions
     /// <summary>
-    /// Ensure all varibles are setup correctly
-    /// When varibles are not setup, attempt to fix, otherwise remove object
+    /// Attempt to get the mesh on a given object
     /// </summary>
-    /// <returns>true when all varibels are setup correctly</returns>
-    private bool VerifyVaribles()
+    /// <param name="p_objectWithMesh">Object that should contain the mesh</param>
+    /// <returns>mesh found, null when no mesh found</returns>
+    private Mesh GetMesh(GameObject p_objectWithMesh)
     {
-        if (m_voxelSize <= 0.0f)
-        {
-#if UNITY_EDITOR
-            Debug.Log("Voxel size on " + name + " is set to less than or equal to 0, defaulting to 1");
-#endif
-            m_voxelSize = 1.0f;
-        }
-
-        //Original Object
-        if (m_objectWithMesh == null)
-        {
-            m_objectWithMesh = gameObject;
-            if (m_objectWithMesh == null)
-            {
-#if UNITY_EDITOR
-                Debug.Log(name + " orginal object is missing");
-#endif
-                m_runFlag = false;
-
-                return false;
-            }
-        }
-        //Original Mesh
-        if (m_originalMesh == null ||  m_originalMesh.vertexCount == 0)
-        {
-            m_originalMesh = GetMesh(m_objectWithMesh);
-            if (m_originalMesh == null || m_originalMesh.vertexCount == 0)
-            {
-#if UNITY_EDITOR
-                Debug.Log(name + " orginal mesh is missing or mesh has no vertices");
-#endif
-                m_runFlag = false;
-
-                return false;
-            }
-        }
-
-        //Voxel Object
-        foreach (GameObject voxelObject in m_voxelObjects)
-        {
-            if (voxelObject == null)
-            {
-#if UNITY_EDITOR
-                Debug.Log(name + " voxel object is missing");
-#endif
-                m_runFlag = false;
-
-                return false;
-            }
-        }
-
-
-        if (m_voxeliserType == VOXELISER_TYPE.ANIMATED)
-        {
-            if (m_skinnedRenderer == null)
-            {
-                m_skinnedRenderer = m_objectWithMesh.GetComponent<SkinnedMeshRenderer>();
-                if (m_skinnedRenderer == null)
-                {
-#if UNITY_EDITOR
-                    Debug.Log(name + " skinned mesh renderer is missing, maybe its intended to be solid or static?");
-#endif
-                    m_runFlag = false;
-
-                    return false;
-                }
-            }
-
-        }
-        return true;
-    }
-
-#if UNITY_EDITOR
-    /// <summary>
-    /// Saving of static meshes
-    /// </summary>
-    private IEnumerator SaveMesh()
-    {
-        //Saving of static mesh
-        if (m_voxeliserType == VOXELISER_TYPE.STATIC)
-        {
-            if (m_objectWithMesh == null)
-                m_objectWithMesh = gameObject;
-
-            //Store transform
-            Quaternion orginalRot = m_objectWithMesh.transform.rotation;
-
-            if (m_resetRotation)
-                m_objectWithMesh.transform.rotation = Quaternion.identity;
-
-            Coroutine saveConvert = StartCoroutine(InitVoxeliser());
-
-            yield return saveConvert;
-
-            if (m_resetRotation)
-                m_objectWithMesh.transform.rotation = orginalRot;
-
-            //Get mesh
-            string fileName = "Voxelised - " + name;
-            string meshPath = "Assets/" + fileName + ".mesh";
-
-            Mesh topMesh = m_voxelMeshs[0];
-
-            AssetDatabase.CreateAsset(topMesh, meshPath);
-            AssetDatabase.SetMainObject(topMesh, meshPath);
-               
-            //Add in any additional meshes
-            for (int meshIndex = 1; meshIndex < m_voxelMeshs.Length; meshIndex++)
-            {
-                Mesh additionalMesh = m_voxelMeshs[meshIndex];
-                additionalMesh.name = "Additional mesh:" + meshIndex;
-                AssetDatabase.AddObjectToAsset(additionalMesh, topMesh);
-            }
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.ImportAsset(meshPath);
-
-            //Create prefab
-            string prefabPath = "Assets/" + fileName + ".prefab";
-            GameObject parentObject = new GameObject();
-            parentObject.name = fileName;
-            //Main asset first
-            Object meshObject = AssetDatabase.LoadMainAssetAtPath(meshPath);
-            Mesh meshSection = (Mesh)meshObject;
-            if (meshSection != null)
-            {
-                GameObject meshSectionObject = new GameObject("Mesh Section: " + 0);
-                MeshFilter meshFilter = meshSectionObject.AddComponent<MeshFilter>();
-                MeshRenderer meshRenderer = meshSectionObject.AddComponent<MeshRenderer>();
-                meshFilter.sharedMesh = meshSection;
-                meshRenderer.materials = m_orginalMats;
-                meshSectionObject.transform.parent = parentObject.transform;
-            }
-
-            //Each sub asset
-            Object[] meshObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(meshPath);
-            for (int meshIndex = 0; meshIndex < meshObjects.Length; meshIndex++)
-            {
-                meshSection = (Mesh)meshObjects[meshIndex];
-
-                if(meshSection!=null)
-                {
-                    GameObject meshSectionObject = new GameObject("Mesh Section: " + meshIndex + 1); //Increment as main is 0
-                    MeshFilter meshFilter = meshSectionObject.AddComponent<MeshFilter>();
-                    MeshRenderer meshRenderer = meshSectionObject.AddComponent<MeshRenderer>();
-                    meshFilter.sharedMesh = meshSection;
-                    meshRenderer.materials = m_orginalMats;
-                    meshSectionObject.transform.parent = parentObject.transform;
-                }
-            }
-
-            PrefabUtility.SaveAsPrefabAssetAndConnect(parentObject, prefabPath, InteractionMode.UserAction);
-            
-            DestroyImmediate(parentObject);
-        }
-        else
-        {
-            Debug.Log("Can only save when set to static");
-        }
-
-        ToggleMaterial(m_objectWithMesh, true);
-        DestroyImmediate(m_parentVoxelObject);
-        m_processingFlag = false;
-
-        CleanUpNatives();
-
-        yield break;
-    }
-#endif
-
-
-    /// <summary>
-    /// Get mesh from eith skinned mesh renderer or mesh renderer
-    /// </summary>
-    /// <param name="p_object">object to get mesh for</param>
-    /// <returns>correct mesh based off avalibilty of renderers in children</returns>
-    private Mesh GetMesh(GameObject p_object)
-    {
-        if (p_object == null) //Early breakout
+        if (p_objectWithMesh == null)
             return null;
 
-        Mesh instanceMesh = new Mesh();
-
-        MeshFilter meshFilter = p_object.GetComponent<MeshFilter>();
-        if (meshFilter != null)
+        MeshFilter meshFilter = p_objectWithMesh.GetComponent<MeshFilter>();
+        if(meshFilter != null)
         {
-            m_originalMesh = meshFilter.sharedMesh;
+            return meshFilter.mesh;
+        }
+        SkinnedMeshRenderer skinnedMeshRenderer = p_objectWithMesh.GetComponent<SkinnedMeshRenderer>();
+        if (skinnedMeshRenderer != null)
+        {
+            Mesh bakedMesh = new Mesh();
+            skinnedMeshRenderer.BakeMesh(bakedMesh);
+            return bakedMesh;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Attempt to get the mesh on a given object
+    /// </summary>
+    /// <param name="p_objectWithMesh">Object that should contain the material</param>
+    /// <returns>mesh found, null when no mesh found</returns>
+    private Material GetMaterial(GameObject p_objectWithMesh)
+    {
+        if (p_objectWithMesh == null)
+            return null;
+
+        MeshRenderer meshRenderer = p_objectWithMesh.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            return meshRenderer.material;
         }
         else
         {
-            if(m_skinnedRenderer == null)
-                m_skinnedRenderer = p_object.GetComponent<SkinnedMeshRenderer>();
-            if (m_skinnedRenderer != null)
+            SkinnedMeshRenderer skinnedMeshRenderer = p_objectWithMesh.GetComponent<SkinnedMeshRenderer>();
+            if (skinnedMeshRenderer != null)
             {
-                GetBakedVerts();
+                return skinnedMeshRenderer.material;
             }
         }
 
-        instanceMesh.vertices = m_originalMesh.vertices;
-        instanceMesh.uv = m_originalMesh.uv;
-        instanceMesh.triangles = m_originalMesh.triangles;
-        return instanceMesh;
+        return null;
     }
 
     /// <summary>
@@ -1253,101 +876,92 @@ public class Voxeliser_Burst : MonoBehaviour
         MeshRenderer meshRenderer = p_object.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
         {
-            if (p_val)
-            {
-                meshRenderer.materials = m_orginalMats;
-            }
-            else
-            {
-                meshRenderer.materials = new Material[0];
-            }
+            meshRenderer.materials = new Material[0];
         }
         else
         {
             SkinnedMeshRenderer skinnedMeshRenderer = p_object.GetComponent<SkinnedMeshRenderer>();
             if (skinnedMeshRenderer != null)
             {
-                if (p_val)
-                {
-                    skinnedMeshRenderer.materials = m_orginalMats;
-                }
-                else
-                {
-                    skinnedMeshRenderer.materials = new Material[0];
-                }
+                skinnedMeshRenderer.materials = new Material[0];
             }
         }
     }
+#endregion
+
+#region Native Maths
 
     /// <summary>
-    /// Remove all materials attached to an object
+    /// Convert Array to NativeArray, float3 type
     /// </summary>
-    /// <param name="p_object">object to remove material from</param>
-    /// <returns></returns>
-    private Material GetMaterial(GameObject p_object)
+    /// <param name="p_fillingArray">Native array to fill</param>
+    /// <param name="p_filledFromArray">Array filling from. Should be same size</param>
+    private static void Convert(NativeArray<double3> p_fillingArray, Vector3[] p_filledFromArray)
     {
-        if (p_object == null)
-            return null;
-
-        MeshRenderer meshRenderer = p_object.GetComponent<MeshRenderer>();
-        if (meshRenderer != null)
+        for (int arrayIndex = 0; arrayIndex < p_filledFromArray.Length; arrayIndex++)
         {
-            return meshRenderer.sharedMaterial;
+            Vector3 currentArrayVal = p_filledFromArray[arrayIndex];
+            p_fillingArray[arrayIndex] = new double3(currentArrayVal.x, currentArrayVal.y, currentArrayVal.z);
         }
-        else
-        {
-            SkinnedMeshRenderer skinnedMeshRenderer = p_object.GetComponent<SkinnedMeshRenderer>();
-            if (skinnedMeshRenderer != null)
-                return skinnedMeshRenderer.sharedMaterial;
-        }
-
-        return null;
     }
 
     /// <summary>
-    /// Due to how baking works, we want to remove all scale transforms, as future functions assume this is the case
+    /// Convert Array to NativeArray, int type
     /// </summary>
-    private void GetBakedVerts()
+    /// <param name="p_fillingArray">Native array to fill</param>
+    /// <param name="p_filledFromArray">Array filling from. Should be same size</param>
+    private static void Convert(NativeArray<int> p_fillingArray, int[] p_filledFromArray)
     {
-        if(m_originalMesh == null)
-            m_originalMesh = new Mesh();
-        m_originalMesh.Clear();
-
-        m_skinnedRenderer.BakeMesh(m_originalMesh);
-
-        Vector3[] verts = m_originalMesh.vertices;
-
-        Vector3 lossyScale = m_objectWithMesh.transform.lossyScale;
-
-        //Invert
-        lossyScale.x = 1.0f / lossyScale.x;
-        lossyScale.y = 1.0f / lossyScale.y;
-        lossyScale.z = 1.0f / lossyScale.z;
-
-        Matrix4x4 scaleMatrix = Matrix4x4.Scale(lossyScale);
-        //Convert
-        for (int vertIndex = 0; vertIndex < verts.Length; vertIndex++)
+        for (int arrayIndex = 0; arrayIndex < p_filledFromArray.Length; arrayIndex++)
         {
-            verts[vertIndex] = scaleMatrix * verts[vertIndex];
+            p_fillingArray[arrayIndex] = p_filledFromArray[arrayIndex];
         }
-        m_originalMesh.vertices = verts;
     }
 
-        /// <summary>
-    /// Build a global local to world matrix
+    /// <summary>
+    /// Convert Array to NativeArray, double2 type
     /// </summary>
-    /// <param name="p_gameObject">Object to build</param>
-    /// <returns>TRS matrix contianing pos, rot and scale</returns>
-    private Matrix4x4 BuildGlobalLocalToWorldMat4x4(GameObject p_gameObject)
+    /// <param name="p_fillingArray">Native array to fill</param>
+    /// <param name="p_filledFromArray">Array filling from. Should be same size</param>
+    private static void Convert(NativeArray<double2> p_fillingArray, Vector2[] p_filledFromArray)
     {
-        Matrix4x4 positionMatrix = Matrix4x4.Translate(p_gameObject.transform.position);
-        Matrix4x4 rotationMatrix = Matrix4x4.Rotate(p_gameObject.transform.rotation);
-        Matrix4x4 scaleMatrix = Matrix4x4.Scale(p_gameObject.transform.lossyScale);
-        return positionMatrix * rotationMatrix * scaleMatrix;
+        for (int arrayIndex = 0; arrayIndex < p_filledFromArray.Length; arrayIndex++)
+        {
+            Vector2 currentArrayVal = p_filledFromArray[arrayIndex];
+            p_fillingArray[arrayIndex] = new double2(currentArrayVal.x, currentArrayVal.y);
+        }
     }
 
-    #endregion
-#endif
+    private static Vector3 Convert(double3 p_val)
+    {
+        return new Vector3((float)p_val.x, (float)p_val.y, (float)p_val.z);
+    }
+
+    private static Vector2 Convert(double2 p_val)
+    {
+        return new Vector2((float)p_val.x, (float)p_val.y);
+    }
+
+    /// <summary>
+    /// Convert Matrix4x4 to double4x4
+    /// </summary>
+    /// <param name="p_floatMatrix">Matrix4x4 to convert</param>
+    /// <returns>double4x4 with values copied over</returns>
+    private static double4x4 FloatMatrixToDoubleMatrix(Matrix4x4 p_floatMatrix)
+    {
+        double4x4 doubleMatrix = new double4x4(0.0);
+
+        for (int rowIndex = 0; rowIndex < 4; rowIndex++)
+        {
+            for (int colIndex = 0; colIndex < 4; colIndex++)
+            {
+                doubleMatrix[rowIndex][colIndex] = p_floatMatrix[colIndex, rowIndex];
+            }
+        }
+
+        return doubleMatrix;
+    }
+#endregion
 }
 
-
+#endif

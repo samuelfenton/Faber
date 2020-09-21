@@ -8,7 +8,7 @@ public class SplinePhysics : MonoBehaviour
     public const float MIN_SPLINE_PERCENT = -0.05f;
     public const float MAX_SPLINE_PERCENT = 1.05f;
 
-    protected const float GROUND_DETECTION = 0.5f;
+    protected const float GROUND_DETECTION = 0.2f;
     public const float GRAVITY = -24.0f;
 
     [Header("Spline settings")]

@@ -15,6 +15,7 @@ public class Entity : MonoBehaviour
     [HideInInspector]
     public SplinePhysics m_splinePhysics = null;
 
+    [HideInInspector]
     public SceneController_InGame m_sceneController = null;
 
     /// <summary>

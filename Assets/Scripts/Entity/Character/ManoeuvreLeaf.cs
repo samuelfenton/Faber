@@ -15,7 +15,7 @@ public class ManoeuvreLeaf : ScriptableObject
     [Header("Animation String Details")]
     [Range(1,100)]
     [SerializeField]
-    private int m_manoeuvreIndex = 0;
+    private int m_manoeuvreIndex = 1;
     [SerializeField]
     private MANOEUVRE_TYPE m_manoeuvreType = MANOEUVRE_TYPE.GROUND;
     [SerializeField]
