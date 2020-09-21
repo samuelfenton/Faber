@@ -80,7 +80,6 @@ public class StateMachine_Player : StateMachine
 
         jump.AddNextState(inAir);
         jump.AddNextState(land);
-        jump.AddNextState(loco);
 
         inAir.AddNextState(land);
         inAir.AddNextState(attack);

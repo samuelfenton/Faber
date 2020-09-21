@@ -105,7 +105,8 @@ public class CustomAnimation : MonoBehaviour
         if (m_animator == null || p_layer == LAYER.LAYER_COUNT)
             return false;
 
-        return m_animator.GetCurrentAnimatorStateInfo(m_layerToInt[(int)p_layer]).normalizedTime > END_ANIMATION_TIME;
+        bool inCrossfade = m_animator.GetNextAnimatorClipInfoCount(m_layerToInt[(int)p_layer]) != 0;
+        return !inCrossfade && m_animator.GetCurrentAnimatorStateInfo(m_layerToInt[(int)p_layer]).normalizedTime > END_ANIMATION_TIME;
     }
 
     public void PlayBase(BASE_DEFINES p_anim)

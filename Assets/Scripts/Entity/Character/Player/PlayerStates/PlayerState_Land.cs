@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerState_Land : State_Player
 {
-    private const float SPEED_FOR_ROLLING_LANDING = 0.8f;
+    private const float SPEED_FOR_ROLLING_LANDING = 0.7f;
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -26,7 +26,7 @@ public class PlayerState_Land : State_Player
         if(Mathf.Abs(m_character.m_localVelocity.x) / m_character.m_groundRunVel > SPEED_FOR_ROLLING_LANDING) //players moving fast enough to need to roll
         {
             m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LANDING_TO_RUN);
-            m_player.SetDesiredVelocity(m_character.m_localVelocity.x > 0.0f ? m_character.m_groundRunVel : -m_character.m_groundRunVel);
+            m_player.SetDesiredVelocity(m_character.m_localVelocity.x);
         }
         else
         {

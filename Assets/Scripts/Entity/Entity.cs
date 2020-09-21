@@ -88,15 +88,29 @@ public class Entity : MonoBehaviour
     /// Should be relative to forwards
     /// </summary>
     /// <param name="p_val">Translation distance</param>
-    public virtual void SplineTranslate(float p_val)
+    public virtual void SplineTranslate(float p_val, bool p_forceAllignToBase = false)
     {
-        if((m_entityModel == null && AllignedToSpline()) || ModelAllignedToSpline())
+        if(p_forceAllignToBase || m_entityModel == null) //Should we align based off base object 
         {
-            m_splinePhysics.m_currentSplinePercent += p_val / m_splinePhysics.m_currentSpline.m_splineLength;
+            if(AllignedToSpline())
+            {
+                m_splinePhysics.m_currentSplinePercent += p_val / m_splinePhysics.m_currentSpline.m_splineLength;
+            }
+            else
+            {
+                m_splinePhysics.m_currentSplinePercent -= p_val / m_splinePhysics.m_currentSpline.m_splineLength;
+            }
         }
-        else
+        else //allign using model
         {
-            m_splinePhysics.m_currentSplinePercent -= p_val / m_splinePhysics.m_currentSpline.m_splineLength;
+            if (ModelAllignedToSpline())
+            {
+                m_splinePhysics.m_currentSplinePercent += p_val / m_splinePhysics.m_currentSpline.m_splineLength;
+            }
+            else
+            {
+                m_splinePhysics.m_currentSplinePercent -= p_val / m_splinePhysics.m_currentSpline.m_splineLength;
+            }
         }
     }
 

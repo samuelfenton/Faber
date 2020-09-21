@@ -7256,6 +7256,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1234162522}
     m_Modifications:
+    - target: {fileID: 5475506748303260416, guid: e87fa2605b367a941976ca36de02b92c,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7334705693917236364, guid: e87fa2605b367a941976ca36de02b92c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -7269,7 +7274,7 @@ PrefabInstance:
     - target: {fileID: 7334705693917236364, guid: e87fa2605b367a941976ca36de02b92c,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -29.34021
+      value: -2.4088058
       objectReference: {fileID: 0}
     - target: {fileID: 7334705693917236364, guid: e87fa2605b367a941976ca36de02b92c,
         type: 3}
@@ -7326,6 +7331,11 @@ PrefabInstance:
       propertyPath: m_nodeB
       value: 
       objectReference: {fileID: 2084684021}
+    - target: {fileID: 7647955024369262057, guid: e87fa2605b367a941976ca36de02b92c,
+        type: 3}
+      propertyPath: m_currentSplinePercent
+      value: 0.776
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e87fa2605b367a941976ca36de02b92c, type: 3}
 --- !u!4 &1712107743 stripped
@@ -7883,7 +7893,7 @@ PrefabInstance:
     - target: {fileID: 4231593497375030806, guid: 33bfad8a67ab4324a92293ae5b524fc4,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4231593497375030807, guid: 33bfad8a67ab4324a92293ae5b524fc4,
         type: 3}

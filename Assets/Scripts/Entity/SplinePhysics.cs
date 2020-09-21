@@ -115,7 +115,7 @@ public class SplinePhysics : MonoBehaviour
         float distanceToGround = transform.position.y - splinePosition.y;
 
         //Is entity on spline
-        if (m_parentEntity.m_localVelocity.y < 0.0f && distanceToGround <= GROUND_DETECTION)
+        if (m_parentEntity.m_localVelocity.y <= 0.0f && distanceToGround <= GROUND_DETECTION)
         {
             //Grounded change y-component of velocity
             newPosition.y = splinePosition.y;
