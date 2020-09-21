@@ -33,7 +33,6 @@ public class PlayerState_Land : State_Player
             m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LANDING_TO_IDLE);
             m_player.SetDesiredVelocity(0.0f);
         }
-
     }
 
     /// <summary>

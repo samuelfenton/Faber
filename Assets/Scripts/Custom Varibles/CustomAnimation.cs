@@ -5,7 +5,7 @@ using UnityEngine;
 public class CustomAnimation : MonoBehaviour
 {
     private const float END_ANIMATION_TIME = 0.9f;
-    private const float BLEND_TIME = 0.1f;
+    private const float BLEND_TIME = 0.2f;
 
     private const string NULL_STRING = "Null";
 

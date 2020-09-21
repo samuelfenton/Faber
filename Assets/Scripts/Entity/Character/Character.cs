@@ -10,7 +10,6 @@ public class Character : Entity
     public const float SPRINT_MODIFIER = 1.5f;//Linked to animator, To slow down sprint, change here and in animation all related blend trees
 
     [Header("Assigned Character Varibles")]
-    public GameObject m_characterModel = null;
     public GameObject m_primaryAnchor = null;
     public GameObject m_secondaryAnchor = null;
 
@@ -91,7 +90,7 @@ public class Character : Entity
         //Get references
         m_characterStatistics = GetComponent<CharacterStatistics>();
         m_weaponManager = GetComponent<WeaponManager>();
-        m_animator = m_characterModel.GetComponent<Animator>();
+        m_animator = m_entityModel.GetComponent<Animator>();
 
         m_customAnimation = GetComponentInChildren<CustomAnimation>();
         m_customAnimation.Init(m_animator);
@@ -189,11 +188,11 @@ public class Character : Entity
     {
         if(p_facingDir == FACING_DIR.RIGHT)
         {
-            m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+            m_entityModel.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
         }
         else
         {
-            m_characterModel.transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+            m_entityModel.transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
         }
     }
 
@@ -203,11 +202,20 @@ public class Character : Entity
     /// <returns>Right when forward is same for model and base object</returns>
     public FACING_DIR GetFacingDir()
     {
-        float alignedModelDot = Vector3.Dot(transform.forward, m_characterModel.transform.forward);
-
-        if (alignedModelDot >= 0.0f)
+        if (ModelAllignedToSpline())
             return FACING_DIR.RIGHT;
         return FACING_DIR.LEFT;
+    }
+
+    /// <summary>
+    /// Determine if character is alligned to same forward direction as the spline they are on
+    /// </summary>
+    /// <returns>True when facing same direction</returns>
+    public bool ModelAllignedToSpline()
+    {
+        Vector3 splineForwards = m_splinePhysics.m_currentSpline.GetForwardDir(m_splinePhysics.m_currentSplinePercent);
+
+        return (Vector3.Dot(splineForwards, m_entityModel.transform.forward) > 0);
     }
 
     /// <summary>
@@ -281,6 +289,9 @@ public class Character : Entity
         m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_localVelocity.x / m_groundRunVel));
     }
 
+    /// <summary>
+    /// Set a random idle pose variable
+    /// </summary>
     public void GetRandomIdlePose()
     {
         int randomPose = Random.Range(0, m_idlePoseCount);

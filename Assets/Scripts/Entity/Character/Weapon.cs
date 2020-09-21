@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
 public class Weapon : MonoBehaviour
 {
     public float m_baseDamage = 10.0f;
@@ -13,26 +14,20 @@ public class Weapon : MonoBehaviour
 
     private List<Character> m_hitCharacters = new List<Character>();
 
+    private void Awake()
+    {
+        m_colldier = GetComponent<Collider>();
+
+        DisableWeaponDamage();
+    }
+
     /// <summary>
     /// Setup varibles for later use
     /// </summary>
     /// <param name="p_character">Parent character</param>
     public void Init(Character p_character)
     {
-        m_character = p_character;
-
-        m_colldier = GetComponent<Collider>();
-        if (m_colldier != null)
-        {
-            m_colldier.enabled = false;
-        }
-        else
-        {
-#if UNITY_EDITOR|| DEVELOPMENT_BUILD
-            Debug.LogWarning("No collider found on " + gameObject.name + ", this weapon will be ignored");
-#endif
-            Destroy(gameObject);
-        }    
+        m_character = p_character;  
     }
 
     /// <summary>

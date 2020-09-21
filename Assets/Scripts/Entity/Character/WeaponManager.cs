@@ -236,7 +236,9 @@ public class WeaponManager : MonoBehaviour
 
         float currentPercent = m_customAnimation.GetAnimationPercent(CustomAnimation.LAYER.ATTACK);
 
-        //Running through initial sequence, that is the start of an attack, wait till completed
+        m_character.SplineTranslate(m_currentManoeuvreLeaf.m_translationXCurve.Evaluate(currentPercent) * Time.deltaTime);
+        
+            //Running through initial sequence, that is the start of an attack, wait till completed
         if(m_currentManoeuvreLeaf.m_sequenceAttack)
         {
             switch (m_currentSequenceState)

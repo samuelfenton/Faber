@@ -18,11 +18,17 @@ public class Character_SplinePhysics : SplinePhysics
         m_colliderExtents = collider.bounds.extents;
     }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+
     private void OnDrawGizmosSelected()
     {
-        if (MOARDebugging.GetSplinePosition(m_nodeA, m_nodeB, m_currentSplinePercent, out Vector3 position))
+        if(!Application.isPlaying)
         {
-            transform.position = position;
+            if (MOARDebugging.GetSplinePosition(m_nodeA, m_nodeB, m_currentSplinePercent, out Vector3 position))
+            {
+                transform.position = position;
+            }
         }
     }
+#endif
 }

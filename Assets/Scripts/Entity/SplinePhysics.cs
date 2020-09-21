@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class SplinePhysics : MonoBehaviour
 {
-    public const float MIN_SPLINE_PERCENT = -0.05f;
-    public const float MAX_SPLINE_PERCENT = 1.05f;
+    public const float MIN_SPLINE_PERCENT = -0.001f;
+    public const float MAX_SPLINE_PERCENT = 1.001f;
 
-    protected const float GROUND_DETECTION = 0.2f;
+    protected const float GROUND_DETECTION = 0.1f;
     public const float GRAVITY = -24.0f;
 
     [Header("Spline settings")]
@@ -18,13 +18,10 @@ public class SplinePhysics : MonoBehaviour
     [Range(0, 1)]
     public float m_currentSplinePercent = 0.0f;
 
-    [HideInInspector]
+    [Header("Pre assigned, dont modify")]
     public bool m_upCollision = false;
-    [HideInInspector]
     public bool m_downCollision = false;
-    [HideInInspector]
     public bool m_forwardCollision = false;
-    [HideInInspector]
     public bool m_backCollision = false;
 
     [HideInInspector]
@@ -48,7 +45,7 @@ public class SplinePhysics : MonoBehaviour
 
         if (m_nodeA == null || m_nodeB == null)
         {
-#if UNITY_EDITOR|| DEVELOPMENT_BUILD
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.LogWarning(name + " doesnt have both nodes set in the inspector");
 #endif
             return;
@@ -58,7 +55,7 @@ public class SplinePhysics : MonoBehaviour
 
         if (splinePosition == Pathing_Spline.SPLINE_POSITION.MAX_LENGTH)
         {
-#if UNITY_EDITOR|| DEVELOPMENT_BUILD
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.LogWarning(name + " nodes are invalid");
 #endif
             return;
@@ -95,8 +92,7 @@ public class SplinePhysics : MonoBehaviour
         //Setup forwards direction
         Vector3 desiredForwards = m_currentSpline.GetForwardDir(m_currentSplinePercent);
 
-        float relativeDot = Vector3.Dot(desiredForwards, transform.forward);
-        if (relativeDot > 0)
+        if (m_parentEntity.AllignedToSpline())
         {
             transform.rotation = Quaternion.LookRotation(desiredForwards, Vector3.up);
             m_currentSplinePercent += m_currentSpline.ChangeinPercent(m_parentEntity.m_localVelocity.x * Time.deltaTime);
@@ -106,26 +102,25 @@ public class SplinePhysics : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(-desiredForwards, Vector3.up);
             m_currentSplinePercent += m_currentSpline.ChangeinPercent(-m_parentEntity.m_localVelocity.x * Time.deltaTime);
         }
+
         //Lock spline percent between close enough to 0 - 1
         m_currentSplinePercent = Mathf.Clamp(m_currentSplinePercent, MIN_SPLINE_PERCENT, MAX_SPLINE_PERCENT);
 
         //Setup transform
-        Vector3 newPosition = m_currentSpline.GetPosition(m_currentSplinePercent); //Spline position with no y considered
+        Vector3 splinePosition = m_currentSpline.GetPosition(m_currentSplinePercent);
 
+        Vector3 newPosition = splinePosition; //Spline position with no y considered
         newPosition.y = transform.position.y + m_parentEntity.m_localVelocity.y * Time.deltaTime; //Adding in y value
 
-        float distanceToGround = GetSplineDistance();
+        float distanceToGround = transform.position.y - splinePosition.y;
 
-        //Override down collision dependant on spline collision
-        m_downCollision = m_downCollision || distanceToGround < GROUND_DETECTION;
-
-        if (m_parentEntity.m_localVelocity.y <= 0.0f && distanceToGround <= 0.0f)
+        //Is entity on spline
+        if (m_parentEntity.m_localVelocity.y < 0.0f && distanceToGround <= GROUND_DETECTION)
         {
-            //Set y-pos
-            newPosition.y = transform.position.y - distanceToGround;
-
             //Grounded change y-component of velocity
+            newPosition.y = splinePosition.y;
             m_parentEntity.m_localVelocity.y = 0.0f;
+            m_downCollision = true;
         }
 
         transform.position = newPosition;
@@ -216,16 +211,5 @@ public class SplinePhysics : MonoBehaviour
             return true; //Early breakout
 
         return false;
-    }
-
-    /// <summary>
-    /// Get the distance between an entity and the spline its currently on
-    /// </summary>
-    /// <returns>Distance to spline, negative means is below the spline</returns>
-    public float GetSplineDistance()
-    {
-        Vector3 splinePosition = m_currentSpline.GetPosition(m_currentSplinePercent);
-
-        return transform.position.y - splinePosition.y;
     }
 }

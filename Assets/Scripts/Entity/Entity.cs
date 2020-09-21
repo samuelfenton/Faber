@@ -6,8 +6,11 @@ public class Entity : MonoBehaviour
 {
     public enum TURNING_DIR { CENTER, RIGHT, LEFT }
 
+    public GameObject m_entityModel = null;
+    
     public Vector3 m_localVelocity = Vector3.zero;
     public bool m_gravity = false;
+
 
     [SerializeField]
     private const float DESTRUCTION_TIME = 1.0f;
@@ -82,11 +85,41 @@ public class Entity : MonoBehaviour
 
     /// <summary>
     /// Translate the entity 
+    /// Should be relative to forwards
     /// </summary>
     /// <param name="p_val">Translation distance</param>
-    public void Translate(float p_val)
+    public virtual void SplineTranslate(float p_val)
     {
-        m_splinePhysics.m_currentSplinePercent += p_val / m_splinePhysics.m_currentSpline.m_splineLength;
+        if((m_entityModel == null && AllignedToSpline()) || ModelAllignedToSpline())
+        {
+            m_splinePhysics.m_currentSplinePercent += p_val / m_splinePhysics.m_currentSpline.m_splineLength;
+        }
+        else
+        {
+            m_splinePhysics.m_currentSplinePercent -= p_val / m_splinePhysics.m_currentSpline.m_splineLength;
+        }
+    }
+
+    /// <summary>
+    /// Determine if character is alligned to same forward direction as the spline they are on
+    /// </summary>
+    /// <returns>True when facing same direction</returns>
+    public bool AllignedToSpline()
+    {
+        Vector3 splineForwards = m_splinePhysics.m_currentSpline.GetForwardDir(m_splinePhysics.m_currentSplinePercent);
+
+        return (Vector3.Dot(splineForwards, transform.forward) > 0);
+    }
+
+    /// <summary>
+    /// Determine if character is alligned to same forward direction as the spline they are on
+    /// </summary>
+    /// <returns>True when facing same direction</returns>
+    public bool ModelAllignedToSpline()
+    {
+        Vector3 splineForwards = m_splinePhysics.m_currentSpline.GetForwardDir(m_splinePhysics.m_currentSplinePercent);
+
+        return (Vector3.Dot(splineForwards, m_entityModel.transform.forward) > 0);
     }
 
     /// <summary>

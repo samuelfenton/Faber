@@ -46,7 +46,7 @@ public class Character_Player : Character
         if(m_customInput.GetKey(CustomInput.INPUT_KEY.CAMERA_FLIP) == CustomInput.INPUT_STATE.DOWNED) //Flip camera
         {
             transform.rotation *= Quaternion.Euler(0.0f, 180.0f, 0.0f);
-            m_characterModel.transform.rotation *= Quaternion.Euler(0.0f, 180.0f, 0.0f);
+            m_entityModel.transform.rotation *= Quaternion.Euler(0.0f, 180.0f, 0.0f);
             m_localVelocity.x *= -1;
         }
     }
@@ -66,7 +66,6 @@ public class Character_Player : Character
         {
             SetDesiredVelocity(m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL) * m_groundRunVel);
         }
-
     }
 
     /// <summary>

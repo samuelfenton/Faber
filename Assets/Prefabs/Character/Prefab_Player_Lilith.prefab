@@ -130,11 +130,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5ce36fdb713a75478da7c3624fccb43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_entityModel: {fileID: 7633926807805041317}
   m_localVelocity: {x: 0, y: 0, z: 0}
   m_gravity: 1
   m_splinePhysics: {fileID: 0}
   m_sceneController: {fileID: 0}
-  m_characterModel: {fileID: 7633926807805041317}
   m_primaryAnchor: {fileID: 1392919925366981228}
   m_secondaryAnchor: {fileID: 6678754843817201293}
   m_team: 0
@@ -144,7 +144,6 @@ MonoBehaviour:
   m_groundAccel: 12
   m_groundedDeaccel: 30
   m_jumpVelocity: 10
-  m_landingDistance: 1
   m_inAirAccelModifier: 0.5
   m_doubleJumpSpeed: 8
   m_wallJumpVerticalSpeed: 5
@@ -221,7 +220,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_voxeliserType: 2
   m_vertType: 0
-  m_voxelSize: 0.05
+  m_voxelSize: 0.04
   m_objectWithMesh: {fileID: 1923960976811222904}
   m_meshesToUse: 1
 --- !u!1001 &1932267347226280876

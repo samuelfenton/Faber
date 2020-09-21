@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 2075161514799004276}
   - component: {fileID: 6828712698901842236}
   - component: {fileID: 8673838031324271581}
-  - component: {fileID: 8133645659415442271}
   - component: {fileID: 5475506748303260416}
   m_Layer: 0
   m_Name: Prefab_Player_YBot
@@ -113,11 +112,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5ce36fdb713a75478da7c3624fccb43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_entityModel: {fileID: 7975037200637696692}
   m_localVelocity: {x: 0, y: 0, z: 0}
   m_gravity: 1
   m_splinePhysics: {fileID: 0}
   m_sceneController: {fileID: 0}
-  m_characterModel: {fileID: 7975037200637696692}
   m_primaryAnchor: {fileID: 1512804058502852881}
   m_secondaryAnchor: {fileID: 2134520504629472535}
   m_team: 0
@@ -127,7 +126,6 @@ MonoBehaviour:
   m_groundAccel: 12
   m_groundedDeaccel: 30
   m_jumpVelocity: 10
-  m_landingDistance: 1
   m_inAirAccelModifier: 0.5
   m_doubleJumpSpeed: 8
   m_wallJumpVerticalSpeed: 5
@@ -160,9 +158,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abe54aedea7d6514fac4b62449e4be9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_primaryWeaponPrefab: {fileID: 872240425218595252, guid: 596d8a3acdb2fc44d8ed3b64c46c1292,
+  m_primaryWeaponPrefab: {fileID: 1315687852932911008, guid: 9655a26717ff5584f9a5163f69290a46,
     type: 3}
-  m_secondaryWeaponPrefab: {fileID: 0}
+  m_secondaryWeaponPrefab: {fileID: 1315687852932911008, guid: 9655a26717ff5584f9a5163f69290a46,
+    type: 3}
   m_groundLightManoeuvre: {fileID: 11400000, guid: 4eaed851bacfa3d46918d9b1784a7998,
     type: 2}
   m_groundHeavyManoeuvre: {fileID: 11400000, guid: 38c686f74eddb57419d73095d95b3645,
@@ -188,23 +187,6 @@ MonoBehaviour:
   m_currentExperience: 0
   m_statLevel: 000000000000000000000000000000000000000000000000
   m_abilityFlags: 000000
---- !u!114 &8133645659415442271
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7334705693917663468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adde9f8806dded842b43e177d1393154, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_voxeliserType: 2
-  m_vertType: 0
-  m_voxelSize: 0.05
-  m_objectWithMesh: {fileID: 5017734646573459516}
-  m_meshesToUse: 1
 --- !u!114 &5475506748303260416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,14 +194,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7334705693917663468}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: adde9f8806dded842b43e177d1393154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_voxeliserType: 2
   m_vertType: 0
-  m_voxelSize: 0.05
+  m_voxelSize: 0.04
   m_objectWithMesh: {fileID: 865461158226686979}
   m_meshesToUse: 1
 --- !u!1001 &2129335121831412669
@@ -294,6 +276,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Character_YBot_Base
       objectReference: {fileID: 0}
+    - target: {fileID: 6354148141002402689, guid: 595c49e6023f363429de1b36ff08178e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 595c49e6023f363429de1b36ff08178e, type: 3}
 --- !u!1 &7975037200637696692 stripped
@@ -305,12 +292,6 @@ GameObject:
 --- !u!4 &6410416451418581159 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 595c49e6023f363429de1b36ff08178e,
-    type: 3}
-  m_PrefabInstance: {fileID: 2129335121831412669}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &5017734646573459516 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6354148141002402689, guid: 595c49e6023f363429de1b36ff08178e,
     type: 3}
   m_PrefabInstance: {fileID: 2129335121831412669}
   m_PrefabAsset: {fileID: 0}
