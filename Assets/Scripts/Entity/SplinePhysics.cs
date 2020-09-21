@@ -18,15 +18,25 @@ public class SplinePhysics : MonoBehaviour
     [Range(0, 1)]
     public float m_currentSplinePercent = 0.0f;
 
-    [Header("Pre assigned, dont modify")]
+    [HideInInspector]
+    public Pathing_Spline m_currentSpline = null;
+
+    [Header("Spline Collisions")]
+    public Vector2 m_splineColliderOffset = Vector2.zero;
+    public Vector2 m_splineColliderExtents = Vector2.one;
+
+    [Header("Debug Options")]
+    public bool m_showColliders = true;
+
+    [Header("Generated values")]
+    public Vector3 m_localVelocity = Vector3.zero;
+
+    //Treated as globals, where the model facing when possible
     public bool m_upCollision = false;
     public bool m_downCollision = false;
     public bool m_forwardCollision = false;
     public bool m_backCollision = false;
 
-    [HideInInspector]
-    public Pathing_Spline m_currentSpline = null;
-    protected Vector3 m_colliderExtents = Vector3.zero;
     protected float m_collisionDetection = 0.3f;
 
     protected Entity m_parentEntity = null;
@@ -84,24 +94,29 @@ public class SplinePhysics : MonoBehaviour
     {
         //Apply Gravity
         if (m_parentEntity.m_gravity)
-            m_parentEntity.m_localVelocity.y += GRAVITY * Time.deltaTime;
+            m_localVelocity.y += GRAVITY * Time.deltaTime;
+
+        //Update velocity
+        if (m_localVelocity.x < 0.0f)
+        {
+            SwapFacingDirection();
+        }
 
         //check for collisions and modify velocity as needed
         UpdateCollisions();
 
         //Setup forwards direction
-        Vector3 desiredForwards = m_currentSpline.GetForwardDir(m_currentSplinePercent);
-
         if (m_parentEntity.AllignedToSpline())
         {
-            transform.rotation = Quaternion.LookRotation(desiredForwards, Vector3.up);
-            m_currentSplinePercent += m_currentSpline.ChangeinPercent(m_parentEntity.m_localVelocity.x * Time.deltaTime);
+            m_currentSplinePercent += m_currentSpline.ChangeInPercent(m_localVelocity.x * Time.deltaTime);
         }
         else
         {
-            transform.rotation = Quaternion.LookRotation(-desiredForwards, Vector3.up);
-            m_currentSplinePercent += m_currentSpline.ChangeinPercent(-m_parentEntity.m_localVelocity.x * Time.deltaTime);
+            m_currentSplinePercent -= m_currentSpline.ChangeInPercent(m_localVelocity.x * Time.deltaTime);
         }
+        
+        Vector3 desiredForwards = m_currentSpline.GetForwardDir(m_currentSplinePercent);
+        transform.rotation = Quaternion.LookRotation(desiredForwards, Vector3.up);
 
         //Lock spline percent between close enough to 0 - 1
         m_currentSplinePercent = Mathf.Clamp(m_currentSplinePercent, MIN_SPLINE_PERCENT, MAX_SPLINE_PERCENT);
@@ -110,16 +125,16 @@ public class SplinePhysics : MonoBehaviour
         Vector3 splinePosition = m_currentSpline.GetPosition(m_currentSplinePercent);
 
         Vector3 newPosition = splinePosition; //Spline position with no y considered
-        newPosition.y = transform.position.y + m_parentEntity.m_localVelocity.y * Time.deltaTime; //Adding in y value
+        newPosition.y = transform.position.y + m_localVelocity.y * Time.deltaTime; //Adding in y value
 
         float distanceToGround = transform.position.y - splinePosition.y;
 
         //Is entity on spline
-        if (m_parentEntity.m_localVelocity.y <= 0.0f && distanceToGround <= GROUND_DETECTION)
+        if (m_localVelocity.y <= 0.0f && distanceToGround <= GROUND_DETECTION)
         {
             //Grounded change y-component of velocity
             newPosition.y = splinePosition.y;
-            m_parentEntity.m_localVelocity.y = 0.0f;
+            m_localVelocity.y = 0.0f;
             m_downCollision = true;
         }
 
@@ -131,13 +146,16 @@ public class SplinePhysics : MonoBehaviour
     /// </summary>
     public void UpdateCollisions()
     {
-        Vector3 centerPos = transform.position + Vector3.up * m_colliderExtents.y;
+        Vector3 forward = transform.forward ;
+        Vector3 up = transform.up;
 
-        m_upCollision = CollidingVertical(transform.up, centerPos);
-        m_downCollision = CollidingVertical(-transform.up, centerPos);
+        Vector3 centerPos = transform.position + forward * m_splineColliderExtents.x + up * m_splineColliderExtents.y;
 
-        m_forwardCollision = CollidingHorizontal(transform.forward, centerPos);
-        m_backCollision = CollidingHorizontal(-transform.forward, centerPos);
+        m_upCollision = CastCollision(up, centerPos, forward * m_splineColliderExtents.x, m_splineColliderExtents.y + m_collisionDetection);
+        m_downCollision = CastCollision(-up, centerPos, forward * m_splineColliderExtents.x, m_splineColliderExtents.y + m_collisionDetection);
+
+        m_forwardCollision = CastCollision(forward, centerPos, up * m_splineColliderExtents.y, m_splineColliderExtents.x + m_collisionDetection);
+        m_backCollision = CastCollision(-forward, centerPos, up * m_splineColliderExtents.y, m_splineColliderExtents.x + m_collisionDetection);
 
         UpdateCollisionVelocity();
     }
@@ -147,69 +165,106 @@ public class SplinePhysics : MonoBehaviour
     /// </summary>
     public void UpdateCollisionVelocity()
     {
-        if (m_upCollision && m_parentEntity.m_localVelocity.y > 0)//Check Upwards
+        if (m_upCollision && m_localVelocity.y > 0)//Check Upwards
         {
-            m_parentEntity.m_localVelocity.y = 0;
+            m_localVelocity.y = 0;
         }
-        else if (m_downCollision && m_parentEntity.m_localVelocity.y < 0)//Downwards
+        else if (m_downCollision && m_localVelocity.y < 0)//Downwards
         {
-            m_parentEntity.m_localVelocity.y = 0;
+            m_localVelocity.y = 0;
         }
-        if (m_forwardCollision && m_parentEntity.m_localVelocity.x > 0)//Forwards
+        if (m_forwardCollision && m_localVelocity.x > 0)//Forwards
         {
-            m_parentEntity.m_localVelocity.x = 0;
+            m_localVelocity.x = 0;
         }
-        else if (m_backCollision && m_parentEntity.m_localVelocity.x < 0)//Backwards
+        else if (m_backCollision && m_localVelocity.x < 0)//Backwards
         {
-            m_parentEntity.m_localVelocity.x = 0;
+            m_localVelocity.x = 0;
         }
     }
 
     /// <summary>
     /// Check for collisions vertically
-    /// Creates three raycasts, front center and back
+    /// Creates three raycasts, forward, forward center, center, back center, back
     /// </summary>
     /// <param name="p_direction">Casting up or down</param>
     /// <param name="p_centerPos">What is current center position of charater</param>
+    /// <param name="p_castFromModifer">Modifer from center cast to offset most</param>
+    /// <param name="p_detectionRange">Distance to cast</param>
     /// <returns>True when any collisions occur</returns>
-    public bool CollidingVertical(Vector3 p_direction, Vector3 p_centerPos)
+    public bool CastCollision(Vector3 p_direction, Vector3 p_centerPos, Vector3 p_castFromModifer, float p_detectionRange)
     {
-        //Forward raycast
-        if (Physics.Raycast(p_centerPos + transform.forward * m_colliderExtents.z, p_direction, m_colliderExtents.y + m_collisionDetection, CustomLayers.m_enviroment))
+        Vector3 castFromModifierHalf = p_castFromModifer / 2.0f;
+
+        //Large Offset raycast
+        if (Physics.Raycast(p_centerPos + p_castFromModifer, p_direction, p_detectionRange, CustomLayers.m_enviroment))
             return true; //Early breakout
 
-        //Back raycast
-        if (Physics.Raycast(p_centerPos, p_direction, m_colliderExtents.y + m_collisionDetection, CustomLayers.m_enviroment))
+        //Forward Center raycast
+        if (Physics.Raycast(p_centerPos + castFromModifierHalf, p_direction, p_detectionRange, CustomLayers.m_enviroment))
             return true; //Early breakout
 
         //Center raycast
-        if (Physics.Raycast(p_centerPos - transform.forward * m_colliderExtents.z, p_direction, m_colliderExtents.y + m_collisionDetection, CustomLayers.m_enviroment))
+        if (Physics.Raycast(p_centerPos, p_direction, p_detectionRange, CustomLayers.m_enviroment))
+            return true; //Early breakout
+
+        //Back Center raycast
+        if (Physics.Raycast(p_centerPos - castFromModifierHalf, p_direction, p_detectionRange, CustomLayers.m_enviroment))
+            return true; //Early breakout
+
+        //Back raycast
+        if (Physics.Raycast(p_centerPos - p_castFromModifer, p_direction, p_detectionRange, CustomLayers.m_enviroment))
             return true; //Early breakout
 
         return false;
     }
 
     /// <summary>
-    /// Check for collisions horizontally
-    /// Creates three raycasts, top center and bottom
+    /// Swap facing direction
     /// </summary>
-    /// <param name="p_direction">Casting forward or backwards</param>
-    /// <param name="p_centerPos">What is current center position of charater</param>
-    /// <returns>True when any collisions occur</returns>
-    public bool CollidingHorizontal(Vector3 p_direction, Vector3 p_centerPos)
+    public virtual void SwapFacingDirection()
     {
-        //Top raycast
-        if (Physics.Raycast(p_centerPos + transform.up * m_colliderExtents.y, p_direction, m_colliderExtents.z + m_collisionDetection, CustomLayers.m_enviroment))
-            return true; //Early breakout
-
-        //Center raycast
-        if (Physics.Raycast(p_centerPos, p_direction, m_colliderExtents.z + m_collisionDetection, CustomLayers.m_enviroment))
-            return true; //Early breakout
-
-        //Bottom raycast, starting offset has been modified, to all moving up inclines
-        if (Physics.Raycast(p_centerPos - transform.up * m_colliderExtents.y, p_direction, m_colliderExtents.z + m_collisionDetection, CustomLayers.m_enviroment))
-            return true; //Early breakout
-
-        return false;
+        m_localVelocity.x = -m_localVelocity.x;
+        transform.Rotate(Vector3.up, 180.0f);
     }
+
+    /// <summary>
+    /// Hard set the value of velocity
+    /// </summary>
+    /// <param name="p_val">velocity</param>
+    public void HardSetVelocity(float p_val)
+    {
+        m_localVelocity.x = p_val;
+    }
+
+    /// <summary>
+    /// Hard set the value of velocity
+    /// </summary>
+    /// <param name="p_val">velocity</param>
+    public void HardSetUpwardsVelocity(float p_val)
+    {
+        m_localVelocity.y = p_val;
+    }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    protected virtual void OnDrawGizmosSelected()
+    {
+        if(m_showColliders)
+        {
+            Gizmos.color = new Color(255.0f, 255.0f, 0.0f, 1.0f);
+
+            Vector3 forward = transform.forward;
+            Vector3 up = transform.up;
+
+            Vector3 startPosition = transform.position + forward * m_splineColliderOffset.x + up * m_splineColliderOffset.y;
+
+            Gizmos.DrawLine(startPosition - forward * m_splineColliderExtents.x + up * m_splineColliderExtents.y, startPosition + forward * m_splineColliderExtents.x + up * m_splineColliderExtents.y);
+            Gizmos.DrawLine(startPosition - forward * m_splineColliderExtents.x - up * m_splineColliderExtents.y, startPosition + forward * m_splineColliderExtents.x - up * m_splineColliderExtents.y);
+
+            Gizmos.DrawLine(startPosition - forward * m_splineColliderExtents.x + up * m_splineColliderExtents.y, startPosition - forward * m_splineColliderExtents.x - up * m_splineColliderExtents.y);
+            Gizmos.DrawLine(startPosition + forward * m_splineColliderExtents.x + up * m_splineColliderExtents.y, startPosition + forward * m_splineColliderExtents.x - up * m_splineColliderExtents.y);
+
+        }
+    }
+#endif
 }

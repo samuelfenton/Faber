@@ -9,10 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7334705693917236364}
-  - component: {fileID: 3636088525113578478}
-  - component: {fileID: 4769953817077000280}
   - component: {fileID: 5438917973039787766}
-  - component: {fileID: 7647955024369262057}
+  - component: {fileID: 556785308882941477}
   - component: {fileID: 2075161514799004276}
   - component: {fileID: 6828712698901842236}
   - component: {fileID: 8673838031324271581}
@@ -39,35 +37,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &3636088525113578478
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7334705693917663468}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.7, y: 1.7, z: 0.46}
-  m_Center: {x: 0, y: 0.85, z: 0}
---- !u!54 &4769953817077000280
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7334705693917663468}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!114 &5438917973039787766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -80,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0938248b1da045b47a12b8718edc0408, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7647955024369262057
+--- !u!114 &556785308882941477
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -89,17 +58,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 7334705693917663468}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc4e21cd721a2bb43ac1e201def8c337, type: 3}
+  m_Script: {fileID: 11500000, guid: 99da33eb2aafd3341a6beffe7dc2808f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_nodeA: {fileID: 0}
   m_nodeB: {fileID: 0}
-  m_currentSplinePercent: 0.954
+  m_currentSplinePercent: 0
+  m_currentSpline: {fileID: 0}
+  m_splineColliderOffset: {x: 0, y: 0}
+  m_splineColliderExtents: {x: 1, y: 1}
+  m_showColliders: 1
+  m_localVelocity: {x: 0, y: 0, z: 0}
   m_upCollision: 0
   m_downCollision: 0
   m_forwardCollision: 0
   m_backCollision: 0
-  m_currentSpline: {fileID: 0}
 --- !u!114 &2075161514799004276
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -112,8 +85,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5ce36fdb713a75478da7c3624fccb43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_entityModel: {fileID: 7975037200637696692}
-  m_localVelocity: {x: 0, y: 0, z: 0}
   m_gravity: 1
   m_splinePhysics: {fileID: 0}
   m_sceneController: {fileID: 0}
@@ -194,7 +165,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7334705693917663468}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: adde9f8806dded842b43e177d1393154, type: 3}
   m_Name: 
@@ -264,7 +235,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 595c49e6023f363429de1b36ff08178e,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 595c49e6023f363429de1b36ff08178e,
         type: 3}
@@ -283,12 +254,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 595c49e6023f363429de1b36ff08178e, type: 3}
---- !u!1 &7975037200637696692 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 595c49e6023f363429de1b36ff08178e,
-    type: 3}
-  m_PrefabInstance: {fileID: 2129335121831412669}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6410416451418581159 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 595c49e6023f363429de1b36ff08178e,

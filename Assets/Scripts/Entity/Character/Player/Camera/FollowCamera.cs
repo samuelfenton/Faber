@@ -11,6 +11,10 @@ public class FollowCamera : MonoBehaviour
 
     public float m_cameraSpeed = 1.0f;
 
+    public enum CAMERA_ORIENTATION { RIGHT, LEFT }
+    [HideInInspector]
+    public CAMERA_ORIENTATION m_currentOrientation = CAMERA_ORIENTATION.LEFT;
+
     private void Start()
     {
         ForceSnap();
@@ -26,6 +30,14 @@ public class FollowCamera : MonoBehaviour
     }
 
     /// <summary>
+    /// Flips camera to other side
+    /// </summary>
+    public void FlipCamera()
+    {
+        m_currentOrientation = m_currentOrientation == CAMERA_ORIENTATION.RIGHT ? CAMERA_ORIENTATION.LEFT : CAMERA_ORIENTATION.RIGHT;
+    }
+
+    /// <summary>
     /// Follow object given offset
     /// </summary>
     private void Update ()
@@ -34,7 +46,16 @@ public class FollowCamera : MonoBehaviour
             return;
 
         //Get desired position
-        Vector3 cameraOffset = m_followTarget.transform.forward * m_cameraOffset.z + m_followTarget.transform.right * m_cameraOffset.x + m_followTarget.transform.up * m_cameraOffset.y;
+        Vector3 cameraOffset = Vector3.zero;
+
+        if(m_currentOrientation == CAMERA_ORIENTATION.RIGHT)
+        {
+            cameraOffset = m_followTarget.transform.forward * m_cameraOffset.z + m_followTarget.transform.right * m_cameraOffset.x + m_followTarget.transform.up * m_cameraOffset.y;
+        }
+        else
+        {
+            cameraOffset = -m_followTarget.transform.forward * m_cameraOffset.z - m_followTarget.transform.right * m_cameraOffset.x + m_followTarget.transform.up * m_cameraOffset.y;
+        }
 
         Vector3 cameraDesiredPos = m_followTarget.transform.position + cameraOffset;
 

@@ -24,7 +24,7 @@ public class PlayerState_Jump : State_Player
     {
         base.StateStart();
 
-        m_character.HardSetUpwardsVelocity(m_jumpVelocity);
+        m_entity.m_splinePhysics.HardSetUpwardsVelocity(m_jumpVelocity);
 
         m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.JUMP);
 
@@ -43,7 +43,7 @@ public class PlayerState_Jump : State_Player
         //Allow player to jump and move
         m_player.ApplyHorizontalMovement(true);
 
-        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE) || m_entity.m_localVelocity.y <= 0.0f;
+        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE) || m_entity.m_splinePhysics.m_localVelocity.y <= 0.0f;
     }
 
     /// <summary>

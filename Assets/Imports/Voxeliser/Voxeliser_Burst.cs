@@ -103,7 +103,7 @@ public class Voxeliser_Burst : MonoBehaviour
     private Mesh[] m_voxelisedMeshes;
 
     //End
-    private void Start()
+    public void InitVoxeliser()
     {
         if (m_objectWithMesh == null)
             m_objectWithMesh = gameObject;

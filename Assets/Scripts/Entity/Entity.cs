@@ -4,16 +4,12 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
+    private const float DESTRUCTION_TIME = 1.0f;
+
     public enum TURNING_DIR { CENTER, RIGHT, LEFT }
 
-    public GameObject m_entityModel = null;
-    
-    public Vector3 m_localVelocity = Vector3.zero;
+    [Header("Assigned variables")]
     public bool m_gravity = false;
-
-
-    [SerializeField]
-    private const float DESTRUCTION_TIME = 1.0f;
 
     [HideInInspector]
     public SplinePhysics m_splinePhysics = null;
@@ -40,6 +36,14 @@ public class Entity : MonoBehaviour
         }
 
         m_splinePhysics.Init();
+
+        //Use voxeliser as needed
+        Voxeliser_Burst[] voxelisers = GetComponents<Voxeliser_Burst>();
+
+        for (int voxeliserIndex = 0; voxeliserIndex < voxelisers.Length; voxeliserIndex++)
+        {
+            voxelisers[voxeliserIndex].InitVoxeliser();
+        }
     }
 
     /// <summary>
@@ -66,51 +70,19 @@ public class Entity : MonoBehaviour
     }
 
     /// <summary>
-    /// Hard set the value of velocity
-    /// </summary>
-    /// <param name="p_val">velocity</param>
-    public void HardSetVelocity(float p_val)
-    {
-        m_localVelocity.x = p_val;
-    }
-
-    /// <summary>
-    /// Hard set the value of velocity
-    /// </summary>
-    /// <param name="p_val">velocity</param>
-    public void HardSetUpwardsVelocity(float p_val)
-    {
-        m_localVelocity.y = p_val;
-    }
-
-    /// <summary>
     /// Translate the entity 
     /// Should be relative to forwards
     /// </summary>
     /// <param name="p_val">Translation distance</param>
-    public virtual void SplineTranslate(float p_val, bool p_forceAllignToBase = false)
+    public virtual void SplineTranslate(float p_val)
     {
-        if(p_forceAllignToBase || m_entityModel == null) //Should we align based off base object 
+        if(AllignedToSpline())
         {
-            if(AllignedToSpline())
-            {
-                m_splinePhysics.m_currentSplinePercent += p_val / m_splinePhysics.m_currentSpline.m_splineLength;
-            }
-            else
-            {
-                m_splinePhysics.m_currentSplinePercent -= p_val / m_splinePhysics.m_currentSpline.m_splineLength;
-            }
+            m_splinePhysics.m_currentSplinePercent += p_val / m_splinePhysics.m_currentSpline.m_splineLength;
         }
-        else //allign using model
+        else
         {
-            if (ModelAllignedToSpline())
-            {
-                m_splinePhysics.m_currentSplinePercent += p_val / m_splinePhysics.m_currentSpline.m_splineLength;
-            }
-            else
-            {
-                m_splinePhysics.m_currentSplinePercent -= p_val / m_splinePhysics.m_currentSpline.m_splineLength;
-            }
+            m_splinePhysics.m_currentSplinePercent -= p_val / m_splinePhysics.m_currentSpline.m_splineLength;
         }
     }
 
@@ -121,19 +93,7 @@ public class Entity : MonoBehaviour
     public bool AllignedToSpline()
     {
         Vector3 splineForwards = m_splinePhysics.m_currentSpline.GetForwardDir(m_splinePhysics.m_currentSplinePercent);
-
         return (Vector3.Dot(splineForwards, transform.forward) > 0);
-    }
-
-    /// <summary>
-    /// Determine if character is alligned to same forward direction as the spline they are on
-    /// </summary>
-    /// <returns>True when facing same direction</returns>
-    public bool ModelAllignedToSpline()
-    {
-        Vector3 splineForwards = m_splinePhysics.m_currentSpline.GetForwardDir(m_splinePhysics.m_currentSplinePercent);
-
-        return (Vector3.Dot(splineForwards, m_entityModel.transform.forward) > 0);
     }
 
     /// <summary>

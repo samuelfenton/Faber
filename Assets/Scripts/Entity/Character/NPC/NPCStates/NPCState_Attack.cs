@@ -26,9 +26,6 @@ public class NPCState_Attack : NPC_State
     public override void StateStart()
     {
         base.StateStart();
-
-        m_character.FaceDirection(GetDesiredTargetFacing());
-
     }
 
     /// <summary>
@@ -43,7 +40,7 @@ public class NPCState_Attack : NPC_State
         m_lightAttackFlag = false;
         m_heavyAttackFlag = false;
 
-        if (GetDesiredTargetFacing() == m_character.GetFacingDir() && SmartTargetWithinRange(m_NPCCharacter.m_targetCharacter, m_NPCCharacter.m_attackingDistance)) //Nto facing right way, or enemy has moved away end
+        if (SmartTargetWithinRange(m_NPCCharacter.m_targetCharacter, m_NPCCharacter.m_attackingDistance)) //Nto facing right way, or enemy has moved away end
         {
             //Setup flags
             int randomIndex = Random.Range(0, 3);
@@ -78,21 +75,5 @@ public class NPCState_Attack : NPC_State
     public override bool IsValid()
     {
         return m_NPCCharacter.m_targetCharacter != null && SmartTargetWithinRange(m_NPCCharacter.m_targetCharacter, m_NPCCharacter.m_attackingDistance);
-    }
-
-    /// <summary>
-    /// Get the desired facing direction
-    /// </summary>
-    /// <returns>Right when allinged towards enemy</returns>
-    public Character.FACING_DIR GetDesiredTargetFacing()
-    {
-        if (m_NPCCharacter.m_targetCharacter == null)
-            return Character.FACING_DIR.RIGHT;
-
-        float enemyAlignedDot = Vector3.Dot(transform.forward, (m_NPCCharacter.m_targetCharacter.transform.position - transform.position).normalized);
-
-        if (enemyAlignedDot >= 0.0f)
-            return Character.FACING_DIR.RIGHT;
-        return Character.FACING_DIR.LEFT;
     }
 }

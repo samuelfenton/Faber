@@ -216,7 +216,7 @@ public class WeaponManager : MonoBehaviour
         m_character.m_gravity = m_currentManoeuvreLeaf.m_useGravity;
         if(!m_currentManoeuvreLeaf.m_useGravity)
         {
-            m_character.HardSetUpwardsVelocity(0.0f);
+            m_character.m_splinePhysics.HardSetUpwardsVelocity(0.0f);
         }
 
         m_customAnimation.PlayAttack(m_currentManoeuvreLeaf);

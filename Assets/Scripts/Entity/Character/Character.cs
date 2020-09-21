@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class Character : Entity
-{
-    public enum FACING_DIR {RIGHT, LEFT}
+{ 
     public enum TEAM { PLAYER, NPC, GAIA }
     public enum ATTACK_INPUT_STANCE { LIGHT, HEAVY, NONE }
 
@@ -90,7 +90,7 @@ public class Character : Entity
         //Get references
         m_characterStatistics = GetComponent<CharacterStatistics>();
         m_weaponManager = GetComponent<WeaponManager>();
-        m_animator = m_entityModel.GetComponent<Animator>();
+        m_animator = GetComponentInChildren<Animator>();
 
         m_customAnimation = GetComponentInChildren<CustomAnimation>();
         m_customAnimation.Init(m_animator);
@@ -114,16 +114,6 @@ public class Character : Entity
         UpdateVelocity();
 
         UpdateAnimationLocomotion();
-
-        //Setup rotation on game model, completly aesthetic based
-        if (m_localVelocity.x > 0.1f)
-        {
-            FaceDirection(FACING_DIR.RIGHT);
-        }
-        else if (m_localVelocity.x < -0.1f)
-        {
-            FaceDirection(FACING_DIR.LEFT);
-        }
     }
 
     /// <summary>
@@ -132,21 +122,10 @@ public class Character : Entity
     /// </summary>
     private void UpdateVelocity()
     {
-        Vector3 newVelocity = m_localVelocity;
+        Vector3 newVelocity = m_splinePhysics.m_localVelocity;
 
         float accel = m_splinePhysics.m_downCollision ? m_groundAccel : m_groundAccel * m_inAirAccelModifier;
         float deaccel = m_splinePhysics.m_downCollision ? m_groundedDeaccel : m_groundedDeaccel * m_inAirAccelModifier;
-
-        //Update velocity
-        //Check for walls
-        if (m_localVelocity.x < 0.0f && m_desiredVelocity < 0.0f && m_splinePhysics.m_backCollision)
-        {
-            m_desiredVelocity = 0.0f;
-        }
-        if (m_localVelocity.x > 0.0f && m_desiredVelocity > 0.0f && m_splinePhysics.m_forwardCollision)
-        {
-            m_desiredVelocity = 0.0f;
-        }
 
         //Run update to velocity based off desired
         if (m_desiredVelocity == 0.0f) //Stop
@@ -159,63 +138,25 @@ public class Character : Entity
         }
         else if (m_desiredVelocity > 0.0f) //Run forwards
         {
-            float deltaSpeed = m_localVelocity.x > m_desiredVelocity || m_localVelocity.x < 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
+            float deltaSpeed = m_splinePhysics.m_localVelocity.x > m_desiredVelocity || m_splinePhysics.m_localVelocity.x < 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
 
             if (deltaSpeed > Mathf.Abs(newVelocity.x - m_desiredVelocity))
                 newVelocity.x = m_desiredVelocity;
             else
-                newVelocity.x += m_localVelocity.x < m_desiredVelocity ? deltaSpeed : -deltaSpeed;
+                newVelocity.x += m_splinePhysics.m_localVelocity.x < m_desiredVelocity ? deltaSpeed : -deltaSpeed;
 
         }
         else //Run backwards
         {
-            float deltaSpeed = m_localVelocity.x < m_desiredVelocity || m_localVelocity.x > 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
+            float deltaSpeed = m_splinePhysics.m_localVelocity.x < m_desiredVelocity || m_splinePhysics.m_localVelocity.x > 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
 
             if (deltaSpeed > Mathf.Abs(newVelocity.x - m_desiredVelocity))
                 newVelocity.x = m_desiredVelocity;
             else
-                newVelocity.x += m_localVelocity.x > m_desiredVelocity ? -deltaSpeed : deltaSpeed;
+                newVelocity.x += m_splinePhysics.m_localVelocity.x > m_desiredVelocity ? -deltaSpeed : deltaSpeed;
         }
 
-        m_localVelocity = newVelocity;
-    }
-
-    /// <summary>
-    /// Make model face left or right
-    /// </summary>
-    /// <param name="p_facingDir"></param>
-    public void FaceDirection(FACING_DIR p_facingDir)
-    {
-        if(p_facingDir == FACING_DIR.RIGHT)
-        {
-            m_entityModel.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-        }
-        else
-        {
-            m_entityModel.transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
-        }
-    }
-
-    /// <summary>
-    /// Get the current facnig direction
-    /// </summary>
-    /// <returns>Right when forward is same for model and base object</returns>
-    public FACING_DIR GetFacingDir()
-    {
-        if (ModelAllignedToSpline())
-            return FACING_DIR.RIGHT;
-        return FACING_DIR.LEFT;
-    }
-
-    /// <summary>
-    /// Determine if character is alligned to same forward direction as the spline they are on
-    /// </summary>
-    /// <returns>True when facing same direction</returns>
-    public bool ModelAllignedToSpline()
-    {
-        Vector3 splineForwards = m_splinePhysics.m_currentSpline.GetForwardDir(m_splinePhysics.m_currentSplinePercent);
-
-        return (Vector3.Dot(splineForwards, m_entityModel.transform.forward) > 0);
+        m_splinePhysics.m_localVelocity = newVelocity;
     }
 
     /// <summary>
@@ -284,9 +225,9 @@ public class Character : Entity
     /// </summary>
     public void UpdateAnimationLocomotion()
     {
-        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.CURRENT_VELOCITY, m_localVelocity.x / m_groundRunVel);
+        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.CURRENT_VELOCITY, m_splinePhysics.m_localVelocity.x / m_groundRunVel);
         m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.DESIRED_VELOCITY, m_desiredVelocity / m_groundRunVel);
-        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_localVelocity.x / m_groundRunVel));
+        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_splinePhysics.m_localVelocity.x / m_groundRunVel));
     }
 
     /// <summary>

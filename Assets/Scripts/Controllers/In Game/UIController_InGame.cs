@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class UIController_InGame : UIController
 {
-    public const string RETURN_TO_SHIRINE_PROMPT = "Are you sure you want to delete your old save?";
+    public const string RETURN_TO_SHIRINE_PROMPT = "Are you sure you want to return to your last shrine?";
 
     [Header("Canvas Variables")]
     public GameObject m_UIObjectInGame = null;

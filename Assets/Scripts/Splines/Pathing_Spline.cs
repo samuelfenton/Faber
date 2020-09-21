@@ -180,7 +180,7 @@ public class Pathing_Spline : MonoBehaviour
     /// </summary>
     /// <param name="p_distanceTravelled">Distance</param>
     /// <returns>What percent</returns>
-    public float ChangeinPercent(float p_distanceTravelled)
+    public float ChangeInPercent(float p_distanceTravelled)
     {
         return p_distanceTravelled / m_splineLength;
     }

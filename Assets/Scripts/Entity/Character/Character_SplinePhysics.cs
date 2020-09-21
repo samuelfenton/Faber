@@ -12,17 +12,13 @@ public class Character_SplinePhysics : SplinePhysics
     public override void Init()
     {
         base.Init();
-
-        Collider collider = GetComponent<Collider>();
-
-        m_colliderExtents = collider.bounds.extents;
     }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-
-    private void OnDrawGizmosSelected()
+    protected override void OnDrawGizmosSelected()
     {
-        if(!Application.isPlaying)
+        base.OnDrawGizmosSelected();
+        if (!Application.isPlaying)
         {
             if (MOARDebugging.GetSplinePosition(m_nodeA, m_nodeB, m_currentSplinePercent, out Vector3 position))
             {

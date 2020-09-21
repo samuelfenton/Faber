@@ -57,9 +57,7 @@ public class PlayerState_InAir : State_Player
                 {
                     m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.DOUBLE_JUMP);
 
-                    Vector3 newVelocity = m_entity.m_localVelocity;
-                    newVelocity.y = m_doubleJumpSpeed;
-                    m_entity.m_localVelocity = newVelocity;
+                    m_entity.m_splinePhysics.HardSetUpwardsVelocity(m_doubleJumpSpeed);
 
                     m_character.m_doubleJumpFlag = false;
 

@@ -26,20 +26,12 @@ public class PlayerState_InAirDash : State_Player
         m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.INAIR_DASH);
 
         m_character.m_gravity = false;
-        m_character.HardSetUpwardsVelocity(0.0f);
+        m_character.m_splinePhysics.HardSetUpwardsVelocity(0.0f);
 
-        //Determine direction of velocity
-        if (m_character.GetFacingDir() == Character.FACING_DIR.RIGHT)
-        {
-            m_dashVelocity = m_player.m_dashVelocity;
-        }
-        else
-        {
-            m_dashVelocity = -m_player.m_dashVelocity;
-        }
+        m_dashVelocity = m_player.m_dashVelocity;
 
         m_character.SetDesiredVelocity(m_dashVelocity);
-        m_character.HardSetVelocity(m_dashVelocity);
+        m_character.m_splinePhysics.HardSetVelocity(m_dashVelocity);
     }
 
     /// <summary>
@@ -52,7 +44,7 @@ public class PlayerState_InAirDash : State_Player
 
         //Update continously to avoid friction
         m_character.SetDesiredVelocity(m_dashVelocity);
-        m_character.HardSetVelocity(m_dashVelocity);
+        m_character.m_splinePhysics.HardSetVelocity(m_dashVelocity);
 
         return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE);
     }
@@ -65,7 +57,7 @@ public class PlayerState_InAirDash : State_Player
         base.StateEnd();
 
         m_character.SetDesiredVelocity(0.0f);
-        m_character.HardSetVelocity(0.0f);
+        m_character.m_splinePhysics.HardSetVelocity(0.0f);
 
         m_character.m_inAirDashFlag = false;
         m_character.m_gravity = true;
