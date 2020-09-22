@@ -54,7 +54,7 @@ public class PlayerState_Locomotion : State_Player
                 }
                 break;
             case LOCOMOTION_STATE.LOCOMOTION:
-                if(Mathf.Abs(m_entity.m_splinePhysics.m_localVelocity.x) > m_character.m_groundRunVel) //Character is sprinting
+                if(Mathf.Abs(m_entity.m_splinePhysics.m_splineVelocity.x) > m_character.m_groundRunVel) //Character is sprinting
                 {
                     m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.RUN_TO_SPRINT);
                     m_currentState = LOCOMOTION_STATE.LOCOMOTION_TO_SPRINT;
@@ -63,7 +63,7 @@ public class PlayerState_Locomotion : State_Player
             case LOCOMOTION_STATE.LOCOMOTION_TO_SPRINT:
                 if (m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE))
                 {
-                    if (Mathf.Abs(m_entity.m_splinePhysics.m_localVelocity.x) > m_character.m_groundRunVel)//Still sprinting
+                    if (Mathf.Abs(m_entity.m_splinePhysics.m_splineVelocity.x) > m_character.m_groundRunVel)//Still sprinting
                     {
                         m_currentState = LOCOMOTION_STATE.SPRINT;
                         m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.SPRINT);
@@ -76,7 +76,7 @@ public class PlayerState_Locomotion : State_Player
                 }
                 break;
             case LOCOMOTION_STATE.SPRINT:
-                if (Mathf.Abs(m_entity.m_splinePhysics.m_localVelocity.x) <= m_character.m_groundRunVel) //Character is no longer sprinting
+                if (Mathf.Abs(m_entity.m_splinePhysics.m_splineVelocity.x) <= m_character.m_groundRunVel) //Character is no longer sprinting
                 {
                     m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LOCOMOTION);
                     m_currentState = LOCOMOTION_STATE.LOCOMOTION;
@@ -103,6 +103,6 @@ public class PlayerState_Locomotion : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_entity.m_splinePhysics.m_downCollision && !m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
+        return m_entity.m_splinePhysics.m_downCollision.m_collision && !m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
     }
 }

@@ -11,9 +11,9 @@ public class FollowCamera : MonoBehaviour
 
     public float m_cameraSpeed = 1.0f;
 
-    public enum CAMERA_ORIENTATION { RIGHT, LEFT }
+    public enum CAMERA_ORIENTATION { INITIAL, INVERTED }
     [HideInInspector]
-    public CAMERA_ORIENTATION m_currentOrientation = CAMERA_ORIENTATION.LEFT;
+    public CAMERA_ORIENTATION m_currentOrientation = CAMERA_ORIENTATION.INITIAL;
 
     private void Start()
     {
@@ -34,7 +34,7 @@ public class FollowCamera : MonoBehaviour
     /// </summary>
     public void FlipCamera()
     {
-        m_currentOrientation = m_currentOrientation == CAMERA_ORIENTATION.RIGHT ? CAMERA_ORIENTATION.LEFT : CAMERA_ORIENTATION.RIGHT;
+        m_currentOrientation = m_currentOrientation == CAMERA_ORIENTATION.INITIAL ? CAMERA_ORIENTATION.INVERTED : CAMERA_ORIENTATION.INITIAL;
     }
 
     /// <summary>
@@ -48,7 +48,7 @@ public class FollowCamera : MonoBehaviour
         //Get desired position
         Vector3 cameraOffset = Vector3.zero;
 
-        if(m_currentOrientation == CAMERA_ORIENTATION.RIGHT)
+        if(m_currentOrientation == CAMERA_ORIENTATION.INITIAL)
         {
             cameraOffset = m_followTarget.transform.forward * m_cameraOffset.z + m_followTarget.transform.right * m_cameraOffset.x + m_followTarget.transform.up * m_cameraOffset.y;
         }

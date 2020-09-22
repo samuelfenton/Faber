@@ -53,7 +53,7 @@ public class Entity : MonoBehaviour
     public virtual void UpdateEntity()
     {
         //Stop colliding with objects
-        m_splinePhysics.UpdatePhysics();
+        m_splinePhysics.ResolvePhysics();
     }
 
     /// <summary>

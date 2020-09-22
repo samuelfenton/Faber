@@ -54,7 +54,7 @@ public class Character : Entity
 
     //Velocity stuff
     [HideInInspector]
-    public float m_desiredVelocity = 0.0f;
+    public Vector2 m_desiredVelocity = Vector2.zero;
 
     //Flags
     [HideInInspector]
@@ -109,26 +109,26 @@ public class Character : Entity
     /// </summary>
     public override void UpdateEntity()
     {
-        base.UpdateEntity();
-
         UpdateVelocity();
 
         UpdateAnimationLocomotion();
+
+        base.UpdateEntity();
     }
 
     /// <summary>
     /// Update the characters velocity
-    /// Takes into account collisions and desired velocity
+    /// Use desired velocity to modify facing direction. Negitive desired will rotate
     /// </summary>
-    private void UpdateVelocity()
+    protected void UpdateVelocity()
     {
-        Vector3 newVelocity = m_splinePhysics.m_localVelocity;
+        Vector3 newVelocity = m_splinePhysics.m_splineVelocity;
 
-        float accel = m_splinePhysics.m_downCollision ? m_groundAccel : m_groundAccel * m_inAirAccelModifier;
-        float deaccel = m_splinePhysics.m_downCollision ? m_groundedDeaccel : m_groundedDeaccel * m_inAirAccelModifier;
+        float accel = m_splinePhysics.m_downCollision.m_collision ? m_groundAccel : m_groundAccel * m_inAirAccelModifier;
+        float deaccel = m_splinePhysics.m_downCollision.m_collision ? m_groundedDeaccel : m_groundedDeaccel * m_inAirAccelModifier;
 
         //Run update to velocity based off desired
-        if (m_desiredVelocity == 0.0f) //Stop
+        if (m_desiredVelocity.x == 0.0f) //Stop
         {
             float deltaSpeed = deaccel * Time.deltaTime;
             if (deltaSpeed > Mathf.Abs(newVelocity.x))//Close enough to stopping this frame
@@ -136,27 +136,35 @@ public class Character : Entity
             else
                 newVelocity.x += newVelocity.x < 0 ? deltaSpeed : -deltaSpeed;//Still have high velocity, just slow down
         }
-        else if (m_desiredVelocity > 0.0f) //Run forwards
+        else if (m_desiredVelocity.x > 0.0f) //Run forwards
         {
-            float deltaSpeed = m_splinePhysics.m_localVelocity.x > m_desiredVelocity || m_splinePhysics.m_localVelocity.x < 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
+            float deltaSpeed = newVelocity.x > m_desiredVelocity.x || newVelocity.x < 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
 
-            if (deltaSpeed > Mathf.Abs(newVelocity.x - m_desiredVelocity))
-                newVelocity.x = m_desiredVelocity;
+            if (deltaSpeed > Mathf.Abs(newVelocity.x - m_desiredVelocity.x))
+                newVelocity.x = m_desiredVelocity.x;
             else
-                newVelocity.x += m_splinePhysics.m_localVelocity.x < m_desiredVelocity ? deltaSpeed : -deltaSpeed;
+                newVelocity.x += newVelocity.x < m_desiredVelocity.x ? deltaSpeed : -deltaSpeed;
 
         }
-        else //Run backwards
+        else //Wants to run in opposite direction
         {
-            float deltaSpeed = m_splinePhysics.m_localVelocity.x < m_desiredVelocity || m_splinePhysics.m_localVelocity.x > 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
+            float deltaSpeed = newVelocity.x < m_desiredVelocity.x || newVelocity.x > 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
 
-            if (deltaSpeed > Mathf.Abs(newVelocity.x - m_desiredVelocity))
-                newVelocity.x = m_desiredVelocity;
+            if (deltaSpeed > Mathf.Abs(newVelocity.x - m_desiredVelocity.x))
+                newVelocity.x = m_desiredVelocity.x;
             else
-                newVelocity.x += m_splinePhysics.m_localVelocity.x > m_desiredVelocity ? -deltaSpeed : deltaSpeed;
+                newVelocity.x += newVelocity.x > m_desiredVelocity.x ? -deltaSpeed : deltaSpeed;
+
+            //Check for flip
+            if(newVelocity.x < 0.0f)
+            {
+                m_splinePhysics.SwapFacingDirection();
+                newVelocity.x = -newVelocity.x;
+                m_desiredVelocity.x = -m_desiredVelocity.x;
+            }
         }
 
-        m_splinePhysics.m_localVelocity = newVelocity;
+        m_splinePhysics.m_splineVelocity = newVelocity;
     }
 
     /// <summary>
@@ -215,9 +223,18 @@ public class Character : Entity
     /// Set the desired velocity
     /// </summary>
     /// <param name="p_val">Desired velocity</param>
-    public void SetDesiredVelocity(float p_val)
+    public void SetDesiredVelocity(Vector2 p_val)
     {
         m_desiredVelocity = p_val;
+    }
+
+    /// <summary>
+    /// Set the desired velocity
+    /// </summary>
+    /// <param name="p_val">Desired velocity</param>
+    public void SetDesiredVelocity(float p_val)
+    {
+        m_desiredVelocity = new Vector2(p_val, 0.0f);
     }
 
     /// <summary>
@@ -225,9 +242,8 @@ public class Character : Entity
     /// </summary>
     public void UpdateAnimationLocomotion()
     {
-        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.CURRENT_VELOCITY, m_splinePhysics.m_localVelocity.x / m_groundRunVel);
-        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.DESIRED_VELOCITY, m_desiredVelocity / m_groundRunVel);
-        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_splinePhysics.m_localVelocity.x / m_groundRunVel));
+        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.CURRENT_VELOCITY, m_splinePhysics.m_splineVelocity.x / m_groundRunVel);
+        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_splinePhysics.m_splineVelocity.x / m_groundRunVel));
     }
 
     /// <summary>

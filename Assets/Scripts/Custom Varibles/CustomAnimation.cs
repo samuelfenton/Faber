@@ -16,7 +16,7 @@ public class CustomAnimation : MonoBehaviour
     public enum LAYER {BASE = 0, ATTACK, INTERRUPT, LAYER_COUNT}
     private int[] m_layerToInt = new int[(int)LAYER.LAYER_COUNT];
 
-    public enum VARIBLE_FLOAT { CURRENT_VELOCITY, DESIRED_VELOCITY, ABSOLUTE_VELOCITY, VERTICAL_VELOCITY, RANDOM_IDLE, FLOAT_COUNT}
+    public enum VARIBLE_FLOAT { CURRENT_VELOCITY, ABSOLUTE_VELOCITY, VERTICAL_VELOCITY, RANDOM_IDLE, FLOAT_COUNT}
     private string[] m_floatToString = new string[(int)VARIBLE_FLOAT.FLOAT_COUNT];
     public enum BASE_DEFINES {LOCOMOTION, SPRINT, RUN_TO_SPRINT, DASH, JUMP, INAIR, DOUBLE_JUMP, INAIR_DASH, LANDING_TO_IDLE, LANDING_TO_RUN, BLOCK, BLOCK_FROM_IDLE, BLOCK_TO_IDLE, END_ATTACK_BLEND, BASE_COUNT }
     private string[] m_baseToString = new string[(int)BASE_DEFINES.BASE_COUNT];
@@ -30,8 +30,10 @@ public class CustomAnimation : MonoBehaviour
     private KeyValuePair<LAYER, float> m_currentBlendToLayer = new KeyValuePair<LAYER, float>(LAYER.LAYER_COUNT, 0.0f);
     private List<KeyValuePair<LAYER, float>> m_currentBlendFromLayers = new List<KeyValuePair<LAYER, float>>();
 
-    private IEnumerator m_blendCoroutine = null;
+    private bool m_currentlyCrossfading = false;
 
+    private Coroutine m_blendCoroutine = null;
+    private Coroutine m_crossFadeCoroutine = null;
     /// <summary>
     /// Setup dicionaries used
     /// </summary>
@@ -45,7 +47,6 @@ public class CustomAnimation : MonoBehaviour
         m_layerToInt[(int)LAYER.INTERRUPT] = m_animator.GetLayerIndex("InterruptLayer");
 
         m_floatToString[(int)VARIBLE_FLOAT.CURRENT_VELOCITY] ="Current Velocity";
-        m_floatToString[(int)VARIBLE_FLOAT.DESIRED_VELOCITY] = "Desired Velocity";
         m_floatToString[(int)VARIBLE_FLOAT.ABSOLUTE_VELOCITY] = "Absolute Velocity";
         m_floatToString[(int)VARIBLE_FLOAT.VERTICAL_VELOCITY] ="Vertical Velocity";
         m_floatToString[(int)VARIBLE_FLOAT.RANDOM_IDLE] = "Random Idle";
@@ -105,13 +106,16 @@ public class CustomAnimation : MonoBehaviour
         if (m_animator == null || p_layer == LAYER.LAYER_COUNT)
             return false;
 
-        bool inCrossfade = m_animator.GetNextAnimatorClipInfoCount(m_layerToInt[(int)p_layer]) != 0;
-        return !inCrossfade && m_animator.GetCurrentAnimatorStateInfo(m_layerToInt[(int)p_layer]).normalizedTime > END_ANIMATION_TIME;
+        return !m_currentlyCrossfading && m_animator.GetCurrentAnimatorStateInfo(m_layerToInt[(int)p_layer]).normalizedTime > END_ANIMATION_TIME;
     }
 
+    /// <summary>
+    /// Play base animation
+    /// </summary>
+    /// <param name="p_anim"></param>
     public void PlayBase(BASE_DEFINES p_anim)
     {
-        m_animator.CrossFade(m_baseToString[(int)p_anim], BLEND_TIME, m_layerToInt[(int)LAYER.BASE]);
+        StartCrossFade(m_baseToString[(int)p_anim], m_layerToInt[(int)LAYER.BASE]);
     }
 
     /// <summary>
@@ -131,7 +135,7 @@ public class CustomAnimation : MonoBehaviour
     /// <param name="p_attackLeaf">Attack leaf containg all relavant animation data</param>
     public void PlayAttackSection01(ManoeuvreLeaf p_attackLeaf)
     {
-        m_animator.CrossFade(p_attackLeaf.GetAnimationString() + SECTION01_STRING, BLEND_TIME, m_layerToInt[(int)LAYER.ATTACK]);
+        StartCrossFade(p_attackLeaf.GetAnimationString() + SECTION01_STRING, m_layerToInt[(int)LAYER.ATTACK]);
     }
 
     /// <summary>
@@ -140,7 +144,7 @@ public class CustomAnimation : MonoBehaviour
     /// <param name="p_attackLeaf">Attack leaf containg all relavant animation data</param>
     public void PlayAttackSection02(ManoeuvreLeaf p_attackLeaf)
     {
-        m_animator.CrossFade(p_attackLeaf.GetAnimationString() + SECTION02_STRING, BLEND_TIME, m_layerToInt[(int)LAYER.ATTACK]);
+        StartCrossFade(p_attackLeaf.GetAnimationString() + SECTION02_STRING, m_layerToInt[(int)LAYER.ATTACK]);
     }
 
     /// <summary>
@@ -177,6 +181,31 @@ public class CustomAnimation : MonoBehaviour
     public void EndInterrupt()
     {
         ChangeLayers(LAYER.BASE, true);
+    }
+
+    /// <summary>
+    /// Perform a crossfade
+    /// Setups coroutine used to determine when crossfade has ended
+    /// </summary>
+    /// <param name="p_animation"></param>
+    /// <param name="p_layer"></param>
+    private void StartCrossFade(string p_animation, int p_layer)
+    {
+        m_animator.CrossFade(p_animation, BLEND_TIME, p_layer);
+
+        m_currentlyCrossfading = true;
+
+        if (m_crossFadeCoroutine != null)
+            StopCoroutine(m_crossFadeCoroutine);
+
+        m_crossFadeCoroutine = StartCoroutine(EndCrossFade());
+    }
+
+    private IEnumerator EndCrossFade()
+    {
+        yield return new WaitForSeconds(BLEND_TIME);
+
+        m_currentlyCrossfading = false;
     }
 
     /// <summary>
@@ -220,8 +249,7 @@ public class CustomAnimation : MonoBehaviour
                 }
             }
 
-            m_blendCoroutine = BlendCoroutine();
-            StartCoroutine(m_blendCoroutine);
+            m_blendCoroutine = StartCoroutine(BlendCoroutine());
         }
         else //Hard set weight, everythign to 0.0f excluding desired
         {
@@ -278,8 +306,7 @@ public class CustomAnimation : MonoBehaviour
 
         yield return null;
 
-        m_blendCoroutine = BlendCoroutine();
-        StartCoroutine(m_blendCoroutine);
+        m_blendCoroutine = StartCoroutine(BlendCoroutine());
     }
 
     /// <summary>

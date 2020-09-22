@@ -43,7 +43,7 @@ public class PlayerState_Jump : State_Player
         //Allow player to jump and move
         m_player.ApplyHorizontalMovement(true);
 
-        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE) || m_entity.m_splinePhysics.m_localVelocity.y <= 0.0f;
+        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE) || m_entity.m_splinePhysics.m_splineVelocity.y <= 0.0f;
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ public class PlayerState_Jump : State_Player
     {
         //Able to jump while jump key is pressed, grounded, and no collision above
         return m_player.m_customInput.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED
-            && m_entity.m_splinePhysics.m_downCollision && 
-            !m_entity.m_splinePhysics.m_upCollision;
+            && m_entity.m_splinePhysics.m_downCollision.m_collision && 
+            !m_entity.m_splinePhysics.m_upCollision.m_collision;
     }
 }

@@ -23,10 +23,10 @@ public class PlayerState_Land : State_Player
     {
         base.StateStart();
 
-        if(Mathf.Abs(m_entity.m_splinePhysics.m_localVelocity.x) / m_character.m_groundRunVel > SPEED_FOR_ROLLING_LANDING) //players moving fast enough to need to roll
+        if(Mathf.Abs(m_entity.m_splinePhysics.m_splineVelocity.x) / m_character.m_groundRunVel > SPEED_FOR_ROLLING_LANDING) //players moving fast enough to need to roll
         {
             m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LANDING_TO_RUN);
-            m_character.SetDesiredVelocity(m_character.m_splinePhysics.m_localVelocity.x);
+            m_character.SetDesiredVelocity(m_character.m_splinePhysics.m_splineVelocity.x);
         }
         else
         {
@@ -62,6 +62,6 @@ public class PlayerState_Land : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_entity.m_splinePhysics.m_localVelocity.y <= 0.0f && m_entity.m_splinePhysics.m_downCollision;
+        return m_entity.m_splinePhysics.m_splineVelocity.y <= 0.0f && m_entity.m_splinePhysics.m_downCollision.m_collision;
     }
 }

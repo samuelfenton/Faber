@@ -55,7 +55,7 @@ public class PlayerState_Block : State_Player
                     m_currentState = BLOCK_STATE.END;
                     m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.BLOCK_TO_IDLE);
                 }
-                if(!m_entity.m_splinePhysics.m_downCollision)
+                if(!m_entity.m_splinePhysics.m_downCollision.m_collision)
                 {
                     return true;
                 }
@@ -85,6 +85,6 @@ public class PlayerState_Block : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_entity.m_splinePhysics.m_downCollision && m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
+        return m_entity.m_splinePhysics.m_downCollision.m_collision && m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.BLOCK);
     }
 }
