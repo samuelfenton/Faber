@@ -6,7 +6,7 @@ public class PlayerState_Attack : State_Player
 {
     private enum ATTACK_STATE {INITIAL, FINISHED }
     private ATTACK_STATE m_currentState = ATTACK_STATE.INITIAL;
-    private WeaponManager m_weaponManager = null;
+    private AttackController m_weaponManager = null;
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -16,7 +16,7 @@ public class PlayerState_Attack : State_Player
     public override void StateInit(bool p_loopedState, Entity p_entity)
     {
         base.StateInit(p_loopedState, p_entity);
-        m_weaponManager = m_player.GetComponent<WeaponManager>();
+        m_weaponManager = m_player.GetComponent<AttackController>();
     }
 
     /// <summary>
@@ -29,12 +29,12 @@ public class PlayerState_Attack : State_Player
         m_player.SetDesiredVelocity(0.0f);
 
         //TODO logic to determine type of attack, in air vs ground vs sprint
-        ManoeuvreLeaf.MANOEUVRE_TYPE currentType = m_character.m_splinePhysics.m_downCollision ? (Mathf.Abs(m_character.m_splinePhysics.m_splineVelocity.x) > m_character.m_groundRunVel ? ManoeuvreLeaf.MANOEUVRE_TYPE.SPRINT : ManoeuvreLeaf.MANOEUVRE_TYPE.GROUND) : ManoeuvreLeaf.MANOEUVRE_TYPE.INAIR;
-        ManoeuvreLeaf.MANOEUVRE_STANCE currentStance = ManoeuvreLeaf.MANOEUVRE_STANCE.LIGHT;
+        ManoeuvreController.MANOEUVRE_TYPE currentType = m_character.m_splinePhysics.m_downCollision ? (Mathf.Abs(m_character.m_splinePhysics.m_splineVelocity.x) > m_character.m_groundRunVel ? ManoeuvreController.MANOEUVRE_TYPE.SPRINT : ManoeuvreController.MANOEUVRE_TYPE.GROUND) : ManoeuvreController.MANOEUVRE_TYPE.INAIR;
+        ManoeuvreController.MANOEUVRE_STANCE currentStance = ManoeuvreController.MANOEUVRE_STANCE.LIGHT;
 
         if (m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.HEAVY_ATTACK))
         {
-            currentStance = ManoeuvreLeaf.MANOEUVRE_STANCE.HEAVY;
+            currentStance = ManoeuvreController.MANOEUVRE_STANCE.HEAVY;
         }
 
         m_weaponManager.StartAttack(currentType, currentStance);

@@ -121,30 +121,30 @@ public class CustomAnimation : MonoBehaviour
     /// <summary>
     /// Play a given attack animation
     /// </summary>
-    /// <param name="p_attackLeaf">Attack leaf containg all relavant animation data</param>
-    public void PlayAttack(ManoeuvreLeaf p_attackLeaf)
+    /// <param name="p_animationString">String for attack animation</param>
+    public void PlayAttack(string p_animationString)
     {
         ChangeLayers(LAYER.ATTACK, false);
 
-        m_animator.Play(p_attackLeaf.GetAnimationString(), m_layerToInt[(int)LAYER.ATTACK]);
+        m_animator.Play(p_animationString, m_layerToInt[(int)LAYER.ATTACK]);
     }
 
     /// <summary>
     /// Play section 1 of an attack
     /// </summary>
-    /// <param name="p_attackLeaf">Attack leaf containg all relavant animation data</param>
-    public void PlayAttackSection01(ManoeuvreLeaf p_attackLeaf)
+    /// <param name="p_animationString">String for attack animation</param>
+    public void PlayAttackSection01(string p_animationString)
     {
-        StartCrossFade(p_attackLeaf.GetAnimationString() + SECTION01_STRING, m_layerToInt[(int)LAYER.ATTACK]);
+        StartCrossFade(p_animationString + SECTION01_STRING, m_layerToInt[(int)LAYER.ATTACK]);
     }
 
     /// <summary>
     /// Play section 2 of an attack
     /// </summary>
-    /// <param name="p_attackLeaf">Attack leaf containg all relavant animation data</param>
-    public void PlayAttackSection02(ManoeuvreLeaf p_attackLeaf)
+    /// <param name="p_animationString">String for attack animation</param>
+    public void PlayAttackSection02(string p_animationString)
     {
-        StartCrossFade(p_attackLeaf.GetAnimationString() + SECTION02_STRING, m_layerToInt[(int)LAYER.ATTACK]);
+        StartCrossFade(p_animationString + SECTION02_STRING, m_layerToInt[(int)LAYER.ATTACK]);
     }
 
     /// <summary>

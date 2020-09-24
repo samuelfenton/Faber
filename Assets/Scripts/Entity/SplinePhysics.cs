@@ -268,7 +268,7 @@ public class SplinePhysics : MonoBehaviour
         {
             BoxCollider boxCollider = GetComponent<BoxCollider>();
 
-            Gizmos.color = new Color(255.0f, 0.0f, 0.0f, 0.5f);
+            Gizmos.color = new Color(0.0f, 255.0f, 0.0f, 0.5f);
 
             Vector3 center = transform.position + transform.up * boxCollider.bounds.center.y + transform.forward * boxCollider.bounds.center.x;
 

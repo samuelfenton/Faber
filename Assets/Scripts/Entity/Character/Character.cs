@@ -71,7 +71,7 @@ public class Character : Entity
     public bool m_deathFlag = false;
 
     //Stored references
-    protected WeaponManager m_weaponManager = null;
+    protected AttackController m_weaponManager = null;
     protected Animator m_animator = null;
     protected CustomAnimation m_customAnimation = null;
     protected ObjectPoolManager_InGame m_objectPoolingManger = null;
@@ -89,7 +89,7 @@ public class Character : Entity
 
         //Get references
         m_characterStatistics = GetComponent<CharacterStatistics>();
-        m_weaponManager = GetComponent<WeaponManager>();
+        m_weaponManager = GetComponent<AttackController>();
         m_animator = GetComponentInChildren<Animator>();
 
         m_customAnimation = GetComponentInChildren<CustomAnimation>();
