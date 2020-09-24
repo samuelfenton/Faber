@@ -122,6 +122,22 @@ public class SceneController_InGame : SceneController
     }
 
     /// <summary>
+    /// Update the scene controller as needed
+    /// should be called form master controller
+    /// Fixed update only
+    /// </summary>
+    public override void FixedUpdateSceneController()
+    {
+        if (m_inGameState == INGAME_STATE.IN_GAME)
+        {
+            foreach (Entity entity in m_entities)
+            {
+                entity.FixedUpdateEntity();
+            }
+        }
+    }
+
+    /// <summary>
     /// Player can respanw in three cases
     /// On death
     /// On respawn

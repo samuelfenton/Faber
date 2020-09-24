@@ -343,7 +343,7 @@ public class WeaponManager : MonoBehaviour
         }
 
         //Grounded
-        if (m_currentManoeuvreLeaf.m_groundedFlag && !m_character.m_splinePhysics.m_downCollision.m_collision)
+        if (m_currentManoeuvreLeaf.m_groundedFlag && !m_character.m_splinePhysics.m_downCollision)
             return false;
 
         //Time

@@ -109,11 +109,20 @@ public class Character : Entity
     /// </summary>
     public override void UpdateEntity()
     {
+        base.UpdateEntity();
+
         UpdateVelocity();
+    }
+
+    /// <summary>
+    /// Update an entity, this should be called from scene controller
+    /// Used to handle fixed updates, tranfroms etc
+    /// </summary>
+    public override void FixedUpdateEntity()
+    {
+        base.FixedUpdateEntity();
 
         UpdateAnimationLocomotion();
-
-        base.UpdateEntity();
     }
 
     /// <summary>
@@ -124,8 +133,8 @@ public class Character : Entity
     {
         Vector3 newVelocity = m_splinePhysics.m_splineVelocity;
 
-        float accel = m_splinePhysics.m_downCollision.m_collision ? m_groundAccel : m_groundAccel * m_inAirAccelModifier;
-        float deaccel = m_splinePhysics.m_downCollision.m_collision ? m_groundedDeaccel : m_groundedDeaccel * m_inAirAccelModifier;
+        float accel = m_splinePhysics.m_downCollision ? m_groundAccel : m_groundAccel * m_inAirAccelModifier;
+        float deaccel = m_splinePhysics.m_downCollision ? m_groundedDeaccel : m_groundedDeaccel * m_inAirAccelModifier;
 
         //Run update to velocity based off desired
         if (m_desiredVelocity.x == 0.0f) //Stop

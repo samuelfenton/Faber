@@ -7335,16 +7335,6 @@ PrefabInstance:
       propertyPath: m_nodeB
       value: 
       objectReference: {fileID: 2084684021}
-    - target: {fileID: 556785308882941477, guid: e87fa2605b367a941976ca36de02b92c,
-        type: 3}
-      propertyPath: m_currentSplinePercent
-      value: 0.778
-      objectReference: {fileID: 0}
-    - target: {fileID: 556785308882941477, guid: e87fa2605b367a941976ca36de02b92c,
-        type: 3}
-      propertyPath: m_splineColliderOffset.y
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7334705693917236364, guid: e87fa2605b367a941976ca36de02b92c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -7405,16 +7395,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Prefab_Player_YBot
       objectReference: {fileID: 0}
-    - target: {fileID: 7647955024369262057, guid: e87fa2605b367a941976ca36de02b92c,
+    - target: {fileID: 8641249222506824974, guid: e87fa2605b367a941976ca36de02b92c,
         type: 3}
-      propertyPath: m_nodeA
-      value: 
-      objectReference: {fileID: 1666794287}
-    - target: {fileID: 7647955024369262057, guid: e87fa2605b367a941976ca36de02b92c,
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8641249222506824974, guid: e87fa2605b367a941976ca36de02b92c,
         type: 3}
-      propertyPath: m_nodeB
-      value: 
-      objectReference: {fileID: 2084684021}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e87fa2605b367a941976ca36de02b92c, type: 3}
 --- !u!4 &1712107743 stripped

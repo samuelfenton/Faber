@@ -62,6 +62,6 @@ public class PlayerState_Land : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_entity.m_splinePhysics.m_splineVelocity.y <= 0.0f && m_entity.m_splinePhysics.m_downCollision.m_collision;
+        return m_entity.m_splinePhysics.m_splineVelocity.y <= 0.0f && m_entity.m_splinePhysics.m_downCollision;
     }
 }

@@ -78,6 +78,12 @@ public class MasterController : MonoBehaviour
             m_currentUIController.UpdateUIController();
     }
 
+    private void FixedUpdate()
+    {
+        if (m_currentSceneController != null)
+            m_currentSceneController.FixedUpdateSceneController();
+    }
+
     /// <summary>
     /// Assign the strings as needed to be used with enums
     /// </summary>

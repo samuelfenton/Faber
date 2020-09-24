@@ -52,7 +52,15 @@ public class Entity : MonoBehaviour
     /// </summary>
     public virtual void UpdateEntity()
     {
-        //Stop colliding with objects
+
+    }
+
+    /// <summary>
+    /// Update an entity, this should be called from scene controller
+    /// Used to handle fixed updates, tranfroms etc
+    /// </summary>
+    public virtual void FixedUpdateEntity()
+    {
         m_splinePhysics.ResolvePhysics();
     }
 
@@ -76,13 +84,16 @@ public class Entity : MonoBehaviour
     /// <param name="p_val">Translation distance</param>
     public virtual void SplineTranslate(float p_val)
     {
-        if(AllignedToSpline())
+        if(p_val > 0.0f && !m_splinePhysics.m_forwardCollision)
         {
-            m_splinePhysics.m_currentSplinePercent += p_val / m_splinePhysics.m_currentSpline.m_splineLength;
-        }
-        else
-        {
-            m_splinePhysics.m_currentSplinePercent -= p_val / m_splinePhysics.m_currentSpline.m_splineLength;
+            if(AllignedToSpline())
+            {
+                m_splinePhysics.m_currentSplinePercent += p_val / m_splinePhysics.m_currentSpline.m_splineLength;
+            }
+            else
+            {
+                m_splinePhysics.m_currentSplinePercent -= p_val / m_splinePhysics.m_currentSpline.m_splineLength;
+            }
         }
     }
 

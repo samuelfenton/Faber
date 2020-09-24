@@ -15,9 +15,8 @@ public class Character_SplinePhysics : SplinePhysics
     }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-    protected override void OnDrawGizmosSelected()
+    protected void OnDrawGizmosSelected()
     {
-        base.OnDrawGizmosSelected();
         if (!Application.isPlaying)
         {
             if (MOARDebugging.GetSplinePosition(m_nodeA, m_nodeB, m_currentSplinePercent, out Vector3 position))

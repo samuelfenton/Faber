@@ -44,9 +44,9 @@ public class NPC_Character : Character
     /// </summary>
     public override void UpdateEntity()
     {
-        m_NPCStateMachine.UpdateStateMachine();
-
         base.UpdateEntity();
+
+        m_NPCStateMachine.UpdateStateMachine();
     }
 
     /// <summary>

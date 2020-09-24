@@ -62,7 +62,7 @@ public class PlayerState_Jump : State_Player
     {
         //Able to jump while jump key is pressed, grounded, and no collision above
         return m_player.m_customInput.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED
-            && m_entity.m_splinePhysics.m_downCollision.m_collision && 
-            !m_entity.m_splinePhysics.m_upCollision.m_collision;
+            && m_entity.m_splinePhysics.m_downCollision && 
+            !m_entity.m_splinePhysics.m_upCollision;
     }
 }

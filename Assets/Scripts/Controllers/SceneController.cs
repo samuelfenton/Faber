@@ -28,4 +28,14 @@ public class SceneController : MonoBehaviour
     {
 
     }
+
+    /// <summary>
+    /// Update the scene controller as needed
+    /// should be called form master controller
+    /// Fixed update only
+    /// </summary>
+    public virtual void FixedUpdateSceneController()
+    {
+
+    }
 }
