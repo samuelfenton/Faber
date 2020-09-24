@@ -38,6 +38,8 @@ public class SplinePhysics : MonoBehaviour
     protected BoxCollider m_boxCollider = null;
     protected Rigidbody m_rigidBody = null;
 
+    public bool m_showDebugColliders = false;
+
     public virtual void Init()
     {
         m_parentEntity = GetComponent<Entity>();
@@ -258,4 +260,29 @@ public class SplinePhysics : MonoBehaviour
     {
         m_splineVelocity.y = p_val;
     }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    protected virtual void OnDrawGizmosSelected()
+    {
+        if(m_showDebugColliders)
+        {
+            BoxCollider boxCollider = GetComponent<BoxCollider>();
+
+            Gizmos.color = new Color(255.0f, 0.0f, 0.0f, 0.5f);
+
+            Vector3 center = transform.position + transform.up * boxCollider.bounds.center.y + transform.forward * boxCollider.bounds.center.x;
+
+            Vector3 topForward = center + transform.up * boxCollider.bounds.extents.y +  transform.forward * boxCollider.bounds.extents.z;
+            Vector3 topBackward = center + transform.up * boxCollider.bounds.extents.y - transform.forward * boxCollider.bounds.extents.z;
+            Vector3 bottomForward = center - transform.up * boxCollider.bounds.extents.y + transform.forward * boxCollider.bounds.extents.z;
+            Vector3 bottomBackward = center - transform.up * boxCollider.bounds.extents.y - transform.forward * boxCollider.bounds.extents.z;
+
+            //Draw collision Box
+            Gizmos.DrawLine(topForward, topBackward);
+            Gizmos.DrawLine(topBackward, bottomBackward);
+            Gizmos.DrawLine(bottomBackward, bottomForward);
+            Gizmos.DrawLine(bottomForward, topForward);
+        }
+    }
+#endif
 }
