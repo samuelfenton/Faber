@@ -84,7 +84,7 @@ public class Entity : MonoBehaviour
     /// <param name="p_val">Translation distance</param>
     public virtual void SplineTranslate(float p_val)
     {
-        if(p_val > 0.0f && !m_splinePhysics.m_forwardCollision)
+        if(p_val > 0.0f && !m_splinePhysics.m_forwardCollision || p_val < 0.0f && !m_splinePhysics.m_backCollision)
         {
             if(AllignedToSpline())
             {
