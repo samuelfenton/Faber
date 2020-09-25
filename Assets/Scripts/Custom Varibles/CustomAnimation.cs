@@ -36,6 +36,7 @@ public class CustomAnimation : MonoBehaviour
     private bool m_currentlyBlending = false;
 
     private Coroutine m_blendCoroutine = null;
+    private KeyValuePair<string, LAYER> m_blendingTo = new KeyValuePair<string, LAYER>();
 
     /// <summary>
     /// Setup dicionaries used
@@ -154,12 +155,16 @@ public class CustomAnimation : MonoBehaviour
     {
         if(m_blendCoroutine != null)
         {
+            m_animator.Play(m_blendingTo.Key, m_layerToInt[(int)m_blendingTo.Value]);
+
             StopCoroutine(m_blendCoroutine);
         }
 
+        m_blendingTo = new KeyValuePair<string, LAYER>(p_animationString, p_layer);
+        
         float blendTime = p_blendTime == BLEND_TIME.INSTANT ? INSTANT_BLEND_TIME : p_blendTime == BLEND_TIME.SHORT ? SHORT_BLEND_TIME : LONG_BLEND_TIME;
 
-        m_animator.Play(p_animationString, m_layerToInt[(int)p_layer]);
+        m_animator.CrossFade(p_animationString, m_layerToInt[(int)p_layer]);
 
         m_blendCoroutine = StartCoroutine(BlendAnimation(p_layer, blendTime));
     }
