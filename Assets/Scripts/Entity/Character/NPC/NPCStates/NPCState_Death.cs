@@ -21,7 +21,7 @@ public class NPCState_Death : NPCState_Interrupt
     {
         base.StateStart();
 
-        m_customAnimator.PlayInterrupt(CustomAnimation.INTERRUPT_DEFINES.DEATH);
+        m_customAnimator.PlayAnimation(CustomAnimation.INTERRUPT_DEFINES.DEATH);
     }
 
     /// <summary>
@@ -41,8 +41,6 @@ public class NPCState_Death : NPCState_Interrupt
     public override void StateEnd()
     {
         base.StateEnd();
-
-        m_customAnimator.EndInterrupt();
     }
 
     /// <summary>

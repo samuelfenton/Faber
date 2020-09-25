@@ -26,7 +26,7 @@ public class PlayerState_Jump : State_Player
 
         m_entity.m_splinePhysics.HardSetUpwardsVelocity(m_jumpVelocity);
 
-        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.JUMP);
+        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.JUMP);
 
         m_character.m_doubleJumpFlag = m_character.m_characterStatistics.HasAbility(CharacterStatistics.ABILITY.DOUBLE_JUMP);
         m_character.m_inAirDashFlag = m_character.m_characterStatistics.HasAbility(CharacterStatistics.ABILITY.IN_AIR_DASH);

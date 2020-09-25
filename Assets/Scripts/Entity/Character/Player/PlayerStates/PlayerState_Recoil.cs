@@ -21,7 +21,7 @@ public class PlayerState_Recoil : PlayerState_Interrupt
     {
         base.StateStart();
 
-        m_customAnimator.PlayInterrupt(CustomAnimation.INTERRUPT_DEFINES.RECOIL);
+        m_customAnimator.PlayAnimation(CustomAnimation.INTERRUPT_DEFINES.RECOIL);
     }
 
     /// <summary>
@@ -43,7 +43,6 @@ public class PlayerState_Recoil : PlayerState_Interrupt
         base.StateEnd();
 
         m_player.m_recoilFlag = false; //Reset flag
-        m_customAnimator.EndInterrupt();
     }
 
     /// <summary>

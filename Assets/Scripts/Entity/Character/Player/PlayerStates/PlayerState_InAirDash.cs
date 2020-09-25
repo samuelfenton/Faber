@@ -23,7 +23,7 @@ public class PlayerState_InAirDash : State_Player
     {
         base.StateStart();
 
-        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.INAIR_DASH);
+        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.INAIR_DASH);
 
         m_character.m_gravity = false;
         m_character.m_splinePhysics.HardSetUpwardsVelocity(0.0f);

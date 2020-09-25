@@ -6,6 +6,9 @@ using UnityEngine;
 
 public class AttackController : MonoBehaviour
 {
+    private const string SECTION01_STRING = "_Section1";
+    private const string SECTION02_STRING = "_Section2";
+
     private enum MANOEUVRE_STATE {AWAITING_ATTACK, PERFORMING_ATTACK, COMPLETED_ATTACK}
     private enum SEQUENCE_STATE { INITIAL, ATTACK, END}
 
@@ -33,10 +36,11 @@ public class AttackController : MonoBehaviour
     private ManoeuvreController m_sprintingHeavyController = null;
 
     //Stored varibles
-    private ManoeuvreController m_currentController = null;
+    [HideInInspector]
+    public ManoeuvreController m_currentController = null;
 
     private Character m_character = null;
-    private CustomAnimation m_customAnimation = null;
+    private CustomAnimation m_customAnimator = null;
 
     //Manoeuvre Varibles
     private Character.ATTACK_INPUT_STANCE m_nextAttackStance = Character.ATTACK_INPUT_STANCE.NONE;
@@ -52,7 +56,7 @@ public class AttackController : MonoBehaviour
     public virtual void Init(Character p_character)
     {
         m_character = p_character;
-        m_customAnimation = p_character.GetComponentInChildren<CustomAnimation>();
+        m_customAnimator = p_character.GetComponentInChildren<CustomAnimation>();
 
         m_groundLightController = BuildHitboxController(m_groundLightControllerPrefab);
         m_groundHeavyController = BuildHitboxController(m_groundHeavyControllerPrefab);
@@ -208,10 +212,7 @@ public class AttackController : MonoBehaviour
     /// </summary>
     public void EndAttack()
     {
-        if(m_currentController != null)
-            m_customAnimation.EndAttack(m_currentController.m_requiresSheathingBlend);
-        
-        m_currentController = null;
+        EndManoeuvre();
     }
 
     /// <summary>
@@ -233,8 +234,7 @@ public class AttackController : MonoBehaviour
             m_character.m_splinePhysics.HardSetUpwardsVelocity(0.0f);
         }
 
-        m_customAnimation.PlayAttack(m_currentController.m_animationString);
-
+        m_customAnimator.PlayAnimation(m_currentController.m_animationString);
     }
 
     /// <summary>
@@ -246,7 +246,7 @@ public class AttackController : MonoBehaviour
     {
         m_attackTimer += Time.deltaTime; 
 
-        float currentPercent = m_customAnimation.GetAnimationPercent(CustomAnimation.LAYER.ATTACK);
+        float currentPercent = m_customAnimator.GetAnimationPercent(CustomAnimation.LAYER.ATTACK);
 
         m_character.SplineTranslate(m_currentController.m_translationXCurve.Evaluate(currentPercent) * Time.deltaTime);
         
@@ -256,17 +256,17 @@ public class AttackController : MonoBehaviour
             switch (m_currentSequenceState)
             {
                 case SEQUENCE_STATE.INITIAL:
-                    if (m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.ATTACK))
+                    if (m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.ATTACK))
                     {
                         m_currentSequenceState = SEQUENCE_STATE.ATTACK;
-                        m_customAnimation.PlayAttackSection01(m_currentController.m_animationString);
+                        m_customAnimator.PlayAnimation(m_currentController.m_animationString + SECTION01_STRING);
                     }
                     break;
                 case SEQUENCE_STATE.ATTACK:
                     if (CompletedManoeuvreSequence())
                     {
                         m_currentSequenceState = SEQUENCE_STATE.END;
-                        m_customAnimation.PlayAttackSection02(m_currentController.m_animationString);
+                        m_customAnimator.PlayAnimation(m_currentController.m_animationString + SECTION02_STRING);
                     }
                     break;
                 case SEQUENCE_STATE.END:
@@ -286,7 +286,7 @@ public class AttackController : MonoBehaviour
                 m_nextAttackStance = Character.ATTACK_INPUT_STANCE.HEAVY;
         }
 
-        return currentPercent >= 0.99f && (!m_currentController.m_sequenceAttack || m_currentSequenceState == SEQUENCE_STATE.END);
+        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.ATTACK) && (!m_currentController.m_sequenceAttack || m_currentSequenceState == SEQUENCE_STATE.END);
     }
 
     /// <summary>
@@ -294,7 +294,8 @@ public class AttackController : MonoBehaviour
     /// </summary>
     public void EndManoeuvre()
     {
-        m_currentController.gameObject.SetActive(false);
+        if(m_currentController!=null)
+            m_currentController.gameObject.SetActive(false);
 
         m_character.m_gravity = true;
     }

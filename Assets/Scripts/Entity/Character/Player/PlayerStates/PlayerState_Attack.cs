@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class PlayerState_Attack : State_Player
 {
-    private enum ATTACK_STATE {INITIAL, FINISHED }
-    private ATTACK_STATE m_currentState = ATTACK_STATE.INITIAL;
     private AttackController m_weaponManager = null;
+
+    private enum ATTACK_STATE {PERFORMING_ATTACK, RETURN_TO_SHEATH}
+    private ATTACK_STATE m_attackState = ATTACK_STATE.PERFORMING_ATTACK;
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -27,6 +28,7 @@ public class PlayerState_Attack : State_Player
         base.StateStart();
 
         m_player.SetDesiredVelocity(0.0f);
+        m_attackState = ATTACK_STATE.PERFORMING_ATTACK;
 
         //TODO logic to determine type of attack, in air vs ground vs sprint
         ManoeuvreController.MANOEUVRE_TYPE currentType = m_character.m_splinePhysics.m_downCollision ? (Mathf.Abs(m_character.m_splinePhysics.m_splineVelocity.x) > m_character.m_groundRunVel ? ManoeuvreController.MANOEUVRE_TYPE.SPRINT : ManoeuvreController.MANOEUVRE_TYPE.GROUND) : ManoeuvreController.MANOEUVRE_TYPE.INAIR;
@@ -38,8 +40,6 @@ public class PlayerState_Attack : State_Player
         }
 
         m_weaponManager.StartAttack(currentType, currentStance);
-
-        m_currentState = ATTACK_STATE.INITIAL;
     }
 
     /// <summary>
@@ -48,17 +48,27 @@ public class PlayerState_Attack : State_Player
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true</returns>
     public override bool StateUpdate()
     {
-        switch (m_currentState)
+        if(m_attackState == ATTACK_STATE.PERFORMING_ATTACK)
         {
-            case ATTACK_STATE.INITIAL:
-                if(m_weaponManager.UpdateAttack())
+            if (m_weaponManager.UpdateAttack())
+            {
+                if(m_weaponManager.m_currentController != null && m_weaponManager.m_currentController.m_requiresSheathingBlend)
                 {
-                    m_currentState = ATTACK_STATE.FINISHED;
+                    m_customAnimator.PlayAnimation(CustomAnimation.END_ATTACK_BLEND, CustomAnimation.BLEND_TIME.INSTANT);
+                    m_attackState = ATTACK_STATE.RETURN_TO_SHEATH;
+                    return false;
                 }
-                break;
-            case ATTACK_STATE.FINISHED:
-                return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE);
+                else
+                {
+                    return true;
+                }
+            }
         }
+        else
+        {
+            return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.ATTACK);
+        }
+
         return false;
     }
 

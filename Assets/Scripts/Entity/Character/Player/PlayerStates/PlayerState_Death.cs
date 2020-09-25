@@ -21,7 +21,7 @@ public class PlayerState_Death : PlayerState_Interrupt
     {
         base.StateStart();
 
-        m_customAnimator.PlayInterrupt(CustomAnimation.INTERRUPT_DEFINES.DEATH);
+        m_customAnimator.PlayAnimation(CustomAnimation.INTERRUPT_DEFINES.DEATH);
     }
 
     /// <summary>
@@ -40,7 +40,6 @@ public class PlayerState_Death : PlayerState_Interrupt
     /// </summary>
     public override void StateEnd()
     {
-        m_customAnimator.EndInterrupt();
         base.StateEnd();
     }
 

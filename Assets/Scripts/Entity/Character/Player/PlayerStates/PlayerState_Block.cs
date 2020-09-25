@@ -24,7 +24,7 @@ public class PlayerState_Block : State_Player
     {
         base.StateStart();
 
-        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.BLOCK_FROM_IDLE);
+        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.BLOCK_FROM_IDLE);
         m_currentState = BLOCK_STATE.START;
     }
 
@@ -41,7 +41,7 @@ public class PlayerState_Block : State_Player
             case BLOCK_STATE.START:
                 if(m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE))
                 {
-                    m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.BLOCK);
+                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.BLOCK);
 
                     m_currentState = BLOCK_STATE.BLOCKING;
                     m_character.m_blockingFlag = true;
@@ -53,7 +53,7 @@ public class PlayerState_Block : State_Player
                     m_character.m_blockingFlag = false;
 
                     m_currentState = BLOCK_STATE.END;
-                    m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.BLOCK_TO_IDLE);
+                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.BLOCK_TO_IDLE);
                 }
                 if(!m_entity.m_splinePhysics.m_downCollision)
                 {

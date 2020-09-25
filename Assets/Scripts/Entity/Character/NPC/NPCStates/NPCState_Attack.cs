@@ -64,8 +64,6 @@ public class NPCState_Attack : NPC_State
     public override void StateEnd()
     {
         base.StateEnd();
-
-        m_customAnimator.EndAttack(false);
     }
 
     /// <summary>

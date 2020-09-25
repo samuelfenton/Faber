@@ -25,12 +25,12 @@ public class PlayerState_Land : State_Player
 
         if(Mathf.Abs(m_entity.m_splinePhysics.m_splineVelocity.x) / m_character.m_groundRunVel > SPEED_FOR_ROLLING_LANDING) //players moving fast enough to need to roll
         {
-            m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LANDING_TO_RUN);
+            m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.LANDING_TO_RUN);
             m_character.SetDesiredVelocity(m_character.m_splinePhysics.m_splineVelocity.x);
         }
         else
         {
-            m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LANDING_TO_IDLE);
+            m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.LANDING_TO_IDLE);
             m_character.SetDesiredVelocity(0.0f);
         }
     }

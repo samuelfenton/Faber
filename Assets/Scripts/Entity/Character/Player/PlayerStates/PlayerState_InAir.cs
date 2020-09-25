@@ -35,7 +35,7 @@ public class PlayerState_InAir : State_Player
 
         m_inAirState = IN_AIR_STATE.IN_AIR;
 
-        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.INAIR);
+        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.INAIR, CustomAnimation.BLEND_TIME.SHORT);
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public class PlayerState_InAir : State_Player
                 //Double Jump
                 if (m_character.m_doubleJumpFlag && m_player.m_customInput.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
                 {
-                    m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.DOUBLE_JUMP);
+                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.DOUBLE_JUMP);
 
                     m_entity.m_splinePhysics.HardSetUpwardsVelocity(m_doubleJumpSpeed);
 
@@ -67,7 +67,7 @@ public class PlayerState_InAir : State_Player
             case IN_AIR_STATE.SECOND_JUMP:
                 if(m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE))
                 {
-                    m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.INAIR);
+                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.INAIR);
 
                     m_inAirState = IN_AIR_STATE.IN_AIR;
                 }

@@ -22,7 +22,7 @@ public class PlayerState_Knockback : PlayerState_Interrupt
     {
         base.StateStart();
 
-        m_customAnimator.PlayInterrupt(CustomAnimation.INTERRUPT_DEFINES.KNOCKBACK);
+        m_customAnimator.PlayAnimation(CustomAnimation.INTERRUPT_DEFINES.KNOCKBACK);
     }
 
     /// <summary>
@@ -44,7 +44,6 @@ public class PlayerState_Knockback : PlayerState_Interrupt
         base.StateEnd();
 
         m_character.m_knockbackFlag = false; //Reset flag
-        m_customAnimator.EndInterrupt();
     }
 
     /// <summary>

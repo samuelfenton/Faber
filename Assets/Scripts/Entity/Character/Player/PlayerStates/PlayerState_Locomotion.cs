@@ -24,7 +24,7 @@ public class PlayerState_Locomotion : State_Player
     {
         base.StateStart();
 
-        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LOCOMOTION);
+        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.LOCOMOTION);
         m_currentState = LOCOMOTION_STATE.LOCOMOTION;
 
         m_character.m_idleDelayTimer = 0.0f;
@@ -56,7 +56,7 @@ public class PlayerState_Locomotion : State_Player
             case LOCOMOTION_STATE.LOCOMOTION:
                 if(Mathf.Abs(m_entity.m_splinePhysics.m_splineVelocity.x) > m_character.m_groundRunVel) //Character is sprinting
                 {
-                    m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.RUN_TO_SPRINT);
+                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.RUN_TO_SPRINT);
                     m_currentState = LOCOMOTION_STATE.LOCOMOTION_TO_SPRINT;
                 }
                 break;
@@ -66,19 +66,19 @@ public class PlayerState_Locomotion : State_Player
                     if (Mathf.Abs(m_entity.m_splinePhysics.m_splineVelocity.x) > m_character.m_groundRunVel)//Still sprinting
                     {
                         m_currentState = LOCOMOTION_STATE.SPRINT;
-                        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.SPRINT);
+                        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.SPRINT);
                     }
                     else //Slow downed during animation
                     {
                         m_currentState = LOCOMOTION_STATE.LOCOMOTION;
-                        m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LOCOMOTION);
+                        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.LOCOMOTION);
                     }
                 }
                 break;
             case LOCOMOTION_STATE.SPRINT:
                 if (Mathf.Abs(m_entity.m_splinePhysics.m_splineVelocity.x) <= m_character.m_groundRunVel) //Character is no longer sprinting
                 {
-                    m_customAnimator.PlayBase(CustomAnimation.BASE_DEFINES.LOCOMOTION);
+                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.LOCOMOTION);
                     m_currentState = LOCOMOTION_STATE.LOCOMOTION;
                 }
                 break;
