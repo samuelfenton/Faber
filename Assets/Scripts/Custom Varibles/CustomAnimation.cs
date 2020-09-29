@@ -30,7 +30,8 @@ public class CustomAnimation : MonoBehaviour
     private Animator m_animator = null;
 
     //Blending
-    private bool m_currentlyBlending = false;
+    [HideInInspector]
+    public bool m_currentlyBlending = false;
 
     private Coroutine m_blendCoroutine = null;
     private KeyValuePair<string, LAYER> m_blendingTo = new KeyValuePair<string, LAYER>();
@@ -43,14 +44,17 @@ public class CustomAnimation : MonoBehaviour
     {
         m_animator = p_animator;
 
-        m_layerToInt[(int)LAYER.BASE] = m_animator.GetLayerIndex("BaseLayer");
-        m_layerToInt[(int)LAYER.ATTACK] = m_animator.GetLayerIndex("AttackLayer");
-        m_layerToInt[(int)LAYER.INTERRUPT] = m_animator.GetLayerIndex("InterruptLayer");
+        if (m_animator != null && p_animator.runtimeAnimatorController != null)
+        {
+            m_layerToInt[(int)LAYER.BASE] = m_animator.GetLayerIndex("BaseLayer");
+            m_layerToInt[(int)LAYER.ATTACK] = m_animator.GetLayerIndex("AttackLayer");
+            m_layerToInt[(int)LAYER.INTERRUPT] = m_animator.GetLayerIndex("InterruptLayer");
+        }
 
-        m_floatToString[(int)VARIBLE_FLOAT.CURRENT_VELOCITY] ="Current Velocity";
-        m_floatToString[(int)VARIBLE_FLOAT.ABSOLUTE_VELOCITY] = "Absolute Velocity";
-        m_floatToString[(int)VARIBLE_FLOAT.VERTICAL_VELOCITY] ="Vertical Velocity";
-        m_floatToString[(int)VARIBLE_FLOAT.RANDOM_IDLE] = "Random Idle";
+        m_floatToString[(int)VARIBLE_FLOAT.CURRENT_VELOCITY] = ContainsParam(m_animator, "Current Velocity") ? "Current Velocity" : "";
+        m_floatToString[(int)VARIBLE_FLOAT.ABSOLUTE_VELOCITY] = ContainsParam(m_animator, "Absolute Velocity") ? "Absolute Velocity" : "";
+        m_floatToString[(int)VARIBLE_FLOAT.VERTICAL_VELOCITY] = ContainsParam(m_animator, "Vertical Velocity") ? "Vertical Velocity" : "";
+        m_floatToString[(int)VARIBLE_FLOAT.RANDOM_IDLE] = ContainsParam(m_animator, "Random Idle") ? "Random Idle" : "";
 
         m_baseToString[(int)BASE_DEFINES.LOCOMOTION] = "Locomotion";
         m_baseToString[(int)BASE_DEFINES.SPRINT] = "Sprint";
@@ -79,7 +83,7 @@ public class CustomAnimation : MonoBehaviour
     /// <param name="p_value">Value of varible to set to</param>
     public void SetVaribleFloat(VARIBLE_FLOAT p_floatVarible, float p_value)
     {
-        if(p_floatVarible != VARIBLE_FLOAT.FLOAT_COUNT)
+        if(p_floatVarible != VARIBLE_FLOAT.FLOAT_COUNT && m_floatToString[(int)p_floatVarible] != "")
             m_animator.SetFloat(m_floatToString[(int)p_floatVarible], p_value);
     }
 
@@ -127,7 +131,7 @@ public class CustomAnimation : MonoBehaviour
     /// <param name="p_blendTime">Time to blend between</param>
     public void PlayAnimation(string p_attackString, BLEND_TIME p_blendTime = BLEND_TIME.SHORT)
     {
-        if(p_attackString!= "")
+        if(p_attackString != "")
             PlayAnimation(p_attackString, LAYER.ATTACK, p_blendTime);
     }
 
@@ -217,5 +221,23 @@ public class CustomAnimation : MonoBehaviour
         m_currentlyBlending = false;
 
         m_animator.Play(p_animationString, m_layerToInt[(int)p_layer], currentBlendTime);
+    }
+
+    /// <summary>
+    /// Cehck if the aniamtor has the parameter present
+    /// </summary>
+    /// <param name="p_animator">Aniamtor to check against</param>
+    /// <param name="p_string">stirng of parameter</param>
+    /// <returns>true when parameter is found</returns>
+    public static bool ContainsParam(Animator p_animator, string p_string)
+    {
+        if (p_animator == null || p_animator.runtimeAnimatorController == null) //Invalid animator
+            return false;
+
+        foreach (AnimatorControllerParameter param in p_animator.parameters)
+        {
+            if (param.name == p_string) return true;
+        }
+        return false;
     }
 }

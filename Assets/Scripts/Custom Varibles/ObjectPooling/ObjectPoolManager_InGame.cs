@@ -13,19 +13,17 @@ public class ObjectPoolManager_InGame: MonoBehaviour
     {
         m_hitMarkerPool = gameObject.AddComponent<ObjectPool>();
         m_hitMarkerPool.Init(m_hitMarkerPrefab, m_hitmarkerCount);
-
     }
 
     /// <summary>
     /// Spawn a hit marker at a given location
     /// </summary>
     /// <param name="p_position">Position to spawn</param>
-    /// <param name="p_rotation">Rotation to spwan at</param>
+    /// <param name="p_rotation">Rotation to spawn</param>
     /// <param name="p_hitmarkerVal">Text value of hit marker</param>
     public void SpawnHitMarker(Vector3 p_position, Quaternion p_rotation, int p_hitmarkerVal)
     {
         PoolObject poolObject = m_hitMarkerPool.RentObject(p_position, p_rotation);
-
 
         if(poolObject!=null)
         {

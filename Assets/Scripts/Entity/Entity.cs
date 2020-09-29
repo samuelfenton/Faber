@@ -126,7 +126,7 @@ public class Entity : MonoBehaviour
         EntityImmediateDestory();
         yield return new WaitForSeconds(DESTRUCTION_TIME); 
         EntityDelayedDestroy();
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 
     /// <summary>

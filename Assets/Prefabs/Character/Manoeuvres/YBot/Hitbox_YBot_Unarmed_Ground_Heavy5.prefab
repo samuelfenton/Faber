@@ -11,11 +11,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 65e9691ddae8718429c2d6a337d736ca, type: 2}
+      objectReference: {fileID: 9100000, guid: 87cc0edef06cf3744a33970ea6e7455b, type: 2}
     - target: {fileID: 1837835607002495293, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
       propertyPath: m_Name
-      value: Hitbox_YBot_Unarmed_Ground_Light1
+      value: Hitbox_YBot_Unarmed_Ground_Heavy5
       objectReference: {fileID: 0}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
@@ -29,21 +29,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
-      propertyPath: m_lightBranchPrefab
-      value: 
-      objectReference: {fileID: 7492896745086726454, guid: 6187d65f2f55a7041841610b90e774dc,
-        type: 3}
+      propertyPath: m_manoeuvreIndex
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
-      propertyPath: m_manoeuvreDamage
-      value: 8
+      propertyPath: m_manoeuvreStance
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_lightBranchPrefab
+      value: 
+      objectReference: {fileID: 7492896745086726454, guid: a881cd51712073a45b1499f82a0dbb77,
+        type: 3}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
       propertyPath: m_heavyBranchPrefab
       value: 
-      objectReference: {fileID: 7492896745086726454, guid: 3b5e86a5f73e32d4babb895cea99f08e,
+      objectReference: {fileID: 7492896745086726454, guid: f720478eca055e0458729416a35665ae,
         type: 3}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_manoeuvreDamage
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
       propertyPath: m_LocalPosition.x

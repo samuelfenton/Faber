@@ -5,8 +5,6 @@ using TMPro;
 
 public class PoolObject_HitMarker : PoolObject
 {
-    private GameObject m_playerCamera = null;
-
     private const float HITMARKER_LIFE = 10.0f;
 
     private const float HITMARKER_GRAVITY = -5.0f; //x,z compont of velocity 
@@ -26,11 +24,6 @@ public class PoolObject_HitMarker : PoolObject
     public override void Init(ObjectPool p_objectPool)
     {
         base.Init(p_objectPool);
-
-        FollowCamera followCamera = FindObjectOfType<FollowCamera>();
-
-        if(followCamera!= null)
-            m_playerCamera = followCamera.gameObject;
     }
 
     /// <summary>
@@ -75,13 +68,6 @@ public class PoolObject_HitMarker : PoolObject
         Vector3 pos = transform.position;
         pos += m_velocity * Time.deltaTime;
         transform.position = pos;
-
-        //Rotation to camera
-        if(m_playerCamera != null)
-        {
-            Vector3 cameraDir = m_playerCamera.transform.position - transform.position;
-            transform.LookAt(transform.position + cameraDir);
-        }
 
         //Clock logic
         if (m_lifeClock >= HITMARKER_LIFE)

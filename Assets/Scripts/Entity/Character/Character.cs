@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(SplinePhysics))]
 public class Character : Entity
 { 
     public enum TEAM { PLAYER, NPC, GAIA }
@@ -77,6 +78,9 @@ public class Character : Entity
     protected ObjectPoolManager_InGame m_objectPoolingManger = null;
 
     [HideInInspector]
+    public FollowCamera m_followCamera = null;
+
+    [HideInInspector]
     public CharacterStatistics m_characterStatistics = null;
 
     /// <summary>
@@ -92,7 +96,7 @@ public class Character : Entity
         m_weaponManager = GetComponent<AttackController>();
         m_animator = GetComponentInChildren<Animator>();
 
-        m_customAnimation = GetComponentInChildren<CustomAnimation>();
+        m_customAnimation = gameObject.AddComponent<CustomAnimation>();
         m_customAnimation.Init(m_animator);
 
         if (m_weaponManager != null)
@@ -101,6 +105,9 @@ public class Character : Entity
         m_objectPoolingManger = GameObject.FindGameObjectWithTag(CustomTags.GAME_CONTROLLER).GetComponent<ObjectPoolManager_InGame>();
 
         m_currentHealth = m_maxHealth;
+
+        m_followCamera = FindObjectOfType<FollowCamera>();
+
     }
 
     /// <summary>
@@ -212,7 +219,13 @@ public class Character : Entity
             p_targetCharacter.ModifyHealth(-p_value);
             p_targetCharacter.m_knockbackFlag = true;
 
-            m_objectPoolingManger.SpawnHitMarker(p_targetCharacter.transform.position + Vector3.up * 2.0f, Quaternion.identity, Mathf.RoundToInt(p_value));
+            Vector3 cameraToTarget = p_targetCharacter.transform.position - m_followCamera.transform.position;
+
+            cameraToTarget.y = 0.0f;
+
+            Quaternion hitmarkerRotation = Quaternion.LookRotation(cameraToTarget, Vector3.up);
+
+            m_objectPoolingManger.SpawnHitMarker(p_targetCharacter.transform.position + Vector3.up * 2.0f, hitmarkerRotation, Mathf.RoundToInt(p_value));
         }
     }
 

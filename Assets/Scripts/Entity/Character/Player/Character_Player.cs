@@ -10,8 +10,6 @@ public class Character_Player : Character
     public Interactable_SavePoint m_lastSavePoint = null;
     [HideInInspector]
     public CustomInput m_customInput = null;
-    [HideInInspector]
-    public FollowCamera m_followCamera = null;
 
     /// <summary>
     /// Initiliase the entity
@@ -29,8 +27,6 @@ public class Character_Player : Character
         m_playerStateMachine = gameObject.AddComponent<StateMachine_Player>();
 
         m_playerStateMachine.InitStateMachine(this);//Run first as animation depends on states being created
-
-        m_followCamera = FindObjectOfType<FollowCamera>();
     }
 
     /// <summary>

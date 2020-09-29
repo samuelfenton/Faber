@@ -11,11 +11,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 65e9691ddae8718429c2d6a337d736ca, type: 2}
+      objectReference: {fileID: 9100000, guid: bbedc2e6e5ce8ae45acc175481e52c49, type: 2}
     - target: {fileID: 1837835607002495293, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
       propertyPath: m_Name
-      value: Hitbox_YBot_Unarmed_Ground_Light1
+      value: Hitbox_YBot_Unarmed_Ground_Heavy4
       objectReference: {fileID: 0}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
@@ -29,21 +29,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
-      propertyPath: m_lightBranchPrefab
-      value: 
-      objectReference: {fileID: 7492896745086726454, guid: 6187d65f2f55a7041841610b90e774dc,
-        type: 3}
-    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
-        type: 3}
-      propertyPath: m_manoeuvreDamage
-      value: 8
+      propertyPath: m_manoeuvreIndex
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
-      propertyPath: m_heavyBranchPrefab
-      value: 
-      objectReference: {fileID: 7492896745086726454, guid: 3b5e86a5f73e32d4babb895cea99f08e,
+      propertyPath: m_manoeuvreStance
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
+      propertyPath: m_manoeuvreDamage
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider), typeof(Rigidbody))]
+[ExecuteAlways]
 public class SplinePhysics : MonoBehaviour
 {
     public const float MIN_SPLINE_PERCENT = -0.001f;
@@ -200,26 +201,26 @@ public class SplinePhysics : MonoBehaviour
         Vector3 castFromModifierHalf = p_castFromModifer * COLLISION_OFFSET_MODIFIER_HALF;
 
         //Large Offset raycast
-        if (Physics.Raycast(p_centerPos + castFromModifier, p_direction, p_boundingDistance, CustomLayers.m_enviroment))
+        if (Physics.Raycast(p_centerPos + castFromModifier, p_direction, p_boundingDistance, CustomLayers.m_enviroment | CustomLayers.m_hurtBox))
             return true;
 
         //Forward Center raycast
-        if (Physics.Raycast(p_centerPos + castFromModifierHalf, p_direction, p_boundingDistance, CustomLayers.m_enviroment))
+        if (Physics.Raycast(p_centerPos + castFromModifierHalf, p_direction, p_boundingDistance, CustomLayers.m_enviroment | CustomLayers.m_hurtBox))
             return true;
 
 
         //Center raycast
-        if (Physics.Raycast(p_centerPos, p_direction, p_boundingDistance, CustomLayers.m_enviroment))
+        if (Physics.Raycast(p_centerPos, p_direction, p_boundingDistance, CustomLayers.m_enviroment | CustomLayers.m_hurtBox))
             return true;
 
 
         //Back Center raycast
-        if (Physics.Raycast(p_centerPos - castFromModifierHalf, p_direction, p_boundingDistance, CustomLayers.m_enviroment))
+        if (Physics.Raycast(p_centerPos - castFromModifierHalf, p_direction, p_boundingDistance, CustomLayers.m_enviroment | CustomLayers.m_hurtBox))
             return true;
 
 
         //Back raycast
-        if (Physics.Raycast(p_centerPos - castFromModifier, p_direction, p_boundingDistance, CustomLayers.m_enviroment))
+        if (Physics.Raycast(p_centerPos - castFromModifier, p_direction, p_boundingDistance, CustomLayers.m_enviroment | CustomLayers.m_hurtBox))
             return true;
 
 
@@ -282,6 +283,14 @@ public class SplinePhysics : MonoBehaviour
             Gizmos.DrawLine(topBackward, bottomBackward);
             Gizmos.DrawLine(bottomBackward, bottomForward);
             Gizmos.DrawLine(bottomForward, topForward);
+        }
+
+        if (!Application.isPlaying)
+        {
+            if (MOARDebugging.GetSplinePosition(m_nodeA, m_nodeB, m_currentSplinePercent, out Vector3 position))
+            {
+                transform.position = position;
+            }
         }
     }
 #endif

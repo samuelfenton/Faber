@@ -276,7 +276,7 @@ public class AttackController : MonoBehaviour
             }
         }
 
-        if(m_nextAttackStance == Character.ATTACK_INPUT_STANCE.NONE && currentPercent > 0.3f) //Get next input
+        if(m_nextAttackStance == Character.ATTACK_INPUT_STANCE.NONE && !m_customAnimator.m_currentlyBlending && currentPercent > 0.3f) //Get next input
         {
             Character.ATTACK_INPUT_STANCE nextAttackStance = m_character.DetermineAttackStance();
 
