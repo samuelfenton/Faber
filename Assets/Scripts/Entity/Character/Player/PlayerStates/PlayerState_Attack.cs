@@ -54,9 +54,9 @@ public class PlayerState_Attack : State_Player
             {
                 if(m_weaponManager.m_currentController != null && m_weaponManager.m_currentController.m_requiresSheathingBlend)
                 {
-                    m_customAnimator.PlayAnimation(CustomAnimation.END_ATTACK_BLEND, CustomAnimation.BLEND_TIME.INSTANT);
+                    m_customAnimator.PlayAnimation(CustomAnimation.END_ATTACK_BLEND, CustomAnimation.BLEND_TIME.SHORT);
                     m_attackState = ATTACK_STATE.RETURN_TO_SHEATH;
-                    return false;
+                    return true;
                 }
                 else
                 {

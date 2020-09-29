@@ -30,9 +30,6 @@ public class CustomAnimation : MonoBehaviour
     private Animator m_animator = null;
 
     //Blending
-    private KeyValuePair<LAYER, float> m_currentBlendToLayer = new KeyValuePair<LAYER, float>(LAYER.LAYER_COUNT, 0.0f);
-    private List<KeyValuePair<LAYER, float>> m_currentBlendFromLayers = new List<KeyValuePair<LAYER, float>>();
-
     private bool m_currentlyBlending = false;
 
     private Coroutine m_blendCoroutine = null;
@@ -155,7 +152,7 @@ public class CustomAnimation : MonoBehaviour
     {
         if(m_blendCoroutine != null)
         {
-            m_animator.Play(m_blendingTo.Key, m_layerToInt[(int)m_blendingTo.Value]);
+            m_animator.CrossFade(m_blendingTo.Key, m_layerToInt[(int)m_blendingTo.Value]);
 
             StopCoroutine(m_blendCoroutine);
         }
@@ -166,15 +163,16 @@ public class CustomAnimation : MonoBehaviour
 
         m_animator.CrossFade(p_animationString, m_layerToInt[(int)p_layer]);
 
-        m_blendCoroutine = StartCoroutine(BlendAnimation(p_layer, blendTime));
+        m_blendCoroutine = StartCoroutine(BlendAnimation(p_animationString, p_layer, blendTime));
     }
 
     /// <summary>
     /// Coroutein to crossfade/blend layers
     /// </summary>
+    /// <param name="p_animationString">String of animation to play after transistion time</param>
     /// <param name="p_layer">Layer to blend into</param>
     /// <param name="p_blendTime">Time to blend</param>
-    private IEnumerator BlendAnimation(LAYER p_layer, float p_blendTime)
+    private IEnumerator BlendAnimation(string p_animationString, LAYER p_layer, float p_blendTime)
     {
         m_currentlyBlending = true;
         
@@ -185,24 +183,39 @@ public class CustomAnimation : MonoBehaviour
             currentBlendTime += Time.deltaTime;
             float changeInWeight = Time.deltaTime / p_blendTime;
 
+            bool compledtedFlag = true;
+
             //Apply new weight
             for (int layerIndex = 0; layerIndex < (int)LAYER.LAYER_COUNT; layerIndex++)
             {
                 float currentWeight = m_animator.GetLayerWeight(m_layerToInt[layerIndex]);
     
                 if ((int)p_layer == layerIndex) //Layer changing to
+                {
                     currentWeight += changeInWeight;
+                    if (currentWeight < 1.0f)
+                        compledtedFlag = false;
+                }
                 else
+                {
                     currentWeight -= changeInWeight;
+                    if (currentWeight > 0.0f)
+                        compledtedFlag = false;
+                }
 
                 currentWeight = Mathf.Clamp(currentWeight, 0.0f, 1.0f);
 
                 m_animator.SetLayerWeight(m_layerToInt[layerIndex], currentWeight);
             }
 
+            if (compledtedFlag)
+                break;
+
             yield return null;
         }
 
         m_currentlyBlending = false;
+
+        m_animator.Play(p_animationString, m_layerToInt[(int)p_layer], currentBlendTime);
     }
 }
