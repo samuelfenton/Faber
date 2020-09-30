@@ -10,7 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8911391010068671140}
   - component: {fileID: -7483017258906199896}
-  - component: {fileID: 8911391010960711172}
+  - component: {fileID: 5652916076023718182}
+  - component: {fileID: 8117290302221373187}
+  - component: {fileID: 2093573076566453000}
   - component: {fileID: 995152099}
   m_Layer: 0
   m_Name: SceneController_InGame
@@ -49,8 +51,14 @@ MonoBehaviour:
   m_splinePrefab: {fileID: 5301878349419929614, guid: 7ad97ecf3593aec468c8ff76e4ca3dac,
     type: 3}
   m_defaultSavePoint: {fileID: 0}
+  m_hitmarkerPool: {fileID: 5652916076023718182}
+  m_damageForwardsPool: {fileID: 8117290302221373187}
+  m_damageHorizontalRightPool: {fileID: 2093573076566453000}
+  m_damageHorizontalLeftPool: {fileID: 0}
+  m_damageVerticalUpwardsPool: {fileID: 0}
+  m_damageVerticalDownwardsPool: {fileID: 0}
   m_customInput: {fileID: 0}
---- !u!114 &8911391010960711172
+--- !u!114 &5652916076023718182
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -59,12 +67,42 @@ MonoBehaviour:
   m_GameObject: {fileID: 8911391010068671137}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12ab578c293b3064aba0dac1d2a177f5, type: 3}
+  m_Script: {fileID: 11500000, guid: 834916ec81d82a1429618e46a93f1924, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_hitMarkerPrefab: {fileID: 6391158163109544366, guid: 0513567914d7abf408159e038905a940,
+  m_prefab: {fileID: 6391158163109544366, guid: 0513567914d7abf408159e038905a940,
     type: 3}
-  m_hitmarkerCount: 10
+  m_objectCount: 10
+--- !u!114 &8117290302221373187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8911391010068671137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 834916ec81d82a1429618e46a93f1924, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_prefab: {fileID: 1011900076457787351, guid: 0b2e1803c96cef94399ad3a6d5ff1473,
+    type: 3}
+  m_objectCount: 10
+--- !u!114 &2093573076566453000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8911391010068671137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 834916ec81d82a1429618e46a93f1924, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_prefab: {fileID: 3129373977792323770, guid: 5c4578093db4e4f41bd0a65435bf624b,
+    type: 3}
+  m_objectCount: 10
 --- !u!114 &995152099
 MonoBehaviour:
   m_ObjectHideFlags: 0

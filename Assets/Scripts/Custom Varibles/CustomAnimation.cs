@@ -19,7 +19,7 @@ public class CustomAnimation : MonoBehaviour
     public enum LAYER {BASE = 0, ATTACK, INTERRUPT, LAYER_COUNT}
     private int[] m_layerToInt = new int[(int)LAYER.LAYER_COUNT];
 
-    public enum VARIBLE_FLOAT { CURRENT_VELOCITY, ABSOLUTE_VELOCITY, VERTICAL_VELOCITY, RANDOM_IDLE, FLOAT_COUNT}
+    public enum VARIBLE_FLOAT { CURRENT_VELOCITY, ABSOLUTE_VELOCITY, VERTICAL_VELOCITY, RANDOM_IDLE, KNOCKBACK_IMPACT, FLOAT_COUNT}
     private string[] m_floatToString = new string[(int)VARIBLE_FLOAT.FLOAT_COUNT];
     public enum BASE_DEFINES {LOCOMOTION, SPRINT, RUN_TO_SPRINT, DASH, JUMP, INAIR, DOUBLE_JUMP, INAIR_DASH, LANDING_TO_IDLE, LANDING_TO_RUN, BLOCK, BLOCK_FROM_IDLE, BLOCK_TO_IDLE, BASE_COUNT }
     private string[] m_baseToString = new string[(int)BASE_DEFINES.BASE_COUNT];
@@ -55,6 +55,7 @@ public class CustomAnimation : MonoBehaviour
         m_floatToString[(int)VARIBLE_FLOAT.ABSOLUTE_VELOCITY] = ContainsParam(m_animator, "Absolute Velocity") ? "Absolute Velocity" : "";
         m_floatToString[(int)VARIBLE_FLOAT.VERTICAL_VELOCITY] = ContainsParam(m_animator, "Vertical Velocity") ? "Vertical Velocity" : "";
         m_floatToString[(int)VARIBLE_FLOAT.RANDOM_IDLE] = ContainsParam(m_animator, "Random Idle") ? "Random Idle" : "";
+        m_floatToString[(int)VARIBLE_FLOAT.KNOCKBACK_IMPACT] = ContainsParam(m_animator, "Knockback Impact") ? "Knockback Impact" : "";
 
         m_baseToString[(int)BASE_DEFINES.LOCOMOTION] = "Locomotion";
         m_baseToString[(int)BASE_DEFINES.SPRINT] = "Sprint";
@@ -143,7 +144,7 @@ public class CustomAnimation : MonoBehaviour
     public void PlayAnimation(INTERRUPT_DEFINES p_anim, BLEND_TIME p_blendTime = BLEND_TIME.INSTANT)
     {
         if(p_anim != INTERRUPT_DEFINES.INTERRUPT_COUNT)
-            PlayAnimation(m_baseToString[(int)p_anim], LAYER.INTERRUPT, p_blendTime);
+            PlayAnimation(m_interruptToString[(int)p_anim], LAYER.INTERRUPT, p_blendTime);
     }
 
     /// <summary>
@@ -219,8 +220,27 @@ public class CustomAnimation : MonoBehaviour
         }
 
         m_currentlyBlending = false;
+        
+        SetLayersToNull(p_layer);
 
         m_animator.Play(p_animationString, m_layerToInt[(int)p_layer], currentBlendTime);
+    }
+
+    /// <summary>
+    /// Set all layers to null excluding p_layerToIgnore.
+    /// This should be the current layer in use
+    /// </summary>
+    /// <param name="p_layerToIgnore">Layer to not set to null</param>
+    private void SetLayersToNull(LAYER p_layerToIgnore)
+    {
+        //Apply new weight
+        for (int layerIndex = 0; layerIndex < (int)LAYER.LAYER_COUNT; layerIndex++)
+        {
+            if ((int)p_layerToIgnore != layerIndex)
+            {
+                m_animator.Play(NULL_STRING, m_layerToInt[layerIndex]);
+            }
+        }
     }
 
     /// <summary>

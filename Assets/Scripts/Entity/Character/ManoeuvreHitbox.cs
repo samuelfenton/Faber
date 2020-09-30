@@ -5,21 +5,22 @@ using UnityEngine;
 public class ManoeuvreHitbox : MonoBehaviour
 {
     private Character m_character = null;
-    private float m_damage = 0.0f;
 
     private BoxCollider m_collider = null;
 
     private List<Character> m_hitCharacters = new List<Character>();
+
+    private ManoeuvreController m_parentController = null;
 
     /// <summary>
     /// Initialise hitbox
     /// </summary>
     /// <param name="p_character">Character controlling hitbox</param>
     /// <param name="p_damage">Damage this attack will do per hit box</param>
-    public void Init(Character p_character, float p_damage)
+    public void Init(Character p_character, ManoeuvreController p_parentController)
     {
         m_character = p_character;
-        m_damage = p_damage;
+        m_parentController = p_parentController;
 
         m_collider = GetComponent<BoxCollider>();
     }
@@ -57,8 +58,14 @@ public class ManoeuvreHitbox : MonoBehaviour
         {
             if (!m_hitCharacters.Contains(otherCharacter))
             {
-                //TODO get proper damage calc
-                m_character.DealDamage(m_damage, otherCharacter);
+                Vector3 otherColliderCenter = other.bounds.center;
+
+                Vector3 collisionPoint = otherColliderCenter; //Using idea of x,z centered on other colldier, so spawnging inside object
+                collisionPoint.y = m_collider.bounds.center.y; //y is the current colliders y position.
+
+                Debug.Log(collisionPoint.y);
+
+                m_character.DealDamage(m_parentController, otherCharacter, collisionPoint);
                 m_hitCharacters.Add(otherCharacter);
             }
         }

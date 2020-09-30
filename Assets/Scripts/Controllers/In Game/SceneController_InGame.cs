@@ -9,6 +9,14 @@ public class SceneController_InGame : SceneController
     public GameObject m_splinePrefab = null;
     public Interactable_SavePoint m_defaultSavePoint = null;
 
+    [Header("Object Pooling")]
+    public ObjectPool m_hitmarkerPool = null;
+    public ObjectPool m_damageForwardsPool = null;
+    public ObjectPool m_damageHorizontalRightPool = null;
+    public ObjectPool m_damageHorizontalLeftPool = null;
+    public ObjectPool m_damageVerticalUpwardsPool = null;
+    public ObjectPool m_damageVerticalDownwardsPool = null;
+
     private Character_Player m_playerCharacter = null;
 
     private Entity[] m_entities;
@@ -94,7 +102,22 @@ public class SceneController_InGame : SceneController
             m_interactables[interactableIndex].InitInteractable(m_playerCharacter);
         }
 
-        RespawnPlayer(true) ;
+        RespawnPlayer(true);
+
+        //Object pooling
+        if (m_hitmarkerPool != null)
+            m_hitmarkerPool.Init();
+
+        if (m_damageForwardsPool != null)
+            m_damageForwardsPool.Init();
+        if (m_damageHorizontalRightPool != null)
+            m_damageHorizontalRightPool.Init();
+        if (m_damageHorizontalLeftPool != null)
+            m_damageHorizontalLeftPool.Init();
+        if (m_damageVerticalUpwardsPool != null)
+            m_damageVerticalUpwardsPool.Init();
+        if (m_damageVerticalDownwardsPool != null)
+            m_damageVerticalDownwardsPool.Init();
     }
 
     /// <summary>
@@ -181,6 +204,58 @@ public class SceneController_InGame : SceneController
             {
                 MasterController.Instance.LoadScene((MasterController.SCENE)m_inGameSaveData.m_saveSceneIndex, true);
             }
+        }
+    }
+
+    /// <summary>
+    /// Spawn a hit marker at a given location
+    /// </summary>
+    /// <param name="p_position">Position to spawn</param>
+    /// <param name="p_rotation">Rotation to spawn</param>
+    /// <param name="p_hitmarkerVal">Text value of hit marker</param>
+    public void SpawnHitMarker(Vector3 p_position, Quaternion p_rotation, int p_hitmarkerVal)
+    {
+        PoolObject poolObject = m_hitmarkerPool.RentObject(p_position, p_rotation);
+
+        if (poolObject != null)
+        {
+            //Get derived hitmarker class
+            PoolObject_HitMarker hitMarker = poolObject.GetComponent<PoolObject_HitMarker>();
+
+            if (hitMarker != null)
+                hitMarker.SetHitMarkerVal(p_hitmarkerVal);
+        }
+    }
+
+    /// <summary>
+    /// Spawn a hit marker at a given location
+    /// </summary>
+    /// <param name="p_position">Position to spawn</param>
+    /// <param name="p_rotation">Rotation to spawn</param>
+    /// <param name="p_hitmarkerVal">Text value of hit marker</param>
+    public void SpawnDamageParticles(Vector3 p_position, Quaternion p_rotation, ManoeuvreController.DAMAGE_DIRECTION p_direction)
+    {
+        PoolObject poolObject = null;
+
+        switch (p_direction)
+        {
+            case ManoeuvreController.DAMAGE_DIRECTION.FORWARDS:
+                poolObject = m_damageForwardsPool.RentObject(p_position, p_rotation);
+                break;
+            case ManoeuvreController.DAMAGE_DIRECTION.HORIZONTAL_RIGHT:
+                poolObject = m_damageHorizontalRightPool.RentObject(p_position, p_rotation);
+                break;
+            case ManoeuvreController.DAMAGE_DIRECTION.HORIZONTAL_LEFT:
+                poolObject = m_damageHorizontalLeftPool.RentObject(p_position, p_rotation);
+                break;
+            case ManoeuvreController.DAMAGE_DIRECTION.VERTICAL_UPWARDS:
+                poolObject = m_damageVerticalUpwardsPool.RentObject(p_position, p_rotation);
+                break;
+            case ManoeuvreController.DAMAGE_DIRECTION.VERTICAL_DOWNWARDS:
+                poolObject = m_damageVerticalDownwardsPool.RentObject(p_position, p_rotation);
+                break;
+            default:
+                break;
         }
     }
 }

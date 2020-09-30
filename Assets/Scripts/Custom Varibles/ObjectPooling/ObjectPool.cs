@@ -5,29 +5,29 @@ using UnityEngine;
 public class ObjectPool : MonoBehaviour
 {
     //Using the active(disabling when not in use) method of object pooling
-    
-    private Queue<PoolObject> m_objectQueue;
+    public GameObject m_prefab = null;
+    public int m_objectCount = 10;
+
+    private Queue<PoolObject> m_objectQueue = new Queue<PoolObject>();
 
     /// <summary>
     /// Initlise the object pool
     /// </summary>
-    /// <param name="p_prefab">Prefab to object pool, requres the PoolObject component attached</param>
-    /// <param name="p_count">How many prefabs to include</param>
     /// <returns>true when successfully intilalised</returns>
-    public bool Init(GameObject p_prefab, int p_count)
+    public bool Init()
     {
         m_objectQueue = new Queue<PoolObject>();
 
-        if (p_prefab == null)
+        if (m_prefab == null)
         {
             return false;
         }
 
         List<GameObject> objects = new List<GameObject>();
 
-        for (int objectIndex = 0; objectIndex < p_count; objectIndex++)
+        for (int objectIndex = 0; objectIndex < m_objectCount; objectIndex++)
         {
-            objects.Add(Instantiate(p_prefab));
+            objects.Add(Instantiate(m_prefab));
 
             PoolObject newScript = objects[objectIndex].GetComponentInChildren<PoolObject>();
 

@@ -58,24 +58,18 @@ public class Character : Entity
     public Vector2 m_desiredVelocity = Vector2.zero;
 
     //Flags
-    [HideInInspector]
+    [Header("No toucy")]
     public bool m_doubleJumpFlag = false;
-    [HideInInspector]
     public bool m_inAirDashFlag = false;
-    [HideInInspector]
     public bool m_blockingFlag = false;
-    [HideInInspector]
     public bool m_knockbackFlag = false;
-    [HideInInspector]
     public bool m_recoilFlag = false;
-    [HideInInspector]
     public bool m_deathFlag = false;
 
     //Stored references
     protected AttackController m_weaponManager = null;
     protected Animator m_animator = null;
     protected CustomAnimation m_customAnimation = null;
-    protected ObjectPoolManager_InGame m_objectPoolingManger = null;
 
     [HideInInspector]
     public FollowCamera m_followCamera = null;
@@ -101,8 +95,6 @@ public class Character : Entity
 
         if (m_weaponManager != null)
             m_weaponManager.Init(this);//Least importance as has no dependances
-
-        m_objectPoolingManger = GameObject.FindGameObjectWithTag(CustomTags.GAME_CONTROLLER).GetComponent<ObjectPoolManager_InGame>();
 
         m_currentHealth = m_maxHealth;
 
@@ -203,9 +195,10 @@ public class Character : Entity
     /// <summary>
     /// Deal dmage to another character, set flags as needed
     /// </summary>
-    /// <param name="p_value"></param>
+    /// <param name="p_manoeuvreController">Controller used in dealing damage</param>
     /// <param name="p_targetCharacter"></param>
-    public void DealDamage(float p_value, Character p_targetCharacter)
+    /// <param name="p_impactPosition">Position of impact</param>
+    public void DealDamage(ManoeuvreController p_manoeuvreController, Character p_targetCharacter, Vector3 p_impactPosition)
     {
         if (p_targetCharacter == null)
             return;
@@ -215,17 +208,27 @@ public class Character : Entity
             m_recoilFlag = true;
         }
         else
-        {
-            p_targetCharacter.ModifyHealth(-p_value);
+        { 
+            p_targetCharacter.ModifyHealth(-p_manoeuvreController.m_manoeuvreDamage);
+
+            //Setup knockback
+            p_targetCharacter.SetKnockbackImpact(p_manoeuvreController.m_damageImpact);
             p_targetCharacter.m_knockbackFlag = true;
 
+            //Setup hit marker
             Vector3 cameraToTarget = p_targetCharacter.transform.position - m_followCamera.transform.position;
-
             cameraToTarget.y = 0.0f;
-
             Quaternion hitmarkerRotation = Quaternion.LookRotation(cameraToTarget, Vector3.up);
 
-            m_objectPoolingManger.SpawnHitMarker(p_targetCharacter.transform.position + Vector3.up * 2.0f, hitmarkerRotation, Mathf.RoundToInt(p_value));
+            m_sceneController.SpawnHitMarker(p_targetCharacter.transform.position + Vector3.up * 2.0f, hitmarkerRotation, Mathf.RoundToInt(p_manoeuvreController.m_manoeuvreDamage));
+
+            //Setup particle effects
+            Vector3 characterToTarget = p_targetCharacter.transform.position - transform.position;
+            characterToTarget.y = 0;//Dont care about y
+
+            Quaternion particleRotation = Quaternion.LookRotation(-characterToTarget, Vector3.up);
+
+            m_sceneController.SpawnDamageParticles(p_impactPosition, particleRotation, p_manoeuvreController.m_damageDirection);
         }
     }
 
@@ -266,6 +269,13 @@ public class Character : Entity
     {
         m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.CURRENT_VELOCITY, m_splinePhysics.m_splineVelocity.x / m_groundRunVel);
         m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_splinePhysics.m_splineVelocity.x / m_groundRunVel));
+    }
+
+    public void SetKnockbackImpact(ManoeuvreController.DAMAGE_IMPACT p_impact)
+    {
+        float knockbackValue = p_impact == ManoeuvreController.DAMAGE_IMPACT.LOW ? 0.0f : p_impact == ManoeuvreController.DAMAGE_IMPACT.MEDIUM ? 1.0f : 2.0f;
+
+        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.KNOCKBACK_IMPACT, knockbackValue);
     }
 
     /// <summary>

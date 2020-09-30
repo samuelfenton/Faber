@@ -7,6 +7,10 @@ public class ManoeuvreController : MonoBehaviour
     public enum MANOEUVRE_STANCE { LIGHT, HEAVY };
     public enum MANOEUVRE_TYPE { GROUND, INAIR, SPRINT };
 
+    public enum DAMAGE_DIRECTION { FORWARDS, HORIZONTAL_RIGHT, HORIZONTAL_LEFT, VERTICAL_UPWARDS, VERTICAL_DOWNWARDS};
+    public enum DAMAGE_IMPACT {LOW, MEDIUM, HIGH};
+
+
     [Header("Branches")]
     public GameObject m_lightBranchPrefab = null;
     public GameObject m_heavyBranchPrefab = null;
@@ -37,6 +41,12 @@ public class ManoeuvreController : MonoBehaviour
     public bool m_requiresSheathingBlend = false;
     [Tooltip("Manoeuvre Damage")]
     public float m_manoeuvreDamage = 0.0f;
+    [SerializeField]
+    [Tooltip("Direction of the attack, for determineing what effect to use")]
+    public DAMAGE_DIRECTION m_damageDirection = DAMAGE_DIRECTION.FORWARDS;
+    [SerializeField]
+    [Tooltip("Force this attack will do, should modify the knockback effect, as well as stamina usage")]
+    public DAMAGE_IMPACT m_damageImpact = DAMAGE_IMPACT.MEDIUM;
 
     [Header("Sequence Data")]
     [Tooltip("Does this attack come in three parts? Start, Loop and End")]
@@ -70,7 +80,7 @@ public class ManoeuvreController : MonoBehaviour
 
         for (int hitboxIndex = 0; hitboxIndex < m_hitboxes.Length; hitboxIndex++)
         {
-            m_hitboxes[hitboxIndex].Init(p_character, m_manoeuvreDamage);
+            m_hitboxes[hitboxIndex].Init(p_character, this);
         }
     }
 
