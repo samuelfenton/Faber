@@ -129,7 +129,8 @@ public class SplinePhysics : MonoBehaviour
 
         //Update to latest spline percentage
         currentPosition = m_currentSpline.GetPosition(m_currentSplinePercent);
-        currentPosition.y = transform.position.y; //Keep y value as spline position ignores this
+        if(transform.position.y > currentPosition.y)
+            currentPosition.y = transform.position.y; //Keep y value as spline position ignores this
 
         transform.position = currentPosition;
     }

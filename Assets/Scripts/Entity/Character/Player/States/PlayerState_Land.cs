@@ -44,6 +44,7 @@ public class PlayerState_Land : State_Player
         base.StateUpdate();
 
         //Allow player to land and move
+        m_player.ApplyHorizontalMovement(true);
 
         return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE);
     }

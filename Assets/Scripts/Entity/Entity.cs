@@ -123,10 +123,18 @@ public class Entity : MonoBehaviour
     /// <returns>Waits DESTRUCTION_TIME</returns>
     public IEnumerator DestroyEntity()
     {
-        EntityImmediateDestory();
+        EntityInitialDestory();
         yield return new WaitForSeconds(DESTRUCTION_TIME); 
         EntityDelayedDestroy();
         //Destroy(gameObject);
+    }
+
+    /// <summary>
+    /// Called as an entity is destroyed intialy
+    /// </summary>
+    protected virtual void EntityInitialDestory()
+    {
+
     }
 
     /// <summary>
@@ -137,11 +145,4 @@ public class Entity : MonoBehaviour
 
     }
 
-    /// <summary>
-    /// Called as an entity is destroyed intialy
-    /// </summary>
-    protected virtual void EntityImmediateDestory()
-    {
-
-    }
 }

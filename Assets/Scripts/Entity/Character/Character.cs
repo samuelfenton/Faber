@@ -57,13 +57,22 @@ public class Character : Entity
     [HideInInspector]
     public Vector2 m_desiredVelocity = Vector2.zero;
 
+    [Header("Effects")]
+    public Color m_effectColor1 = Color.white;
+    public Color m_effectColor2 = Color.white;
+
     //Flags
-    [Header("No toucy")]
+    [HideInInspector]
     public bool m_doubleJumpFlag = false;
+    [HideInInspector]
     public bool m_inAirDashFlag = false;
+    [HideInInspector]
     public bool m_blockingFlag = false;
+    [HideInInspector]
     public bool m_knockbackFlag = false;
+    [HideInInspector]
     public bool m_recoilFlag = false;
+    [HideInInspector]
     public bool m_deathFlag = false;
 
     //Stored references
@@ -226,9 +235,9 @@ public class Character : Entity
             Vector3 characterToTarget = p_targetCharacter.transform.position - transform.position;
             characterToTarget.y = 0;//Dont care about y
 
-            Quaternion particleRotation = Quaternion.LookRotation(-characterToTarget, Vector3.up);
+            Quaternion particleRotation = Quaternion.LookRotation(characterToTarget, Vector3.up);
 
-            m_sceneController.SpawnDamageParticles(p_impactPosition, particleRotation, p_manoeuvreController.m_damageDirection);
+            m_sceneController.SpawnDamageParticles(p_impactPosition, particleRotation, p_manoeuvreController.m_damageDirection, p_targetCharacter.m_effectColor1, p_targetCharacter.m_effectColor2);
         }
     }
 

@@ -134,12 +134,14 @@ public class SceneController_InGame : SceneController
         {
             foreach (Entity entity in m_entities)
             {
-                entity.UpdateEntity();
+                if (entity.isActiveAndEnabled)
+                    entity.UpdateEntity();
             }
 
             foreach (Interactable interactable in m_interactables)
             {
-                interactable.UpdateInteractable();
+                if (interactable.isActiveAndEnabled)
+                    interactable.UpdateInteractable();
             }
         }
     }
@@ -155,7 +157,8 @@ public class SceneController_InGame : SceneController
         {
             foreach (Entity entity in m_entities)
             {
-                entity.FixedUpdateEntity();
+                if(entity.isActiveAndEnabled)
+                    entity.FixedUpdateEntity();
             }
         }
     }
@@ -172,7 +175,10 @@ public class SceneController_InGame : SceneController
         //Attempt to place player
         DataController.InGameSaveData m_inGameSaveData = MasterController.Instance.m_inGameSaveData;
 
-        if(m_inGameSaveData.IsValid())
+        Interactable_SavePoint savePoint = null;
+
+
+        if (m_inGameSaveData.IsValid())
         {
             if (m_inGameSaveData.m_saveSceneIndex == (int)m_sceneDefine)//correct scene, teleport to
             {
@@ -181,28 +187,32 @@ public class SceneController_InGame : SceneController
                 {
                     if (m_interactables[interactableIndex].m_uniqueID == m_inGameSaveData.m_savePointID)
                     {
-                        Interactable_SavePoint savePoint = (Interactable_SavePoint)m_interactables[interactableIndex];
-
-                        if (savePoint != null)
-                        {
-                            m_playerCharacter.m_splinePhysics.m_nodeA = savePoint.m_nodeA;
-                            m_playerCharacter.m_splinePhysics.m_nodeB = savePoint.m_nodeB;
-                            m_playerCharacter.m_splinePhysics.m_currentSplinePercent = savePoint.m_splinePercent;
-
-                            //force updatye of player position so camera will follow
-                            m_playerCharacter.transform.position = m_playerCharacter.m_splinePhysics.m_currentSpline.GetPosition(m_playerCharacter.m_splinePhysics.m_currentSplinePercent);
-
-                            if (p_snapCamera)
-                            {
-                                m_playerCharacter.m_followCamera.ForceSnap();
-                            }
-                        }
+                        savePoint = (Interactable_SavePoint)m_interactables[interactableIndex];
                     }
                 }
             }
             else
             {
                 MasterController.Instance.LoadScene((MasterController.SCENE)m_inGameSaveData.m_saveSceneIndex, true);
+            }
+        }
+        else if(m_defaultSavePoint != null)
+        {
+            savePoint = m_defaultSavePoint;
+        }
+
+        if (savePoint != null)
+        {
+            m_playerCharacter.m_splinePhysics.m_nodeA = savePoint.m_nodeA;
+            m_playerCharacter.m_splinePhysics.m_nodeB = savePoint.m_nodeB;
+            m_playerCharacter.m_splinePhysics.m_currentSplinePercent = savePoint.m_splinePercent;
+
+            //force updatye of player position so camera will follow
+            m_playerCharacter.transform.position = m_playerCharacter.m_splinePhysics.m_currentSpline.GetPosition(m_playerCharacter.m_splinePhysics.m_currentSplinePercent);
+
+            if (p_snapCamera)
+            {
+                m_playerCharacter.m_followCamera.ForceSnap();
             }
         }
     }
@@ -228,12 +238,14 @@ public class SceneController_InGame : SceneController
     }
 
     /// <summary>
-    /// Spawn a hit marker at a given location
+    /// Spawn a hit damage effect at a given location
     /// </summary>
     /// <param name="p_position">Position to spawn</param>
     /// <param name="p_rotation">Rotation to spawn</param>
     /// <param name="p_hitmarkerVal">Text value of hit marker</param>
-    public void SpawnDamageParticles(Vector3 p_position, Quaternion p_rotation, ManoeuvreController.DAMAGE_DIRECTION p_direction)
+    /// <param name="p_effectColor1">first color to use in particle system</param>
+    /// <param name="p_effectColor1">second color to use in particle system</param>
+    public void SpawnDamageParticles(Vector3 p_position, Quaternion p_rotation, ManoeuvreController.DAMAGE_DIRECTION p_direction, Color p_effectColor1, Color p_effectColor2)
     {
         PoolObject poolObject = null;
 
@@ -256,6 +268,14 @@ public class SceneController_InGame : SceneController
                 break;
             default:
                 break;
+        }
+
+        if (poolObject != null)
+        {
+            PoolObject_DamageEffect damageEffect = poolObject.GetComponentInChildren<PoolObject_DamageEffect>();
+
+            if (damageEffect != null)
+                damageEffect.SetupDamageEffect(p_effectColor1, p_effectColor2);
         }
     }
 }
