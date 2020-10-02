@@ -28,6 +28,11 @@ public class UIController_MainMenu : UIController
     [Header("Main Menu Variables")]
     public Button m_loadGameButton = null;
 
+    [Header("Save Slot Variables")]
+    public TextMeshProUGUI m_saveSlot1BtnText = null;
+    public TextMeshProUGUI m_saveSlot2BtnText = null;
+    public TextMeshProUGUI m_saveSlot3BtnText = null;
+
     [Header("Options Variables")]
     public Slider m_masterVolumeSlider = null;
     public Slider m_musicVolumeSlider = null;
@@ -117,10 +122,41 @@ public class UIController_MainMenu : UIController
             {
                 string savefile = "LevelData_Save" + saveSlotIndex + ".dat";
 
+                //TODO can probably make this better.... A lot better
                 if (DataController.DoesFileExist(savePath, savefile))
                 {
                     anySaves = true;
-                    break;
+                    switch (saveSlotIndex)
+                    {
+                        case 0:
+                            m_saveSlot1BtnText.text = "Load";
+                            break;
+                        case 1:
+                            m_saveSlot2BtnText.text = "Load";
+                            break;
+                        case 2:
+                            m_saveSlot3BtnText.text = "Load";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (saveSlotIndex)
+                    {
+                        case 0:
+                            m_saveSlot1BtnText.text = "New";
+                            break;
+                        case 1:
+                            m_saveSlot2BtnText.text = "New";
+                            break;
+                        case 2:
+                            m_saveSlot3BtnText.text = "New";
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
