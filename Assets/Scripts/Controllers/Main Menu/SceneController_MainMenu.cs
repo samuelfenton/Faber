@@ -21,7 +21,7 @@ public class SceneController_MainMenu : SceneController
     /// </summary>
     public void LoadGame()
     {
-        MasterController.Instance.LoadScene((MasterController.SCENE)MasterController.Instance.m_inGameSaveData.m_saveSceneIndex, true);
+        MasterController.Instance.LoadScene((MasterController.SCENE)MasterController.Instance.m_inGameSaveData.m_lastSavePoint.m_saveSceneIndex, true);
     }
 
     /// <summary>

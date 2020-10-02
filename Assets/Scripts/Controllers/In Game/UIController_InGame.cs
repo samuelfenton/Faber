@@ -115,7 +115,7 @@ public class UIController_InGame : UIController
         m_UIObjectInGame.SetActive(false);
         m_UIObjectPause.SetActive(true);
 
-        m_returnToShrineButton.interactable = MasterController.Instance.m_inGameSaveData.IsValid();
+        m_returnToShrineButton.interactable = MasterController.Instance.m_inGameSaveData.m_lastSavePoint.IsValid();
 
         Time.timeScale = 0.0f;
         m_sceneController.InGameState = SceneController_InGame.INGAME_STATE.PAUSED;

@@ -7,12 +7,85 @@ public class DataController
     [System.Serializable]
     public struct InGameSaveData
     {
-        public static InGameSaveData Invalid() { return new InGameSaveData(-1, (int)MasterController.SCENE.SCENE_COUNT); }
+        public static InGameSaveData NewSaveGame(SavePointData p_lastSavePoint){ return new InGameSaveData(p_lastSavePoint, new SavePointData[] { p_lastSavePoint }); }
+        public static InGameSaveData Default() { return new InGameSaveData(SavePointData.Invalid(), new SavePointData[] {}); }
 
-        public InGameSaveData(int p_savePointID, int p_saveSceneIndex)
+        public InGameSaveData (SavePointData p_lastSavePoint, SavePointData[] p_unlockedSavePoints)
+        {
+            m_lastSavePoint = p_lastSavePoint;
+            m_unlockedSavePoints = p_unlockedSavePoints;
+        }
+
+        /// <summary>
+        /// Is this a valid save data?
+        /// </summary>
+        /// <returns>True when save point is valid, and at least one unlock</returns>
+        public bool ValidSaveData()
+        {
+            return m_lastSavePoint.IsValid() && m_unlockedSavePoints.Length > 0;
+        }
+
+        /// <summary>
+        /// Has a given point already been added?
+        /// </summary>
+        /// <param name="p_savePoint">Point to check against</param>
+        /// <returns>true when any unlocked point is p_savePoint</returns>
+        public bool HasPointBeenAddeded(SavePointData p_savePoint)
+        {
+            if (!p_savePoint.IsValid())
+                return false;
+
+            for (int savePointIndex = 0; savePointIndex < m_unlockedSavePoints.Length; savePointIndex++)
+            {
+                if(m_unlockedSavePoints[savePointIndex] == p_savePoint)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Try add a point to unlocked saved points
+        /// In the case it has already been added, it is ignored
+        /// </summary>
+        /// <param name="p_savePoint">Save point to try add</param>
+        public void TryAddPoint(SavePointData p_savePoint)
+        {
+            if(!HasPointBeenAddeded(p_savePoint))
+            {
+                SavePointData[] newUnlockedSavePoints = new SavePointData[m_unlockedSavePoints.Length + 1];
+                m_unlockedSavePoints.CopyTo(newUnlockedSavePoints, 0);
+                newUnlockedSavePoints[newUnlockedSavePoints.Length - 1] = p_savePoint;
+                m_unlockedSavePoints = newUnlockedSavePoints;
+            }
+        }
+
+        public SavePointData m_lastSavePoint;
+        public SavePointData[] m_unlockedSavePoints;
+    }
+
+    [System.Serializable]
+#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
+#pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
+    public struct SavePointData
+#pragma warning restore CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
+#pragma warning restore CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
+    {
+        public static SavePointData Invalid() { return new SavePointData(-1, (int)MasterController.SCENE.SCENE_COUNT); }
+
+        public int m_savePointID;
+        public int m_saveSceneIndex; //Not defined by build index but the enum equivalent found in MasterController.SCENE
+
+        public SavePointData(int p_savePointID, int p_saveSceneIndex)
         {
             m_savePointID = p_savePointID;
             m_saveSceneIndex = p_saveSceneIndex;
+        }
+
+        public SavePointData(Interactable_SavePoint p_interactableSavePoint)
+        {
+            m_savePointID = p_interactableSavePoint.m_uniqueID.m_val;
+            m_saveSceneIndex = (int)MasterController.Instance.m_currentSceneController.m_sceneDefine;
         }
 
         /// <summary>
@@ -25,8 +98,15 @@ public class DataController
             return m_savePointID > -1 && m_saveSceneIndex > 0 && m_saveSceneIndex < (int)MasterController.SCENE.SCENE_COUNT;
         }
 
-        public int m_savePointID;
-        public int m_saveSceneIndex; //Not defined by build index but the enum equivalent found in MasterController.SCENE
+        public static bool operator == (SavePointData p_lhs, SavePointData p_rhs)
+        {
+            return p_lhs.m_savePointID == p_rhs.m_savePointID && p_lhs.m_saveSceneIndex == p_rhs.m_saveSceneIndex;
+        }
+
+        public static bool operator !=(SavePointData p_lhs, SavePointData p_rhs)
+        {
+            return p_lhs.m_savePointID != p_rhs.m_savePointID || p_lhs.m_saveSceneIndex != p_rhs.m_saveSceneIndex;
+        }
     }
 
     [System.Serializable]
@@ -126,6 +206,10 @@ public class DataController
     /// <param name="p_stats">Stats to be saved</param>
     public static void SaveCharacterStatistics(CharacterStatistics p_stats)
     {
+        //Ensure using correct save slot
+        if (MasterController.Instance.m_currentSaveSlot == -1)
+            MasterController.Instance.m_currentSaveSlot = 0;
+
         string savePath = Application.persistentDataPath + "/saves/";
         string savefile = "PlayerData_Save" + MasterController.Instance.m_currentSaveSlot + ".json";
 
@@ -141,6 +225,10 @@ public class DataController
     /// <param name="p_stats">Where to save stats to, when no save data is present will use default/param>
     public static void LoadCharacterStatistics(CharacterStatistics p_statistics)
     {
+        //Ensure using correct save slot
+        if (MasterController.Instance.m_currentSaveSlot == -1)
+            MasterController.Instance.m_currentSaveSlot = 0;
+
         string savePath = Application.persistentDataPath + "/saves/";
         string savefile = "PlayerData_Save" + MasterController.Instance.m_currentSaveSlot + ".json";
 
@@ -159,9 +247,22 @@ public class DataController
     /// Will auto update master controller
     /// </summary>
     /// <param name="p_newSavePoint">Point to use</param>
-    public static void SaveSavingPoint(Interactable_SavePoint p_newSavePoint)
+    public static void SaveInGameSaveData(Interactable_SavePoint p_newSavePoint)
     {
-        MasterController.Instance.m_inGameSaveData = new InGameSaveData(p_newSavePoint.m_uniqueID, (int)MasterController.Instance.m_currentSceneController.m_sceneDefine);
+        //Ensure using correct save slot
+        if (MasterController.Instance.m_currentSaveSlot == -1)
+            MasterController.Instance.m_currentSaveSlot = 0;
+
+        //Load in data, ensures up to data
+        LoadInGameSaveData();
+
+        SavePointData savePointData = new SavePointData(p_newSavePoint);
+
+        MasterController.Instance.m_inGameSaveData.TryAddPoint(savePointData);
+
+        Debug.Log(savePointData.m_savePointID);
+
+        MasterController.Instance.m_inGameSaveData.m_lastSavePoint = savePointData;
 
         string savePath = Application.persistentDataPath + "/saves/";
         string savefile = "LevelData_Save" + MasterController.Instance.m_currentSaveSlot + ".dat";
@@ -182,11 +283,15 @@ public class DataController
     }
 
     /// <summary>
-    /// Load up the chaarcters level data, 
+    /// Load up the characters level data, 
     /// </summary>
     /// <returns>true when able to load</returns>
-    public static bool LoadGameSavingPoint()
+    public static bool LoadInGameSaveData()
     {
+        //Ensure using correct save slot
+        if (MasterController.Instance.m_currentSaveSlot == -1)
+            MasterController.Instance.m_currentSaveSlot = 0;
+
         string savePath = Application.persistentDataPath + "/saves/";
         string savefile = "LevelData_Save" + MasterController.Instance.m_currentSaveSlot + ".dat";
 
@@ -201,7 +306,7 @@ public class DataController
         }
         else
         {
-            MasterController.Instance.m_inGameSaveData = InGameSaveData.Invalid();
+            MasterController.Instance.m_inGameSaveData = InGameSaveData.Default();
 
             return false;
         }
@@ -245,6 +350,6 @@ public class DataController
             File.Delete(savePath + characterDataSavefile);
         }
 
-        MasterController.Instance.m_inGameSaveData = InGameSaveData.Invalid();
+        MasterController.Instance.m_inGameSaveData = InGameSaveData.Default();
     }
 }

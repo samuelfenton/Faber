@@ -16,13 +16,6 @@ public class Interactable_SavePoint : Interactable
     public enum SAVEPOINT_STATE {LIT, UNLIT}
     public SAVEPOINT_STATE m_currentState = SAVEPOINT_STATE.UNLIT;
 
-    /// <summary>
-    /// Setup a unique id for every interactable
-    /// </summary>
-    protected override void Awake()
-    {
-        base.Awake();
-    }
 
     private void OnDrawGizmos()
     {
@@ -53,9 +46,17 @@ public class Interactable_SavePoint : Interactable
     {
         base.Interact();
 
-        DataController.SaveSavingPoint(this);
+        DataController.SaveInGameSaveData(this);
         DataController.SaveCharacterStatistics(m_playerCharacter.m_characterStatistics);
 
+        ToggleLit();
+    }
+
+    /// <summary>
+    /// Toggle if shrine is lit
+    /// </summary>
+    public void ToggleLit()
+    {
         if (m_currentState == SAVEPOINT_STATE.UNLIT)
         {
             m_currentState = SAVEPOINT_STATE.LIT;

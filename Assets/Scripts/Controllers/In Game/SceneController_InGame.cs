@@ -66,7 +66,7 @@ public class SceneController_InGame : SceneController
         if (MasterController.Instance.m_currentSaveSlot == -1)//Load slot 0 as default when debugging
         {
             MasterController.Instance.m_currentSaveSlot = 0;
-            DataController.LoadGameSavingPoint();
+            DataController.LoadInGameSaveData();
         }
 #endif
 
@@ -103,6 +103,22 @@ public class SceneController_InGame : SceneController
         }
 
         RespawnPlayer(true);
+
+        DataController.InGameSaveData inGameSaveData = MasterController.Instance.m_inGameSaveData;
+
+        //Add in save point data
+        for (int unlockedSavePointIndex = 0; unlockedSavePointIndex < inGameSaveData.m_unlockedSavePoints.Length; unlockedSavePointIndex++)
+        {
+            DataController.SavePointData unlockedSavePoint = inGameSaveData.m_unlockedSavePoints[unlockedSavePointIndex];
+            if (unlockedSavePoint.IsValid() && unlockedSavePoint.m_saveSceneIndex == (int)m_sceneDefine) //Save point is in this scene, and its unlocked
+            {
+                Interactable_SavePoint savePoint = GetSavePoint(unlockedSavePoint.m_savePointID);
+                if (savePoint != null)
+                {
+                    savePoint.ToggleLit();
+                }
+            }
+        }
 
         //Object pooling
         if (m_hitmarkerPool != null)
@@ -164,6 +180,16 @@ public class SceneController_InGame : SceneController
     }
 
     /// <summary>
+    /// Attempt to use save point
+    /// Will add to list of unlocked save points
+    /// </summary>
+    /// <param name="p_savePoint">Point to set as current and add to unlocked</param>
+    public void UseSavePoint(Interactable_SavePoint p_savePoint)
+    {
+        DataController.SaveInGameSaveData(p_savePoint);
+    }
+
+    /// <summary>
     /// Player can respanw in three cases
     /// On death
     /// On respawn
@@ -173,31 +199,27 @@ public class SceneController_InGame : SceneController
     public void RespawnPlayer(bool p_snapCamera)
     {
         //Attempt to place player
+        DataController.LoadInGameSaveData();
         DataController.InGameSaveData m_inGameSaveData = MasterController.Instance.m_inGameSaveData;
 
         Interactable_SavePoint savePoint = null;
 
-
-        if (m_inGameSaveData.IsValid())
+        if (m_inGameSaveData.m_lastSavePoint.IsValid()) //Valid save
         {
-            if (m_inGameSaveData.m_saveSceneIndex == (int)m_sceneDefine)//correct scene, teleport to
+            if (m_inGameSaveData.m_lastSavePoint.m_saveSceneIndex == (int)m_sceneDefine)//correct scene, teleport to
             {
-                //Attempt to find level save point
-                for (int interactableIndex = 0; interactableIndex < m_interactables.Length; interactableIndex++)
-                {
-                    if (m_interactables[interactableIndex].m_uniqueID == m_inGameSaveData.m_savePointID)
-                    {
-                        savePoint = (Interactable_SavePoint)m_interactables[interactableIndex];
-                    }
-                }
+                savePoint = GetSavePoint(m_inGameSaveData.m_lastSavePoint.m_savePointID);
             }
             else
             {
-                MasterController.Instance.LoadScene((MasterController.SCENE)m_inGameSaveData.m_saveSceneIndex, true);
+                MasterController.Instance.LoadScene((MasterController.SCENE)m_inGameSaveData.m_lastSavePoint.m_saveSceneIndex, true);
             }
         }
-        else if(m_defaultSavePoint != null)
+        else if(m_defaultSavePoint != null) //New game
         {
+            DataController.SaveInGameSaveData(m_defaultSavePoint);
+            DataController.SaveCharacterStatistics(m_playerCharacter.m_characterStatistics);
+
             savePoint = m_defaultSavePoint;
         }
 
@@ -277,5 +299,24 @@ public class SceneController_InGame : SceneController
             if (damageEffect != null)
                 damageEffect.SetupDamageEffect(p_effectColor1, p_effectColor2);
         }
+    }
+
+    /// <summary>
+    /// Attempt to get interactive save point
+    /// </summary>
+    /// <param name="p_uniqueID">ID to look for</param>
+    /// <returns>Script for interactive point, default to null</returns>
+    public Interactable_SavePoint GetSavePoint(int p_uniqueID)
+    {
+        //Attempt to find level save point
+        for (int interactableIndex = 0; interactableIndex < m_interactables.Length; interactableIndex++)
+        {
+            if (m_interactables[interactableIndex].m_uniqueID.m_val == p_uniqueID)
+            {
+                return (Interactable_SavePoint)m_interactables[interactableIndex];
+            }
+        }
+
+        return null;
     }
 }

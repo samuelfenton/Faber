@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteAlways]
+[RequireComponent(typeof(UniqueID))]
 public class Interactable : MonoBehaviour
 {
     [Header("Assigned Variables")]
@@ -11,24 +11,10 @@ public class Interactable : MonoBehaviour
     private float m_sqrActivationDistance = 4.0f;
 
     [Header("Auto generated")]
-    public int m_uniqueID = -1;
+    public UniqueID m_uniqueID = null;
 
     protected Character_Player m_playerCharacter = null;
     private bool m_interactableFlag = false;
-
-    /// <summary>
-    /// Setup a unique id for every interactable
-    /// </summary>
-    protected virtual void Awake()
-    {
-        m_uniqueID = 0;
-        Interactable[] allInteractables = FindObjectsOfType<Interactable>();
-        for (int interactableIndex = 0; interactableIndex < allInteractables.Length; interactableIndex++)
-        {
-            if (allInteractables[interactableIndex] != this && allInteractables[interactableIndex].m_uniqueID >= m_uniqueID)
-                m_uniqueID = allInteractables[interactableIndex].m_uniqueID + 1;
-        }
-    }
 
     /// <summary>
     /// Initilise the interactable
@@ -36,6 +22,8 @@ public class Interactable : MonoBehaviour
     /// <param name="p_player">Player character</param>
     public virtual void InitInteractable(Character_Player p_player)
     {
+        m_uniqueID = GetComponent<UniqueID>();
+        
         m_playerCharacter = p_player;
 
         m_sqrActivationDistance = m_activationDistance * m_activationDistance;

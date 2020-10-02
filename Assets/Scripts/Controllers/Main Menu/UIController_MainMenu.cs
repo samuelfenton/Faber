@@ -147,7 +147,7 @@ public class UIController_MainMenu : UIController
 
     public void DisplayMainMenu()
     {
-        DataController.LoadGameSavingPoint();
+        DataController.LoadInGameSaveData();
 
         //Fill data
         MasterController.Instance.m_playerPrefs = DataController.LoadPlayerPrefs();
@@ -166,7 +166,7 @@ public class UIController_MainMenu : UIController
         //Setup graphics
         UpdateGraphicsSettings();
 
-        if (!MasterController.Instance.m_inGameSaveData.IsValid())
+        if (!MasterController.Instance.m_inGameSaveData.m_lastSavePoint.IsValid())
         {
             m_loadGameButton.gameObject.SetActive(false);
         }
@@ -300,7 +300,7 @@ public class UIController_MainMenu : UIController
     /// </summary>
     public void Btn_NewGame()
     {
-        if(MasterController.Instance.m_inGameSaveData.IsValid())//Already a save file, should we overwrite?
+        if(MasterController.Instance.m_inGameSaveData.m_lastSavePoint.IsValid())//Already a save file, should we overwrite?
         {
             StartCoroutine(NewGamePrompt());
         }

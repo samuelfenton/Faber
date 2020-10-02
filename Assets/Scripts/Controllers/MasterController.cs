@@ -14,6 +14,9 @@ public class MasterController : MonoBehaviour
 
     //In scene varibles
     [HideInInspector]
+    public int m_currentSaveSlot = -1;
+
+    [HideInInspector]
     public SceneController m_currentSceneController = null;
     [HideInInspector]
     public UIController m_currentUIController = null;
@@ -21,11 +24,11 @@ public class MasterController : MonoBehaviour
     [HideInInspector]
     public AsyncOperation m_asyncSceneLoading = null;
     [HideInInspector]
-    public DataController.InGameSaveData m_inGameSaveData;
-    [HideInInspector]
     public DataController.PlayerPreferences m_playerPrefs;
 
-    public int m_currentSaveSlot = -1;
+    //In game save
+    [HideInInspector]
+    public DataController.InGameSaveData m_inGameSaveData;
 
     /// <summary>
     /// Setup singleton functionality for the master controller
