@@ -260,8 +260,6 @@ public class DataController
 
         MasterController.Instance.m_inGameSaveData.TryAddPoint(savePointData);
 
-        Debug.Log(savePointData.m_savePointID);
-
         MasterController.Instance.m_inGameSaveData.m_lastSavePoint = savePointData;
 
         string savePath = Application.persistentDataPath + "/saves/";

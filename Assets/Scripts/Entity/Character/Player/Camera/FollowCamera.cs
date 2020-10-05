@@ -9,7 +9,12 @@ public class FollowCamera : MonoBehaviour
     public Vector3 m_cameraOffset = Vector3.zero;
     public Vector3 m_lookAtOffset = Vector3.zero;
 
-    public float m_cameraSpeed = 1.0f;
+    [Tooltip("Linear Speed")]
+    public float m_cameraLinerarSpeed = 1.0f;
+    [Tooltip("Distance where camera will move the linear speed")]
+    public float m_linearSpeedDistance = 1.0f;
+    [Tooltip("How quickly when not near the one to one distance will it slowdown and speed up, smaller means harsher dropoff")]
+    public float m_dropOffRate = 1.0f;
 
     public enum CAMERA_ORIENTATION { INITIAL, INVERTED }
     [HideInInspector]
@@ -40,7 +45,7 @@ public class FollowCamera : MonoBehaviour
     /// <summary>
     /// Follow object given offset
     /// </summary>
-    private void Update ()
+    private void FixedUpdate ()
     {
         if (m_followTarget == null)//Early breakout
             return;
@@ -51,7 +56,7 @@ public class FollowCamera : MonoBehaviour
         if(m_currentOrientation == CAMERA_ORIENTATION.INITIAL)
         {
             cameraOffset = m_followTarget.transform.forward * m_cameraOffset.z + m_followTarget.transform.right * m_cameraOffset.x + m_followTarget.transform.up * m_cameraOffset.y;
-        }
+        }  
         else
         {
             cameraOffset = -m_followTarget.transform.forward * m_cameraOffset.z - m_followTarget.transform.right * m_cameraOffset.x + m_followTarget.transform.up * m_cameraOffset.y;
@@ -61,12 +66,37 @@ public class FollowCamera : MonoBehaviour
 
         //Based off desired postion move towards it. Based off distance magnitude move faster/slower
 
-        Vector3 desiredVector = cameraDesiredPos - transform.position;
-        if(desiredVector.magnitude > 0.0f)
-            transform.position += desiredVector * ((desiredVector.magnitude * m_cameraSpeed) / desiredVector.magnitude) * Time.deltaTime;
+        Vector3 requiredMovement = cameraDesiredPos - transform.position;
+        Vector3 smoothedMovement = requiredMovement.normalized * DetermineCameraSpeed(requiredMovement.magnitude) * Time.deltaTime;
+
+        if (smoothedMovement.sqrMagnitude < requiredMovement.sqrMagnitude)
+            transform.position += smoothedMovement;
+        else
+            transform.position = cameraDesiredPos;
 
         Quaternion desiredRotation = Quaternion.LookRotation(m_followTarget.transform.position + m_lookAtOffset - transform.position);
 
-        transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, 0.5f);
+        transform.rotation = desiredRotation;
 	}
+
+    public float DetermineCameraSpeed(float p_distance)
+    {
+        //Arctan
+        //Equation of (2xSpeed/PI) * arctan(droppoff*(x - linearSpeedDistance)) + C
+        //Where C = -y intercept
+
+        //Calc C
+
+        float C = (m_cameraLinerarSpeed * 2 / Mathf.PI) * Mathf.Atan(m_dropOffRate * (-m_linearSpeedDistance));
+
+        return (m_cameraLinerarSpeed * 2 / Mathf.PI) * Mathf.Atan(m_dropOffRate * (p_distance - m_linearSpeedDistance)) - C;
+
+        //Linear
+        //Equation of gradiant(x)
+        //return m_cameraLinerarSpeed * p_distance;
+
+        //Parabola
+        //Equation of gradiant(x)
+        //return m_cameraLinerarSpeed * p_distance*p_distance;
+    }
 }

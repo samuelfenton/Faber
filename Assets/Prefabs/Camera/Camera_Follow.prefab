@@ -15,7 +15,10 @@ MonoBehaviour:
   m_followTarget: {fileID: 0}
   m_cameraOffset: {x: 4, y: 3, z: 0}
   m_lookAtOffset: {x: 0, y: 1.5, z: 0}
-  m_cameraSpeed: 3
+  m_cameraLinerarSpeed: 8
+  m_linearSpeedDistance: 1
+  m_dropOffRate: 2
+  m_currentOrientation: 1
 --- !u!1001 &1606692771047684104
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27,6 +30,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Camera_Follow
+      objectReference: {fileID: 0}
+    - target: {fileID: 6912546211480013805, guid: 99a833b0a67cf964d9c3d83b93645074,
+        type: 3}
+      propertyPath: m_BackGroundColor.r
+      value: 0.8784314
+      objectReference: {fileID: 0}
+    - target: {fileID: 6912546211480013805, guid: 99a833b0a67cf964d9c3d83b93645074,
+        type: 3}
+      propertyPath: m_BackGroundColor.g
+      value: 0.84313726
+      objectReference: {fileID: 0}
+    - target: {fileID: 6912546211480013805, guid: 99a833b0a67cf964d9c3d83b93645074,
+        type: 3}
+      propertyPath: m_BackGroundColor.b
+      value: 0.8392157
       objectReference: {fileID: 0}
     - target: {fileID: 7517885006713286506, guid: 99a833b0a67cf964d9c3d83b93645074,
         type: 3}
