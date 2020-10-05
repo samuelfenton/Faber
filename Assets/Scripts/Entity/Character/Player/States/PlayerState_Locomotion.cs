@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerState_Locomotion : State_Player
 {
-    private enum LOCOMOTION_STATE {IDLING, LOCOMOTION, LOCOMOTION_TO_SPRINT, SPRINT }
+    private enum LOCOMOTION_STATE {PREVIOUS_STATE_ANIMATION, IDLING, LOCOMOTION, LOCOMOTION_TO_SPRINT, SPRINT }
     private LOCOMOTION_STATE m_currentState = LOCOMOTION_STATE.LOCOMOTION;
 
     /// <summary>
@@ -24,8 +24,15 @@ public class PlayerState_Locomotion : State_Player
     {
         base.StateStart();
 
-        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.LOCOMOTION);
-        m_currentState = LOCOMOTION_STATE.LOCOMOTION;
+        if(!m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE))
+        {
+            m_currentState = LOCOMOTION_STATE.PREVIOUS_STATE_ANIMATION;
+        }
+        else
+        {
+            m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.LOCOMOTION);
+            m_currentState = LOCOMOTION_STATE.LOCOMOTION;
+        }
 
         m_character.m_idleDelayTimer = 0.0f;
     }
@@ -44,6 +51,13 @@ public class PlayerState_Locomotion : State_Player
         //Animation
         switch (m_currentState)
         {
+            case LOCOMOTION_STATE.PREVIOUS_STATE_ANIMATION:
+                if(m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE))
+                {
+                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.LOCOMOTION);
+                    m_currentState = LOCOMOTION_STATE.LOCOMOTION;
+                }
+                break;
             case LOCOMOTION_STATE.IDLING:
                 m_character.m_idleDelayTimer += Time.deltaTime;
 

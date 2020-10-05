@@ -45,7 +45,6 @@ public class Interactable : MonoBehaviour
             {
                 InteractEnd();
                 m_interactableFlag = false;
-
             }
             else if(m_playerCharacter.m_customInput.GetKey(CustomInput.INPUT_KEY.INTERACT) == CustomInput.INPUT_STATE.DOWNED)
             {

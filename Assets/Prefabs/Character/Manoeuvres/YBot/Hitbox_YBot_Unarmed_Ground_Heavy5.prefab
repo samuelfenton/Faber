@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &9114529579944478731
+--- !u!1001 &2383180215522633901
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -19,12 +19,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
-      propertyPath: m_sequenceAttack
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
-        type: 3}
-      propertyPath: m_requiresSheathingBlend
+      propertyPath: m_manoeuvreStance
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
@@ -34,35 +29,25 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
-      propertyPath: m_manoeuvreStance
-      value: 1
-      objectReference: {fileID: 0}
+      propertyPath: m_heavyBranchPrefab
+      value: 
+      objectReference: {fileID: 5623164422109160528, guid: 7ce743a15ab246e428030f22380e12b3,
+        type: 3}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
       propertyPath: m_lightBranchPrefab
       value: 
-      objectReference: {fileID: 7492896745086726454, guid: a881cd51712073a45b1499f82a0dbb77,
-        type: 3}
-    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
-        type: 3}
-      propertyPath: m_heavyBranchPrefab
-      value: 
-      objectReference: {fileID: 7492896745086726454, guid: f720478eca055e0458729416a35665ae,
+      objectReference: {fileID: 1177538980946917893, guid: 51d985a2fa5623d4397baf8beecca58d,
         type: 3}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
       propertyPath: m_manoeuvreDamage
-      value: 14
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
-      propertyPath: m_damageImpact
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
-        type: 3}
-      propertyPath: m_damageDirection
-      value: 3
+      propertyPath: m_requiresSheathingBlend
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
