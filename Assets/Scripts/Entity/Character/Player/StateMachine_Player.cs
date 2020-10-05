@@ -16,11 +16,11 @@ public class StateMachine_Player : StateMachine
         PlayerState_Knockback knockback = NewInterruptState<PlayerState_Knockback>();
         PlayerState_Recoil recoil = NewInterruptState<PlayerState_Recoil>();
 
-        
         PlayerState_Locomotion loco = NewNextState<PlayerState_Locomotion>();
         PlayerState_Jump jump = NewNextState<PlayerState_Jump>();
         PlayerState_InAir inAir = NewNextState<PlayerState_InAir>();
         PlayerState_Land land = NewNextState<PlayerState_Land>();
+        PlayerState_WallJump wallJump = NewNextState<PlayerState_WallJump>();
         PlayerState_Dash dash = NewNextState<PlayerState_Dash>();
         PlayerState_InAirDash inAirDash = NewNextState<PlayerState_InAirDash>();
         PlayerState_Block block = NewNextState<PlayerState_Block>();
@@ -37,6 +37,7 @@ public class StateMachine_Player : StateMachine
         loco.StateInit(true, p_character);
         jump.StateInit(false, p_character);
         inAir.StateInit(true, p_character);
+        wallJump.StateInit(false, p_character);
         land.StateInit(false, p_character);
         dash.StateInit(false, p_character);
         inAirDash.StateInit(false, p_character);
@@ -75,12 +76,15 @@ public class StateMachine_Player : StateMachine
         dash.AddNextState(inAir);
         dash.AddNextState(loco);
 
+        inAirDash.AddNextState(wallJump);
         inAirDash.AddNextState(inAir);
         inAirDash.AddNextState(land);
 
+        jump.AddNextState(wallJump);
         jump.AddNextState(inAir);
         jump.AddNextState(land);
 
+        inAir.AddNextState(wallJump);
         inAir.AddNextState(land);
         inAir.AddNextState(attack);
         inAir.AddNextState(inAirDash);
@@ -91,6 +95,9 @@ public class StateMachine_Player : StateMachine
         land.AddNextState(block);
         land.AddNextState(jump);
         land.AddNextState(loco);
+
+        wallJump.AddNextState(inAir);
+        wallJump.AddNextState(land);
 
         idle.AddNextState(attack);
         idle.AddNextState(inAir);

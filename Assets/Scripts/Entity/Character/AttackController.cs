@@ -228,7 +228,7 @@ public class AttackController : MonoBehaviour
 
         m_currentController.gameObject.SetActive(true);
 
-        m_character.m_gravity = m_currentController.m_useGravity;
+        m_character.m_splinePhysics.m_gravity = m_currentController.m_useGravity;
         if(!m_currentController.m_useGravity)
         {
             m_character.m_splinePhysics.HardSetUpwardsVelocity(0.0f);
@@ -297,7 +297,7 @@ public class AttackController : MonoBehaviour
         if(m_currentController!=null)
             m_currentController.gameObject.SetActive(false);
 
-        m_character.m_gravity = true;
+        m_character.m_splinePhysics.m_gravity = true;
     }
 
     public bool CompletedManoeuvreSequence()

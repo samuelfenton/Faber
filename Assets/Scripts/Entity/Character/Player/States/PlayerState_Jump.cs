@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PlayerState_Jump : State_Player
 {
-    private float m_jumpVelocity = 10.0f;
-
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
@@ -14,7 +12,6 @@ public class PlayerState_Jump : State_Player
     public override void StateInit(bool p_loopedState, Entity p_entity)
     {
         base.StateInit(p_loopedState, p_entity);
-        m_jumpVelocity = m_character.m_jumpVelocity;
     }
 
     /// <summary>
@@ -24,7 +21,7 @@ public class PlayerState_Jump : State_Player
     {
         base.StateStart();
 
-        m_entity.m_splinePhysics.HardSetUpwardsVelocity(m_jumpVelocity);
+        m_entity.m_splinePhysics.HardSetUpwardsVelocity(m_character.m_jumpVelocity);
 
         m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.JUMP);
 
@@ -43,7 +40,7 @@ public class PlayerState_Jump : State_Player
         //Allow player to jump and move
         m_player.ApplyHorizontalMovement(true);
 
-        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE) || m_entity.m_splinePhysics.m_splineVelocity.y <= 0.0f;
+        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE) || m_entity.m_splinePhysics.m_splineLocalVelocity.y <= 0.0f;
     }
 
     /// <summary>

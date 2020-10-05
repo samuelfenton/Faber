@@ -8,9 +8,6 @@ public class Entity : MonoBehaviour
 
     public enum TURNING_DIR { CENTER, RIGHT, LEFT }
 
-    [Header("Assigned variables")]
-    public bool m_gravity = false;
-
     [HideInInspector]
     public SplinePhysics m_splinePhysics = null;
 

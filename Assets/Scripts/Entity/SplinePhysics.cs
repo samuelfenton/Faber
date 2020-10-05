@@ -7,6 +7,8 @@ using UnityEngine;
 [ExecuteAlways]
 public class SplinePhysics : MonoBehaviour
 {
+    public enum COLLISION_TYPE {ENVIROMENT, HURT_BOX }
+
     public const float MIN_SPLINE_PERCENT = -0.001f;
     public const float MAX_SPLINE_PERCENT = 1.001f;
 
@@ -15,6 +17,9 @@ public class SplinePhysics : MonoBehaviour
     public const float COLLISION_OFFSET_MODIFIER_HALF = COLLISION_OFFSET_MODIFIER/2.0f;
 
     public const float GRAVITY = -24.0f;
+
+    [Header("Physics settings")]
+    public bool m_gravity = true;
 
     [Header("Spline settings")]
     public Pathing_Node m_nodeA = null;
@@ -27,12 +32,17 @@ public class SplinePhysics : MonoBehaviour
     public Pathing_Spline m_currentSpline = null;
 
     [Header("Generated values")]
-    public Vector2 m_splineVelocity = Vector2.zero;
+    public Vector2 m_splineLocalVelocity = Vector2.zero;
 
     public bool m_upCollision = false;
     public bool m_downCollision = false;
     public bool m_forwardCollision = false;
     public bool m_backCollision = false;
+
+    public COLLISION_TYPE m_upCollisionType = COLLISION_TYPE.ENVIROMENT;
+    public COLLISION_TYPE m_downCollisionType = COLLISION_TYPE.ENVIROMENT;
+    public COLLISION_TYPE m_forwardCollisionType = COLLISION_TYPE.ENVIROMENT;
+    public COLLISION_TYPE m_backCollisionType = COLLISION_TYPE.ENVIROMENT;
 
     protected Entity m_parentEntity = null;
 
@@ -96,8 +106,8 @@ public class SplinePhysics : MonoBehaviour
     public void ResolvePhysics()
     {
         //Apply Gravity
-        if (m_parentEntity.m_gravity)
-            m_splineVelocity.y += GRAVITY * Time.deltaTime;
+        if (m_gravity)
+            m_splineLocalVelocity.y += GRAVITY * Time.deltaTime;
 
         UpdateCollisions();
         
@@ -107,19 +117,19 @@ public class SplinePhysics : MonoBehaviour
             Vector3 desiredForwards = m_currentSpline.GetForwardDir(m_currentSplinePercent);
             transform.rotation = Quaternion.LookRotation(desiredForwards, Vector3.up);
 
-            m_currentSplinePercent += m_currentSpline.ChangeInPercent(m_splineVelocity.x * Time.deltaTime);
+            m_currentSplinePercent += m_currentSpline.ChangeInPercent(m_splineLocalVelocity.x * Time.deltaTime);
         }
         else
         {
             Vector3 desiredForwards = Quaternion.Euler(0.0f, 180.0f, 0.0f) * m_currentSpline.GetForwardDir(m_currentSplinePercent);
             transform.rotation = Quaternion.LookRotation(desiredForwards, Vector3.up);
 
-            m_currentSplinePercent -= m_currentSpline.ChangeInPercent(m_splineVelocity.x * Time.deltaTime);
+            m_currentSplinePercent -= m_currentSpline.ChangeInPercent(m_splineLocalVelocity.x * Time.deltaTime);
         }
 
         //Apply vertical change
         Vector3 currentPosition = transform.position;
-        currentPosition.y += m_splineVelocity.y * Time.deltaTime;
+        currentPosition.y += m_splineLocalVelocity.y * Time.deltaTime;
         transform.position = currentPosition;
 
 
@@ -146,16 +156,16 @@ public class SplinePhysics : MonoBehaviour
         Vector3 centerPos = transform.position + forward * m_boxCollider.center.z + up * m_boxCollider.center.y;
 
         //UPWARDS
-        m_upCollision = CastCollision(up, centerPos, forward * m_boxCollider.bounds.extents.z, m_boxCollider.bounds.extents.y + DETECITON_RANGE);
+        m_upCollision = CastCollision(up, centerPos, forward * m_boxCollider.bounds.extents.z, m_boxCollider.bounds.extents.y + DETECITON_RANGE, out m_upCollisionType);
 
         if (m_upCollision)//Check Upwards
         {
-            if (m_splineVelocity.y > 0.0f)//Moving up, stop this 
-                m_splineVelocity.y = 0.0f;
+            if (m_splineLocalVelocity.y > 0.0f)//Moving up, stop this 
+                m_splineLocalVelocity.y = 0.0f;
         }
 
         //DOWNWARDS
-        m_downCollision = CastCollision(-up, centerPos, forward * m_boxCollider.bounds.extents.z, m_boxCollider.bounds.extents.y + DETECITON_RANGE);
+        m_downCollision = CastCollision(-up, centerPos, forward * m_boxCollider.bounds.extents.z, m_boxCollider.bounds.extents.y + DETECITON_RANGE, out m_downCollisionType);
 
         if (!m_downCollision)
         {
@@ -166,24 +176,24 @@ public class SplinePhysics : MonoBehaviour
 
         if (m_downCollision)//Downwards
         {
-            if (m_splineVelocity.y < 0.0f)//Moving up, stop this 
-                m_splineVelocity.y = 0.0f;
+            if (m_splineLocalVelocity.y < 0.0f)//Moving up, stop this 
+                m_splineLocalVelocity.y = 0.0f;
         }
 
         //FOWARDS
-        m_forwardCollision = CastCollision(forward, centerPos, up * m_boxCollider.bounds.extents.y, m_boxCollider.bounds.extents.z + DETECITON_RANGE);
+        m_forwardCollision = CastCollision(forward, centerPos, up * m_boxCollider.bounds.extents.y, m_boxCollider.bounds.extents.z + DETECITON_RANGE, out m_forwardCollisionType);
         if (m_forwardCollision)//Forwards
         {
-            if (m_splineVelocity.x > 0.0f)//Moving up, stop this 
-                m_splineVelocity.x = 0.0f;
+            if (m_splineLocalVelocity.x > 0.0f)//Moving up, stop this 
+                m_splineLocalVelocity.x = 0.0f;
         }
 
         //BACKWARDS
-        m_backCollision = CastCollision(-forward, centerPos, up * m_boxCollider.bounds.extents.y, m_boxCollider.bounds.extents.z + DETECITON_RANGE);
+        m_backCollision = CastCollision(-forward, centerPos, up * m_boxCollider.bounds.extents.y, m_boxCollider.bounds.extents.z + DETECITON_RANGE, out m_backCollisionType);
         if (m_backCollision)//Backwards
         {
-            if (m_splineVelocity.x < 0.0f)//Moving up, stop this 
-                m_splineVelocity.x = 0.0f;
+            if (m_splineLocalVelocity.x < 0.0f)//Moving up, stop this 
+                m_splineLocalVelocity.x = 0.0f;
         }
     }
 
@@ -196,35 +206,51 @@ public class SplinePhysics : MonoBehaviour
     /// <param name="p_castFromModifer">Modifer from center cast to offset most</param>
     /// <param name="p_boundingDistance">Distance to edge of collider bounds</param>
     /// <returns>True when any collisions occur</returns>
-    private bool CastCollision(Vector3 p_direction, Vector3 p_centerPos, Vector3 p_castFromModifer, float p_boundingDistance)
+    private bool CastCollision(Vector3 p_direction, Vector3 p_centerPos, Vector3 p_castFromModifer, float p_boundingDistance, out COLLISION_TYPE p_collisionType)
     {
         Vector3 castFromModifier = p_castFromModifer * COLLISION_OFFSET_MODIFIER;
         Vector3 castFromModifierHalf = p_castFromModifer * COLLISION_OFFSET_MODIFIER_HALF;
 
+        RaycastHit hit;
+
         //Large Offset raycast
-        if (Physics.Raycast(p_centerPos + castFromModifier, p_direction, p_boundingDistance, CustomLayers.m_enviroment | CustomLayers.m_hurtBox))
+        if (Physics.Raycast(p_centerPos + castFromModifier, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask | CustomLayers.m_hurtBoxMask))
+        {
+            p_collisionType = hit.collider.gameObject.layer == CustomLayers.m_enviromentLayer ? COLLISION_TYPE.ENVIROMENT : COLLISION_TYPE.HURT_BOX;//Use layer not mask, when comparing to game object layer
             return true;
+        }
 
         //Forward Center raycast
-        if (Physics.Raycast(p_centerPos + castFromModifierHalf, p_direction, p_boundingDistance, CustomLayers.m_enviroment | CustomLayers.m_hurtBox))
+        if (Physics.Raycast(p_centerPos + castFromModifierHalf, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask | CustomLayers.m_hurtBoxMask))
+        {
+            p_collisionType = hit.collider.gameObject.layer == CustomLayers.m_enviromentLayer ? COLLISION_TYPE.ENVIROMENT : COLLISION_TYPE.HURT_BOX;//Use layer not mask, when comparing to game object layer
             return true;
-
+        }
 
         //Center raycast
-        if (Physics.Raycast(p_centerPos, p_direction, p_boundingDistance, CustomLayers.m_enviroment | CustomLayers.m_hurtBox))
+        if (Physics.Raycast(p_centerPos, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask | CustomLayers.m_hurtBoxMask))
+        {
+            p_collisionType = hit.collider.gameObject.layer == CustomLayers.m_enviromentLayer ? COLLISION_TYPE.ENVIROMENT : COLLISION_TYPE.HURT_BOX;//Use layer not mask, when comparing to game object layer
             return true;
+        }
 
 
         //Back Center raycast
-        if (Physics.Raycast(p_centerPos - castFromModifierHalf, p_direction, p_boundingDistance, CustomLayers.m_enviroment | CustomLayers.m_hurtBox))
+        if (Physics.Raycast(p_centerPos - castFromModifierHalf, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask | CustomLayers.m_hurtBoxMask))
+        {
+            p_collisionType = hit.collider.gameObject.layer == CustomLayers.m_enviromentLayer ? COLLISION_TYPE.ENVIROMENT : COLLISION_TYPE.HURT_BOX;//Use layer not mask, when comparing to game object layer
             return true;
+        }
 
 
         //Back raycast
-        if (Physics.Raycast(p_centerPos - castFromModifier, p_direction, p_boundingDistance, CustomLayers.m_enviroment | CustomLayers.m_hurtBox))
+        if (Physics.Raycast(p_centerPos - castFromModifier, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask | CustomLayers.m_hurtBoxMask))
+        {
+            p_collisionType = hit.collider.gameObject.layer == CustomLayers.m_enviromentLayer ? COLLISION_TYPE.ENVIROMENT : COLLISION_TYPE.HURT_BOX;//Use layer not mask, when comparing to game object layer
             return true;
+        }
 
-
+        p_collisionType = COLLISION_TYPE.ENVIROMENT; //Default
         return false;
     }
 
@@ -246,21 +272,30 @@ public class SplinePhysics : MonoBehaviour
     }
 
     /// <summary>
-    /// Hard set the value of velocity
+    /// Hard set the velocity
     /// </summary>
     /// <param name="p_val">velocity</param>
-    public void HardSetVelocity(float p_val)
+    public void HardSetVelocity(Vector2 p_val)
     {
-        m_splineVelocity.x = p_val;
+        m_splineLocalVelocity = p_val;
     }
 
     /// <summary>
-    /// Hard set the value of velocity
+    /// Hard set the horizontal velocity
+    /// </summary>
+    /// <param name="p_val">velocity</param>
+    public void HardSetHorizontalVelocity(float p_val)
+    {
+        m_splineLocalVelocity.x = p_val;
+    }
+
+    /// <summary>
+    /// Hard set the vertical velocity
     /// </summary>
     /// <param name="p_val">velocity</param>
     public void HardSetUpwardsVelocity(float p_val)
     {
-        m_splineVelocity.y = p_val;
+        m_splineLocalVelocity.y = p_val;
     }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD

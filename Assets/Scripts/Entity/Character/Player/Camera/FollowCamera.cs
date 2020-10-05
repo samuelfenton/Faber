@@ -9,7 +9,7 @@ public class FollowCamera : MonoBehaviour
     public Vector3 m_cameraOffset = Vector3.zero;
     public Vector3 m_lookAtOffset = Vector3.zero;
 
-    [Tooltip("Linear Speed")]
+    [Tooltip("Linear Speed, how long itll take to move the requried distance in one second")]
     public float m_cameraLinerarSpeed = 1.0f;
     [Tooltip("Distance where camera will move the linear speed")]
     public float m_linearSpeedDistance = 1.0f;
@@ -43,7 +43,7 @@ public class FollowCamera : MonoBehaviour
     }
 
     /// <summary>
-    /// Follow object given offset
+    /// Follow object at a given offset
     /// </summary>
     private void FixedUpdate ()
     {
@@ -64,8 +64,7 @@ public class FollowCamera : MonoBehaviour
 
         Vector3 cameraDesiredPos = m_followTarget.transform.position + cameraOffset;
 
-        //Based off desired postion move towards it. Based off distance magnitude move faster/slower
-
+        //Based off desired postion move towards it. Based off distance move faster/slower
         Vector3 requiredMovement = cameraDesiredPos - transform.position;
         Vector3 smoothedMovement = requiredMovement.normalized * DetermineCameraSpeed(requiredMovement.magnitude) * Time.deltaTime;
 
@@ -85,11 +84,10 @@ public class FollowCamera : MonoBehaviour
         //Equation of (2xSpeed/PI) * arctan(droppoff*(x - linearSpeedDistance)) + C
         //Where C = -y intercept
 
-        //Calc C
+        //Calc C, set x or p_distance to 0 for y-intercept, then invert 
+        float C = -((m_cameraLinerarSpeed * 2 / Mathf.PI) * Mathf.Atan(m_dropOffRate * (-m_linearSpeedDistance)));
 
-        float C = (m_cameraLinerarSpeed * 2 / Mathf.PI) * Mathf.Atan(m_dropOffRate * (-m_linearSpeedDistance));
-
-        return (m_cameraLinerarSpeed * 2 / Mathf.PI) * Mathf.Atan(m_dropOffRate * (p_distance - m_linearSpeedDistance)) - C;
+        return (m_cameraLinerarSpeed * 2 / Mathf.PI) * Mathf.Atan(m_dropOffRate * (p_distance - m_linearSpeedDistance)) + C;
 
         //Linear
         //Equation of gradiant(x)

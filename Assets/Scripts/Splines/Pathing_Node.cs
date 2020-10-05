@@ -179,16 +179,16 @@ public class Pathing_Node : MonoBehaviour
                 if (relativeVelocity >= 0.0f) //Moving is same relative space, so positive x velocity is forwards
                 {
                     if (previousDirection == TRIGGER_DIRECTION.BACKWARDS) //Was moving from forwards, stop any negitive velocity
-                        entity.m_splinePhysics.m_splineVelocity.x = Mathf.Min(0.0f, entity.m_splinePhysics.m_splineVelocity.x);
+                        entity.m_splinePhysics.m_splineLocalVelocity.x = Mathf.Min(0.0f, entity.m_splinePhysics.m_splineLocalVelocity.x);
                     else
-                        entity.m_splinePhysics.m_splineVelocity.x = Mathf.Max(0.0f, entity.m_splinePhysics.m_splineVelocity.x);
+                        entity.m_splinePhysics.m_splineLocalVelocity.x = Mathf.Max(0.0f, entity.m_splinePhysics.m_splineLocalVelocity.x);
                 }
                 else //Same as before but flip logic
                 {
                     if (previousDirection == TRIGGER_DIRECTION.BACKWARDS)
-                        entity.m_splinePhysics.m_splineVelocity.x = Mathf.Max(0.0f, entity.m_splinePhysics.m_splineVelocity.x);
+                        entity.m_splinePhysics.m_splineLocalVelocity.x = Mathf.Max(0.0f, entity.m_splinePhysics.m_splineLocalVelocity.x);
                     else
-                        entity.m_splinePhysics.m_splineVelocity.x = Mathf.Min(0.0f, entity.m_splinePhysics.m_splineVelocity.x);
+                        entity.m_splinePhysics.m_splineLocalVelocity.x = Mathf.Min(0.0f, entity.m_splinePhysics.m_splineLocalVelocity.x);
 
                 }
             }

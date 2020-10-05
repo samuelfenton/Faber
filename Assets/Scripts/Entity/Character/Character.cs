@@ -36,9 +36,7 @@ public class Character : Entity
     public float m_doubleJumpSpeed = 6.0f;
 
     [Header("Wall Jump Stats")]
-    public float m_wallJumpVerticalSpeed = 5.0f;
-    public float m_wallJumpHorizontalSpeed = 2.0f;
-    public float m_wallJumpInputDelay = 0.1f;
+    public Vector2 m_wallJumpVelocity = new Vector2(2.0f, 8.0f);
 
     [Header("Dash Stats")]
     public float m_dashVelocity = 12.0f;
@@ -139,7 +137,7 @@ public class Character : Entity
     /// </summary>
     protected void UpdateVelocity()
     {
-        Vector3 newVelocity = m_splinePhysics.m_splineVelocity;
+        Vector3 newVelocity = m_splinePhysics.m_splineLocalVelocity;
 
         float accel = m_splinePhysics.m_downCollision ? m_groundAccel : m_groundAccel * m_inAirAccelModifier;
         float deaccel = m_splinePhysics.m_downCollision ? m_groundedDeaccel : m_groundedDeaccel * m_inAirAccelModifier;
@@ -181,7 +179,7 @@ public class Character : Entity
             }
         }
 
-        m_splinePhysics.m_splineVelocity = newVelocity;
+        m_splinePhysics.m_splineLocalVelocity = newVelocity;
     }
 
     /// <summary>
@@ -276,8 +274,8 @@ public class Character : Entity
     /// </summary>
     public void UpdateAnimationLocomotion()
     {
-        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.CURRENT_VELOCITY, m_splinePhysics.m_splineVelocity.x / m_groundRunVel);
-        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_splinePhysics.m_splineVelocity.x / m_groundRunVel));
+        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.CURRENT_VELOCITY, m_splinePhysics.m_splineLocalVelocity.x / m_groundRunVel);
+        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_splinePhysics.m_splineLocalVelocity.x / m_groundRunVel));
     }
 
     public void SetKnockbackImpact(ManoeuvreController.DAMAGE_IMPACT p_impact)
