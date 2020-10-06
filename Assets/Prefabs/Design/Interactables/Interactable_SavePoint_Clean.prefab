@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c3b517bafa4d96479eb43f929f7f620, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uniqueID: 1
+  m_val: 4
 --- !u!114 &7404025649511168591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25,9 +25,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a7ca7e252c8e643b8007fa6898140e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_activationDistance: 2
-  m_interactText: {fileID: 0}
-  m_uniqueID: -1
+  m_interactText: {fileID: 7273454509910547812}
+  m_uniqueID: {fileID: 0}
   m_effectObjectOnLit: {fileID: 2983590667846490562}
   m_nodeA: {fileID: 0}
   m_nodeB: {fileID: 0}
@@ -81,6 +80,12 @@ GameObject:
 --- !u!4 &309339447807861426 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 890543213293681074, guid: af7344d9a5b5c63468f4be290ce9dcff,
+    type: 3}
+  m_PrefabInstance: {fileID: 581288446675081984}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7273454509910547812 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7845735180730173028, guid: af7344d9a5b5c63468f4be290ce9dcff,
     type: 3}
   m_PrefabInstance: {fileID: 581288446675081984}
   m_PrefabAsset: {fileID: 0}

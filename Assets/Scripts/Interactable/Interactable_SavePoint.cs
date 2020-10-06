@@ -7,6 +7,7 @@ public class Interactable_SavePoint : Interactable
 {
     [Header("Assigned Variables")]
     public GameObject m_effectObjectOnLit = null;
+
     [Header("Respawn Point")]
     public Pathing_Node m_nodeA = null;
     public Pathing_Node m_nodeB = null;
@@ -15,7 +16,6 @@ public class Interactable_SavePoint : Interactable
 
     public enum SAVEPOINT_STATE {LIT, UNLIT}
     public SAVEPOINT_STATE m_currentState = SAVEPOINT_STATE.UNLIT;
-
 
     private void OnDrawGizmos()
     {
@@ -46,6 +46,8 @@ public class Interactable_SavePoint : Interactable
     {
         base.Interact();
 
+        m_playerCharacter.m_atShrineFlag = true;
+
         DataController.SaveInGameSaveData(this);
         DataController.SaveCharacterStatistics(m_playerCharacter.m_characterStatistics);
 
@@ -62,5 +64,15 @@ public class Interactable_SavePoint : Interactable
             m_currentState = SAVEPOINT_STATE.LIT;
             m_effectObjectOnLit.SetActive(true);
         }
+    }
+
+    /// <summary>
+    /// Can the player interact with this interactable?
+    /// Will be contstantly checked
+    /// </summary>
+    /// <returns>true when able to interact</returns>
+    public override bool ValidInteraction()
+    {
+        return true;
     }
 }

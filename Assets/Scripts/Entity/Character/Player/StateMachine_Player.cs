@@ -12,22 +12,22 @@ public class StateMachine_Player : StateMachine
     public override void InitStateMachine(Character p_character)
     {
         //Add components
-        PlayerState_Death death = NewInterruptState<PlayerState_Death>();
-        PlayerState_Knockback knockback = NewInterruptState<PlayerState_Knockback>();
-        PlayerState_Recoil recoil = NewInterruptState<PlayerState_Recoil>();
+        StatePlayer_Death death = NewInterruptState<StatePlayer_Death>();
+        StatePlayer_Knockback knockback = NewInterruptState<StatePlayer_Knockback>();
+        StatePlayer_Recoil recoil = NewInterruptState<StatePlayer_Recoil>();
 
-        PlayerState_Locomotion loco = NewNextState<PlayerState_Locomotion>();
-        PlayerState_Jump jump = NewNextState<PlayerState_Jump>();
-        PlayerState_InAir inAir = NewNextState<PlayerState_InAir>();
-        PlayerState_Land land = NewNextState<PlayerState_Land>();
-        PlayerState_WallJump wallJump = NewNextState<PlayerState_WallJump>();
-        PlayerState_Dash dash = NewNextState<PlayerState_Dash>();
-        PlayerState_InAirDash inAirDash = NewNextState<PlayerState_InAirDash>();
-        PlayerState_Block block = NewNextState<PlayerState_Block>();
+        StatePlayer_Locomotion loco = NewNextState<StatePlayer_Locomotion>();
+        StatePlayer_Jump jump = NewNextState<StatePlayer_Jump>();
+        StatePlayer_InAir inAir = NewNextState<StatePlayer_InAir>();
+        StatePlayer_Land land = NewNextState<StatePlayer_Land>();
+        StatePlayer_WallJump wallJump = NewNextState<StatePlayer_WallJump>();
+        StatePlayer_Dash dash = NewNextState<StatePlayer_Dash>();
+        StatePlayer_InAirDash inAirDash = NewNextState<StatePlayer_InAirDash>();
+        StatePlayer_Block block = NewNextState<StatePlayer_Block>();
 
-        PlayerState_Attack attack = NewNextState<PlayerState_Attack>();
+        StatePlayer_Attack attack = NewNextState<StatePlayer_Attack>();
 
-        PlayerState_Idle idle = NewNextState<PlayerState_Idle>();
+        StatePlayer_Idle idle = NewNextState<StatePlayer_Idle>();
         
         //Init all 
         death.StateInit(true, p_character);

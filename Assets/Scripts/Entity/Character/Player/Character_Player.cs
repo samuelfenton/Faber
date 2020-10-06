@@ -11,6 +11,12 @@ public class Character_Player : Character
     [HideInInspector]
     public CustomInput m_customInput = null;
 
+    [Header("Auto Assigned Variables")]
+    public bool m_atShrineFlag = false;
+
+    [HideInInspector]
+    public Interactable m_currentInteractable = null;
+
     /// <summary>
     /// Initiliase the entity
     /// setup varible/physics
@@ -91,6 +97,49 @@ public class Character_Player : Character
                 return TURNING_DIR.RIGHT;
         }
         return TURNING_DIR.CENTER;
+    }
+
+    /// <summary>
+    /// Given interactable is the current one, set interactable to null
+    /// </summary>
+    /// <param name="p_interactable">Interactable assumed to be current</param>
+    public void RemoveCurrentInteractable(Interactable p_interactable)
+    {
+        if(m_currentInteractable == p_interactable)
+        {
+            m_currentInteractable.InteractEnd();
+            m_currentInteractable = null;
+        }
+    }
+
+    /// <summary>
+    /// Update the possible current interactable
+    /// </summary>
+    /// <param name="p_interactable">New possible interactable</param>
+    /// <param name="p_interactableDistance">Distance to new interactable</param>
+    public void UpdateCurrentInteractable(Interactable p_interactable, float p_interactableDistance)
+    {
+        if (p_interactable == null) //Invalid variables
+            return;
+
+        if (m_currentInteractable == p_interactable) //Already current
+            return;
+
+        if(m_currentInteractable == null) //No assigned current, so go for this one
+        {
+            m_currentInteractable = p_interactable;
+            p_interactable.InteractStart();
+            return;
+        }
+
+        float currentDistance = MOARMaths.SqrDistance(m_currentInteractable.transform.position, transform.position);
+
+        if(p_interactableDistance < currentDistance)//New interactable is closer, swap to this
+        {
+            m_currentInteractable.InteractEnd();
+            m_currentInteractable = p_interactable;
+            p_interactable.InteractStart();
+        }
     }
 
     #region WEAPON FUNCTIONS - OVERRIDE

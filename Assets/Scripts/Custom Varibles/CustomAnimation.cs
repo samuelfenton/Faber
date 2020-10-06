@@ -21,7 +21,7 @@ public class CustomAnimation : MonoBehaviour
 
     public enum VARIBLE_FLOAT { CURRENT_VELOCITY, ABSOLUTE_VELOCITY, VERTICAL_VELOCITY, RANDOM_IDLE, KNOCKBACK_IMPACT, FLOAT_COUNT}
     private string[] m_floatToString = new string[(int)VARIBLE_FLOAT.FLOAT_COUNT];
-    public enum BASE_DEFINES {LOCOMOTION, SPRINT, RUN_TO_SPRINT, DASH, JUMP, INAIR, DOUBLE_JUMP, INAIR_DASH, LANDING_TO_IDLE, LANDING_TO_RUN, WALL_JUMP, BLOCK, BLOCK_FROM_IDLE, BLOCK_TO_IDLE, BASE_COUNT }
+    public enum BASE_DEFINES {LOCOMOTION, SPRINT, RUN_TO_SPRINT, DASH, JUMP, INAIR, DOUBLE_JUMP, INAIR_DASH, LANDING_TO_IDLE, LANDING_TO_RUN, WALL_JUMP, BLOCK, BLOCK_FROM_IDLE, BLOCK_TO_IDLE, PRAY_START, PRAY_LOOP, PRAY_END, BASE_COUNT }
     private string[] m_baseToString = new string[(int)BASE_DEFINES.BASE_COUNT];
 
     public enum INTERRUPT_DEFINES {RECOIL, KNOCKBACK, KNOCKFORWARD, DEATH, IDLE_EMOTE, INTERRUPT_COUNT}
@@ -51,7 +51,7 @@ public class CustomAnimation : MonoBehaviour
             m_layerToInt[(int)LAYER.INTERRUPT] = m_animator.GetLayerIndex("InterruptLayer");
         }
 
-        //Assign strings, in the case a string/aniamtion is not found in the aniamtor default to empty string ""
+        //Assign strings, in the case a string/aniamtion is not found in the animator default to empty string ""
         m_floatToString[(int)VARIBLE_FLOAT.CURRENT_VELOCITY] = ContainsParam(m_animator, "CurrentVelocity") ? "CurrentVelocity" : "";
         m_floatToString[(int)VARIBLE_FLOAT.ABSOLUTE_VELOCITY] = ContainsParam(m_animator, "AbsoluteVelocity") ? "AbsoluteVelocity" : "";
         m_floatToString[(int)VARIBLE_FLOAT.VERTICAL_VELOCITY] = ContainsParam(m_animator, "VerticalVelocity") ? "VerticalVelocity" : "";
@@ -72,6 +72,9 @@ public class CustomAnimation : MonoBehaviour
         m_baseToString[(int)BASE_DEFINES.BLOCK] = HasAnimation(m_animator, "Block", m_layerToInt[(int)LAYER.BASE]) ? "Block" : "";
         m_baseToString[(int)BASE_DEFINES.BLOCK_FROM_IDLE] = HasAnimation(m_animator, "BlockFromIdle", m_layerToInt[(int)LAYER.BASE]) ? "BlockFromIdle" : "";
         m_baseToString[(int)BASE_DEFINES.BLOCK_TO_IDLE] = HasAnimation(m_animator, "BlockToIdle", m_layerToInt[(int)LAYER.BASE]) ? "BlockToIdle" : "";
+        m_baseToString[(int)BASE_DEFINES.PRAY_START] = HasAnimation(m_animator, "PrayStart", m_layerToInt[(int)LAYER.BASE]) ? "PrayStart" : "";
+        m_baseToString[(int)BASE_DEFINES.PRAY_LOOP] = HasAnimation(m_animator, "PrayLoop", m_layerToInt[(int)LAYER.BASE]) ? "PrayLoop" : "";
+        m_baseToString[(int)BASE_DEFINES.PRAY_END] = HasAnimation(m_animator, "PrayEnd", m_layerToInt[(int)LAYER.BASE]) ? "PrayEnd" : "";
 
         m_interruptToString[(int)INTERRUPT_DEFINES.RECOIL] = HasAnimation(m_animator, "Recoil", m_layerToInt[(int)LAYER.INTERRUPT]) ? "Recoil" : "";
         m_interruptToString[(int)INTERRUPT_DEFINES.KNOCKBACK] = HasAnimation(m_animator, "Knockback", m_layerToInt[(int)LAYER.INTERRUPT]) ? "Knockback" : "";

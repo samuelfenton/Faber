@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [ExecuteAlways]
-public class Character_SplinePhysics : SplinePhysics
+public class SplinePhysics_Character : SplinePhysics
 {
     /// <summary>
     /// Initilise entity physics

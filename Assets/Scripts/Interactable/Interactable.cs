@@ -5,16 +5,16 @@ using UnityEngine;
 [RequireComponent(typeof(UniqueID))]
 public class Interactable : MonoBehaviour
 {
+    private const float SQR_ACTIVATION_DISTANCE = 4.0f;
+    
     [Header("Assigned Variables")]
-    public float m_activationDistance = 2.0f;
     public GameObject m_interactText = null;
-    private float m_sqrActivationDistance = 4.0f;
 
-    [Header("Auto generated")]
+    [HideInInspector]
     public UniqueID m_uniqueID = null;
 
     protected Character_Player m_playerCharacter = null;
-    private bool m_interactableFlag = false;
+    private bool m_previouslyCloseFlag = false;
 
     /// <summary>
     /// Initilise the interactable
@@ -26,8 +26,7 @@ public class Interactable : MonoBehaviour
         
         m_playerCharacter = p_player;
 
-        m_sqrActivationDistance = m_activationDistance * m_activationDistance;
-        m_interactableFlag = false;
+        m_previouslyCloseFlag = false;
 
         if (m_interactText != null)
             m_interactText.SetActive(false);
@@ -37,26 +36,34 @@ public class Interactable : MonoBehaviour
     /// Used rather than update
     /// Checks for player interaction
     /// </summary>
-    public virtual void UpdateInteractable()
+    public void UpdateInteractable()
     {
-        if(m_interactableFlag)
+        if(!ValidInteraction()) //Not Valid, early breakout
         {
-            if(!ValidInteraction())
+            return;
+        }
+
+        float distance = MOARMaths.SqrDistance(transform.position, m_playerCharacter.transform.position);
+
+        if (m_previouslyCloseFlag)
+        {
+            if(distance > SQR_ACTIVATION_DISTANCE) //No longer close enough
             {
-                InteractEnd();
-                m_interactableFlag = false;
+                m_previouslyCloseFlag = false;
+                m_playerCharacter.RemoveCurrentInteractable(this);
+                return;
             }
-            else if(m_playerCharacter.m_customInput.GetKey(CustomInput.INPUT_KEY.INTERACT) == CustomInput.INPUT_STATE.DOWNED)
-            {
+
+            m_playerCharacter.UpdateCurrentInteractable(this, distance);
+
+            if(m_playerCharacter.m_currentInteractable == this && m_playerCharacter.m_customInput.GetKey(CustomInput.INPUT_KEY.INTERACT) == CustomInput.INPUT_STATE.DOWNED)
                 Interact();
-            }
         }
         else
         {
-            if (ValidInteraction())
+            if (distance < SQR_ACTIVATION_DISTANCE) //No close enough
             {
-                InteractStart();
-                m_interactableFlag = true;
+                m_previouslyCloseFlag = true;
             }
         }
     }
@@ -79,7 +86,7 @@ public class Interactable : MonoBehaviour
     }
     
     /// <summary>
-    /// Player can no longer intereact, moved out of distance
+    /// Player can no longer interact, moved out of distance
     /// </summary>
     public virtual void InteractEnd()
     {
@@ -94,7 +101,6 @@ public class Interactable : MonoBehaviour
     /// <returns>true when able to interact</returns>
     public virtual bool ValidInteraction()
     {
-        return MOARMaths.SqrDistance(m_playerCharacter.transform.position, transform.position) < m_sqrActivationDistance;
+        return false;
     }
-
 }
