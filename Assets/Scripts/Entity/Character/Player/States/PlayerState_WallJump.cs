@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class PlayerState_WallJump : State_Player
 {
-    private enum WALL_JUMP_STATE {LAND, HANG, JUMP}
-    private WALL_JUMP_STATE m_currentState = WALL_JUMP_STATE.LAND;
-
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
@@ -24,10 +21,17 @@ public class PlayerState_WallJump : State_Player
     {
         base.StateStart();
 
-        m_entity.m_splinePhysics.HardSetVelocity(Vector2.zero);
-        m_character.m_splinePhysics.m_gravity = false;
-        m_currentState = WALL_JUMP_STATE.LAND;
-        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.WALL_LAND);
+        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.WALL_JUMP);
+
+        //Allow player to jump again
+        m_character.m_doubleJumpFlag = m_character.m_characterStatistics.HasAbility(CharacterStatistics.ABILITY.DOUBLE_JUMP);
+        m_character.m_inAirDashFlag = m_character.m_characterStatistics.HasAbility(CharacterStatistics.ABILITY.IN_AIR_DASH);
+
+        //Velocity
+        m_entity.m_splinePhysics.m_gravity = false;
+        m_character.m_splinePhysics.HardSetVelocity(m_character.m_wallJumpVelocity);
+
+        m_character.m_splinePhysics.SwapFacingDirection();
     }
 
     /// <summary>
@@ -38,40 +42,9 @@ public class PlayerState_WallJump : State_Player
     {
         base.StateUpdate();
 
-        if(!InputTowardsWall())//player let go, so drop
-        {
-            return true;
-        }
+        m_character.SetDesiredVelocity(m_character.m_wallJumpVelocity);//Keep desired velocity till jump is done
+        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE);
 
-        //Allow player to jump and move
-        switch (m_currentState)
-        {
-            case WALL_JUMP_STATE.LAND:
-                if(m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE))
-                {
-                    m_currentState = WALL_JUMP_STATE.HANG;
-                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.WALL_HANG);
-                }
-                if(m_player.m_customInput.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
-                {
-                    m_currentState = WALL_JUMP_STATE.JUMP;
-                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.WALL_JUMP);
-                    m_character.m_splinePhysics.HardSetVelocity(m_character.m_wallJumpVelocity);
-                }
-                break;
-            case WALL_JUMP_STATE.HANG:
-                if (m_player.m_customInput.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED)
-                {
-                    m_currentState = WALL_JUMP_STATE.JUMP;
-                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.WALL_JUMP);
-                    m_character.m_splinePhysics.HardSetVelocity(m_character.m_wallJumpVelocity);
-                }
-                break;
-            case WALL_JUMP_STATE.JUMP:
-                return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE);
-        }
-
-        return false;
     }
 
     /// <summary>
@@ -79,7 +52,7 @@ public class PlayerState_WallJump : State_Player
     /// </summary>
     public override void StateEnd()
     {
-        m_character.m_splinePhysics.m_gravity = true;
+        m_entity.m_splinePhysics.m_gravity = true;
 
         base.StateEnd();
     }
@@ -91,14 +64,14 @@ public class PlayerState_WallJump : State_Player
     public override bool IsValid()
     {
         //Not grounded, holding direction of wall in direction of travel.
-        return !m_character.m_splinePhysics.m_downCollision && InputTowardsWall();
+        return !m_character.m_splinePhysics.m_downCollision && MovingTowardWalls() && m_player.m_customInput.GetKey(CustomInput.INPUT_KEY.JUMP) == CustomInput.INPUT_STATE.DOWNED;
     }
 
     /// <summary>
     /// Is players input towards the wall
     /// </summary>
     /// <returns>true when players input is towards wall</returns>
-    public bool InputTowardsWall()
+    public bool MovingTowardWalls()
     {
         if(m_player.m_followCamera.m_currentOrientation == FollowCamera.CAMERA_ORIENTATION.INITIAL)
         {

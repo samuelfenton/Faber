@@ -36,6 +36,7 @@ public class Character : Entity
     public float m_doubleJumpSpeed = 6.0f;
 
     [Header("Wall Jump Stats")]
+    [Tooltip("Keep x positive, to push away from wall")]
     public Vector2 m_wallJumpVelocity = new Vector2(2.0f, 8.0f);
 
     [Header("Dash Stats")]
@@ -68,6 +69,8 @@ public class Character : Entity
     public bool m_blockingFlag = false;
     [HideInInspector]
     public bool m_knockbackFlag = false;
+    [HideInInspector]
+    public bool m_knockforwardFlag = false;
     [HideInInspector]
     public bool m_recoilFlag = false;
     [HideInInspector]
@@ -220,7 +223,13 @@ public class Character : Entity
 
             //Setup knockback
             p_targetCharacter.SetKnockbackImpact(p_manoeuvreController.m_damageImpact);
-            p_targetCharacter.m_knockbackFlag = true;
+
+            //Determine knockback or knock forward
+            float characterTargetAlignment = Vector3.Dot(transform.forward, p_targetCharacter.transform.forward); 
+            if(characterTargetAlignment >= 0.0f)
+                p_targetCharacter.m_knockforwardFlag = true;
+            else
+                p_targetCharacter.m_knockbackFlag = true;
 
             //Setup hit marker
             Vector3 cameraToTarget = p_targetCharacter.transform.position - m_followCamera.transform.position;
@@ -266,7 +275,7 @@ public class Character : Entity
     /// <param name="p_val">Desired velocity</param>
     public void SetDesiredVelocity(float p_val)
     {
-        m_desiredVelocity = new Vector2(p_val, 0.0f);
+        m_desiredVelocity = new Vector2(p_val, m_desiredVelocity.y);
     }
 
     /// <summary>

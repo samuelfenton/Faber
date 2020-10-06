@@ -12,8 +12,8 @@ public class SplinePhysics : MonoBehaviour
     public const float MIN_SPLINE_PERCENT = -0.001f;
     public const float MAX_SPLINE_PERCENT = 1.001f;
 
-    public const float DETECITON_RANGE = 0.1f;
-    public const float COLLISION_OFFSET_MODIFIER = 0.98f;
+    public const float DETECITON_RANGE = 0.2f;
+    public const float COLLISION_OFFSET_MODIFIER = 0.95f;
     public const float COLLISION_OFFSET_MODIFIER_HALF = COLLISION_OFFSET_MODIFIER/2.0f;
 
     public const float GRAVITY = -24.0f;

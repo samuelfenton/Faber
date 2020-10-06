@@ -22,6 +22,7 @@ public class FollowCamera : MonoBehaviour
 
     private void Start()
     {
+        FlipCamera();
         ForceSnap();
     }
 

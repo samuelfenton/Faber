@@ -79,16 +79,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99da33eb2aafd3341a6beffe7dc2808f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_gravity: 1
   m_nodeA: {fileID: 0}
   m_nodeB: {fileID: 0}
   m_currentSplinePercent: 0.778
   m_currentSpline: {fileID: 0}
-  m_splineVelocity: {x: 0, y: 0}
+  m_splineLocalVelocity: {x: 0, y: 0}
   m_upCollision: 0
   m_downCollision: 0
   m_forwardCollision: 0
   m_backCollision: 0
-  m_showDebugColliders: 1
+  m_upCollisionType: 0
+  m_downCollisionType: 0
+  m_forwardCollisionType: 0
+  m_backCollisionType: 0
+  m_showDebugColliders: 0
 --- !u!114 &2075161514799004276
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101,7 +106,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5ce36fdb713a75478da7c3624fccb43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_gravity: 1
   m_splinePhysics: {fileID: 0}
   m_sceneController: {fileID: 0}
   m_primaryAnchor: {fileID: 1512804058502852881}
@@ -115,18 +119,19 @@ MonoBehaviour:
   m_jumpVelocity: 10
   m_inAirAccelModifier: 0.7
   m_doubleJumpSpeed: 8
-  m_wallJumpVerticalSpeed: 5
-  m_wallJumpHorizontalSpeed: 2
-  m_wallJumpInputDelay: 0.1
+  m_wallJumpVelocity: {x: 6, y: 8}
   m_dashVelocity: 8
   m_idlePoseCount: 2
   m_idleDelayTime: 5
   m_idleDelayTimer: 0
   m_desiredVelocity: {x: 0, y: 0}
+  m_effectColor1: {r: 1, g: 1, b: 1, a: 1}
+  m_effectColor2: {r: 1, g: 1, b: 1, a: 1}
   m_doubleJumpFlag: 0
   m_inAirDashFlag: 0
   m_blockingFlag: 0
   m_knockbackFlag: 0
+  m_knockforwardFlag: 0
   m_recoilFlag: 0
   m_deathFlag: 0
   m_followCamera: {fileID: 0}
@@ -147,7 +152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_groundLightControllerPrefab: {fileID: 7492896745086726454, guid: b6ac757416838924ca0af5bbafc58147,
     type: 3}
-  m_groundHeavyControllerPrefab: {fileID: 7492896745086726454, guid: a4e189a49792a934993a6cd08e9c3520,
+  m_groundHeavyControllerPrefab: {fileID: 4076756538130534800, guid: 4e3a4011e720c3d4d9d8ebe6b49adab0,
     type: 3}
   m_inAirLightControllerPrefab: {fileID: 0}
   m_inAirHeavyControllerPrefab: {fileID: 0}
@@ -168,7 +173,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_currentExperience: 0
   m_statLevel: 000000000000000000000000000000000000000000000000
-  m_abilityFlags: 000000
+  m_abilityFlags: 010101
 --- !u!114 &5475506748303260416
 MonoBehaviour:
   m_ObjectHideFlags: 0

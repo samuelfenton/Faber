@@ -21,10 +21,10 @@ public class CustomAnimation : MonoBehaviour
 
     public enum VARIBLE_FLOAT { CURRENT_VELOCITY, ABSOLUTE_VELOCITY, VERTICAL_VELOCITY, RANDOM_IDLE, KNOCKBACK_IMPACT, FLOAT_COUNT}
     private string[] m_floatToString = new string[(int)VARIBLE_FLOAT.FLOAT_COUNT];
-    public enum BASE_DEFINES {LOCOMOTION, SPRINT, RUN_TO_SPRINT, DASH, JUMP, INAIR, DOUBLE_JUMP, INAIR_DASH, LANDING_TO_IDLE, LANDING_TO_RUN, WALL_LAND, WALL_HANG, WALL_JUMP, BLOCK, BLOCK_FROM_IDLE, BLOCK_TO_IDLE, BASE_COUNT }
+    public enum BASE_DEFINES {LOCOMOTION, SPRINT, RUN_TO_SPRINT, DASH, JUMP, INAIR, DOUBLE_JUMP, INAIR_DASH, LANDING_TO_IDLE, LANDING_TO_RUN, WALL_JUMP, BLOCK, BLOCK_FROM_IDLE, BLOCK_TO_IDLE, BASE_COUNT }
     private string[] m_baseToString = new string[(int)BASE_DEFINES.BASE_COUNT];
 
-    public enum INTERRUPT_DEFINES {RECOIL, KNOCKBACK, DEATH, IDLE_EMOTE, INTERRUPT_COUNT}
+    public enum INTERRUPT_DEFINES {RECOIL, KNOCKBACK, KNOCKFORWARD, DEATH, IDLE_EMOTE, INTERRUPT_COUNT}
     private string[] m_interruptToString = new string[(int)INTERRUPT_DEFINES.INTERRUPT_COUNT];
 
     private Animator m_animator = null;
@@ -52,11 +52,11 @@ public class CustomAnimation : MonoBehaviour
         }
 
         //Assign strings, in the case a string/aniamtion is not found in the aniamtor default to empty string ""
-        m_floatToString[(int)VARIBLE_FLOAT.CURRENT_VELOCITY] = ContainsParam(m_animator, "Current Velocity") ? "Current Velocity" : "";
-        m_floatToString[(int)VARIBLE_FLOAT.ABSOLUTE_VELOCITY] = ContainsParam(m_animator, "Absolute Velocity") ? "Absolute Velocity" : "";
-        m_floatToString[(int)VARIBLE_FLOAT.VERTICAL_VELOCITY] = ContainsParam(m_animator, "Vertical Velocity") ? "Vertical Velocity" : "";
-        m_floatToString[(int)VARIBLE_FLOAT.RANDOM_IDLE] = ContainsParam(m_animator, "Random Idle") ? "Random Idle" : "";
-        m_floatToString[(int)VARIBLE_FLOAT.KNOCKBACK_IMPACT] = ContainsParam(m_animator, "Knockback Impact") ? "Knockback Impact" : "";
+        m_floatToString[(int)VARIBLE_FLOAT.CURRENT_VELOCITY] = ContainsParam(m_animator, "CurrentVelocity") ? "CurrentVelocity" : "";
+        m_floatToString[(int)VARIBLE_FLOAT.ABSOLUTE_VELOCITY] = ContainsParam(m_animator, "AbsoluteVelocity") ? "AbsoluteVelocity" : "";
+        m_floatToString[(int)VARIBLE_FLOAT.VERTICAL_VELOCITY] = ContainsParam(m_animator, "VerticalVelocity") ? "VerticalVelocity" : "";
+        m_floatToString[(int)VARIBLE_FLOAT.RANDOM_IDLE] = ContainsParam(m_animator, "RandomIdle") ? "RandomIdle" : "";
+        m_floatToString[(int)VARIBLE_FLOAT.KNOCKBACK_IMPACT] = ContainsParam(m_animator, "KnockbackImpact") ? "KnockbackImpact" : "";
 
         m_baseToString[(int)BASE_DEFINES.LOCOMOTION] = HasAnimation(m_animator, "Locomotion", m_layerToInt[(int)LAYER.BASE]) ? "Locomotion" : "";
         m_baseToString[(int)BASE_DEFINES.SPRINT] = HasAnimation(m_animator, "Sprint", m_layerToInt[(int)LAYER.BASE]) ? "Sprint" : "";
@@ -68,8 +68,6 @@ public class CustomAnimation : MonoBehaviour
         m_baseToString[(int)BASE_DEFINES.INAIR_DASH] = HasAnimation(m_animator, "InAirDash", m_layerToInt[(int)LAYER.BASE]) ? "InAirDash" : "";
         m_baseToString[(int)BASE_DEFINES.LANDING_TO_IDLE] = HasAnimation(m_animator, "LandingToIdle", m_layerToInt[(int)LAYER.BASE]) ? "LandingToIdle" : "";
         m_baseToString[(int)BASE_DEFINES.LANDING_TO_RUN] = HasAnimation(m_animator, "LandingToRun", m_layerToInt[(int)LAYER.BASE]) ? "LandingToRun" : "";
-        m_baseToString[(int)BASE_DEFINES.WALL_LAND] = HasAnimation(m_animator, "WallLand", m_layerToInt[(int)LAYER.BASE]) ? "WallLand" : "";
-        m_baseToString[(int)BASE_DEFINES.WALL_HANG] = HasAnimation(m_animator, "WallHang", m_layerToInt[(int)LAYER.BASE]) ? "WallHang" : "";
         m_baseToString[(int)BASE_DEFINES.WALL_JUMP] = HasAnimation(m_animator, "WallJump", m_layerToInt[(int)LAYER.BASE]) ? "WallJump" : "";
         m_baseToString[(int)BASE_DEFINES.BLOCK] = HasAnimation(m_animator, "Block", m_layerToInt[(int)LAYER.BASE]) ? "Block" : "";
         m_baseToString[(int)BASE_DEFINES.BLOCK_FROM_IDLE] = HasAnimation(m_animator, "BlockFromIdle", m_layerToInt[(int)LAYER.BASE]) ? "BlockFromIdle" : "";
@@ -77,6 +75,7 @@ public class CustomAnimation : MonoBehaviour
 
         m_interruptToString[(int)INTERRUPT_DEFINES.RECOIL] = HasAnimation(m_animator, "Recoil", m_layerToInt[(int)LAYER.INTERRUPT]) ? "Recoil" : "";
         m_interruptToString[(int)INTERRUPT_DEFINES.KNOCKBACK] = HasAnimation(m_animator, "Knockback", m_layerToInt[(int)LAYER.INTERRUPT]) ? "Knockback" : "";
+        m_interruptToString[(int)INTERRUPT_DEFINES.KNOCKFORWARD] = HasAnimation(m_animator, "Knockforward", m_layerToInt[(int)LAYER.INTERRUPT]) ? "Knockforward" : "";
         m_interruptToString[(int)INTERRUPT_DEFINES.DEATH] = HasAnimation(m_animator, "Death", m_layerToInt[(int)LAYER.INTERRUPT]) ? "Death" : "";
         m_interruptToString[(int)INTERRUPT_DEFINES.IDLE_EMOTE] = HasAnimation(m_animator, "IdleEmote", m_layerToInt[(int)LAYER.INTERRUPT]) ? "IdleEmote" : "";
     }

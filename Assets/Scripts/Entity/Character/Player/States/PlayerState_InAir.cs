@@ -76,7 +76,7 @@ public class PlayerState_InAir : State_Player
                 break;
         }
 
-        return true;
+        return false;
     }
 
     /// <summary>
