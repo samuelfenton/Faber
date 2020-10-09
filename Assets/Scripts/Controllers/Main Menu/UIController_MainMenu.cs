@@ -102,6 +102,15 @@ public class UIController_MainMenu : UIController
             return;
         }
 
+        if (m_saveSlot1BtnText == null || m_saveSlot2BtnText == null || m_saveSlot3BtnText == null)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD 
+            Debug.LogWarning(name + " does not have all its required save slot variables assigned");
+#endif
+            Destroy(gameObject);
+            return;
+        }
+
         if (m_promptText == null)
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD 

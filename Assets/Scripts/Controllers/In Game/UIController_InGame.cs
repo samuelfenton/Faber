@@ -11,11 +11,11 @@ public class UIController_InGame : UIController
     [Header("Canvas Variables")]
     public GameObject m_UIObjectInGame = null;
     public GameObject m_UIObjectPause = null;
+    public GameObject m_UIObjectShrine = null;
     public GameObject m_UIObjectPrompt = null;
 
     [Header("Pause Menu Variables")]
     public Button m_returnToShrineButton = null;
-
 
     private enum CURRENT_MENU_STATE {IN_GAME, PAUSE_MENU }
     private CURRENT_MENU_STATE m_currentMenuState = CURRENT_MENU_STATE.IN_GAME;
@@ -30,7 +30,7 @@ public class UIController_InGame : UIController
     {
         base.Init();
         
-        if (m_UIObjectInGame == null || m_UIObjectPause == null || m_UIObjectPrompt == null)
+        if (m_UIObjectInGame == null || m_UIObjectPause == null || m_UIObjectShrine == null || m_UIObjectPrompt == null)
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD 
             Debug.LogWarning(name + " does not have its assigned objects");
@@ -87,6 +87,39 @@ public class UIController_InGame : UIController
         }
     }
 
+    /// <summary>
+    /// Setup state and time
+    /// </summary>
+    private void PauseGame()
+    {
+        Time.timeScale = 0.0f;
+        m_sceneController.InGameState = SceneController_InGame.INGAME_STATE.PAUSED;
+    }
+
+    /// <summary>
+    /// Setup state and time
+    /// </summary>
+    private void UnPauseGame()
+    {
+        Time.timeScale = 1.0f;
+        m_sceneController.InGameState = SceneController_InGame.INGAME_STATE.IN_GAME;
+    }
+
+    #region Shrine
+    /// <summary>
+    /// Show the ingame shrine menu
+    /// </summary>
+    public void ShowShrineMenu()
+    {
+        m_UIObjectInGame.SetActive(false);
+        m_UIObjectPause.SetActive(false);
+        m_UIObjectShrine.SetActive(true);
+        m_UIObjectPrompt.SetActive(false);
+
+        PauseGame();
+    }
+    #endregion
+
     #region Menu Management
     /// <summary>
     /// Show the in game UI
@@ -98,10 +131,10 @@ public class UIController_InGame : UIController
 
         m_UIObjectInGame.SetActive(true);
         m_UIObjectPause.SetActive(false);
+        m_UIObjectShrine.SetActive(false);
         m_UIObjectPrompt.SetActive(false);
 
-        Time.timeScale = 1.0f;
-        m_sceneController.InGameState = SceneController_InGame.INGAME_STATE.IN_GAME;
+        UnPauseGame();
     }
 
     /// <summary>
@@ -117,8 +150,7 @@ public class UIController_InGame : UIController
 
         m_returnToShrineButton.interactable = MasterController.Instance.m_inGameSaveData.m_lastSavePoint.IsValid();
 
-        Time.timeScale = 0.0f;
-        m_sceneController.InGameState = SceneController_InGame.INGAME_STATE.PAUSED;
+        PauseGame();
     }
     #endregion
 

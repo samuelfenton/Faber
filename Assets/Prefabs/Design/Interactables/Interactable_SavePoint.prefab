@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c3b517bafa4d96479eb43f929f7f620, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uniqueID: -1
+  m_val: 0
 --- !u!114 &6742778223941079336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25,9 +25,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a7ca7e252c8e643b8007fa6898140e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_activationDistance: 2
   m_interactText: {fileID: 8300236050162996427}
-  m_uniqueID: -1
+  m_uniqueID: {fileID: 0}
   m_effectObjectOnLit: {fileID: 1615695106137823279}
   m_nodeA: {fileID: 0}
   m_nodeB: {fileID: 0}
@@ -69,6 +68,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738023913961566369, guid: af7344d9a5b5c63468f4be290ce9dcff,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8242898681517548780, guid: af7344d9a5b5c63468f4be290ce9dcff,
         type: 3}
