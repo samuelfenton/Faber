@@ -41,6 +41,9 @@ public class FollowCamera : MonoBehaviour
     /// </summary>
     public void ForceSnap()
     {
+        if (m_followTarget == null)//Early breakout
+            return;
+
         Vector3 cameraDesiredPos = m_followTarget.transform.position + (m_followTarget.transform.forward * m_cameraOffset.z + m_followTarget.transform.right * m_cameraOffset.x + m_followTarget.transform.up * m_cameraOffset.y);
         transform.position = cameraDesiredPos;
     }

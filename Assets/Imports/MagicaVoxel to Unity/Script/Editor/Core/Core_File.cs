@@ -193,10 +193,14 @@
 							{
 								var mat = new2old[mr.sharedMaterial] as Material;
 								mr.sharedMaterial = mat;
-								if (mat.mainTexture && new2old.ContainsKey(mat.mainTexture)) 
+
+								Texture currentBaseTexture = mat.GetTexture("_BaseColorMap");
+								Debug.Log(currentBaseTexture);
+
+								if (currentBaseTexture && new2old.ContainsKey(currentBaseTexture)) 
 								{
-									var texture = new2old[mat.mainTexture] as Texture2D;
-									mat.mainTexture = texture;
+									var texture = new2old[currentBaseTexture] as Texture2D;
+									mat.SetTexture("_BaseColorMap",texture);
 								}
 							}
 						}
@@ -220,10 +224,14 @@
 							{
 								var mat = new2old[sr.sharedMaterial] as Material;
 								sr.sharedMaterial = mat;
+
+								Texture currentBaseTexture = mat.GetTexture("_BaseColorMap");
+								Debug.Log(currentBaseTexture);
+
 								if (mat.mainTexture && new2old.ContainsKey(mat.mainTexture)) 
 								{
-									var texture = new2old[mat.mainTexture] as Texture2D;
-									mat.mainTexture = texture;
+									var texture = new2old[currentBaseTexture] as Texture2D;
+									mat.SetTexture("_BaseColorMap", texture);
 								}
 							}
 						}
