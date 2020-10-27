@@ -22,7 +22,17 @@ public class FollowCamera : MonoBehaviour
 
     private void Start()
     {
-        FlipCamera();
+        if (m_followTarget == null)
+        {
+            m_followTarget = FindObjectOfType<Character_Player>().gameObject;
+
+            if (m_followTarget == null)
+            {
+                enabled = false;
+                return;
+            }
+        }
+
         ForceSnap();
     }
 
@@ -81,6 +91,9 @@ public class FollowCamera : MonoBehaviour
 
     public float DetermineCameraSpeed(float p_distance)
     {
+        //Static
+        //return float.PositiveInfinity;
+
         //Arctan
         //Equation of (2xSpeed/PI) * arctan(droppoff*(x - linearSpeedDistance)) + C
         //Where C = -y intercept

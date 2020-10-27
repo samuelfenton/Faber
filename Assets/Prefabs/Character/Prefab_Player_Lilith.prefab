@@ -29,8 +29,8 @@ GameObject:
   - component: {fileID: 5576363102575628370}
   - component: {fileID: 1935659960459431728}
   - component: {fileID: 7681844626118014086}
+  - component: {fileID: 6689109739641642546}
   - component: {fileID: 7193313282808312360}
-  - component: {fileID: 4795170144421986615}
   - component: {fileID: 3775519670443091626}
   - component: {fileID: 8533570605815633378}
   - component: {fileID: 5834003191271657219}
@@ -86,6 +86,33 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &6689109739641642546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5576363102575397938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99da33eb2aafd3341a6beffe7dc2808f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_gravity: 1
+  m_nodeA: {fileID: 0}
+  m_nodeB: {fileID: 0}
+  m_currentSplinePercent: 0
+  m_currentSpline: {fileID: 0}
+  m_splineLocalVelocity: {x: 0, y: 0}
+  m_upCollision: 0
+  m_downCollision: 0
+  m_forwardCollision: 0
+  m_backCollision: 0
+  m_upCollisionType: 0
+  m_downCollisionType: 0
+  m_forwardCollisionType: 0
+  m_backCollisionType: 0
+  m_showDebugColliders: 0
 --- !u!114 &7193313282808312360
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,26 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0938248b1da045b47a12b8718edc0408, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4795170144421986615
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5576363102575397938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc4e21cd721a2bb43ac1e201def8c337, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_nodeA: {fileID: 0}
-  m_nodeB: {fileID: 0}
-  m_currentSplinePercent: 0.972
-  m_upCollision: 0
-  m_downCollision: 0
-  m_forwardCollision: 0
-  m_backCollision: 0
-  m_currentSpline: {fileID: 0}
+  m_currentlyBlending: 0
 --- !u!114 &3775519670443091626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,9 +138,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5ce36fdb713a75478da7c3624fccb43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_entityModel: {fileID: 7633926807805041317}
-  m_localVelocity: {x: 0, y: 0, z: 0}
-  m_gravity: 1
   m_splinePhysics: {fileID: 0}
   m_sceneController: {fileID: 0}
   m_primaryAnchor: {fileID: 1392919925366981228}
@@ -146,24 +151,27 @@ MonoBehaviour:
   m_jumpVelocity: 10
   m_inAirAccelModifier: 0.5
   m_doubleJumpSpeed: 8
-  m_wallJumpVerticalSpeed: 5
-  m_wallJumpHorizontalSpeed: 2
-  m_wallJumpInputDelay: 0.1
+  m_wallJumpVelocity: {x: 2, y: 8}
   m_dashVelocity: 8
   m_idlePoseCount: 2
   m_idleDelayTime: 5
   m_idleDelayTimer: 0
-  m_desiredVelocity: 0
+  m_desiredVelocity: {x: 0, y: 0}
+  m_effectColor1: {r: 1, g: 1, b: 1, a: 1}
+  m_effectColor2: {r: 1, g: 1, b: 1, a: 1}
   m_doubleJumpFlag: 0
   m_inAirDashFlag: 0
   m_blockingFlag: 0
   m_knockbackFlag: 0
+  m_knockforwardFlag: 0
   m_recoilFlag: 0
   m_deathFlag: 0
+  m_followCamera: {fileID: 0}
   m_characterStatistics: {fileID: 0}
   m_lastSavePoint: {fileID: 0}
   m_customInput: {fileID: 0}
-  m_followCamera: {fileID: 0}
+  m_atShrineFlag: 0
+  m_currentInteractable: {fileID: 0}
 --- !u!114 &8533570605815633378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -176,21 +184,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abe54aedea7d6514fac4b62449e4be9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_primaryWeaponPrefab: {fileID: 872240425218595252, guid: 596d8a3acdb2fc44d8ed3b64c46c1292,
-    type: 3}
-  m_secondaryWeaponPrefab: {fileID: 0}
-  m_groundLightManoeuvre: {fileID: 11400000, guid: 45b49a574343cea4281221f0b3f67efc,
-    type: 2}
-  m_groundHeavyManoeuvre: {fileID: 11400000, guid: 60b3812dc202ef345b1a669a6b7b9a95,
-    type: 2}
-  m_inAirLightManoeuvre: {fileID: 11400000, guid: 029ef31029a4b894fa6d627aaa3ded74,
-    type: 2}
-  m_inAirHeavyManoeuvre: {fileID: 11400000, guid: ffcb113d7180b604e8e0c6d5a4f048b4,
-    type: 2}
-  m_sprintingLightManoeuvre: {fileID: 11400000, guid: e94893388b7a441409dc50e1207b1875,
-    type: 2}
-  m_sprintingHeavyManoeuvre: {fileID: 11400000, guid: 0d6d29ac66c8a2a4a86b940fa068e4a6,
-    type: 2}
+  m_groundLightControllerPrefab: {fileID: 0}
+  m_groundHeavyControllerPrefab: {fileID: 0}
+  m_inAirLightControllerPrefab: {fileID: 0}
+  m_inAirHeavyControllerPrefab: {fileID: 0}
+  m_sprintingLightControllerPrefab: {fileID: 0}
+  m_sprintingHeavyControllerPrefab: {fileID: 0}
+  m_currentController: {fileID: 0}
 --- !u!114 &5834003191271657219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -302,12 +302,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4cfaa36bc91f76d4f85f769347a4fad4, type: 3}
---- !u!1 &7633926807805041317 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
-    type: 3}
-  m_PrefabInstance: {fileID: 1932267347226280876}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6893460875598620854 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 4cfaa36bc91f76d4f85f769347a4fad4,

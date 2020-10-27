@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_followTarget: {fileID: 0}
-  m_cameraOffset: {x: 4, y: 3, z: 0}
+  m_cameraOffset: {x: 4, y: 2, z: 0}
   m_lookAtOffset: {x: 0, y: 1.5, z: 0}
-  m_cameraLinerarSpeed: 8
-  m_linearSpeedDistance: 1
+  m_cameraLinerarSpeed: 10
+  m_linearSpeedDistance: 0.4
   m_dropOffRate: 2
-  m_currentOrientation: 1
+  m_currentOrientation: 0
 --- !u!1001 &1606692771047684104
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -45,6 +45,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_BackGroundColor.b
       value: 0.8392157
+      objectReference: {fileID: 0}
+    - target: {fileID: 6912546211480013805, guid: 99a833b0a67cf964d9c3d83b93645074,
+        type: 3}
+      propertyPath: near clip plane
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6912546211480013805, guid: 99a833b0a67cf964d9c3d83b93645074,
+        type: 3}
+      propertyPath: orthographic
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7517885006713286506, guid: 99a833b0a67cf964d9c3d83b93645074,
         type: 3}

@@ -64,14 +64,14 @@ public class DataController
         public SavePointData[] m_unlockedSavePoints;
     }
 
+    #region Ignore of override errors
     [System.Serializable]
 #pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
 #pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
+    #endregion
     public struct SavePointData
-#pragma warning restore CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
-#pragma warning restore CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
     {
-        public static SavePointData Invalid() { return new SavePointData(-1, (int)MasterController.SCENE.SCENE_COUNT); }
+        public static SavePointData Invalid() { return new SavePointData(-1, (int)MasterController.SCENE.MAIN_MENU); }
 
         public int m_savePointID;
         public int m_saveSceneIndex; //Not defined by build index but the enum equivalent found in MasterController.SCENE
@@ -95,7 +95,7 @@ public class DataController
         /// <returns>True when all constraints are met</returns>
         public bool IsValid()
         {
-            return m_savePointID > -1 && m_saveSceneIndex > 0 && m_saveSceneIndex < (int)MasterController.SCENE.SCENE_COUNT;
+            return m_savePointID > -1 && m_saveSceneIndex > 0;
         }
 
         public static bool operator == (SavePointData p_lhs, SavePointData p_rhs)

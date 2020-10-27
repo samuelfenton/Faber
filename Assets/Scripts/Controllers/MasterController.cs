@@ -6,8 +6,9 @@ using UnityEngine.SceneManagement;
 public class MasterController : MonoBehaviour
 {
     //Naming scheme for levels excluding main menu and loading should follow the following "LEVEL_AREA"
-    public enum SCENE {MAIN_MENU, LOADING, LEVEL_TUTORIAL, LEVEL_CHILDHOOD, LEVEL_CYBERCITY, LEVEL_INDUSTRIAL, LEVEL_EDO, LEVEL_PAINTING, SCENE_COUNT}
-    private string[] m_sceneStrings = new string[(int)SCENE.SCENE_COUNT];
+    public enum SCENE {MAIN_MENU, LOADING, LEVEL_TUTORIAL, LEVEL_CHILDHOOD, LEVEL_CYBERCITY, LEVEL_INDUSTRIAL, LEVEL_EDO, LEVEL_PAINTING}
+    private Dictionary<SCENE, string> m_sceneStrings = new Dictionary<SCENE, string>() { {SCENE.MAIN_MENU, "MainMenu" }, { SCENE.LOADING, "Loading" }, { SCENE.LEVEL_TUTORIAL, "Level_Tutorial" }, 
+        { SCENE.LEVEL_CHILDHOOD, "Level_Childhood" }, { SCENE.LEVEL_CYBERCITY, "Level_CyberCity" }, { SCENE.LEVEL_INDUSTRIAL, "Level_Industrial" }, { SCENE.LEVEL_EDO, "Level_Edo" }, { SCENE.LEVEL_PAINTING, "Level_Painting" } };
     public static MasterController Instance { get; private set; }
 
     //In scene varibles
@@ -47,8 +48,6 @@ public class MasterController : MonoBehaviour
 
         DontDestroyOnLoad(topObject);
 
-        BuildSceneStrings();
-
         m_currentSaveSlot = -1;
 
         InitSceneControllers();
@@ -86,31 +85,19 @@ public class MasterController : MonoBehaviour
     }
 
     /// <summary>
-    /// Assign the strings as needed to be used with enums
-    /// </summary>
-    public void BuildSceneStrings()
-    {
-        m_sceneStrings[(int)SCENE.MAIN_MENU] = "MainMenu";
-        m_sceneStrings[(int)SCENE.LOADING] = "Loading";
-        m_sceneStrings[(int)SCENE.LEVEL_TUTORIAL] = "Level_Tutorial";
-        m_sceneStrings[(int)SCENE.LEVEL_INDUSTRIAL] = "Level_Industrial_Opening";
-        m_sceneStrings[(int)SCENE.LEVEL_CYBERCITY] = "Level_Cybercity_PlayerHub";
-    }
-
-    /// <summary>
     /// Convert scene name to scene enum
     /// </summary>
     /// <param name="p_sceneString">String to attempt to find</param>
-    /// <returns>Scene enum, defaulted to SCENE_COUNT, when not found</returns>
+    /// <returns>Scene enum, defaulted to MAINMENU, when not found</returns>
     public SCENE GetSceneEnum(string p_sceneString)
     {
-        for (int sceneIndex = 0; sceneIndex < (int)SCENE.SCENE_COUNT; sceneIndex++)
+        foreach (KeyValuePair<SCENE, string> scenePair in m_sceneStrings)
         {
-            if (m_sceneStrings[sceneIndex] == p_sceneString)
-                return (SCENE)sceneIndex;
+            if (scenePair.Value == p_sceneString)
+                return scenePair.Key;
         }
 
-        return SCENE.SCENE_COUNT;
+        return SCENE.MAIN_MENU;
     }
 
     /// <summary>
@@ -121,10 +108,10 @@ public class MasterController : MonoBehaviour
     /// <param name="p_useLoadingScreen">Should we use the loading screen? In cases such as loading credits or main menu, theres no need to wait</param>
     public void LoadScene(SCENE p_scene, bool p_useLoadingScreen)
     {
-        if (p_scene == SCENE.SCENE_COUNT || p_scene == SCENE.LOADING)
+        if (p_scene == SCENE.LOADING)
             return;
 
-        if (!MOARMaths.DoesSceneExist(m_sceneStrings[(int)p_scene]))//No scene found, or not in load list
+        if (!MOARMaths.DoesSceneExist(m_sceneStrings[p_scene]))//No scene found, or not in load list
             return;
 
         if(p_useLoadingScreen)
@@ -143,7 +130,7 @@ public class MasterController : MonoBehaviour
     /// <param name="p_scene">Scene to attempt to load</param>
     private IEnumerator LoadSceneImmediatly(SCENE p_scene)
     {
-        SceneManager.LoadScene(m_sceneStrings[(int)p_scene]);
+        SceneManager.LoadScene(m_sceneStrings[p_scene]);
         yield return null;
 
         InitSceneControllers();
@@ -156,10 +143,10 @@ public class MasterController : MonoBehaviour
     /// <param name="p_scene">Scene to attempted to load, pre checked for validity</param>
     private IEnumerator LoadSceneAsync(SCENE p_scene)
     {
-        AsyncOperation loadingAsync = SceneManager.LoadSceneAsync(m_sceneStrings[(int)SCENE.LOADING], LoadSceneMode.Single);
+        AsyncOperation loadingAsync = SceneManager.LoadSceneAsync(m_sceneStrings[SCENE.LOADING], LoadSceneMode.Single);
 
         //Setup async loading
-        m_asyncSceneLoading = SceneManager.LoadSceneAsync(m_sceneStrings[(int)p_scene], LoadSceneMode.Additive);
+        m_asyncSceneLoading = SceneManager.LoadSceneAsync(m_sceneStrings[p_scene], LoadSceneMode.Additive);
         m_asyncSceneLoading.allowSceneActivation = false;
 
         while(!loadingAsync.isDone)
@@ -190,7 +177,7 @@ public class MasterController : MonoBehaviour
             yield return null;
         }
 
-        AsyncOperation unloading = SceneManager.UnloadSceneAsync(m_sceneStrings[(int)SCENE.LOADING]);
+        AsyncOperation unloading = SceneManager.UnloadSceneAsync(m_sceneStrings[SCENE.LOADING]);
 
         while (!unloading.isDone)
         {
