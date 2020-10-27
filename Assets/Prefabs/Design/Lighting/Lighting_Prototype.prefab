@@ -65,7 +65,13 @@ PrefabInstance:
     - target: {fileID: 1181893875787516391, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_Name
-      value: Lighting (4)
+      value: Lighting_Prototype
       objectReference: {fileID: 0}
+    - target: {fileID: 5763697109142757621, guid: 1068d130347680c47bcc17f963315e9b,
+        type: 3}
+      propertyPath: sharedProfile
+      value: 
+      objectReference: {fileID: 11400000, guid: 17fb7770d744a714eb6134731b69d04c,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1068d130347680c47bcc17f963315e9b, type: 3}

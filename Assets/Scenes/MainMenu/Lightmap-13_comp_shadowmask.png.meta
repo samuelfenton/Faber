@@ -1,13 +1,13 @@
 fileFormatVersion: 2
-guid: b54df8ee9cf551d4097a5a665c6f8ed7
+guid: baa2a400524fa724392d0df011b1be93
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 0
-    sRGBTexture: 1
+    enableMipMap: 1
+    sRGBTexture: 0
     linearTexture: 0
     fadeOut: 0
     borderMipMap: 0
@@ -21,7 +21,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
   isReadable: 0
-  streamingMipmaps: 0
+  streamingMipmaps: 1
   streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
@@ -31,12 +31,12 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
-    aniso: -1
-    mipBias: -100
-    wrapU: -1
-    wrapV: -1
-    wrapW: -1
+    filterMode: 1
+    aniso: 3
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 1
   lightmap: 0
   compressionQuality: 50
@@ -62,9 +62,9 @@ TextureImporter:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
-    resizeAlgorithm: 1
+    resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -72,10 +72,10 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
-    buildTarget: Standalone
+    buildTarget: Win64
     maxTextureSize: 2048
-    resizeAlgorithm: 1
-    textureFormat: -1
+    resizeAlgorithm: 0
+    textureFormat: 2
     textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0

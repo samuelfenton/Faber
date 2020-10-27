@@ -5,23 +5,25 @@ using UnityEngine;
 
 public class CustomNeon : MonoBehaviour
 {
-    private const string COLOR_STRING = "_Color";
-    private const string EMISSION_STRING = "_EmissionColor";
+    private const string BASE_COLOR = "_BaseColor";
+    private const string EMISSION_COLOR = "_EmissiveColor";
+    private const string ENABLE_EMISSIVE_INTENSITY = "_UseEmissiveIntensity";
+    private const string EMISSIVE_INTENSITY = "_EmissiveIntensity";
+    private const string METALLIC_FLOAT = "_Metallic";
+    private const float METALLIC_VAL = 0.3f;
 
     [System.Serializable]
     public struct NEON_SECTION
     {
         public float m_timeCode;
-        public bool m_emissionEnabled;
         public Color m_neonColor;
-        public float m_neonIntensity;
+        public bool m_emissionInUse;
 
         public NEON_SECTION(float p_timeCode = 0.0f)
         {
             m_timeCode = p_timeCode;
-            m_emissionEnabled = false;
             m_neonColor = Color.white;
-            m_neonIntensity = 1;
+            m_emissionInUse = false;
         }
     }
 
@@ -67,20 +69,23 @@ public class CustomNeon : MonoBehaviour
 
         private Coroutine m_loopCoroutine = null;
 
-        private string[] m_targetVariables;
+        private NEON_TYPE m_neonType;
+        private float m_emissionIntensity = 1.0f;
 
         /// <summary>
         /// Initialise the seqeance
         /// </summary>
         /// <param name="p_validData">Data to copy over from</param>
-        /// <param name="p_targetVariables">String to use when modifying color</param>
+        /// <param name="p_neonType">Type of intended neon</param>
+        /// <param name="p_emissionIntensity">In the case of emission, what intensity is it?</param>
         /// <returns>True when inialisation has completed</returns>
-        public bool InitSequence(NEON_SEQUENCE_DATA p_validData, string[] p_targetVariables)
+        public bool InitSequence(NEON_SEQUENCE_DATA p_validData, NEON_TYPE p_neonType, float p_emissionIntensity = 1.0f)
         {
             //Copy data
             m_neonObject = p_validData.m_neonObject;
             m_neonSequence = p_validData.m_neonSequence;
-            m_targetVariables = p_targetVariables;
+            m_neonType = p_neonType;
+            m_emissionIntensity = p_emissionIntensity;
 
             //Valid setup
             MeshRenderer[] sectionRenderers = m_neonObject.GetComponentsInChildren<MeshRenderer>();
@@ -100,13 +105,38 @@ public class CustomNeon : MonoBehaviour
             for (int rendererIndex = 0; rendererIndex < sectionRenderers.Length; rendererIndex++)
             {
                 m_materials[rendererIndex] = Instantiate(sectionRenderers[rendererIndex].material);
+
+                //Setup keywords
+                switch (m_neonType)
+                {
+                    case NEON_TYPE.COLOR_ONLY:
+                        m_materials[rendererIndex].EnableKeyword(BASE_COLOR);
+                        m_materials[rendererIndex].SetFloat(METALLIC_FLOAT, METALLIC_VAL);
+                        break;
+                    case NEON_TYPE.EMISSION_ONLY:
+                        m_materials[rendererIndex].EnableKeyword(EMISSION_COLOR);
+                        m_materials[rendererIndex].SetInt(ENABLE_EMISSIVE_INTENSITY, 1);
+                        m_materials[rendererIndex].SetFloat(METALLIC_FLOAT, METALLIC_VAL);
+
+                        break;
+                    case NEON_TYPE.COLOR_AND_EMISSION:
+                        m_materials[rendererIndex].EnableKeyword(BASE_COLOR);
+                        m_materials[rendererIndex].SetFloat(METALLIC_FLOAT, METALLIC_VAL);
+
+                        m_materials[rendererIndex].EnableKeyword(EMISSION_COLOR);
+                        m_materials[rendererIndex].SetInt(ENABLE_EMISSIVE_INTENSITY, 1);
+                        break;
+                    default:
+                        break;
+                }
+
                 sectionRenderers[rendererIndex].sharedMaterial = m_materials[rendererIndex];
             }
 
             //Only one change needed so set now and forget
             if(m_neonSequence.Count == 1)
             {
-                SetColour(m_neonSequence[0].m_emissionEnabled, m_neonSequence[0].m_neonColor, m_neonSequence[0].m_neonIntensity);
+                SetColour(m_neonSequence[0].m_neonColor, m_neonSequence[0].m_emissionInUse);
 
                 return false;
             }
@@ -135,7 +165,7 @@ public class CustomNeon : MonoBehaviour
         /// </summary>
         private IEnumerator NextSection()
         {
-            SetColour(m_neonSequence[m_currentIndex].m_emissionEnabled, m_neonSequence[m_currentIndex].m_neonColor, m_neonSequence[m_currentIndex].m_neonIntensity);
+            SetColour(m_neonSequence[m_currentIndex].m_neonColor, m_neonSequence[m_currentIndex].m_emissionInUse);
 
             if (m_currentIndex == m_neonSequence.Count - 1)
             {
@@ -156,34 +186,31 @@ public class CustomNeon : MonoBehaviour
         /// Set color for all materials being used
         /// </summary>
         /// <param name="p_enabled">Is the emission set for this</param>
-        /// <param name="p_color">Color to set to</param>
-        /// <param name="p_intensity"></param>
-        private void SetColour(bool p_enabled, Color p_color, float p_intensity)
+        /// <param name="p_emisisonInUse">Is this color in use? In the case of emission, set emission to 0</param>
+        private void SetColour(Color p_color, bool p_emisisonInUse)
         {
             for (int materialIndex = 0; materialIndex < m_materials.Length; materialIndex++)
             {
-                //Assign to all varibles
-                for (int varibleIndex = 0; varibleIndex < m_targetVariables.Length; varibleIndex++)
+                switch (m_neonType)
                 {
-                    if(p_enabled)
-                    {
-                        m_materials[materialIndex].EnableKeyword("_EMISSION");
+                    case NEON_TYPE.COLOR_ONLY:
+                        //Apply values
+                        m_materials[materialIndex].SetColor(BASE_COLOR, p_color);
+                        break;
+                    case NEON_TYPE.EMISSION_ONLY:
+                        //Apply values
+                        m_materials[materialIndex].SetColor(EMISSION_COLOR, p_color);
+                        m_materials[materialIndex].SetFloat(EMISSIVE_INTENSITY, p_emisisonInUse ? m_emissionIntensity : 0.0f);
 
-                        //Answer to generat color intensity found here
-                        //https://forum.unity.com/threads/setting-material-emission-intensity-in-script-to-match-ui-value.661624/
-
-                        float adjustedIntensity = p_intensity - (0.4169F);
-
-                        // redefine the color with intensity factored in - this should result in the UI slider matching the desired value
-                        Color colorWithIntensity = p_color * Mathf.Pow(2.0F, adjustedIntensity);
-                        m_materials[materialIndex].SetColor(m_targetVariables[varibleIndex], colorWithIntensity);
-                    }
-                    else
-                    {
-                        m_materials[materialIndex].SetColor(m_targetVariables[varibleIndex], p_color);
-
-                        m_materials[materialIndex].DisableKeyword("_EMISSION");
-                    }
+                        break;
+                    case NEON_TYPE.COLOR_AND_EMISSION:
+                        //Apply values
+                        m_materials[materialIndex].SetColor(BASE_COLOR, p_color);
+                        m_materials[materialIndex].SetColor(EMISSION_COLOR, p_color);
+                        m_materials[materialIndex].SetFloat(EMISSIVE_INTENSITY, p_emisisonInUse ? m_emissionIntensity : 0.0f);
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -191,11 +218,13 @@ public class CustomNeon : MonoBehaviour
 
     [Header("Settings")]
     public float m_totalTime = 0.0f;
-    public enum NEON_TYPE {EMISSION, BOTH}
-    [Tooltip("EMISSION: Adds emission to object, used more on neon tube signs, BOTH: Add to both colour and emission, used more for LCD screens")]
-    public NEON_TYPE m_colourType = NEON_TYPE.EMISSION;
+    public enum NEON_TYPE {COLOR_ONLY, EMISSION_ONLY, COLOR_AND_EMISSION}
+    [Tooltip("COLOR_ONLY: only changes color, COLOR_AND_EMISSION: Add to both colour and emission, used more for LCD screens")]
+    public NEON_TYPE m_colourType = NEON_TYPE.COLOR_ONLY;
 
     [Header("Advanced")]
+    [Tooltip("Neon intensity when using emission")]
+    public float m_emissionIntensity = 1.0f;
     [Tooltip("Only change if youre not using the default varible names in the shader, otherwise leave empty")]
     public string m_materialVarible = "";
 
@@ -207,37 +236,14 @@ public class CustomNeon : MonoBehaviour
     /// Setup all sequencing based off data given
     /// </summary>
     private void Start()
-    {
-        string[] variableStrings = new string[0];
-
-        if(m_materialVarible != "") //Preassigned varible
-        {
-            variableStrings = new string[1];
-            variableStrings[0] = m_materialVarible;
-        }
-        else
-        {
-            switch (m_colourType)
-            {
-                case NEON_TYPE.EMISSION:
-                    variableStrings = new string[1];
-                    variableStrings[0] = EMISSION_STRING;
-                    break;
-                case NEON_TYPE.BOTH:
-                    variableStrings = new string[2];
-                    variableStrings[0] = COLOR_STRING;
-                    variableStrings[1] = EMISSION_STRING;
-                    break;
-            }
-        }
-            
+    {            
         for (int sequenceIndex = 0; sequenceIndex < m_neonSequenceData.Count; sequenceIndex++)
         {
             if(m_neonSequenceData[sequenceIndex].IsValidData())
             {
                 NeonSequence nextSequence = gameObject.AddComponent<NeonSequence>();
 
-                if (nextSequence.InitSequence(m_neonSequenceData[sequenceIndex], variableStrings))
+                if (nextSequence.InitSequence(m_neonSequenceData[sequenceIndex], m_colourType, m_emissionIntensity))
                     m_neonSequence.Add(nextSequence);
                 else
                     Destroy(nextSequence);
