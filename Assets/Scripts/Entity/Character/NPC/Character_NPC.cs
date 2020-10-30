@@ -9,8 +9,17 @@ public class Character_NPC : Character
     public float m_attackingDistance = 1.0f;
     public float m_detectionDistance = 10.0f;
 
+    [System.Serializable]
+    public struct PatrolPoint
+    {
+        public Pathing_Node m_nodeA;
+        public Pathing_Node m_nodeB;
+        [Range(0.0f,1.0f)]
+        public float m_splinePercent;
+    }
+
     [Header("Patrolling")]
-    public List<Pathing_Spline> m_patrolSplines = new List<Pathing_Spline>();
+    public List<PatrolPoint> m_patrolPoints = new List<PatrolPoint>();
 
     [HideInInspector]
     public List<Pathing_Spline> m_path = new List<Pathing_Spline>();
@@ -104,6 +113,20 @@ public class Character_NPC : Character
         //TODO implement attack logic
 
         return ATTACK_INPUT_STANCE.LIGHT;
+    }
+    #endregion
+
+    #region DEBUG
+    private void OnDrawGizmos()
+    {
+        foreach (PatrolPoint patrolPoint in m_patrolPoints)
+        {
+            if (MOARDebugging.GetSplinePosition(patrolPoint.m_nodeA, patrolPoint.m_nodeB, patrolPoint.m_splinePercent, out Vector3 position))
+            {
+                MOARDebugging.DrawFlag(position, MOARDebugging.PATROL_COLOR);
+            }
+        }
+
     }
     #endregion
 }

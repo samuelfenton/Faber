@@ -808,7 +808,7 @@
 					Util.SetMaterialFloatOrColor(material, keywords[12], Util.Remap(MaterialData.SHADER_VALUE_REMAP_SOURCE[12].x, MaterialData.SHADER_VALUE_REMAP_SOURCE[12].y, remaps[12].x, remaps[12].y, mat.LDR));// ldr
 					break;
 			}
-			material.SetTexture("_BaseColorMap", texture);
+			material.SetTexture(Core_File.BASE_TEXTURE, texture);
 			return material;
 		}
 

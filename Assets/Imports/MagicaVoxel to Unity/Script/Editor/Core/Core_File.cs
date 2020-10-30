@@ -6,7 +6,7 @@
 
 	public static class Core_File 
 	{
-
+		public const string BASE_TEXTURE = "_BaseMap";
 
 		public static void CreateFileForResult (List<Core_Voxel.Result> resultList, Shader shader, float scale, Vector3 pivot) {
 			CreateFileForResult(resultList, new Shader[1] { shader }, null, null, scale, pivot);
@@ -194,13 +194,13 @@
 								var mat = new2old[mr.sharedMaterial] as Material;
 								mr.sharedMaterial = mat;
 
-								Texture currentBaseTexture = mat.GetTexture("_BaseColorMap");
+								Texture currentBaseTexture = mat.GetTexture(BASE_TEXTURE);
 								Debug.Log(currentBaseTexture);
 
 								if (currentBaseTexture && new2old.ContainsKey(currentBaseTexture)) 
 								{
 									var texture = new2old[currentBaseTexture] as Texture2D;
-									mat.SetTexture("_BaseColorMap",texture);
+									mat.SetTexture(BASE_TEXTURE, texture);
 								}
 							}
 						}
@@ -225,13 +225,13 @@
 								var mat = new2old[sr.sharedMaterial] as Material;
 								sr.sharedMaterial = mat;
 
-								Texture currentBaseTexture = mat.GetTexture("_BaseColorMap");
+								Texture currentBaseTexture = mat.GetTexture(BASE_TEXTURE);
 								Debug.Log(currentBaseTexture);
 
 								if (mat.mainTexture && new2old.ContainsKey(mat.mainTexture)) 
 								{
 									var texture = new2old[currentBaseTexture] as Texture2D;
-									mat.SetTexture("_BaseColorMap", texture);
+									mat.SetTexture(BASE_TEXTURE, texture);
 								}
 							}
 						}

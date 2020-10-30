@@ -31,7 +31,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7334705693917663468}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -32.0636}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6410416451418581159}
@@ -82,7 +82,7 @@ MonoBehaviour:
   m_gravity: 1
   m_nodeA: {fileID: 0}
   m_nodeB: {fileID: 0}
-  m_currentSplinePercent: 0.778
+  m_currentSplinePercent: 0
   m_currentSpline: {fileID: 0}
   m_splineLocalVelocity: {x: 0, y: 0}
   m_upCollision: 0
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_jumpVelocity: 10
   m_inAirAccelModifier: 0.7
   m_doubleJumpSpeed: 8
-  m_wallJumpVelocity: {x: 6, y: 8}
+  m_wallJumpVelocity: {x: 4, y: 4}
   m_dashVelocity: 8
   m_idlePoseCount: 2
   m_idleDelayTime: 5
@@ -138,6 +138,8 @@ MonoBehaviour:
   m_characterStatistics: {fileID: 0}
   m_lastSavePoint: {fileID: 0}
   m_customInput: {fileID: 0}
+  m_atShrineFlag: 0
+  m_currentInteractable: {fileID: 0}
 --- !u!114 &6828712698901842236
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,7 +190,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_voxeliserType: 2
   m_vertType: 0
-  m_voxelSize: 0.04
+  m_voxelSize: 0.06
   m_objectWithMesh: {fileID: 865461158226686979}
   m_meshesToUse: 1
 --- !u!1001 &2129335121831412669

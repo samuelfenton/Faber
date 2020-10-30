@@ -36,13 +36,14 @@ public class StateNPC_Waiting : State_NPC
         else //Patrolling
         {
             //pick random spline to move to and random percent
-            List<Pathing_Spline> possibleSplines = new List<Pathing_Spline>();
+            List<Character_NPC.PatrolPoint> possiblePoints = new List<Character_NPC.PatrolPoint>();
 
-            possibleSplines.AddRange(m_NPCCharacter.m_patrolSplines);
-            possibleSplines.Remove(m_entity.m_splinePhysics.m_currentSpline); //Dont attempt to get current spline
+            possiblePoints.AddRange(m_NPCCharacter.m_patrolPoints);
 
-            m_patrolSpline = possibleSplines[Random.Range(0, possibleSplines.Count)];
-            m_patrolSplinePercent = Random.Range(0.2f, 0.8f);
+            Character_NPC.PatrolPoint randomPatrolPoint = possiblePoints[Random.Range(0, possiblePoints.Count)];
+
+            m_patrolSpline = randomPatrolPoint.m_nodeA.GetSpline(randomPatrolPoint.m_nodeB);
+            m_patrolSplinePercent = randomPatrolPoint.m_splinePercent;
         }
     }
 
@@ -99,7 +100,7 @@ public class StateNPC_Waiting : State_NPC
     /// </summary>
     public void SetNextStatus()
     {
-        if(m_NPCCharacter.m_patrolSplines.Count <= 1)
+        if(m_NPCCharacter.m_patrolPoints.Count <= 1)
         {
             m_currentWaitingState = WAITING_STATUS.IDLE;
         }

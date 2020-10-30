@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 368.25027, g: 368.25027, b: 368.25027, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -9249,6 +9249,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -5793898484424511129, guid: d8c7bd5135d707e468adf663836884ee,
+        type: 3}
+      propertyPath: m_lookAtOffset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -5793898484424511129, guid: d8c7bd5135d707e468adf663836884ee,
+        type: 3}
+      propertyPath: m_cameraOffset.x
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 7723055460018113353, guid: d8c7bd5135d707e468adf663836884ee,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9302,6 +9312,11 @@ PrefabInstance:
     - target: {fileID: 7723055460018113353, guid: d8c7bd5135d707e468adf663836884ee,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7855162070832571904, guid: d8c7bd5135d707e468adf663836884ee,
+        type: 3}
+      propertyPath: orthographic
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8063401032989623573, guid: d8c7bd5135d707e468adf663836884ee,
@@ -21679,16 +21694,6 @@ PrefabInstance:
       propertyPath: m_nodeB
       value: 
       objectReference: {fileID: 2084684021}
-    - target: {fileID: 2075161514799004276, guid: e87fa2605b367a941976ca36de02b92c,
-        type: 3}
-      propertyPath: m_wallJumpVelocity.x
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 2075161514799004276, guid: e87fa2605b367a941976ca36de02b92c,
-        type: 3}
-      propertyPath: m_wallJumpVelocity.y
-      value: 4
-      objectReference: {fileID: 0}
     - target: {fileID: 7334705693917236364, guid: e87fa2605b367a941976ca36de02b92c,
         type: 3}
       propertyPath: m_LocalPosition.x

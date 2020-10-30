@@ -6,11 +6,8 @@ using UnityEngine;
 public class CustomNeon : MonoBehaviour
 {
     private const string BASE_COLOR = "_BaseColor";
-    private const string EMISSION_COLOR = "_EmissiveColor";
-    private const string ENABLE_EMISSIVE_INTENSITY = "_UseEmissiveIntensity";
-    private const string EMISSIVE_INTENSITY = "_EmissiveIntensity";
-    private const string METALLIC_FLOAT = "_Metallic";
-    private const float METALLIC_VAL = 0.3f;
+    private const string EMISSION_ENABLE = "_EMISSION";
+    private const string EMISSION_COLOR = "_EmissionColor";
 
     [System.Serializable]
     public struct NEON_SECTION
@@ -109,22 +106,14 @@ public class CustomNeon : MonoBehaviour
                 //Setup keywords
                 switch (m_neonType)
                 {
-                    case NEON_TYPE.COLOR_ONLY:
+                    case NEON_TYPE.COLOR_ONLY:                        
                         m_materials[rendererIndex].EnableKeyword(BASE_COLOR);
-                        m_materials[rendererIndex].SetFloat(METALLIC_FLOAT, METALLIC_VAL);
                         break;
                     case NEON_TYPE.EMISSION_ONLY:
-                        m_materials[rendererIndex].EnableKeyword(EMISSION_COLOR);
-                        m_materials[rendererIndex].SetInt(ENABLE_EMISSIVE_INTENSITY, 1);
-                        m_materials[rendererIndex].SetFloat(METALLIC_FLOAT, METALLIC_VAL);
 
                         break;
-                    case NEON_TYPE.COLOR_AND_EMISSION:
+                    case NEON_TYPE.COLOR_AND_EMISSION:                        
                         m_materials[rendererIndex].EnableKeyword(BASE_COLOR);
-                        m_materials[rendererIndex].SetFloat(METALLIC_FLOAT, METALLIC_VAL);
-
-                        m_materials[rendererIndex].EnableKeyword(EMISSION_COLOR);
-                        m_materials[rendererIndex].SetInt(ENABLE_EMISSIVE_INTENSITY, 1);
                         break;
                     default:
                         break;
@@ -196,25 +185,85 @@ public class CustomNeon : MonoBehaviour
                     case NEON_TYPE.COLOR_ONLY:
                         //Apply values
                         m_materials[materialIndex].SetColor(BASE_COLOR, p_color);
+
                         break;
                     case NEON_TYPE.EMISSION_ONLY:
                         //Apply values
-                        m_materials[materialIndex].SetColor(EMISSION_COLOR, p_color);
-                        m_materials[materialIndex].SetFloat(EMISSIVE_INTENSITY, p_emisisonInUse ? m_emissionIntensity : 0.0f);
+                        if (p_emisisonInUse)
+                            ToggleEmission(m_materials[materialIndex], true, GetColourIntensity(p_color));
+                        else
+                            ToggleEmission(m_materials[materialIndex], false, Color.black);
 
                         break;
                     case NEON_TYPE.COLOR_AND_EMISSION:
                         //Apply values
                         m_materials[materialIndex].SetColor(BASE_COLOR, p_color);
-                        m_materials[materialIndex].SetColor(EMISSION_COLOR, p_color);
-                        m_materials[materialIndex].SetFloat(EMISSIVE_INTENSITY, p_emisisonInUse ? m_emissionIntensity : 0.0f);
+
+                        if (p_emisisonInUse)
+                            ToggleEmission(m_materials[materialIndex], true, GetColourIntensity(p_color));
+                        else
+                            ToggleEmission(m_materials[materialIndex], false, Color.black);
+
                         break;
                     default:
                         break;
                 }
             }
         }
+
+        /// <summary>
+        /// Determine a colour based off its intensity
+        /// uses m_emissionIntensity for intensity 
+        /// Math found here https://forum.unity.com/threads/how-to-change-hdr-colors-intensity-via-shader.531861/
+        /// </summary>
+        /// <param name="p_baseColour">Base colour to modify</param>
+        /// <returns>Color modified by intensity</returns>
+        private Color GetColourIntensity(Color p_baseColour)
+        {
+            float intensityMul = Mathf.Pow(2.0f, m_emissionIntensity);
+            intensityMul = Mathf.Pow(intensityMul, 2.2f); //Get gamma value
+
+            //Aplpy modifier
+            p_baseColour.r *= intensityMul;
+            p_baseColour.g *= intensityMul;
+            p_baseColour.b *= intensityMul;
+
+            return p_baseColour;
+        }
+
+        /// <summary>
+        /// Toggle a materials emissivness
+        /// </summary>
+        /// <param name="p_material">Material to modify</param>
+        /// <param name="p_val">Emissiveness value, true for in use</param>
+        /// <param name="p_color">Desired emission color, use black for false</param>
+        private void ToggleEmission(Material p_material, bool p_val, Color p_color)
+        {
+            if(p_val)
+            {
+                p_material.EnableKeyword(EMISSION_ENABLE);
+                p_material.EnableKeyword(EMISSION_COLOR);
+
+                p_material.SetColor(EMISSION_COLOR, p_color);
+
+                p_material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+                
+                DynamicGI.UpdateEnvironment();
+            }
+            else
+            {
+                p_material.DisableKeyword(EMISSION_ENABLE);
+                p_material.DisableKeyword(EMISSION_COLOR);
+
+                p_material.SetColor(EMISSION_COLOR, Color.black);
+
+                p_material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
+
+                DynamicGI.UpdateEnvironment();
+            }
+        }
     }
+
 
     [Header("Settings")]
     public float m_totalTime = 0.0f;

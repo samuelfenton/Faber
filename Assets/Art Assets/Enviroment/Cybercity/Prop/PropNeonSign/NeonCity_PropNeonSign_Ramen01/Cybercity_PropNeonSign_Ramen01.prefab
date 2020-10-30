@@ -49,14 +49,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_totalTime: 3
   m_colourType: 1
-  m_emissionIntensity: 5
+  m_emissionIntensity: 30
   m_materialVarible: 
   m_neonSequenceData:
   - m_neonObject: {fileID: 425471507135025844}
     m_neonSequence:
     - m_timeCode: 0
       m_neonColor: {r: 0, g: 1, b: 0.0009315014, a: 0}
-      m_emissionInUse: 0
+      m_emissionInUse: 1
   - m_neonObject: {fileID: 9143528912479056623}
     m_neonSequence:
     - m_timeCode: 0
@@ -64,7 +64,7 @@ MonoBehaviour:
       m_emissionInUse: 0
     - m_timeCode: 0.5
       m_neonColor: {r: 1, g: 1, b: 0, a: 0}
-      m_emissionInUse: 0
+      m_emissionInUse: 1
     - m_timeCode: 2
       m_neonColor: {r: 0, g: 0, b: 0, a: 0}
       m_emissionInUse: 0
@@ -72,7 +72,7 @@ MonoBehaviour:
     m_neonSequence:
     - m_timeCode: 0
       m_neonColor: {r: 0, g: 0.98154783, b: 1, a: 0}
-      m_emissionInUse: 0
+      m_emissionInUse: 1
     - m_timeCode: 2.2
       m_neonColor: {r: 0, g: 0, b: 0, a: 0}
       m_emissionInUse: 0
@@ -80,7 +80,7 @@ MonoBehaviour:
     m_neonSequence:
     - m_timeCode: 0
       m_neonColor: {r: 1, g: 0, b: 0, a: 0}
-      m_emissionInUse: 0
+      m_emissionInUse: 1
 --- !u!1001 &393128702978500077
 PrefabInstance:
   m_ObjectHideFlags: 0

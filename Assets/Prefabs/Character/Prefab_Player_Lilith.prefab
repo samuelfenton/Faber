@@ -30,12 +30,11 @@ GameObject:
   - component: {fileID: 1935659960459431728}
   - component: {fileID: 7681844626118014086}
   - component: {fileID: 6689109739641642546}
-  - component: {fileID: 7193313282808312360}
   - component: {fileID: 3775519670443091626}
   - component: {fileID: 8533570605815633378}
   - component: {fileID: 5834003191271657219}
   - component: {fileID: 5995276341813878792}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Prefab_Player_Lilith
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -113,19 +112,6 @@ MonoBehaviour:
   m_forwardCollisionType: 0
   m_backCollisionType: 0
   m_showDebugColliders: 0
---- !u!114 &7193313282808312360
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5576363102575397938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0938248b1da045b47a12b8718edc0408, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_currentlyBlending: 0
 --- !u!114 &3775519670443091626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,7 +206,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_voxeliserType: 2
   m_vertType: 0
-  m_voxelSize: 0.04
+  m_voxelSize: 0.06
   m_objectWithMesh: {fileID: 1923960976811222904}
   m_meshesToUse: 1
 --- !u!1001 &1932267347226280876

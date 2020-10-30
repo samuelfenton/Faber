@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class MOARDebugging
 {
+    public static Color SAVE_POINT_COLOR = Color.blue;
+    public static Color PATROL_COLOR = Color.red;
+    private const float DEBUG_FLAG_HEIGHT = 3.0f;
+
     /// <summary>
     /// Given two nodes determine the position on a spline when valid
     /// </summary>
@@ -73,5 +77,19 @@ public class MOARDebugging
             }
         }
         return false;
+    }
+
+    /// <summary>
+    /// Draw a flag using gizmos
+    /// </summary>
+    /// <param name="p_position">Point to draw flag</param>
+    /// <param name="p_color">Color to use in gizmos</param>
+    public static void DrawFlag(Vector3 p_position, Color p_color)
+    {
+        Gizmos.color = p_color;
+        Gizmos.DrawLine(p_position, p_position + Vector3.up * DEBUG_FLAG_HEIGHT); //Stick
+        Gizmos.DrawLine(p_position + Vector3.up * DEBUG_FLAG_HEIGHT, p_position + Vector3.up * (DEBUG_FLAG_HEIGHT - 0.5f) + Vector3.forward); //Top flag edge
+        Gizmos.DrawLine(p_position + Vector3.up * (DEBUG_FLAG_HEIGHT - 1.0f), p_position + Vector3.up * (DEBUG_FLAG_HEIGHT - 0.5f) + Vector3.forward); //Bottom flag edge
+
     }
 }

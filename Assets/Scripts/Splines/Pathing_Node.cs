@@ -312,6 +312,23 @@ public class Pathing_Node : MonoBehaviour
     }
 
     /// <summary>
+    /// Get spline based off secondary node
+    /// </summary>
+    /// <param name="p_node">Secondary node</param>
+    /// <returns>Pahting spline, defualt to null</returns>
+    public Pathing_Spline GetSpline(Pathing_Node p_node)
+    {
+        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
+        {
+            if (m_pathingSplines[splineIndex].m_nodePrimary == p_node || m_pathingSplines[splineIndex].m_nodeSecondary == p_node)
+            {
+                return m_pathingSplines[splineIndex];
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
     /// Does this pathing node, contain a link to a given spline
     /// That is, is any spline in m_pathingSplines the given spline
     /// </summary>

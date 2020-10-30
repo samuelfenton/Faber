@@ -95,16 +95,16 @@ public class FollowCamera : MonoBehaviour
     public float DetermineCameraSpeed(float p_distance)
     {
         //Static
-        //return float.PositiveInfinity;
+        return float.PositiveInfinity;
 
         //Arctan
         //Equation of (2xSpeed/PI) * arctan(droppoff*(x - linearSpeedDistance)) + C
         //Where C = -y intercept
 
         //Calc C, set x or p_distance to 0 for y-intercept, then invert 
-        float C = -((m_cameraLinerarSpeed * 2 / Mathf.PI) * Mathf.Atan(m_dropOffRate * (-m_linearSpeedDistance)));
+        //float C = -((m_cameraLinerarSpeed * 2 / Mathf.PI) * Mathf.Atan(m_dropOffRate * (-m_linearSpeedDistance)));
 
-        return (m_cameraLinerarSpeed * 2 / Mathf.PI) * Mathf.Atan(m_dropOffRate * (p_distance - m_linearSpeedDistance)) + C;
+        //return (m_cameraLinerarSpeed * 2 / Mathf.PI) * Mathf.Atan(m_dropOffRate * (p_distance - m_linearSpeedDistance)) + C;
 
         //Linear
         //Equation of gradiant(x)

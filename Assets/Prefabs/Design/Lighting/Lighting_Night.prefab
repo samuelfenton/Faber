@@ -80,32 +80,32 @@ PrefabInstance:
     - target: {fileID: 844054648441267907, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_Intensity
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 844054648441267907, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_ColorTemperature
-      value: 15405
+      value: 9604
       objectReference: {fileID: 0}
     - target: {fileID: 844054648441267907, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_Color.r
-      value: 0
+      value: 0.03773582
       objectReference: {fileID: 0}
     - target: {fileID: 844054648441267907, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_Color.g
-      value: 0.14761382
+      value: 0.03773582
       objectReference: {fileID: 0}
     - target: {fileID: 844054648441267907, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_Color.b
-      value: 0.1792453
+      value: 0.03773582
       objectReference: {fileID: 0}
     - target: {fileID: 844054648441267907, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_UseColorTemperature
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1181893875787516391, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
@@ -115,12 +115,17 @@ PrefabInstance:
     - target: {fileID: 1916221996260948120, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_Intensity
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1916221996260948120, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_AngularDiameter
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1962832996340611099, guid: 1068d130347680c47bcc17f963315e9b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2218506133341742387, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
@@ -130,7 +135,7 @@ PrefabInstance:
     - target: {fileID: 4158937011081115872, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_ShadowAngle
-      value: 0
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 4158937011081115872, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
@@ -145,42 +150,37 @@ PrefabInstance:
     - target: {fileID: 4158937011081115872, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_ColorTemperature
-      value: 11456
+      value: 8318
       objectReference: {fileID: 0}
     - target: {fileID: 4158937011081115872, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_UseColorTemperature
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4158937011081115872, guid: 1068d130347680c47bcc17f963315e9b,
-        type: 3}
-      propertyPath: m_Intensity
-      value: 10
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4158937011081115872, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_Color.r
-      value: 0.103773594
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4158937011081115872, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_Color.g
-      value: 0.103773594
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4158937011081115872, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_Color.b
-      value: 0.103773594
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5127592584452398791, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_Intensity
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5127592584452398791, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}
       propertyPath: m_AngularDiameter
-      value: 0
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 5763697109142757621, guid: 1068d130347680c47bcc17f963315e9b,
         type: 3}

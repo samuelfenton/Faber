@@ -21,8 +21,7 @@ public class Interactable_SavePoint : Interactable
     {
         if (MOARDebugging.GetSplinePosition(m_nodeA, m_nodeB, m_splinePercent, out Vector3 position))
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(position, position + Vector3.up);
+            MOARDebugging.DrawFlag(position, MOARDebugging.SAVE_POINT_COLOR);
         }
     }
 

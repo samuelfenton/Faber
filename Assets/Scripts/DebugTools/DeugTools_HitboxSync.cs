@@ -20,8 +20,8 @@ public class DeugTools_HitboxSync : MonoBehaviour
         }
 
         m_character = m_characterObj.GetComponent<Character>();
-        m_characterAnimator = m_characterObj.GetComponent<Animator>();
-        m_hitboxManoeuvreController = m_hitboxObj.GetComponent<ManoeuvreController>();
+        m_characterAnimator = m_characterObj.GetComponentInChildren<Animator>();
+        m_hitboxManoeuvreController = m_hitboxObj.GetComponentInChildren<ManoeuvreController>();
 
         if (m_character == null || m_characterAnimator == null || m_hitboxManoeuvreController == null)
         {
@@ -58,6 +58,6 @@ public class DeugTools_HitboxSync : MonoBehaviour
         if (m_characterAnimator == null)
             return false;
 
-        return m_characterAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.95f;
+        return m_characterAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.99f;
     }
 }

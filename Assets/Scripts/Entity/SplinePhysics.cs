@@ -34,14 +34,22 @@ public class SplinePhysics : MonoBehaviour
     [Header("Generated values")]
     public Vector2 m_splineLocalVelocity = Vector2.zero;
 
+    [HideInInspector]
     public bool m_upCollision = false;
+    [HideInInspector]
     public bool m_downCollision = false;
+    [HideInInspector]
     public bool m_forwardCollision = false;
+    [HideInInspector]
     public bool m_backCollision = false;
 
+    [HideInInspector]
     public COLLISION_TYPE m_upCollisionType = COLLISION_TYPE.ENVIROMENT;
+    [HideInInspector]
     public COLLISION_TYPE m_downCollisionType = COLLISION_TYPE.ENVIROMENT;
+    [HideInInspector]
     public COLLISION_TYPE m_forwardCollisionType = COLLISION_TYPE.ENVIROMENT;
+    [HideInInspector]
     public COLLISION_TYPE m_backCollisionType = COLLISION_TYPE.ENVIROMENT;
 
     protected Entity m_parentEntity = null;
