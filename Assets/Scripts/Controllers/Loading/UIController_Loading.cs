@@ -50,6 +50,12 @@ public class UIController_Loading : UIController
     {
         yield return null;
 
+        if (m_asyncSceneLoading == null)
+        {
+            MasterController.Instance.LoadScene(MasterController.SCENE.MAIN_MENU, false);
+            yield break;
+        }
+
         switch (m_currentLoadingState)
         {
             case LOADING_STATE.LOADING:

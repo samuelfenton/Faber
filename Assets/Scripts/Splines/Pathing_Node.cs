@@ -203,7 +203,7 @@ public class Pathing_Node : MonoBehaviour
     {
         Entity collidingEntity = p_other.GetComponent<Entity>();
 
-        if (collidingEntity != null)
+        if (collidingEntity != null && collidingEntity.m_splinePhysics != null && collidingEntity.m_splinePhysics.m_currentSpline != null)
         {
             if (m_activeColliders.ContainsKey(collidingEntity)) //Remove to update new state
             {

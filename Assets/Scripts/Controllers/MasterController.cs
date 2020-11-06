@@ -29,6 +29,11 @@ public class MasterController : MonoBehaviour
     [HideInInspector]
     public DataController.InGameSaveData m_inGameSaveData;
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD 
+    [Header("Debug options")]
+    public bool m_loadSave = false;
+
+#endif
     /// <summary>
     /// Setup singleton functionality for the master controller
     /// </summary>
