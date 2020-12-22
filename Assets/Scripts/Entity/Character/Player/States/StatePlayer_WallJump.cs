@@ -73,7 +73,7 @@ public class StatePlayer_WallJump : State_Player
     /// <returns>true when players input is towards wall</returns>
     public bool MovingTowardWalls()
     {
-        if(m_player.m_followCamera.m_currentOrientation == FollowCamera.CAMERA_ORIENTATION.INITIAL)
+        if(m_player.m_followCamera.m_currentOrientation == FollowCamera.CAMERA_ORIENTATION.FORWARD)
         {
             return (m_player.m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL) > 0.0f && m_character.m_splinePhysics.m_forwardCollision && m_character.m_splinePhysics.m_forwardCollisionType == SplinePhysics.COLLISION_TYPE.ENVIROMENT) ||
             (m_player.m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL) < 0.0f && m_character.m_splinePhysics.m_backCollision && m_character.m_splinePhysics.m_backCollisionType == SplinePhysics.COLLISION_TYPE.ENVIROMENT);

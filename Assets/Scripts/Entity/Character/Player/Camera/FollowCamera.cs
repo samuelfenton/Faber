@@ -16,10 +16,10 @@ public class FollowCamera : MonoBehaviour
     public float m_linearSpeedDistance = 1.0f;
     [Tooltip("How quickly when not near the one to one distance will it slowdown and speed up, smaller means harsher dropoff")]
     public float m_dropOffRate = 1.0f;
-
-    public enum CAMERA_ORIENTATION { INITIAL, INVERTED }
+    
+    public enum CAMERA_ORIENTATION { FORWARD, BACKWARD }
     [HideInInspector]
-    public CAMERA_ORIENTATION m_currentOrientation = CAMERA_ORIENTATION.INITIAL;
+    public CAMERA_ORIENTATION m_currentOrientation = CAMERA_ORIENTATION.FORWARD;
 
     private void Start()
     {
@@ -31,7 +31,9 @@ public class FollowCamera : MonoBehaviour
             enabled = false;
             return;
         }
-        
+
+        m_currentOrientation = CAMERA_ORIENTATION.FORWARD;
+
         ForceSnap();
     }
 
@@ -43,7 +45,10 @@ public class FollowCamera : MonoBehaviour
         if (m_followTarget == null)//Early breakout
             return;
 
-        Vector3 cameraDesiredPos = m_followTarget.transform.position + (m_followTarget.transform.forward * m_cameraOffset.z + m_followTarget.transform.right * m_cameraOffset.x + m_followTarget.transform.up * m_cameraOffset.y);
+        Vector3 offset = m_followTarget.transform.forward * m_cameraOffset.z + m_followTarget.transform.right * m_cameraOffset.x + m_followTarget.transform.up * m_cameraOffset.y;
+
+        Vector3 cameraDesiredPos = m_followTarget.transform.position + offset;
+
         transform.position = cameraDesiredPos;
     }
 
@@ -52,7 +57,7 @@ public class FollowCamera : MonoBehaviour
     /// </summary>
     public void FlipCamera()
     {
-        m_currentOrientation = m_currentOrientation == CAMERA_ORIENTATION.INITIAL ? CAMERA_ORIENTATION.INVERTED : CAMERA_ORIENTATION.INITIAL;
+        m_currentOrientation = m_currentOrientation == CAMERA_ORIENTATION.FORWARD ? CAMERA_ORIENTATION.BACKWARD : CAMERA_ORIENTATION.FORWARD;
     }
 
     /// <summary>
@@ -66,7 +71,7 @@ public class FollowCamera : MonoBehaviour
         //Get desired position
         Vector3 cameraOffset = Vector3.zero;
 
-        if(m_currentOrientation == CAMERA_ORIENTATION.INITIAL)
+        if(m_currentOrientation == CAMERA_ORIENTATION.FORWARD)
         {
             cameraOffset = m_followTarget.transform.forward * m_cameraOffset.z + m_followTarget.transform.right * m_cameraOffset.x + m_followTarget.transform.up * m_cameraOffset.y;
         }  
@@ -86,9 +91,7 @@ public class FollowCamera : MonoBehaviour
         else
             transform.position = cameraDesiredPos;
 
-        Quaternion desiredRotation = Quaternion.LookRotation(m_followTarget.transform.position + m_lookAtOffset - transform.position);
-
-        transform.rotation = desiredRotation;
+        transform.LookAt(m_followTarget.transform.position + m_lookAtOffset, Vector3.up);
 	}
 
     public float DetermineCameraSpeed(float p_distance)
