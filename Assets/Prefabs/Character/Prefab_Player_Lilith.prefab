@@ -100,7 +100,7 @@ MonoBehaviour:
   m_gravity: 1
   m_nodeA: {fileID: 0}
   m_nodeB: {fileID: 0}
-  m_currentSplinePercent: 0
+  m_currentSplinePercent: 0.5
   m_currentSpline: {fileID: 0}
   m_splineLocalVelocity: {x: 0, y: 0}
   m_upCollision: 0
@@ -170,8 +170,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abe54aedea7d6514fac4b62449e4be9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_groundLightControllerPrefab: {fileID: 0}
-  m_groundHeavyControllerPrefab: {fileID: 0}
+  m_groundLightControllerPrefab: {fileID: 8757271741000013733, guid: aaffaca18d630a442a30e26790451354,
+    type: 3}
+  m_groundHeavyControllerPrefab: {fileID: 3999432466993005201, guid: 3664840fcde751e4199c4d396209aaf0,
+    type: 3}
   m_inAirLightControllerPrefab: {fileID: 0}
   m_inAirHeavyControllerPrefab: {fileID: 0}
   m_sprintingLightControllerPrefab: {fileID: 0}
@@ -223,6 +225,11 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: c74b939496297fe458a6f620208cea3c, type: 2}
     - target: {fileID: -4216859302048453862, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
         type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -238,6 +245,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -249,16 +261,6 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: 4cfaa36bc91f76d4f85f769347a4fad4,
-        type: 3}
-      propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 4cfaa36bc91f76d4f85f769347a4fad4,

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class FollowCamera : MonoBehaviour
 {
+    [HideInInspector]
     public GameObject m_followTarget = null;
 
     public Vector3 m_cameraOffset = Vector3.zero;
@@ -22,17 +23,15 @@ public class FollowCamera : MonoBehaviour
 
     private void Start()
     {
+
+        m_followTarget = FindObjectOfType<Character_Player>().gameObject;
+
         if (m_followTarget == null)
         {
-            m_followTarget = FindObjectOfType<Character_Player>().gameObject;
-
-            if (m_followTarget == null)
-            {
-                enabled = false;
-                return;
-            }
+            enabled = false;
+            return;
         }
-
+        
         ForceSnap();
     }
 

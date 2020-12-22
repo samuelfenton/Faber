@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_followTarget: {fileID: 0}
-  m_cameraOffset: {x: 0, y: 2, z: 0}
+  m_cameraOffset: {x: -5, y: 2, z: 0}
   m_lookAtOffset: {x: -5, y: 2, z: 0}
   m_cameraLinerarSpeed: 20
   m_linearSpeedDistance: 0.4
   m_dropOffRate: 5
-  m_currentOrientation: 0
+  m_currentOrientation: 1
 --- !u!1001 &327491227375337946
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30,6 +30,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Camera_Follow
+      objectReference: {fileID: 0}
+    - target: {fileID: 8045317401434573459, guid: eb6854396713cd74196b3af48c0c1e49,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8045317401434573459, guid: eb6854396713cd74196b3af48c0c1e49,
         type: 3}
@@ -48,6 +53,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8045317401434573459, guid: eb6854396713cd74196b3af48c0c1e49,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8045317401434573459, guid: eb6854396713cd74196b3af48c0c1e49,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
@@ -60,16 +70,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8045317401434573459, guid: eb6854396713cd74196b3af48c0c1e49,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8045317401434573459, guid: eb6854396713cd74196b3af48c0c1e49,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8045317401434573459, guid: eb6854396713cd74196b3af48c0c1e49,
         type: 3}
