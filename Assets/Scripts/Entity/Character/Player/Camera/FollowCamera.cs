@@ -23,7 +23,7 @@ public class FollowCamera : MonoBehaviour
 
     private void Start()
     {
-
+        //Always follow player
         m_followTarget = FindObjectOfType<Character_Player>().gameObject;
 
         if (m_followTarget == null)
@@ -94,6 +94,11 @@ public class FollowCamera : MonoBehaviour
         transform.LookAt(m_followTarget.transform.position + m_lookAtOffset, Vector3.up);
 	}
 
+    /// <summary>
+    /// Determine the distance that should be traveled by the camera given its distance to the desired position
+    /// </summary>
+    /// <param name="p_distance">Distance to desired position</param>
+    /// <returns>Max distance to travel, ignores over time</returns>
     public float DetermineCameraSpeed(float p_distance)
     {
         //Static
