@@ -12,7 +12,6 @@ public class AttackController : MonoBehaviour
     private enum MANOEUVRE_STATE {AWAITING_ATTACK, PERFORMING_ATTACK, COMPLETED_ATTACK}
     private enum SEQUENCE_STATE { INITIAL, ATTACK, END}
 
-    [Header("Manoeuvre Controller Prefabs")]
     [Header("Ground")]
     public GameObject m_groundLightControllerPrefab = null;
     public GameObject m_groundHeavyControllerPrefab = null;

@@ -18,6 +18,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hitbox_Lilith_Katana_Ground_Heavy7
       objectReference: {fileID: 0}
+    - target: {fileID: 2604224626468161597, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3055797084708410960, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -25,13 +30,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
-      propertyPath: m_manoeuvreStance
-      value: 1
+      propertyPath: m_manoeuvreIndex
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
-      propertyPath: m_manoeuvreIndex
-      value: 7
+      propertyPath: m_manoeuvreStance
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
@@ -50,6 +60,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -61,16 +76,6 @@ PrefabInstance:
     - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
-        type: 3}
-      propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
