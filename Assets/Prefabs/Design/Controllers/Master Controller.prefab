@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8886290424792769669}
   - component: {fileID: 105444212217563746}
   - component: {fileID: 1263529927}
+  - component: {fileID: 6684119727367022176}
   m_Layer: 0
   m_Name: Master Controller
   m_TagString: Untagged
@@ -45,8 +46,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ffee02dd9b4b05499e8e88d725a8946, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_currentSaveSlot: -1
   m_currentSceneController: {fileID: 0}
   m_currentUIController: {fileID: 0}
+  m_playerPrefs:
+    m_masterVolume: 0
+    m_musicVolume: 0
+    m_SFXVolume: 0
+    m_voiceVolume: 0
+    m_subtitles: 0
+    m_performanceIndex: 0
+    m_resolutionIndex: 0
+    m_windowModeIndex: 0
+    m_customResolutionX: 0
+    m_customResolutionY: 0
+  m_inGameSaveData:
+    m_lastSavePoint:
+      m_savePointID: 0
+      m_saveSceneIndex: 0
+    m_unlockedSavePoints: []
+  m_loadSave: 0
 --- !u!114 &105444212217563746
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,3 +119,30 @@ MonoBehaviour:
     type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
+--- !u!114 &6684119727367022176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8886290424792769668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 635eb5635b61756479056de9111003c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InitializationSettings: {fileID: 11400000, guid: dee44fddeaaefd64bb10233d2dee9c5c,
+    type: 2}
+  basePath: 
+  language: 
+  defaultPoolSize: 0
+  lowerPoolSize: 0
+  streamingPoolSize: 0
+  memoryCutoffThreshold: 0
+  monitorPoolSize: 0
+  monitorQueuePoolSize: 0
+  callbackManagerBufferSize: 0
+  spatialAudioPoolSize: 0
+  maxSoundPropagationDepth: 0
+  diffractionFlags: 11
+  engineLogging: 0
