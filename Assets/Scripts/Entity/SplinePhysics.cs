@@ -12,7 +12,7 @@ public class SplinePhysics : MonoBehaviour
     public const float MIN_SPLINE_PERCENT = -0.001f;
     public const float MAX_SPLINE_PERCENT = 1.001f;
 
-    public const float DETECITON_RANGE = 0.2f;
+    public const float DETECTION_RANGE = 0.2f;
     public const float COLLISION_OFFSET_MODIFIER = 0.95f;
     public const float COLLISION_OFFSET_MODIFIER_HALF = COLLISION_OFFSET_MODIFIER/2.0f;
 
@@ -118,7 +118,7 @@ public class SplinePhysics : MonoBehaviour
             m_splineLocalVelocity.y += GRAVITY * Time.deltaTime;
 
         UpdateCollisions();
-        
+
         //Apply horizontal change
         if (m_parentEntity.AllignedToSpline())
         {
@@ -135,22 +135,26 @@ public class SplinePhysics : MonoBehaviour
             m_currentSplinePercent -= m_currentSpline.ChangeInPercent(m_splineLocalVelocity.x * Time.deltaTime);
         }
 
+        Vector3 newPosition = transform.position;
+        
         //Apply vertical change
-        Vector3 currentPosition = transform.position;
-        currentPosition.y += m_splineLocalVelocity.y * Time.deltaTime;
-        transform.position = currentPosition;
-
-
+        newPosition.y += m_splineLocalVelocity.y * Time.deltaTime;
+        
         //Setup transform
         //Lock spline percent between close enough to 0 - 1
         m_currentSplinePercent = Mathf.Clamp(m_currentSplinePercent, MIN_SPLINE_PERCENT, MAX_SPLINE_PERCENT);
 
         //Update to latest spline percentage
-        currentPosition = m_currentSpline.GetPosition(m_currentSplinePercent);
-        if(transform.position.y > currentPosition.y)
-            currentPosition.y = transform.position.y; //Keep y value as spline position ignores this
+        Vector3 splinePosition = m_currentSpline.GetPosition(m_currentSplinePercent);
+        if(splinePosition.y > newPosition.y || (m_downCollision && m_splineLocalVelocity.y <= 0.0f))
+            newPosition = splinePosition; //Keep y value as spline position ignores this
+        else
+        {
+            newPosition.x = splinePosition.x;
+            newPosition.z = splinePosition.z;
+        }
 
-        transform.position = currentPosition;
+        transform.position = newPosition;
     }
 
     /// <summary>
@@ -164,7 +168,7 @@ public class SplinePhysics : MonoBehaviour
         Vector3 centerPos = transform.position + forward * m_boxCollider.center.z + up * m_boxCollider.center.y;
 
         //UPWARDS
-        m_upCollision = CastCollision(up, centerPos, forward * m_boxCollider.bounds.extents.z, m_boxCollider.bounds.extents.y + DETECITON_RANGE, out m_upCollisionType);
+        m_upCollision = CastCollision(up, centerPos, forward * m_boxCollider.bounds.extents.z, m_boxCollider.bounds.extents.y + DETECTION_RANGE, out m_upCollisionType);
 
         if (m_upCollision)//Check Upwards
         {
@@ -173,12 +177,12 @@ public class SplinePhysics : MonoBehaviour
         }
 
         //DOWNWARDS
-        m_downCollision = CastCollision(-up, centerPos, forward * m_boxCollider.bounds.extents.z, m_boxCollider.bounds.extents.y + DETECITON_RANGE, out m_downCollisionType);
+        m_downCollision = CastCollision(-up, centerPos, forward * m_boxCollider.bounds.extents.z, m_boxCollider.bounds.extents.y + DETECTION_RANGE, out m_downCollisionType);
 
-        if (!m_downCollision)
+        if (!m_downCollision) //Check if colliding with spline
         {
             float splineOverlap = m_currentSpline.GetPosition(m_currentSplinePercent).y - transform.position.y;
-            if (splineOverlap >= 0.0f)
+            if (splineOverlap >= -DETECTION_RANGE)
                 m_downCollision = true;
         }
 
@@ -189,7 +193,7 @@ public class SplinePhysics : MonoBehaviour
         }
 
         //FOWARDS
-        m_forwardCollision = CastCollision(forward, centerPos, up * m_boxCollider.bounds.extents.y, m_boxCollider.bounds.extents.z + DETECITON_RANGE, out m_forwardCollisionType);
+        m_forwardCollision = CastCollision(forward, centerPos, up * m_boxCollider.bounds.extents.y, m_boxCollider.bounds.extents.z + DETECTION_RANGE, out m_forwardCollisionType);
         if (m_forwardCollision)//Forwards
         {
             if (m_splineLocalVelocity.x > 0.0f)//Moving up, stop this 
@@ -197,7 +201,7 @@ public class SplinePhysics : MonoBehaviour
         }
 
         //BACKWARDS
-        m_backCollision = CastCollision(-forward, centerPos, up * m_boxCollider.bounds.extents.y, m_boxCollider.bounds.extents.z + DETECITON_RANGE, out m_backCollisionType);
+        m_backCollision = CastCollision(-forward, centerPos, up * m_boxCollider.bounds.extents.y, m_boxCollider.bounds.extents.z + DETECTION_RANGE, out m_backCollisionType);
         if (m_backCollision)//Backwards
         {
             if (m_splineLocalVelocity.x < 0.0f)//Moving up, stop this 
@@ -221,7 +225,7 @@ public class SplinePhysics : MonoBehaviour
 
         RaycastHit hit;
 
-        //Large Offset raycast
+        //Forward Offset raycast
         if (Physics.Raycast(p_centerPos + castFromModifier, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask | CustomLayers.m_hurtBoxMask))
         {
             p_collisionType = hit.collider.gameObject.layer == CustomLayers.m_enviromentLayer ? COLLISION_TYPE.ENVIROMENT : COLLISION_TYPE.HURT_BOX;//Use layer not mask, when comparing to game object layer

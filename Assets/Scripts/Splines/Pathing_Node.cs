@@ -349,7 +349,7 @@ public class Pathing_Node : MonoBehaviour
     }
 
     #region Editor Specific
-    private const int SPLINE_STEPS = 10;
+    private const int SPLINE_STEPS = 32;
 
     /// <summary>
     /// Remove the nodes conjoined details

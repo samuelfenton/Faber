@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4580953749446779342}
   - component: {fileID: 5625241742665454165}
   m_Layer: 0
-  m_Name: PathingNode
+  m_Name: Prefab_Node
   m_TagString: Untagged
   m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -43,8 +43,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 10, z: 0.5}
-  m_Center: {x: 0, y: 5, z: 0}
+  m_Size: {x: 1, y: 5, z: 0.5}
+  m_Center: {x: 0, y: 2.5, z: 0}
 --- !u!114 &5625241742665454165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58,42 +58,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_pathingSplineDetails:
-  - m_splinePosition: 0
-    m_conjoinedNode: {fileID: 0}
+  - m_nodePrimary: {fileID: 0}
+    m_nodeSecondary: {fileID: 0}
     m_splineType: 0
     m_circleDir: 0
     m_circleAngle: 0
     m_bezierStrength: 0
-  - m_splinePosition: 1
-    m_conjoinedNode: {fileID: 0}
+    m_createdFlag: 0
+  - m_nodePrimary: {fileID: 0}
+    m_nodeSecondary: {fileID: 0}
     m_splineType: 0
     m_circleDir: 0
     m_circleAngle: 0
     m_bezierStrength: 0
-  - m_splinePosition: 2
-    m_conjoinedNode: {fileID: 0}
+    m_createdFlag: 0
+  - m_nodePrimary: {fileID: 0}
+    m_nodeSecondary: {fileID: 0}
     m_splineType: 0
     m_circleDir: 0
     m_circleAngle: 0
     m_bezierStrength: 0
-  - m_splinePosition: 3
-    m_conjoinedNode: {fileID: 0}
+    m_createdFlag: 0
+  - m_nodePrimary: {fileID: 0}
+    m_nodeSecondary: {fileID: 0}
     m_splineType: 0
     m_circleDir: 0
     m_circleAngle: 0
     m_bezierStrength: 0
-  - m_splinePosition: 4
-    m_conjoinedNode: {fileID: 0}
+    m_createdFlag: 0
+  - m_nodePrimary: {fileID: 0}
+    m_nodeSecondary: {fileID: 0}
     m_splineType: 0
     m_circleDir: 0
     m_circleAngle: 0
     m_bezierStrength: 0
-  - m_splinePosition: 5
-    m_conjoinedNode: {fileID: 0}
+    m_createdFlag: 0
+  - m_nodePrimary: {fileID: 0}
+    m_nodeSecondary: {fileID: 0}
     m_splineType: 0
     m_circleDir: 0
     m_circleAngle: 0
     m_bezierStrength: 0
+    m_createdFlag: 0
   m_pathingSplines:
   - {fileID: 0}
   - {fileID: 0}
@@ -102,3 +108,11 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   m_adjacentSplines: []
+  m_conjoinedNodes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  m_conjoinedPosition: 000000000000000000000000000000000000000000000000

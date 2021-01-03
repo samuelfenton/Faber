@@ -119,7 +119,7 @@ public class @InputAction_Gameplay : IInputActionCollection, IDisposable
                 {
                     ""name"": ""WASD"",
                     ""id"": ""4ea7126c-976f-41da-be21-df28bdc17242"",
-                    ""path"": ""2DVector"",
+                    ""path"": ""2DVector(mode=2)"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
