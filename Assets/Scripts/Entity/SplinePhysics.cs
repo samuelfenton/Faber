@@ -315,22 +315,30 @@ public class SplinePhysics : MonoBehaviour
     {
         if(m_showDebugColliders)
         {
+            //Box collider
             BoxCollider boxCollider = GetComponent<BoxCollider>();
 
-            Gizmos.color = new Color(0.0f, 255.0f, 0.0f, 0.5f);
+            CustomDebug.DrawSquare(boxCollider.bounds.center, boxCollider.bounds.size.z, boxCollider.bounds.size.y, transform.forward, Color.blue);
 
-            Vector3 center = transform.position + transform.up * boxCollider.bounds.center.y + transform.forward * boxCollider.bounds.center.x;
+            //Collisions
+            Vector3 colliderForwardOffset = transform.forward * (boxCollider.bounds.extents.z + DETECTION_RANGE / 2.0f);
+            Vector3 colliderUpOffset = Vector3.up * (boxCollider.bounds.extents.y + DETECTION_RANGE / 2.0f);
 
-            Vector3 topForward = center + transform.up * boxCollider.bounds.extents.y +  transform.forward * boxCollider.bounds.extents.z;
-            Vector3 topBackward = center + transform.up * boxCollider.bounds.extents.y - transform.forward * boxCollider.bounds.extents.z;
-            Vector3 bottomForward = center - transform.up * boxCollider.bounds.extents.y + transform.forward * boxCollider.bounds.extents.z;
-            Vector3 bottomBackward = center - transform.up * boxCollider.bounds.extents.y - transform.forward * boxCollider.bounds.extents.z;
+            //Forward
+            Color collisionColor = m_forwardCollision ? Color.red : Color.green;
+            CustomDebug.DrawSquare(boxCollider.bounds.center - colliderForwardOffset, DETECTION_RANGE, boxCollider.bounds.size.y, transform.forward, collisionColor, CustomDebug.DEFAULT_LINE_THICKNESS_HALF);
 
-            //Draw collision Box
-            Gizmos.DrawLine(topForward, topBackward);
-            Gizmos.DrawLine(topBackward, bottomBackward);
-            Gizmos.DrawLine(bottomBackward, bottomForward);
-            Gizmos.DrawLine(bottomForward, topForward);
+            //Backward
+            collisionColor = m_backCollision ? Color.red : Color.green;
+            CustomDebug.DrawSquare(boxCollider.bounds.center + colliderForwardOffset, DETECTION_RANGE, boxCollider.bounds.size.y, transform.forward, collisionColor, CustomDebug.DEFAULT_LINE_THICKNESS_HALF);
+
+            //Up
+            collisionColor = m_upCollision ? Color.red : Color.green;
+            CustomDebug.DrawSquare(boxCollider.bounds.center + colliderUpOffset, boxCollider.bounds.size.z, DETECTION_RANGE, transform.forward, collisionColor, CustomDebug.DEFAULT_LINE_THICKNESS_HALF);
+
+            //Down
+            collisionColor = m_downCollision ? Color.red : Color.green;
+            CustomDebug.DrawSquare(boxCollider.bounds.center - colliderUpOffset, boxCollider.bounds.size.z, DETECTION_RANGE, transform.forward, collisionColor, CustomDebug.DEFAULT_LINE_THICKNESS_HALF);
         }
 
         if (!Application.isPlaying)

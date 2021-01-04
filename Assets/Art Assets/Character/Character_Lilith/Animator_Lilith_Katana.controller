@@ -113,7 +113,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: InAirDash
-  m_Speed: 1.5
+  m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -310,7 +310,7 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 6338416230978049004}
-    m_Position: {x: 300, y: 200, z: 0}
+    m_Position: {x: 300, y: 100, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2301409760792691531}
     m_Position: {x: 0, y: 100, z: 0}
@@ -352,7 +352,7 @@ AnimatorStateMachine:
     m_Position: {x: 600, y: 100, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5187461699539434215}
-    m_Position: {x: 300, y: 100, z: 0}
+    m_Position: {x: 300, y: 200, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 3724231629509242264}
     m_Position: {x: 600, y: 300, z: 0}
@@ -371,10 +371,10 @@ AnimatorStateMachine:
   m_StateMachineTransitions: {}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 320, y: -210, z: 0}
-  m_EntryPosition: {x: 320, y: -10, z: 0}
+  m_EntryPosition: {x: 320, y: 50, z: 0}
   m_ExitPosition: {x: 320, y: -110, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
-  m_DefaultState: {fileID: 5187461699539434215}
+  m_DefaultState: {fileID: 6338416230978049004}
 --- !u!1102 &-4386070339169814057
 AnimatorState:
   serializedVersion: 5
@@ -627,7 +627,7 @@ AnimatorState:
   m_TimeParameter: 
 --- !u!206 &-2262913013862783376
 BlendTree:
-  m_ObjectHideFlags: 3
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -702,7 +702,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: DoubleJump
-  m_Speed: 1.5
+  m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -723,7 +723,7 @@ AnimatorState:
   m_TimeParameter: 
 --- !u!206 &-1406934270838403912
 BlendTree:
-  m_ObjectHideFlags: 3
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1166,7 +1166,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: EndAttackBlend
-  m_Speed: 2
+  m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -1610,7 +1610,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Dash
-  m_Speed: 1.5
+  m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []

@@ -23,11 +23,15 @@ public class ObjectPool : MonoBehaviour
             return false;
         }
 
+        GameObject parentObject = new GameObject();
+        parentObject.name = "Object Pool: " + m_prefab.name;
+
+        //Spawn all objects
         List<GameObject> objects = new List<GameObject>();
 
         for (int objectIndex = 0; objectIndex < m_objectCount; objectIndex++)
         {
-            objects.Add(Instantiate(m_prefab));
+            objects.Add(Instantiate(m_prefab, parentObject.transform));
 
             PoolObject newScript = objects[objectIndex].GetComponentInChildren<PoolObject>();
 
