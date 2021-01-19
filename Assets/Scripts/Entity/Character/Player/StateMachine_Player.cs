@@ -41,7 +41,7 @@ public class StateMachine_Player : StateMachine
         land.StateInit(false, p_character);
         dash.StateInit(false, p_character);
         inAirDash.StateInit(false, p_character);
-        block.StateInit(true, p_character);
+        block.StateInit(false, p_character);
         idle.StateInit(false, p_character);
 
         attack.StateInit(false, p_character);

@@ -43,7 +43,7 @@ public class StatePlayer_Block : State_Player
             case BLOCK_STATE.START:
                 if(m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE))
                 {
-                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.BLOCK, CustomAnimation.BLEND_TIME.SHORT);
+                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.BLOCK, CustomAnimation.BLEND_TIME.INSTANT);
 
                     m_currentState = BLOCK_STATE.BLOCKING;
                     m_character.m_blockingFlag = true;

@@ -12,6 +12,10 @@ public class CustomAnimation : MonoBehaviour
     private const float SHORT_BLEND_TIME = 0.15f;
     private const float LONG_BLEND_TIME = 0.3f;
 
+    public const string BASE_LAYER_STRING = "BaseLayer";
+    public const string ATTACK_LAYER_STRING = "AttackLayer";
+    public const string INTERRUPT_LAYER_STRING = "InterruptLayer";
+
     public const string NULL_STRING = "Null";
     public const string END_ATTACK_BLEND = "EndAttackBlend";
 
@@ -30,9 +34,7 @@ public class CustomAnimation : MonoBehaviour
     private Animator m_animator = null;
 
     //Blending
-    [HideInInspector]
-    public bool m_currentlyBlending = false;
-
+    private LAYER m_currentLayer = LAYER.BASE;
     private Coroutine m_blendCoroutine = null;
     private KeyValuePair<string, LAYER> m_blendingTo = new KeyValuePair<string, LAYER>();
 
@@ -46,9 +48,9 @@ public class CustomAnimation : MonoBehaviour
 
         if (m_animator != null && p_animator.runtimeAnimatorController != null)
         {
-            m_layerToInt[(int)LAYER.BASE] = m_animator.GetLayerIndex("BaseLayer");
-            m_layerToInt[(int)LAYER.ATTACK] = m_animator.GetLayerIndex("AttackLayer");
-            m_layerToInt[(int)LAYER.INTERRUPT] = m_animator.GetLayerIndex("InterruptLayer");
+            m_layerToInt[(int)LAYER.BASE] = m_animator.GetLayerIndex(BASE_LAYER_STRING);
+            m_layerToInt[(int)LAYER.ATTACK] = m_animator.GetLayerIndex(ATTACK_LAYER_STRING);
+            m_layerToInt[(int)LAYER.INTERRUPT] = m_animator.GetLayerIndex(INTERRUPT_LAYER_STRING);
         }
 
         //Assign strings, in the case a string/aniamtion is not found in the animator default to empty string ""
@@ -117,7 +119,16 @@ public class CustomAnimation : MonoBehaviour
         if (m_animator == null || p_layer == LAYER.LAYER_COUNT)
             return false;
 
-        return !m_currentlyBlending && m_animator.GetCurrentAnimatorStateInfo(m_layerToInt[(int)p_layer]).normalizedTime > END_ANIMATION_TIME;
+        return !IsAnimatorBlending() && m_animator.GetCurrentAnimatorStateInfo(m_layerToInt[(int)p_layer]).normalizedTime > END_ANIMATION_TIME;
+    }
+
+    /// <summary>
+    /// Determine if animator is currently blending
+    /// </summary>
+    /// <returns>True when animator is not blending</returns>
+    public bool IsAnimatorBlending()
+    {
+        return m_blendCoroutine != null;
     }
 
     /// <summary>
@@ -161,32 +172,66 @@ public class CustomAnimation : MonoBehaviour
     /// <param name="p_blendTime">Time to crossfade and blend layers</param>
     private void PlayAnimation(string p_animationString, LAYER p_layer, BLEND_TIME p_blendTime)
     {
-        if(m_blendCoroutine != null)
+        //Crossfade requires layer in name
+        string layerAnimationString = p_layer == LAYER.BASE ? BASE_LAYER_STRING : (p_layer == LAYER.ATTACK ? ATTACK_LAYER_STRING : INTERRUPT_LAYER_STRING);
+        layerAnimationString = layerAnimationString + "." + p_animationString;
+
+        if(m_blendingTo.Key == layerAnimationString && m_blendingTo.Value == p_layer) //Attempting to blend into same animation, break out early
+        {
+            return;
+        }
+
+        if(m_blendCoroutine != null) //If another animation call comes in, end previous blending harshly, and start new
         {
             m_animator.Play(m_blendingTo.Key, m_layerToInt[(int)m_blendingTo.Value]);
 
-            StopCoroutine(m_blendCoroutine);
+            EndBlend(m_blendingTo.Value, 0.0f);
         }
 
-        m_blendingTo = new KeyValuePair<string, LAYER>(p_animationString, p_layer);
+        m_blendingTo = new KeyValuePair<string, LAYER>(layerAnimationString, p_layer);
         
         float blendTime = p_blendTime == BLEND_TIME.INSTANT ? INSTANT_BLEND_TIME : p_blendTime == BLEND_TIME.SHORT ? SHORT_BLEND_TIME : LONG_BLEND_TIME;
 
-        m_animator.CrossFade(p_animationString, blendTime);
+        m_animator.CrossFadeInFixedTime(layerAnimationString, blendTime);
 
-        m_blendCoroutine = StartCoroutine(BlendAnimation(p_animationString, p_layer, blendTime));
+        if(m_currentLayer == p_layer) //Not blending between layers
+        {
+            m_blendCoroutine = StartCoroutine(BlendAnimations(blendTime));
+        }
+        else //Blending between layers
+        {
+            m_blendCoroutine = StartCoroutine(BlendLayers(p_layer, blendTime));
+        }
     }
 
     /// <summary>
-    /// Coroutein to crossfade/blend layers
+    /// Coroutine to crossfade/blend layers
     /// </summary>
-    /// <param name="p_animationString">String of animation to play after transistion time</param>
     /// <param name="p_layer">Layer to blend into</param>
     /// <param name="p_blendTime">Time to blend</param>
-    private IEnumerator BlendAnimation(string p_animationString, LAYER p_layer, float p_blendTime)
+    private IEnumerator BlendAnimations(float p_blendTime)
     {
-        m_currentlyBlending = true;
-        
+        float currentBlendTime = 0.0f;
+
+        while (currentBlendTime < p_blendTime)
+        {
+            currentBlendTime += Time.deltaTime;
+
+            yield return null;
+        }
+
+        currentBlendTime += Time.deltaTime;
+
+        EndBlend(m_currentLayer, currentBlendTime);
+    }
+
+    /// <summary>
+    /// Coroutine to crossfade/blend layers
+    /// </summary>
+    /// <param name="p_layer">Layer to blend into</param>
+    /// <param name="p_blendTime">Time to blend</param>
+    private IEnumerator BlendLayers(LAYER p_layer, float p_blendTime)
+    {        
         float currentBlendTime = 0.0f;
 
         while (currentBlendTime < p_blendTime)
@@ -225,11 +270,29 @@ public class CustomAnimation : MonoBehaviour
             yield return null;
         }
 
-        m_currentlyBlending = false;
-        
-        SetLayersToNull(p_layer);
+        currentBlendTime += Time.deltaTime;
 
-        m_animator.Play(p_animationString, m_layerToInt[(int)p_layer], currentBlendTime);
+        EndBlend(p_layer, currentBlendTime);
+    }
+
+    /// <summary>
+    /// End the current blending
+    /// </summary>
+    /// <param name="p_currentLayer">New current layer to have</param>
+    /// <param name="p_currentBlendDuration">How long the blend was, new animation will start this far through</param>
+    private void EndBlend(LAYER p_currentLayer, float p_currentBlendDuration)
+    {
+        m_currentLayer = p_currentLayer;
+
+        if(m_blendingTo.Value != LAYER.LAYER_COUNT)
+            m_animator.Play(m_blendingTo.Key, m_layerToInt[(int)m_blendingTo.Value], p_currentBlendDuration);
+
+        m_blendCoroutine = null;
+
+        m_blendingTo = new KeyValuePair<string, LAYER>("", LAYER.LAYER_COUNT);
+
+        m_animator.SetLayerWeight(m_layerToInt[(int)m_currentLayer], 1.0f);
+        SetLayersToNull(m_currentLayer);
     }
 
     /// <summary>
@@ -245,6 +308,7 @@ public class CustomAnimation : MonoBehaviour
             if ((int)p_layerToIgnore != layerIndex)
             {
                 m_animator.Play(NULL_STRING, m_layerToInt[layerIndex]);
+                m_animator.SetLayerWeight(m_layerToInt[layerIndex], 0.0f);
             }
         }
     }

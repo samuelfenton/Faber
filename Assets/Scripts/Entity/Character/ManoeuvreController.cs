@@ -194,7 +194,7 @@ public class ManoeuvreController : MonoBehaviour
             }
         }
 
-        if(m_nextManoeuvreStance == Manoeuvre.MANOEUVRE_STANCE.NONE && !m_customAnimation.m_currentlyBlending && currentPercent > 0.3f) //Get next input
+        if(m_nextManoeuvreStance == Manoeuvre.MANOEUVRE_STANCE.NONE && !m_customAnimation.IsAnimatorBlending() && currentPercent > 0.3f) //Get next input
         {
             Character.ATTACK_INPUT_STANCE nextAttackStance = m_character.DetermineAttackStance();
 

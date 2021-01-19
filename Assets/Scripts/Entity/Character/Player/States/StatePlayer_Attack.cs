@@ -66,7 +66,7 @@ public class StatePlayer_Attack : State_Player
                 {
                     if (m_manoeuvreController.m_currentManoeuvre.m_requiresSheathingBlend) // Does this attack need to blend using sheathing animation?
                     {
-                        m_customAnimator.PlayAnimation(CustomAnimation.END_ATTACK_BLEND, CustomAnimation.BLEND_TIME.LONG);
+                        m_customAnimator.PlayAnimation(CustomAnimation.END_ATTACK_BLEND, CustomAnimation.BLEND_TIME.SHORT);
                         m_attackState = ATTACK_STATE.RETURN_TO_SHEATH;
                         return false;
                     }
