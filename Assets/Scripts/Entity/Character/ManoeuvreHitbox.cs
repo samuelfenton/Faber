@@ -10,14 +10,14 @@ public class ManoeuvreHitbox : MonoBehaviour
 
     private List<Character> m_hitCharacters = new List<Character>();
 
-    private ManoeuvreController m_parentController = null;
+    private Manoeuvre m_parentController = null;
 
     /// <summary>
     /// Initialise hitbox
     /// </summary>
     /// <param name="p_character">Character controlling hitbox</param>
     /// <param name="p_damage">Damage this attack will do per hit box</param>
-    public void Init(Character p_character, ManoeuvreController p_parentController)
+    public void Init(Character p_character, Manoeuvre p_parentController)
     {
         m_character = p_character;
         m_parentController = p_parentController;

@@ -77,7 +77,12 @@ public class Character : Entity
     public bool m_deathFlag = false;
 
     //Stored references
-    protected AttackController m_weaponManager = null;
+    [Header("Manoeuvre Prefab")]
+    public GameObject m_manoeuvreControllerObjPrefab = null;
+    protected GameObject m_manoeuvreControllerObjStored = null;
+
+    [HideInInspector]
+    public ManoeuvreController m_manoeuvreController = null;
     protected Animator m_animator = null;
     protected CustomAnimation m_customAnimation = null;
 
@@ -97,14 +102,20 @@ public class Character : Entity
 
         //Get references
         m_characterStatistics = GetComponent<CharacterStatistics>();
-        m_weaponManager = GetComponent<AttackController>();
+
         m_animator = GetComponentInChildren<Animator>();
 
         m_customAnimation = gameObject.AddComponent<CustomAnimation>();
         m_customAnimation.Init(m_animator);
 
-        if (m_weaponManager != null)
-            m_weaponManager.Init(this);//Least importance as has no dependances
+        if(m_manoeuvreControllerObjPrefab != null)
+        {
+            m_manoeuvreControllerObjStored = Instantiate(m_manoeuvreControllerObjPrefab, transform, false);
+            m_manoeuvreController = m_manoeuvreControllerObjStored.GetComponent<ManoeuvreController>();
+    
+            if (m_manoeuvreController != null)
+                m_manoeuvreController.Init(this, m_customAnimation);//Least importance as has no dependances
+        }
 
         m_currentHealth = m_maxHealth;
 
@@ -208,7 +219,7 @@ public class Character : Entity
     /// <param name="p_manoeuvreController">Controller used in dealing damage</param>
     /// <param name="p_targetCharacter"></param>
     /// <param name="p_impactPosition">Position of impact</param>
-    public void DealDamage(ManoeuvreController p_manoeuvreController, Character p_targetCharacter, Vector3 p_impactPosition)
+    public void DealDamage(Manoeuvre p_manoeuvreController, Character p_targetCharacter, Vector3 p_impactPosition)
     {
         if (p_targetCharacter == null)
             return;
@@ -287,9 +298,9 @@ public class Character : Entity
         m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_splinePhysics.m_splineLocalVelocity.x / m_groundRunVel));
     }
 
-    public void SetKnockbackImpact(ManoeuvreController.DAMAGE_IMPACT p_impact)
+    public void SetKnockbackImpact(Manoeuvre.DAMAGE_IMPACT p_impact)
     {
-        float knockbackValue = p_impact == ManoeuvreController.DAMAGE_IMPACT.LOW ? 0.0f : p_impact == ManoeuvreController.DAMAGE_IMPACT.MEDIUM ? 1.0f : 2.0f;
+        float knockbackValue = p_impact == Manoeuvre.DAMAGE_IMPACT.LOW ? 0.0f : p_impact == Manoeuvre.DAMAGE_IMPACT.MEDIUM ? 1.0f : 2.0f;
 
         m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.KNOCKBACK_IMPACT, knockbackValue);
     }

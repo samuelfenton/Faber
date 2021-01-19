@@ -7,7 +7,7 @@ public class StateNPC_Attack : State_NPC
     public bool m_lightAttackFlag = false;
     public bool m_heavyAttackFlag = false;
 
-    private AttackController m_weaponManager = null;
+    private Manoeuvre m_weaponManager = null;
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -17,7 +17,7 @@ public class StateNPC_Attack : State_NPC
     public override void StateInit(bool p_loopedState, Entity p_entity)
     {
         base.StateInit(p_loopedState, p_entity);
-        m_weaponManager = m_NPCCharacter.GetComponent<AttackController>();
+        m_weaponManager = m_NPCCharacter.GetComponent<Manoeuvre>();
     }
 
     /// <summary>

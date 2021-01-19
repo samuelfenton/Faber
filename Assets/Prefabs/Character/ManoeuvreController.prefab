@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1315687852932911008
+--- !u!1 &1144741882814528324
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,23 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8426866739296145293}
-  - component: {fileID: 4718535130943455477}
-  - component: {fileID: 764812837899323473}
+  - component: {fileID: 108178950065798439}
+  - component: {fileID: 767670538937953154}
   m_Layer: 0
-  m_Name: Prefab_Weapon_Melee01
+  m_Name: ManoeuvreController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8426866739296145293
+--- !u!4 &108178950065798439
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1315687852932911008}
+  m_GameObject: {fileID: 1144741882814528324}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,29 +31,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4718535130943455477
+--- !u!114 &767670538937953154
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1315687852932911008}
+  m_GameObject: {fileID: 1144741882814528324}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f17005716945dee4fbceaf49ddf4477f, type: 3}
+  m_Script: {fileID: 11500000, guid: 16931a64c19c4014e9f4e180a83f9d2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_baseDamage: 3
---- !u!135 &764812837899323473
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1315687852932911008}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.2
-  m_Center: {x: 0, y: 0, z: 0}
+  m_primaryWeaponObject: {fileID: 0}
+  m_secondaryWeaponObject: {fileID: 0}
+  m_groundLightPrefab: {fileID: 0}
+  m_groundHeavyPrefab: {fileID: 0}
+  m_inAirLightPrefab: {fileID: 0}
+  m_inAirHeavyPrefab: {fileID: 0}
+  m_sprintingLightPrefab: {fileID: 0}
+  m_sprintingHeavyPrefab: {fileID: 0}
+  m_currentManoeuvre: {fileID: 0}

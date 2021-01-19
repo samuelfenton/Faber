@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class StatePlayer_Attack : State_Player
 {
-    private AttackController m_weaponManager = null;
+    private ManoeuvreController m_manoeuvreController = null;
 
-    private enum ATTACK_STATE {PERFORMING_ATTACK, RETURN_TO_SHEATH}
-    private ATTACK_STATE m_attackState = ATTACK_STATE.PERFORMING_ATTACK;
+    private enum ATTACK_STATE {PERFORMING_ATTACK, RETURN_TO_SHEATH, END_MANOEUVRE }
+    private ATTACK_STATE m_attackState = ATTACK_STATE.END_MANOEUVRE;
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -17,7 +17,7 @@ public class StatePlayer_Attack : State_Player
     public override void StateInit(bool p_loopedState, Entity p_entity)
     {
         base.StateInit(p_loopedState, p_entity);
-        m_weaponManager = m_player.GetComponent<AttackController>();
+        m_manoeuvreController = m_player.m_manoeuvreController;
     }
 
     /// <summary>
@@ -31,10 +31,19 @@ public class StatePlayer_Attack : State_Player
         m_attackState = ATTACK_STATE.PERFORMING_ATTACK;
 
         //TODO logic to determine type of attack, in air vs ground vs sprint
-        ManoeuvreController.MANOEUVRE_TYPE currentType = m_character.m_splinePhysics.m_downCollision ? (Mathf.Abs(m_character.m_splinePhysics.m_splineLocalVelocity.x) > m_character.m_groundRunVel ? ManoeuvreController.MANOEUVRE_TYPE.SPRINT : ManoeuvreController.MANOEUVRE_TYPE.GROUND) : ManoeuvreController.MANOEUVRE_TYPE.INAIR;
-        ManoeuvreController.MANOEUVRE_STANCE currentStance = m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.LIGHT_ATTACK) ? ManoeuvreController.MANOEUVRE_STANCE.LIGHT : ManoeuvreController.MANOEUVRE_STANCE.HEAVY;
+        Manoeuvre.MANOEUVRE_TYPE currentType = m_character.m_splinePhysics.m_downCollision ? (Mathf.Abs(m_character.m_splinePhysics.m_splineLocalVelocity.x) > m_character.m_groundRunVel ? Manoeuvre.MANOEUVRE_TYPE.SPRINT : Manoeuvre.MANOEUVRE_TYPE.GROUND) : Manoeuvre.MANOEUVRE_TYPE.INAIR;
+        Manoeuvre.MANOEUVRE_STANCE currentStance = m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.LIGHT_ATTACK) ? Manoeuvre.MANOEUVRE_STANCE.LIGHT : Manoeuvre.MANOEUVRE_STANCE.HEAVY;
 
-        m_weaponManager.StartAttack(currentType, currentStance);
+        Manoeuvre manoeuvre = m_manoeuvreController.GetInitialManoeuvre(currentStance, currentType);
+
+        if (manoeuvre != null)
+        {
+            m_manoeuvreController.StartManoeuvre(manoeuvre);
+        }
+        else
+        {
+            m_attackState = ATTACK_STATE.END_MANOEUVRE;
+        }
     }
 
     /// <summary>
@@ -43,25 +52,44 @@ public class StatePlayer_Attack : State_Player
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true</returns>
     public override bool StateUpdate()
     {
-        if(m_attackState == ATTACK_STATE.PERFORMING_ATTACK)
+        if (m_attackState == ATTACK_STATE.PERFORMING_ATTACK)
         {
-            if (m_weaponManager.UpdateAttack())
+            m_manoeuvreController.UpdateManoeuvre();
+
+            if (m_manoeuvreController.HasManoeuvreCompleted()) //Get next manoeuvre if possible
             {
-                if(m_weaponManager.m_currentController != null && m_weaponManager.m_currentController.m_requiresSheathingBlend)
+                m_manoeuvreController.EndManoeuvre();
+
+                Manoeuvre manoeuvre = m_manoeuvreController.GetNextManoeuvre();
+
+                if (manoeuvre == null) //There are no more combo manoeuvres, check for blend
                 {
-                    m_customAnimator.PlayAnimation(CustomAnimation.END_ATTACK_BLEND, CustomAnimation.BLEND_TIME.SHORT);
-                    m_attackState = ATTACK_STATE.RETURN_TO_SHEATH;
-                    return true;
+                    if (m_manoeuvreController.m_currentManoeuvre.m_requiresSheathingBlend) // Does this attack need to blend using sheathing animation?
+                    {
+                        m_customAnimator.PlayAnimation(CustomAnimation.END_ATTACK_BLEND, CustomAnimation.BLEND_TIME.LONG);
+                        m_attackState = ATTACK_STATE.RETURN_TO_SHEATH;
+                        return false;
+                    }
+                    else
+                    {
+                        m_attackState = ATTACK_STATE.END_MANOEUVRE;
+                        return true;
+                    }
                 }
-                else
+                else //Start next manoeuvre
                 {
-                    return true;
+                    m_manoeuvreController.StartManoeuvre(manoeuvre);
+                    return false;
                 }
             }
         }
-        else
+        else if (m_attackState == ATTACK_STATE.RETURN_TO_SHEATH)
         {
             return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.ATTACK);
+        }
+        else //End of attack
+        {
+            return true;
         }
 
         return false;

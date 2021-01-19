@@ -9,7 +9,7 @@ public class DeugTools_HitboxSync : MonoBehaviour
 
     private Character m_character = null;
     private Animator m_characterAnimator = null;
-    private ManoeuvreController m_hitboxManoeuvreController = null;
+    private Manoeuvre m_hitboxManoeuvreController = null;
 
     private void Start()
     {
@@ -21,7 +21,7 @@ public class DeugTools_HitboxSync : MonoBehaviour
 
         m_character = m_characterObj.GetComponent<Character>();
         m_characterAnimator = m_characterObj.GetComponentInChildren<Animator>();
-        m_hitboxManoeuvreController = m_hitboxObj.GetComponentInChildren<ManoeuvreController>();
+        m_hitboxManoeuvreController = m_hitboxObj.GetComponentInChildren<Manoeuvre>();
 
         if (m_character == null || m_characterAnimator == null || m_hitboxManoeuvreController == null)
         {

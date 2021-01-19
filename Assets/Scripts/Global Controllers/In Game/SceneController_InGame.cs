@@ -267,25 +267,25 @@ public class SceneController_InGame : SceneController
     /// <param name="p_hitmarkerVal">Text value of hit marker</param>
     /// <param name="p_effectColor1">first color to use in particle system</param>
     /// <param name="p_effectColor1">second color to use in particle system</param>
-    public void SpawnDamageParticles(Vector3 p_position, Quaternion p_rotation, ManoeuvreController.DAMAGE_DIRECTION p_direction, Color p_effectColor1, Color p_effectColor2)
+    public void SpawnDamageParticles(Vector3 p_position, Quaternion p_rotation, Manoeuvre.DAMAGE_DIRECTION p_direction, Color p_effectColor1, Color p_effectColor2)
     {
         PoolObject poolObject = null;
 
         switch (p_direction)
         {
-            case ManoeuvreController.DAMAGE_DIRECTION.FORWARDS:
+            case Manoeuvre.DAMAGE_DIRECTION.FORWARDS:
                 poolObject = m_damageForwardsPool.RentObject(p_position, p_rotation);
                 break;
-            case ManoeuvreController.DAMAGE_DIRECTION.HORIZONTAL_RIGHT:
+            case Manoeuvre.DAMAGE_DIRECTION.HORIZONTAL_RIGHT:
                 poolObject = m_damageHorizontalRightPool.RentObject(p_position, p_rotation);
                 break;
-            case ManoeuvreController.DAMAGE_DIRECTION.HORIZONTAL_LEFT:
+            case Manoeuvre.DAMAGE_DIRECTION.HORIZONTAL_LEFT:
                 poolObject = m_damageHorizontalLeftPool.RentObject(p_position, p_rotation);
                 break;
-            case ManoeuvreController.DAMAGE_DIRECTION.VERTICAL_UPWARDS:
+            case Manoeuvre.DAMAGE_DIRECTION.VERTICAL_UPWARDS:
                 poolObject = m_damageVerticalUpwardsPool.RentObject(p_position, p_rotation);
                 break;
-            case ManoeuvreController.DAMAGE_DIRECTION.VERTICAL_DOWNWARDS:
+            case Manoeuvre.DAMAGE_DIRECTION.VERTICAL_DOWNWARDS:
                 poolObject = m_damageVerticalDownwardsPool.RentObject(p_position, p_rotation);
                 break;
             default:

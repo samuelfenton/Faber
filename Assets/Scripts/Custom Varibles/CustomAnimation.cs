@@ -172,7 +172,7 @@ public class CustomAnimation : MonoBehaviour
         
         float blendTime = p_blendTime == BLEND_TIME.INSTANT ? INSTANT_BLEND_TIME : p_blendTime == BLEND_TIME.SHORT ? SHORT_BLEND_TIME : LONG_BLEND_TIME;
 
-        m_animator.CrossFade(p_animationString, m_layerToInt[(int)p_layer]);
+        m_animator.CrossFade(p_animationString, blendTime);
 
         m_blendCoroutine = StartCoroutine(BlendAnimation(p_animationString, p_layer, blendTime));
     }
