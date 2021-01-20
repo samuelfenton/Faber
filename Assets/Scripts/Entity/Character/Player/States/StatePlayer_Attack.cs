@@ -9,6 +9,8 @@ public class StatePlayer_Attack : State_Player
     private enum ATTACK_STATE {PERFORMING_ATTACK, RETURN_TO_SHEATH, END_MANOEUVRE }
     private ATTACK_STATE m_attackState = ATTACK_STATE.END_MANOEUVRE;
 
+    private Manoeuvre m_storedManoeuvre = null;
+
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
@@ -30,15 +32,9 @@ public class StatePlayer_Attack : State_Player
         m_player.SetDesiredVelocity(0.0f);
         m_attackState = ATTACK_STATE.PERFORMING_ATTACK;
 
-        //TODO logic to determine type of attack, in air vs ground vs sprint
-        Manoeuvre.MANOEUVRE_TYPE currentType = m_character.m_splinePhysics.m_downCollision ? (Mathf.Abs(m_character.m_splinePhysics.m_splineLocalVelocity.x) > m_character.m_groundRunVel ? Manoeuvre.MANOEUVRE_TYPE.SPRINT : Manoeuvre.MANOEUVRE_TYPE.GROUND) : Manoeuvre.MANOEUVRE_TYPE.INAIR;
-        Manoeuvre.MANOEUVRE_STANCE currentStance = m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.LIGHT_ATTACK) ? Manoeuvre.MANOEUVRE_STANCE.LIGHT : Manoeuvre.MANOEUVRE_STANCE.HEAVY;
-
-        Manoeuvre manoeuvre = m_manoeuvreController.GetInitialManoeuvre(currentStance, currentType);
-
-        if (manoeuvre != null)
+        if (m_storedManoeuvre != null)
         {
-            m_manoeuvreController.StartManoeuvre(manoeuvre);
+            m_manoeuvreController.StartManoeuvre(m_storedManoeuvre);
         }
         else
         {
@@ -109,6 +105,11 @@ public class StatePlayer_Attack : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.LIGHT_ATTACK) || m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.HEAVY_ATTACK);
+        Manoeuvre.MANOEUVRE_STANCE currentStance = m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.LIGHT_ATTACK) ? Manoeuvre.MANOEUVRE_STANCE.LIGHT : (m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.HEAVY_ATTACK) ? Manoeuvre.MANOEUVRE_STANCE.HEAVY : Manoeuvre.MANOEUVRE_STANCE.NONE);
+        Manoeuvre.MANOEUVRE_TYPE currentType = m_character.m_splinePhysics.m_downCollision ? (Mathf.Abs(m_character.m_splinePhysics.m_splineLocalVelocity.x) > m_character.m_groundRunVel ? Manoeuvre.MANOEUVRE_TYPE.SPRINT : Manoeuvre.MANOEUVRE_TYPE.GROUND) : Manoeuvre.MANOEUVRE_TYPE.INAIR;
+
+        m_storedManoeuvre = m_manoeuvreController.GetInitialManoeuvre(currentStance, currentType);
+
+        return m_storedManoeuvre != null;
     }
 }

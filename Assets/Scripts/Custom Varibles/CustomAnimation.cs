@@ -183,8 +183,6 @@ public class CustomAnimation : MonoBehaviour
 
         if(m_blendCoroutine != null) //If another animation call comes in, end previous blending harshly, and start new
         {
-            m_animator.Play(m_blendingTo.Key, m_layerToInt[(int)m_blendingTo.Value]);
-
             EndBlend(m_blendingTo.Value, 0.0f);
         }
 
@@ -284,10 +282,14 @@ public class CustomAnimation : MonoBehaviour
     {
         m_currentLayer = p_currentLayer;
 
-        if(m_blendingTo.Value != LAYER.LAYER_COUNT)
+        if(m_blendingTo.Value != LAYER.LAYER_COUNT) //This is the equivalent of null
             m_animator.Play(m_blendingTo.Key, m_layerToInt[(int)m_blendingTo.Value], p_currentBlendDuration);
 
-        m_blendCoroutine = null;
+        if(m_blendCoroutine!= null)
+        {
+            StopCoroutine(m_blendCoroutine);
+            m_blendCoroutine = null;
+        }
 
         m_blendingTo = new KeyValuePair<string, LAYER>("", LAYER.LAYER_COUNT);
 
