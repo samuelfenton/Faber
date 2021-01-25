@@ -29,7 +29,7 @@ public class StatePlayer_Attack : State_Player
     {
         base.StateStart();
 
-        m_player.SetDesiredVelocity(0.0f);
+        m_player.SetDesiredHorizontalVelocity(0.0f);
         m_attackState = ATTACK_STATE.PERFORMING_ATTACK;
 
         if (m_storedManoeuvre != null)
@@ -96,6 +96,8 @@ public class StatePlayer_Attack : State_Player
     /// </summary>
     public override void StateEnd()
     {
+        m_character.m_performedInAirAttackFlag = true; //Reset flag on attack every attack regardless of in air or not.
+
         base.StateEnd();
     }
 
@@ -107,6 +109,12 @@ public class StatePlayer_Attack : State_Player
     {
         Manoeuvre.MANOEUVRE_STANCE currentStance = m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.LIGHT_ATTACK) ? Manoeuvre.MANOEUVRE_STANCE.LIGHT : (m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.HEAVY_ATTACK) ? Manoeuvre.MANOEUVRE_STANCE.HEAVY : Manoeuvre.MANOEUVRE_STANCE.NONE);
         Manoeuvre.MANOEUVRE_TYPE currentType = m_character.m_splinePhysics.m_downCollision ? (Mathf.Abs(m_character.m_splinePhysics.m_splineLocalVelocity.x) > m_character.m_groundRunVel ? Manoeuvre.MANOEUVRE_TYPE.SPRINT : Manoeuvre.MANOEUVRE_TYPE.GROUND) : Manoeuvre.MANOEUVRE_TYPE.INAIR;
+
+        if (currentType == Manoeuvre.MANOEUVRE_TYPE.INAIR && m_character.m_performedInAirAttackFlag)// Only anle to perform a single in air attack
+        {
+            m_storedManoeuvre = null;
+            return false;
+        }
 
         m_storedManoeuvre = m_manoeuvreController.GetInitialManoeuvre(currentStance, currentType);
 

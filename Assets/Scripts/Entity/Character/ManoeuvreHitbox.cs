@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ManoeuvreHitbox : MonoBehaviour
 {
+    private const string HITBOX_ANIMATION = "Hitbox Animation";
+
     private Character m_character = null;
 
     private BoxCollider m_collider = null;
@@ -11,6 +13,7 @@ public class ManoeuvreHitbox : MonoBehaviour
     private List<Character> m_hitCharacters = new List<Character>();
 
     private Manoeuvre m_parentController = null;
+    private Animator m_animator = null;
 
     /// <summary>
     /// Initialise hitbox
@@ -23,6 +26,10 @@ public class ManoeuvreHitbox : MonoBehaviour
         m_parentController = p_parentController;
 
         m_collider = GetComponent<BoxCollider>();
+
+        m_animator = GetComponent<Animator>();
+
+        DisableHitbox(); //Used to setup intial state
     }
 
     /// <summary>
@@ -30,19 +37,21 @@ public class ManoeuvreHitbox : MonoBehaviour
     /// Enable collider
     /// Clear old list of hit characters
     /// </summary>
-    public void StartOfManouvre()
+    public void EnableHitbox()
     {
-        m_collider.enabled = true;
+        gameObject.SetActive(true);
         m_hitCharacters.Clear();
+
+        m_animator.Play(HITBOX_ANIMATION, 0, 0.0f);
     }
 
     /// <summary>
     /// End of attakc manouvre
     /// Disable collider
     /// </summary>
-    public void EndOfManouvre()
+    public void DisableHitbox()
     {
-        m_collider.enabled = false;
+        gameObject.SetActive(false);
     }
 
     /// <summary>

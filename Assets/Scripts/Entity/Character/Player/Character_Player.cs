@@ -63,11 +63,11 @@ public class Character_Player : Character
         //Allow player to jump and move
         if (p_allowSprinting && m_customInput.GetKeyBool(CustomInput.INPUT_KEY.SPRINT))
         {
-            SetDesiredVelocity(horizontalInput * m_groundRunVel * SPRINT_MODIFIER);
+            SetDesiredHorizontalVelocity(horizontalInput * m_groundRunVel * SPRINT_MODIFIER);
         }
         else
         {
-            SetDesiredVelocity(horizontalInput * m_groundRunVel);
+            SetDesiredHorizontalVelocity(horizontalInput * m_groundRunVel);
         }
     }
 

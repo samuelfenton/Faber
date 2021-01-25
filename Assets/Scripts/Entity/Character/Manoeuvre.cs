@@ -14,7 +14,6 @@ public class Manoeuvre : MonoBehaviour
     public GameObject m_lightBranchPrefab = null;
     public GameObject m_heavyBranchPrefab = null;
 
-
     [Header("Animation String Details")]
     [Range(1, 100)]
     [SerializeField]
@@ -25,10 +24,13 @@ public class Manoeuvre : MonoBehaviour
     private MANOEUVRE_STANCE m_manoeuvreStance = MANOEUVRE_STANCE.LIGHT;
 
     [Header("Manoeuvre Details")]
-    [Tooltip("Will this manoeuvre be affected by gravity")]
+    [Header("Desired Velocity Curves")]
+    [Tooltip("Desired velocity curve for horizontal")]
+    public AnimationCurve m_velocityXCurve = null;
+    [Tooltip("Should this manoeuvre use gravity? When false itll use the velocity Y Curve")]
     public bool m_useGravity = true;
-    [Tooltip("Translation data from start of attack, positive will move character forwards")]
-    public AnimationCurve m_translationXCurve = null;
+    [Tooltip("Desired velocity curve for vertical")]
+    public AnimationCurve m_velocityYCurve = null;
     [Tooltip("Will this manoeuvre require a sheathing blend? Example most gorund attacks, whereas in air attacks never sheath")]
     public bool m_requiresSheathingBlend = false;
     [Tooltip("Manoeuvre Damage")]
@@ -90,19 +92,25 @@ public class Manoeuvre : MonoBehaviour
         }
     }
 
-    private void OnEnable()
+    /// <summary>
+    /// Enable the colliders for the given manoeuvre
+    /// </summary>
+    public void EnableHitboxes()
     {
         for (int hitboxIndex = 0; hitboxIndex < m_hitboxes.Length; hitboxIndex++)
         {
-            m_hitboxes[hitboxIndex].StartOfManouvre();
+            m_hitboxes[hitboxIndex].EnableHitbox();
         }
     }
 
-    private void OnDisable()
+    /// <summary>
+    /// Disable the colliders for the given manoeuvre
+    /// </summary>
+    public void DisableHitboxes()
     {
         for (int hitboxIndex = 0; hitboxIndex < m_hitboxes.Length; hitboxIndex++)
         {
-            m_hitboxes[hitboxIndex].EndOfManouvre();
+            m_hitboxes[hitboxIndex].DisableHitbox();
         }
     }
 }

@@ -27,7 +27,7 @@ public class StatePlayer_Block : State_Player
         m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.BLOCK_FROM_IDLE);
         m_currentState = BLOCK_STATE.START;
 
-        m_character.SetDesiredVelocity(0.0f);
+        m_character.SetDesiredHorizontalVelocity(0.0f);
     }
 
     /// <summary>

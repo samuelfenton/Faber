@@ -5,6 +5,8 @@ using UnityEditor;
 
 public class CustomDebug : MonoBehaviour
 {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+
     public const float DEFAULT_LINE_THICKNESS = 5.0f;
     public const float DEFAULT_LINE_THICKNESS_HALF = DEFAULT_LINE_THICKNESS/2.0f;
 
@@ -27,4 +29,5 @@ public class CustomDebug : MonoBehaviour
         Handles.DrawBezier(topLeft, topRight, topLeft, topRight, p_color, null, p_thickness);
 
     }
+#endif
 }

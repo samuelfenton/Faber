@@ -20,8 +20,8 @@ public class ShrineData : MonoBehaviour
 
     public ShrineDetails[] m_shrineDetails = new ShrineDetails[]
     {
-        new ShrineDetails(MasterController.SCENE.LEVEL_TUTORIAL, 0, "New Game"),
-        new ShrineDetails(MasterController.SCENE.LEVEL_TUTORIAL, 1, "Samurai Training")
+        new ShrineDetails(MasterController.SCENE.LEVEL_GREYBOX1, 0, "New Game"),
+        new ShrineDetails(MasterController.SCENE.LEVEL_GREYBOX1, 1, "Tower")
     };
 
     public void BuildShrineDetail()

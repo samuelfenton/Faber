@@ -170,7 +170,7 @@ public class State_NPC : State_Character
         Pathing_Spline currentSpline = m_entity.m_splinePhysics.m_currentSpline;
 
         int input = DetermineDirectionInput(currentSpline, p_desiredPercent);
-        m_character.SetDesiredVelocity(input * p_speed);
+        m_character.SetDesiredHorizontalVelocity(input * p_speed);
     }
 
 

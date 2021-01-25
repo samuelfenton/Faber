@@ -133,7 +133,7 @@ MonoBehaviour:
   m_groundRunVel: 8
   m_groundAccel: 12
   m_groundedDeaccel: 30
-  m_jumpVelocity: 10
+  m_jumpVelocity: 14
   m_inAirAccelModifier: 0.5
   m_doubleJumpSpeed: 8
   m_wallJumpVelocity: {x: 2, y: 8}
@@ -141,7 +141,6 @@ MonoBehaviour:
   m_idlePoseCount: 2
   m_idleDelayTime: 5
   m_idleDelayTimer: 0
-  m_desiredVelocity: {x: 0, y: 0}
   m_effectColor1: {r: 1, g: 1, b: 1, a: 1}
   m_effectColor2: {r: 1, g: 1, b: 1, a: 1}
   m_doubleJumpFlag: 0
@@ -151,7 +150,9 @@ MonoBehaviour:
   m_knockforwardFlag: 0
   m_recoilFlag: 0
   m_deathFlag: 0
-  m_manoeuvreControllerPrefab: {fileID: 0}
+  m_manoeuvreControllerObjPrefab: {fileID: 8911133571396418080, guid: 7a03760a191d5764c9e72f982149d0f3,
+    type: 3}
+  m_manoeuvreController: {fileID: 0}
   m_followCamera: {fileID: 0}
   m_characterStatistics: {fileID: 0}
   m_lastSavePoint: {fileID: 0}
@@ -187,7 +188,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_voxeliserType: 2
   m_vertType: 0
-  m_voxelSize: 0.06
+  m_voxelSize: 0.05
   m_objectWithMesh: {fileID: 1923960976811222904}
   m_meshesToUse: 1
 --- !u!1001 &1932267347226280876

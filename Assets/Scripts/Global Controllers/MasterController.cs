@@ -6,9 +6,8 @@ using UnityEngine.SceneManagement;
 public class MasterController : MonoBehaviour
 {
     //Naming scheme for levels excluding main menu and loading should follow the following "LEVEL_AREA"
-    public enum SCENE {MAIN_MENU, LOADING, LEVEL_TUTORIAL, LEVEL_CHILDHOOD, LEVEL_CYBERCITY, LEVEL_INDUSTRIAL, LEVEL_EDO, LEVEL_PAINTING}
-    private Dictionary<SCENE, string> m_sceneStrings = new Dictionary<SCENE, string>() { {SCENE.MAIN_MENU, "MainMenu" }, { SCENE.LOADING, "Loading" }, { SCENE.LEVEL_TUTORIAL, "Level_Tutorial" }, 
-        { SCENE.LEVEL_CHILDHOOD, "Level_Childhood" }, { SCENE.LEVEL_CYBERCITY, "Level_CyberCity" }, { SCENE.LEVEL_INDUSTRIAL, "Level_Industrial" }, { SCENE.LEVEL_EDO, "Level_Edo" }, { SCENE.LEVEL_PAINTING, "Level_Painting" } };
+    public enum SCENE {MAIN_MENU, LOADING, LEVEL_GREYBOX1}
+    private Dictionary<SCENE, string> m_sceneStrings = new Dictionary<SCENE, string>() { {SCENE.MAIN_MENU, "MainMenu" }, { SCENE.LOADING, "Loading" }, { SCENE.LEVEL_GREYBOX1, "Level_GreyBox01" }};
     public static MasterController Instance { get; private set; }
 
     //In scene varibles

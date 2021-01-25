@@ -29,7 +29,7 @@ public class StatePlayer_Dash : State_Player
 
         m_dashVelocity = m_player.m_dashVelocity;
 
-        m_character.SetDesiredVelocity(m_dashVelocity);
+        m_character.SetDesiredHorizontalVelocity(m_dashVelocity);
         m_character.m_splinePhysics.HardSetHorizontalVelocity(m_dashVelocity);
     }
 
@@ -42,7 +42,7 @@ public class StatePlayer_Dash : State_Player
         base.StateUpdate();
 
         //Update continously to avoid friction
-        m_character.SetDesiredVelocity(m_dashVelocity);
+        m_character.SetDesiredHorizontalVelocity(m_dashVelocity);
         m_character.m_splinePhysics.HardSetHorizontalVelocity(m_dashVelocity);
 
         return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE);
@@ -55,7 +55,7 @@ public class StatePlayer_Dash : State_Player
     {
         base.StateEnd();
 
-        m_character.SetDesiredVelocity(0.0f);
+        m_character.SetDesiredHorizontalVelocity(0.0f);
         m_character.m_splinePhysics.HardSetHorizontalVelocity(0.0f);
     }
 

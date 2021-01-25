@@ -64,6 +64,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 767670538937953154, guid: 2d95e2349f329b94181e9a9cd5db8f47,
         type: 3}
+      propertyPath: m_inAirHeavyPrefab
+      value: 
+      objectReference: {fileID: 1036111150798974363, guid: 7b140dc85df977842b4789ba2bb0cc62,
+        type: 3}
+    - target: {fileID: 767670538937953154, guid: 2d95e2349f329b94181e9a9cd5db8f47,
+        type: 3}
+      propertyPath: m_inAirLightPrefab
+      value: 
+      objectReference: {fileID: 3085730670211360524, guid: 6c6854936468ed343a6bd7666a86c132,
+        type: 3}
+    - target: {fileID: 767670538937953154, guid: 2d95e2349f329b94181e9a9cd5db8f47,
+        type: 3}
       propertyPath: m_groundHeavyPrefab
       value: 
       objectReference: {fileID: 3999432466993005201, guid: 3664840fcde751e4199c4d396209aaf0,
@@ -79,6 +91,18 @@ PrefabInstance:
       propertyPath: m_primaryWeaponObject
       value: 
       objectReference: {fileID: 763865646751693230}
+    - target: {fileID: 767670538937953154, guid: 2d95e2349f329b94181e9a9cd5db8f47,
+        type: 3}
+      propertyPath: m_sprintingHeavyPrefab
+      value: 
+      objectReference: {fileID: 6132026508996035680, guid: 12235505ec05bf843a201b1e40a0aae4,
+        type: 3}
+    - target: {fileID: 767670538937953154, guid: 2d95e2349f329b94181e9a9cd5db8f47,
+        type: 3}
+      propertyPath: m_sprintingLightPrefab
+      value: 
+      objectReference: {fileID: 5246732717864885379, guid: c2cd5c7ab22f97846a8436c5793114d6,
+        type: 3}
     - target: {fileID: 1144741882814528324, guid: 2d95e2349f329b94181e9a9cd5db8f47,
         type: 3}
       propertyPath: m_Name

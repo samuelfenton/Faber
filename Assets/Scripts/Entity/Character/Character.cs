@@ -53,14 +53,15 @@ public class Character : Entity
     public float m_idleDelayTimer = 0.0f;
 
     //Velocity stuff
-    [HideInInspector]
-    public Vector2 m_desiredVelocity = Vector2.zero;
+    protected Vector2 m_desiredVelocity = Vector2.zero;
 
     [Header("Effects")]
     public Color m_effectColor1 = Color.white;
     public Color m_effectColor2 = Color.white;
 
     //Flags
+    [HideInInspector]
+    public bool m_performedInAirAttackFlag = false;
     [HideInInspector]
     public bool m_doubleJumpFlag = false;
     [HideInInspector]
@@ -151,49 +152,58 @@ public class Character : Entity
     /// </summary>
     protected void UpdateVelocity()
     {
-        Vector3 newVelocity = m_splinePhysics.m_splineLocalVelocity;
+        Vector3 frameVelocity = m_splinePhysics.m_splineLocalVelocity;
 
         float accel = m_splinePhysics.m_downCollision ? m_groundAccel : m_groundAccel * m_inAirAccelModifier;
         float deaccel = m_splinePhysics.m_downCollision ? m_groundedDeaccel : m_groundedDeaccel * m_inAirAccelModifier;
 
-        //Run update to velocity based off desired
+        //Run update to velocity based off desired, only horizontal
         if (m_desiredVelocity.x == 0.0f) //Stop
         {
-            float deltaSpeed = deaccel * Time.deltaTime;
-            if (deltaSpeed > Mathf.Abs(newVelocity.x))//Close enough to stopping this frame
-                newVelocity.x = 0.0f;
+            float deltaHorizontalSpeed = deaccel * Time.deltaTime;
+            if (deltaHorizontalSpeed > Mathf.Abs(frameVelocity.x))//Close enough to stopping this frame
+                frameVelocity.x = 0.0f;
             else
-                newVelocity.x += newVelocity.x < 0 ? deltaSpeed : -deltaSpeed;//Still have high velocity, just slow down
+                frameVelocity.x += frameVelocity.x < 0 ? deltaHorizontalSpeed : -deltaHorizontalSpeed;//Still have high velocity, just slow down
         }
         else if (m_desiredVelocity.x > 0.0f) //Run forwards
         {
-            float deltaSpeed = newVelocity.x > m_desiredVelocity.x || newVelocity.x < 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
+            float deltaHorizontalSpeed = frameVelocity.x > m_desiredVelocity.x || frameVelocity.x < 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
 
-            if (deltaSpeed > Mathf.Abs(newVelocity.x - m_desiredVelocity.x))
-                newVelocity.x = m_desiredVelocity.x;
+            if (deltaHorizontalSpeed > Mathf.Abs(frameVelocity.x - m_desiredVelocity.x))
+                frameVelocity.x = m_desiredVelocity.x;
             else
-                newVelocity.x += newVelocity.x < m_desiredVelocity.x ? deltaSpeed : -deltaSpeed;
+                frameVelocity.x += frameVelocity.x < m_desiredVelocity.x ? deltaHorizontalSpeed : -deltaHorizontalSpeed;
 
         }
         else //Wants to run in opposite direction
         {
-            float deltaSpeed = newVelocity.x < m_desiredVelocity.x || newVelocity.x > 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
+            float deltaHorizontalSpeed = frameVelocity.x < m_desiredVelocity.x || frameVelocity.x > 0.0f ? deaccel * Time.deltaTime : accel * Time.deltaTime; // Desired slower then current, or current is wrong direction, use deaccel
 
-            if (deltaSpeed > Mathf.Abs(newVelocity.x - m_desiredVelocity.x))
-                newVelocity.x = m_desiredVelocity.x;
+            if (deltaHorizontalSpeed > Mathf.Abs(frameVelocity.x - m_desiredVelocity.x))
+                frameVelocity.x = m_desiredVelocity.x;
             else
-                newVelocity.x += newVelocity.x > m_desiredVelocity.x ? -deltaSpeed : deltaSpeed;
+                frameVelocity.x += frameVelocity.x < m_desiredVelocity.x ? deltaHorizontalSpeed : -deltaHorizontalSpeed;
 
             //Check for flip
-            if(newVelocity.x < 0.0f)
+            if(frameVelocity.x < 0.0f)
             {
                 m_splinePhysics.SwapFacingDirection();
-                newVelocity.x = -newVelocity.x;
+                frameVelocity.x = -frameVelocity.x;
                 m_desiredVelocity.x = -m_desiredVelocity.x;
             }
         }
 
-        m_splinePhysics.m_splineLocalVelocity = newVelocity;
+        //Update y velocity
+        float deltaVerticalSpeed = 20.0f * Time.deltaTime; //Ho much vertical velocity can occur on one frame
+        float desiredChange = m_desiredVelocity.y - frameVelocity.y;
+
+        if (deltaVerticalSpeed > Mathf.Abs(desiredChange))
+            frameVelocity.y = m_desiredVelocity.y;
+        else
+            frameVelocity.y += frameVelocity.y < m_desiredVelocity.y ? deltaVerticalSpeed : -deltaVerticalSpeed;
+
+        m_splinePhysics.m_splineLocalVelocity = frameVelocity;
     }
 
     /// <summary>
@@ -281,12 +291,12 @@ public class Character : Entity
     }
 
     /// <summary>
-    /// Set the desired velocity
+    /// Set the desired horizontal velocity
     /// </summary>
     /// <param name="p_val">Desired velocity</param>
-    public void SetDesiredVelocity(float p_val)
+    public void SetDesiredHorizontalVelocity(float p_val)
     {
-        m_desiredVelocity = new Vector2(p_val, m_desiredVelocity.y);
+        m_desiredVelocity = new Vector2(p_val, m_splinePhysics.m_splineLocalVelocity.y);
     }
 
     /// <summary>

@@ -1,0 +1,202 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &5859585693385434558
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 259999733876418763, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: 7bf69c1fcaa95f84abe956518a67e3bc,
+        type: 2}
+    - target: {fileID: 1837835607002495293, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_Name
+      value: Hitbox_Lilith_Katana_Sprint_Light1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3055797084708410960, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.801
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_manoeuvreType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_sequenceAttack
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_timeTraveledFlag
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_requiredAttackTime
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[1].time
+      value: 0.33
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[2].time
+      value: 0.66
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[3].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[0].value
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[1].value
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[2].value
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[1].inSlope
+      value: -6.060606
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[2].inSlope
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[3].inSlope
+      value: -23.529413
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[0].outSlope
+      value: -6.060606
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[2].inWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[2].outSlope
+      value: -23.529413
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[3].inWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[1].outWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[2].outWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[0].tangentMode
+      value: 69
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[1].tangentMode
+      value: 69
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[2].tangentMode
+      value: 69
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474784085462778043, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_velocityXCurve.m_Curve.Array.data[3].tangentMode
+      value: 69
+      objectReference: {fileID: 0}
+    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7052438341627163943, guid: 207aa1ea63829664c9c79d1be34c68b9,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 207aa1ea63829664c9c79d1be34c68b9, type: 3}
