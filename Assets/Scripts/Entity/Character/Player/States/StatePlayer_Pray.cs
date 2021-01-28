@@ -21,7 +21,7 @@ public class StatePlayer_Pray : State_Player
     {
         base.StateStart();
 
-        m_customAnimator.PlayAnimation(CustomAnimation.INTERRUPT_DEFINES.RECOIL);
+        m_customAnimator.PlayAnimation((int)CustomAnimation_Player.INTERRUPT_DEFINES.RECOIL, CustomAnimation.LAYER.INTERRUPT);
     }
 
     /// <summary>

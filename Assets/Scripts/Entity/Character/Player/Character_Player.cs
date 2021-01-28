@@ -72,34 +72,6 @@ public class Character_Player : Character
     }
 
     /// <summary>
-    /// Get turning direction for junction navigation, based off current input
-    /// </summary>
-    /// <param name="p_node">junction entity will pass through</param>
-    /// <returns>Path entity will desire to take</returns>
-    public override TURNING_DIR GetDesiredTurning(Pathing_Node p_node)
-    {
-        float relativeDot = Vector3.Dot(transform.forward, p_node.transform.forward);
-
-        float verticalInput = m_customInput.GetAxis(CustomInput.INPUT_AXIS.VERTICAL);
-
-        if (relativeDot >= 0)//Right is positive on vertical, left is negative
-        {
-            if (verticalInput < 0)
-                return TURNING_DIR.RIGHT;
-            if (verticalInput > 0)
-                return TURNING_DIR.LEFT;
-        }
-        else//Right is negative on vertical, left is positive
-        {
-            if (verticalInput < 0)
-                return TURNING_DIR.LEFT;
-            if (verticalInput > 0)
-                return TURNING_DIR.RIGHT;
-        }
-        return TURNING_DIR.CENTER;
-    }
-
-    /// <summary>
     /// Given interactable is the current one, set interactable to null
     /// </summary>
     /// <param name="p_interactable">Interactable assumed to be current</param>
@@ -142,7 +114,35 @@ public class Character_Player : Character
         }
     }
 
-    #region WEAPON FUNCTIONS - OVERRIDE
+    #region CHARACTER FUNCTIONS REQUIRING OVERRIDE
+    /// <summary>
+    /// Get turning direction for junction navigation, based off current input
+    /// </summary>
+    /// <param name="p_node">junction entity will pass through</param>
+    /// <returns>Path entity will desire to take</returns>
+    public override TURNING_DIR GetDesiredTurning(Pathing_Node p_node)
+    {
+        float relativeDot = Vector3.Dot(transform.forward, p_node.transform.forward);
+
+        float verticalInput = m_customInput.GetAxis(CustomInput.INPUT_AXIS.VERTICAL);
+
+        if (relativeDot >= 0)//Right is positive on vertical, left is negative
+        {
+            if (verticalInput < 0)
+                return TURNING_DIR.RIGHT;
+            if (verticalInput > 0)
+                return TURNING_DIR.LEFT;
+        }
+        else//Right is negative on vertical, left is positive
+        {
+            if (verticalInput < 0)
+                return TURNING_DIR.LEFT;
+            if (verticalInput > 0)
+                return TURNING_DIR.RIGHT;
+        }
+        return TURNING_DIR.CENTER;
+    }
+
     /// <summary>
     /// Function desired to be overridden, should this character be attempting to perform light or heavy attack
     /// Example click by player, or logic for NPC

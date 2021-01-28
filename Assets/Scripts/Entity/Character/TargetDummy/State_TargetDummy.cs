@@ -5,6 +5,7 @@ using UnityEngine;
 public class State_TargetDummy : State_Character
 {
     protected Character_TargetDummy m_targetDummy = null;
+    protected CustomAnimation_TargetDummy m_customAnimator = null;
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -16,5 +17,7 @@ public class State_TargetDummy : State_Character
         base.StateInit(p_loopedState, p_entity);
 
         m_targetDummy = (Character_TargetDummy)p_entity;
+
+        m_customAnimator = m_character.GetComponent<CustomAnimation_TargetDummy>();
     }
 }

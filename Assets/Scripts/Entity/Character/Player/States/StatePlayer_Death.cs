@@ -21,7 +21,7 @@ public class StatePlayer_Death : State_Player
     {
         base.StateStart();
 
-        m_customAnimator.PlayAnimation(CustomAnimation.INTERRUPT_DEFINES.DEATH);
+        m_customAnimator.PlayAnimation((int)CustomAnimation_Player.INTERRUPT_DEFINES.DEATH, CustomAnimation.LAYER.INTERRUPT);
     }
 
     /// <summary>

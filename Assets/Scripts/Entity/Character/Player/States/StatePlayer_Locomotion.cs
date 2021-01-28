@@ -24,7 +24,7 @@ public class StatePlayer_Locomotion : State_Player
     {
         base.StateStart();
 
-        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.LOCOMOTION);
+        m_customAnimator.PlayAnimation((int)CustomAnimation_Player.BASE_DEFINES.LOCOMOTION, CustomAnimation.LAYER.BASE);
         m_currentState = LOCOMOTION_STATE.LOCOMOTION;
 
         m_character.m_idleDelayTimer = 0.0f;
@@ -56,7 +56,7 @@ public class StatePlayer_Locomotion : State_Player
             case LOCOMOTION_STATE.LOCOMOTION:
                 if(Mathf.Abs(m_entity.m_splinePhysics.m_splineLocalVelocity.x) > m_character.m_groundRunVel) //Character is sprinting
                 {
-                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.RUN_TO_SPRINT);
+                    m_customAnimator.PlayAnimation((int)CustomAnimation_Player.BASE_DEFINES.RUN_TO_SPRINT, CustomAnimation.LAYER.BASE);
                     m_currentState = LOCOMOTION_STATE.LOCOMOTION_TO_SPRINT;
                 }
                 break;
@@ -66,19 +66,19 @@ public class StatePlayer_Locomotion : State_Player
                     if (Mathf.Abs(m_entity.m_splinePhysics.m_splineLocalVelocity.x) > m_character.m_groundRunVel)//Still sprinting
                     {
                         m_currentState = LOCOMOTION_STATE.SPRINT;
-                        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.SPRINT);
+                        m_customAnimator.PlayAnimation((int)CustomAnimation_Player.BASE_DEFINES.SPRINT, CustomAnimation.LAYER.BASE);
                     }
                     else //Slow downed during animation
                     {
                         m_currentState = LOCOMOTION_STATE.LOCOMOTION;
-                        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.LOCOMOTION);
+                        m_customAnimator.PlayAnimation((int)CustomAnimation_Player.BASE_DEFINES.LOCOMOTION, CustomAnimation.LAYER.BASE);
                     }
                 }
                 break;
             case LOCOMOTION_STATE.SPRINT:
                 if (Mathf.Abs(m_entity.m_splinePhysics.m_splineLocalVelocity.x) <= m_character.m_groundRunVel) //Character is no longer sprinting
                 {
-                    m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.LOCOMOTION);
+                    m_customAnimator.PlayAnimation((int)CustomAnimation_Player.BASE_DEFINES.LOCOMOTION, CustomAnimation.LAYER.BASE);
                     m_currentState = LOCOMOTION_STATE.LOCOMOTION;
                 }
                 break;

@@ -6,9 +6,6 @@ using UnityEngine;
 
 public class ManoeuvreController : MonoBehaviour
 {
-    private const string SECTION01_STRING = "_Section1";
-    private const string SECTION02_STRING = "_Section2";
-
     private enum SEQUENCE_STATE { INITIAL, ATTACK, END}
     [Header("Weapon Prefabs")]
     [Tooltip("Add weapon object into Prefab and assign here, This object will follow the primary anchor point")]
@@ -83,14 +80,6 @@ public class ManoeuvreController : MonoBehaviour
             m_secondaryWeaponObject.transform.SetParent(p_character.m_secondaryAnchor.transform, false);
             m_secondaryWeaponSkinned = m_secondaryWeaponObject.GetComponentInChildren<SkinnedMeshRenderer>();
         }
-
-        //Use voxeliser as needed
-        //Voxeliser_Burst[] voxelisers = GetComponents<Voxeliser_Burst>();
-
-        //for (int voxeliserIndex = 0; voxeliserIndex < voxelisers.Length; voxeliserIndex++)
-        //{
-        //    voxelisers[voxeliserIndex].InitVoxeliser();
-        //}
     }
 
     /// <summary>
@@ -146,7 +135,7 @@ public class ManoeuvreController : MonoBehaviour
         
         SetBlendShapes(0.0f, 0.0f, 0.0f);
 
-        m_customAnimation.PlayAnimation(m_currentManoeuvre.m_animationString);
+        m_customAnimation.PlayAnimation(m_currentManoeuvre.m_animationString, CustomAnimation.LAYER.ATTACK);
     }
 
     /// <summary>
@@ -186,7 +175,7 @@ public class ManoeuvreController : MonoBehaviour
                     if (m_customAnimation.IsAnimationDone(CustomAnimation.LAYER.ATTACK))
                     {
                         m_currentSequenceState = SEQUENCE_STATE.ATTACK;
-                        m_customAnimation.PlayAnimation(m_currentManoeuvre.m_animationString + SECTION01_STRING);
+                        m_customAnimation.PlayAnimation(m_currentManoeuvre.m_animationString + CustomAnimation.SECTION01_STRING, CustomAnimation.LAYER.ATTACK);
 
                         m_currentManoeuvre.EnableHitboxes();
                     }
@@ -195,13 +184,13 @@ public class ManoeuvreController : MonoBehaviour
                     if (CompletedManoeuvreSequence())
                     {
                         m_currentSequenceState = SEQUENCE_STATE.END;
-                        m_customAnimation.PlayAnimation(m_currentManoeuvre.m_animationString + SECTION02_STRING);
+                        m_customAnimation.PlayAnimation(m_currentManoeuvre.m_animationString + CustomAnimation.SECTION02_STRING, CustomAnimation.LAYER.ATTACK);
 
                         m_currentManoeuvre.DisableHitboxes();
                     }
                     else if(currentPercent >= 0.99f) //End of animation in sequence attack, loop it manually 
                     {
-                        m_customAnimation.PlayAnimation(m_currentManoeuvre.m_animationString + SECTION01_STRING, CustomAnimation.BLEND_TIME.INSTANT);
+                        m_customAnimation.PlayAnimation(m_currentManoeuvre.m_animationString + CustomAnimation.SECTION01_STRING, CustomAnimation.LAYER.ATTACK, CustomAnimation.BLEND_TIME.INSTANT);
                     }
                     break;
                 case SEQUENCE_STATE.END:

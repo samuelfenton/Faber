@@ -21,7 +21,7 @@ public class StatePlayer_WallJump : State_Player
     {
         base.StateStart();
 
-        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.WALL_JUMP);
+        m_customAnimator.PlayAnimation((int)CustomAnimation_Player.BASE_DEFINES.WALL_JUMP, CustomAnimation.LAYER.BASE);
 
         //Allow player to jump again
         m_character.m_doubleJumpFlag = m_character.m_characterStatistics.HasAbility(CharacterStatistics.ABILITY.DOUBLE_JUMP);

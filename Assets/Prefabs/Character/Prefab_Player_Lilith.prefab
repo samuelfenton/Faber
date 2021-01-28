@@ -29,6 +29,7 @@ GameObject:
   - component: {fileID: 5576363102575628370}
   - component: {fileID: 1935659960459431728}
   - component: {fileID: 7681844626118014086}
+  - component: {fileID: 4590140520742123554}
   - component: {fileID: 6689109739641642546}
   - component: {fileID: 3775519670443091626}
   - component: {fileID: 5834003191271657219}
@@ -84,6 +85,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &4590140520742123554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5576363102575397938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22f8ee9a29aedb64dbd2e6664a2e045f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &6689109739641642546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,6 +156,7 @@ MonoBehaviour:
   m_idleDelayTimer: 0
   m_effectColor1: {r: 1, g: 1, b: 1, a: 1}
   m_effectColor2: {r: 1, g: 1, b: 1, a: 1}
+  m_performedInAirAttackFlag: 0
   m_doubleJumpFlag: 0
   m_inAirDashFlag: 0
   m_blockingFlag: 0

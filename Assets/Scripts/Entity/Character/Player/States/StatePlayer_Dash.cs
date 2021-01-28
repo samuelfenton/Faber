@@ -23,7 +23,7 @@ public class StatePlayer_Dash : State_Player
     {
         base.StateStart();
 
-        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.DASH);
+        m_customAnimator.PlayAnimation((int)CustomAnimation_Player.BASE_DEFINES.DASH, CustomAnimation.LAYER.BASE);
 
         m_character.m_splinePhysics.HardSetUpwardsVelocity(0.0f);
 

@@ -21,7 +21,7 @@ public class StatePlayer_InAirDash : State_Player
     {
         base.StateStart();
 
-        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.INAIR_DASH);
+        m_customAnimator.PlayAnimation((int)CustomAnimation_Player.BASE_DEFINES.INAIR_DASH, CustomAnimation.LAYER.BASE);
 
         m_character.m_inAirDashFlag = false;
 

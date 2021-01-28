@@ -23,7 +23,7 @@ public class StatePlayer_Jump : State_Player
 
         m_entity.m_splinePhysics.HardSetUpwardsVelocity(m_character.m_jumpVelocity);
 
-        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.JUMP);
+        m_customAnimator.PlayAnimation((int)CustomAnimation_Player.BASE_DEFINES.JUMP, CustomAnimation.LAYER.BASE);
 
         m_character.m_performedInAirAttackFlag = false;
         m_character.m_doubleJumpFlag = m_character.m_characterStatistics.HasAbility(CharacterStatistics.ABILITY.DOUBLE_JUMP);

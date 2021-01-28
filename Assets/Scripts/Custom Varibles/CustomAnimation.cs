@@ -4,14 +4,27 @@ using UnityEngine;
 
 public class CustomAnimation : MonoBehaviour
 {
+    //Manouevre String
+    public const string SECTION01_STRING = "_Section1";
+    public const string SECTION02_STRING = "_Section2";
+
+    protected const string TYPE_GROUND = "Ground";
+    protected const string TYPE_INAIR = "InAir";
+    protected const string TYPE_SPRINT = "Sprint";
+
+    protected const string STANCE_LIGHT = "Light";
+    protected const string STANCE_HEAVY = "Heavy";
+
+    //Blending
     public enum BLEND_TIME {INSTANT, SHORT, LONG }
 
-    private const float END_ANIMATION_TIME = 0.9f;
+    protected const float END_ANIMATION_TIME = 0.9f;
 
-    private const float INSTANT_BLEND_TIME = 0.05f;
-    private const float SHORT_BLEND_TIME = 0.15f;
-    private const float LONG_BLEND_TIME = 0.3f;
+    protected const float INSTANT_BLEND_TIME = 0.05f;
+    protected const float SHORT_BLEND_TIME = 0.15f;
+    protected const float LONG_BLEND_TIME = 0.3f;
 
+    //Layers
     public const string BASE_LAYER_STRING = "BaseLayer";
     public const string ATTACK_LAYER_STRING = "AttackLayer";
     public const string INTERRUPT_LAYER_STRING = "InterruptLayer";
@@ -21,22 +34,19 @@ public class CustomAnimation : MonoBehaviour
 
     //Used Varibles
     public enum LAYER {BASE = 0, ATTACK, INTERRUPT, LAYER_COUNT}
-    private int[] m_layerToInt = new int[(int)LAYER.LAYER_COUNT];
+    protected int[] m_layerToInt = new int[(int)LAYER.LAYER_COUNT];
 
-    public enum VARIBLE_FLOAT { CURRENT_VELOCITY, ABSOLUTE_VELOCITY, VERTICAL_VELOCITY, RANDOM_IDLE, KNOCKBACK_IMPACT, FLOAT_COUNT}
-    private string[] m_floatToString = new string[(int)VARIBLE_FLOAT.FLOAT_COUNT];
-    public enum BASE_DEFINES {LOCOMOTION, SPRINT, RUN_TO_SPRINT, DASH, JUMP, INAIR, DOUBLE_JUMP, INAIR_DASH, LANDING_TO_IDLE, LANDING_TO_RUN, WALL_JUMP, BLOCK, BLOCK_FROM_IDLE, BLOCK_TO_IDLE, PRAY_START, PRAY_LOOP, PRAY_END, BASE_COUNT }
-    private string[] m_baseToString = new string[(int)BASE_DEFINES.BASE_COUNT];
+    //To be filled up in init by derrived class
+    protected string[] m_floatToString = new string[0];
+    protected string[] m_baseToString = new string[0];
+    protected string[] m_interruptToString = new string[0];
 
-    public enum INTERRUPT_DEFINES {RECOIL, KNOCKBACK, KNOCKFORWARD, DEATH, IDLE_EMOTE, INTERRUPT_COUNT}
-    private string[] m_interruptToString = new string[(int)INTERRUPT_DEFINES.INTERRUPT_COUNT];
-
-    private Animator m_animator = null;
+    protected Animator m_animator = null;
 
     //Blending
-    private LAYER m_currentLayer = LAYER.BASE;
-    private Coroutine m_blendCoroutine = null;
-    private KeyValuePair<string, LAYER> m_blendingTo = new KeyValuePair<string, LAYER>();
+    protected LAYER m_currentLayer = LAYER.BASE;
+    protected Coroutine m_blendCoroutine = null;
+    protected KeyValuePair<string, LAYER> m_blendingTo = new KeyValuePair<string, LAYER>();
 
     /// <summary>
     /// Setup dicionaries used
@@ -53,47 +63,34 @@ public class CustomAnimation : MonoBehaviour
             m_layerToInt[(int)LAYER.INTERRUPT] = m_animator.GetLayerIndex(INTERRUPT_LAYER_STRING);
         }
 
-        //Assign strings, in the case a string/aniamtion is not found in the animator default to empty string ""
-        m_floatToString[(int)VARIBLE_FLOAT.CURRENT_VELOCITY] = ContainsParam(m_animator, "CurrentVelocity") ? "CurrentVelocity" : "";
-        m_floatToString[(int)VARIBLE_FLOAT.ABSOLUTE_VELOCITY] = ContainsParam(m_animator, "AbsoluteVelocity") ? "AbsoluteVelocity" : "";
-        m_floatToString[(int)VARIBLE_FLOAT.VERTICAL_VELOCITY] = ContainsParam(m_animator, "VerticalVelocity") ? "VerticalVelocity" : "";
-        m_floatToString[(int)VARIBLE_FLOAT.RANDOM_IDLE] = ContainsParam(m_animator, "RandomIdle") ? "RandomIdle" : "";
-        m_floatToString[(int)VARIBLE_FLOAT.KNOCKBACK_IMPACT] = ContainsParam(m_animator, "KnockbackImpact") ? "KnockbackImpact" : "";
+        //Derrived classes need to define m_floatToString, m_baseToString, m_interruptToString
+        //See CustomAnimation_Player.cs for example
+    }
 
-        m_baseToString[(int)BASE_DEFINES.LOCOMOTION] = HasAnimation(m_animator, "Locomotion", m_layerToInt[(int)LAYER.BASE]) ? "Locomotion" : "";
-        m_baseToString[(int)BASE_DEFINES.SPRINT] = HasAnimation(m_animator, "Sprint", m_layerToInt[(int)LAYER.BASE]) ? "Sprint" : "";
-        m_baseToString[(int)BASE_DEFINES.RUN_TO_SPRINT] = HasAnimation(m_animator, "RunToSprint", m_layerToInt[(int)LAYER.BASE]) ? "RunToSprint" : "";
-        m_baseToString[(int)BASE_DEFINES.DASH] = HasAnimation(m_animator, "Dash", m_layerToInt[(int)LAYER.BASE]) ? "Dash" : "";
-        m_baseToString[(int)BASE_DEFINES.JUMP] = HasAnimation(m_animator, "Jump", m_layerToInt[(int)LAYER.BASE]) ? "Jump" : "";
-        m_baseToString[(int)BASE_DEFINES.INAIR] = HasAnimation(m_animator, "InAir", m_layerToInt[(int)LAYER.BASE]) ? "InAir" : "";
-        m_baseToString[(int)BASE_DEFINES.DOUBLE_JUMP] = HasAnimation(m_animator, "DoubleJump", m_layerToInt[(int)LAYER.BASE]) ? "DoubleJump" : "";
-        m_baseToString[(int)BASE_DEFINES.INAIR_DASH] = HasAnimation(m_animator, "InAirDash", m_layerToInt[(int)LAYER.BASE]) ? "InAirDash" : "";
-        m_baseToString[(int)BASE_DEFINES.LANDING_TO_IDLE] = HasAnimation(m_animator, "LandingToIdle", m_layerToInt[(int)LAYER.BASE]) ? "LandingToIdle" : "";
-        m_baseToString[(int)BASE_DEFINES.LANDING_TO_RUN] = HasAnimation(m_animator, "LandingToRun", m_layerToInt[(int)LAYER.BASE]) ? "LandingToRun" : "";
-        m_baseToString[(int)BASE_DEFINES.WALL_JUMP] = HasAnimation(m_animator, "WallJump", m_layerToInt[(int)LAYER.BASE]) ? "WallJump" : "";
-        m_baseToString[(int)BASE_DEFINES.BLOCK] = HasAnimation(m_animator, "Block", m_layerToInt[(int)LAYER.BASE]) ? "Block" : "";
-        m_baseToString[(int)BASE_DEFINES.BLOCK_FROM_IDLE] = HasAnimation(m_animator, "BlockFromIdle", m_layerToInt[(int)LAYER.BASE]) ? "BlockFromIdle" : "";
-        m_baseToString[(int)BASE_DEFINES.BLOCK_TO_IDLE] = HasAnimation(m_animator, "BlockToIdle", m_layerToInt[(int)LAYER.BASE]) ? "BlockToIdle" : "";
-        m_baseToString[(int)BASE_DEFINES.PRAY_START] = HasAnimation(m_animator, "PrayStart", m_layerToInt[(int)LAYER.BASE]) ? "PrayStart" : "";
-        m_baseToString[(int)BASE_DEFINES.PRAY_LOOP] = HasAnimation(m_animator, "PrayLoop", m_layerToInt[(int)LAYER.BASE]) ? "PrayLoop" : "";
-        m_baseToString[(int)BASE_DEFINES.PRAY_END] = HasAnimation(m_animator, "PrayEnd", m_layerToInt[(int)LAYER.BASE]) ? "PrayEnd" : "";
+    /// <summary>
+    /// Given a manoeuvres variables, build a string for the animator to play
+    /// </summary>
+    /// <param name="p_type">Type of manoeuvre</param>
+    /// <param name="p_stance">Stance of manoeuvre</param>
+    /// <param name="p_index">Index of manoeuvre</param>
+    /// <returns>String for animation, it may not exist in the animator</returns>
+    public static string BuildManoeuvreString(Manoeuvre.MANOEUVRE_TYPE p_type, Manoeuvre.MANOEUVRE_STANCE p_stance, int p_index)
+    {
+        string type = p_type == Manoeuvre.MANOEUVRE_TYPE.GROUND ? TYPE_GROUND : p_type == Manoeuvre.MANOEUVRE_TYPE.INAIR ? TYPE_INAIR : TYPE_SPRINT;
+        string stance = p_stance == Manoeuvre.MANOEUVRE_STANCE.LIGHT ? STANCE_LIGHT : STANCE_HEAVY;
 
-        m_interruptToString[(int)INTERRUPT_DEFINES.RECOIL] = HasAnimation(m_animator, "Recoil", m_layerToInt[(int)LAYER.INTERRUPT]) ? "Recoil" : "";
-        m_interruptToString[(int)INTERRUPT_DEFINES.KNOCKBACK] = HasAnimation(m_animator, "Knockback", m_layerToInt[(int)LAYER.INTERRUPT]) ? "Knockback" : "";
-        m_interruptToString[(int)INTERRUPT_DEFINES.KNOCKFORWARD] = HasAnimation(m_animator, "Knockforward", m_layerToInt[(int)LAYER.INTERRUPT]) ? "Knockforward" : "";
-        m_interruptToString[(int)INTERRUPT_DEFINES.DEATH] = HasAnimation(m_animator, "Death", m_layerToInt[(int)LAYER.INTERRUPT]) ? "Death" : "";
-        m_interruptToString[(int)INTERRUPT_DEFINES.IDLE_EMOTE] = HasAnimation(m_animator, "IdleEmote", m_layerToInt[(int)LAYER.INTERRUPT]) ? "IdleEmote" : "";
+        return type + "_" + stance + p_index;
     }
 
     /// <summary>
     /// Set the varible value 
     /// </summary>
-    /// <param name="p_floatVarible">Varible to set</param>
+    /// <param name="p_floatIndex">Varible to set, typically use enums</param>
     /// <param name="p_value">Value of varible to set to</param>
-    public void SetVaribleFloat(VARIBLE_FLOAT p_floatVarible, float p_value)
+    public void SetVaribleFloat(int p_floatIndex, float p_value)
     {
-        if(p_floatVarible != VARIBLE_FLOAT.FLOAT_COUNT && m_floatToString[(int)p_floatVarible] != "")
-            m_animator.SetFloat(m_floatToString[(int)p_floatVarible], p_value);
+        if(p_floatIndex > 0 && p_floatIndex < m_floatToString.Length && m_floatToString[p_floatIndex] != "")
+            m_animator.SetFloat(m_floatToString[p_floatIndex], p_value);
     }
 
     /// <summary>
@@ -134,43 +131,58 @@ public class CustomAnimation : MonoBehaviour
     /// <summary>
     /// Playing of animation for base animations 
     /// </summary>
-    /// <param name="p_anim">Animation to play</param>
+    /// <param name="p_animationIndex">Animation to play, typically use enums in derived class to define its index</param>
+    /// <param name="p_layer">Layer to play on</param>
     /// <param name="p_blendTime">Time to blend between</param>
-    public void PlayAnimation(BASE_DEFINES p_anim, BLEND_TIME p_blendTime = BLEND_TIME.SHORT)
+    public void PlayAnimation(int p_animationIndex, LAYER p_layer, BLEND_TIME p_blendTime = BLEND_TIME.SHORT)
     {
-        if(p_anim!= BASE_DEFINES.BASE_COUNT && m_baseToString[(int)p_anim] != "")
-            PlayAnimation(m_baseToString[(int)p_anim], LAYER.BASE, p_blendTime);
+        switch (p_layer)
+        {
+            case LAYER.BASE:
+                if(p_animationIndex >= 0 && p_animationIndex < m_baseToString.Length && m_baseToString[p_animationIndex] != "")
+                    PlayAnimationSetup(m_baseToString[p_animationIndex], p_layer, p_blendTime);
+                break;
+            case LAYER.INTERRUPT:
+                if (p_animationIndex >= 0 && p_animationIndex < m_interruptToString.Length && m_interruptToString[p_animationIndex] != "")
+                    PlayAnimationSetup(m_interruptToString[p_animationIndex], p_layer, p_blendTime);
+                break;
+            case LAYER.ATTACK:
+            case LAYER.LAYER_COUNT:
+            default:
+                break;
+        }
+
     }
 
     /// <summary>
-    /// Playing of animation for attack animations 
+    /// Playing of animation based off strings
     /// </summary>
     /// <param name="p_attackString">string of attack animation</param>
+    /// <param name="p_layer">Layer to play on</param>
     /// <param name="p_blendTime">Time to blend between</param>
-    public void PlayAnimation(string p_attackString, BLEND_TIME p_blendTime = BLEND_TIME.SHORT)
+    public void PlayAnimation(string p_animationString, LAYER p_layer, BLEND_TIME p_blendTime = BLEND_TIME.SHORT)
     {
-        if(p_attackString != "" && HasAnimation(m_animator, p_attackString, m_layerToInt[(int)LAYER.ATTACK]))
-            PlayAnimation(p_attackString, LAYER.ATTACK, p_blendTime);
+        switch (p_layer)
+        {
+            case LAYER.BASE:
+            case LAYER.ATTACK:
+            case LAYER.INTERRUPT:
+                if (p_animationString != "" && HasAnimation(m_animator, p_animationString, m_layerToInt[(int)p_layer]))
+                    PlayAnimationSetup(p_animationString, p_layer, p_blendTime);
+                break;
+            case LAYER.LAYER_COUNT:
+            default:
+                break;
+        }
     }
 
     /// <summary>
-    /// Playing of animation for interrupt animations 
-    /// </summary>
-    /// <param name="p_anim">Animation to play</param>
-    /// <param name="p_blendTime">Time to blend between</param>
-    public void PlayAnimation(INTERRUPT_DEFINES p_anim, BLEND_TIME p_blendTime = BLEND_TIME.INSTANT)
-    {
-        if(p_anim != INTERRUPT_DEFINES.INTERRUPT_COUNT && m_interruptToString[(int)p_anim] != "")
-            PlayAnimation(m_interruptToString[(int)p_anim], LAYER.INTERRUPT, p_blendTime);
-    }
-
-    /// <summary>
-    /// Play a given animation. This fucntion should only be called from one of hte above playanimation functions
+    /// Play a given animation. This fucntion should only be called from one of hte above play animation functions
     /// </summary>
     /// <param name="p_animationString">String of animation to crossfade</param>
     /// <param name="p_layer">Layer to crossfade into</param>
     /// <param name="p_blendTime">Time to crossfade and blend layers</param>
-    private void PlayAnimation(string p_animationString, LAYER p_layer, BLEND_TIME p_blendTime)
+    private void PlayAnimationSetup(string p_animationString, LAYER p_layer, BLEND_TIME p_blendTime)
     {
         //Crossfade requires layer in name
         string layerAnimationString = p_layer == LAYER.BASE ? BASE_LAYER_STRING : (p_layer == LAYER.ATTACK ? ATTACK_LAYER_STRING : INTERRUPT_LAYER_STRING);

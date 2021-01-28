@@ -79,10 +79,7 @@ public class Manoeuvre : MonoBehaviour
     /// <param name="p_character">Character controlling hitbox</param>
     public void InitController(Character p_character)
     {
-        string type = m_manoeuvreType == MANOEUVRE_TYPE.GROUND ? "Ground" : m_manoeuvreType == MANOEUVRE_TYPE.INAIR ? "InAir" : "Sprint";
-        string stance = m_manoeuvreStance == MANOEUVRE_STANCE.LIGHT ? "Light" : "Heavy";
-
-        m_animationString = type + "_" + stance + m_manoeuvreIndex;
+        m_animationString = CustomAnimation.BuildManoeuvreString(m_manoeuvreType, m_manoeuvreStance, m_manoeuvreIndex);
 
         m_hitboxes = GetComponentsInChildren<ManoeuvreHitbox>();
 

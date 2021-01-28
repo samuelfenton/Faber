@@ -25,7 +25,7 @@ public class StatePlayer_Idle : State_Player
         base.StateStart();
 
         m_character.GetRandomIdlePose();
-        m_customAnimator.PlayAnimation(CustomAnimation.INTERRUPT_DEFINES.IDLE_EMOTE);
+        m_customAnimator.PlayAnimation((int)CustomAnimation_Player.INTERRUPT_DEFINES.IDLE_EMOTE, CustomAnimation.LAYER.BASE);
     }
 
     /// <summary>

@@ -5,6 +5,7 @@ using UnityEngine;
 public class State_Player : State_Character
 {
     protected Character_Player m_player = null;
+    protected CustomAnimation_Player m_customAnimator = null;
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -16,5 +17,7 @@ public class State_Player : State_Character
         base.StateInit(p_loopedState, p_entity);
 
         m_player = (Character_Player)p_entity;
+
+        m_customAnimator = m_character.GetComponent<CustomAnimation_Player>();
     }
 }

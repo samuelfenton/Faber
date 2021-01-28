@@ -21,7 +21,7 @@ public class StateTargetDummy_Idle : State_TargetDummy
     {
         base.StateStart();
 
-        m_customAnimator.PlayAnimation(CustomAnimation.BASE_DEFINES.LOCOMOTION);
+        m_customAnimator.PlayAnimation((int)CustomAnimation_Player.BASE_DEFINES.LOCOMOTION, CustomAnimation.LAYER.BASE);
     }
 
     /// <summary>

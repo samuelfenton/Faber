@@ -106,10 +106,10 @@ public class Character : Entity
 
         m_animator = GetComponentInChildren<Animator>();
 
-        m_customAnimation = gameObject.AddComponent<CustomAnimation>();
+        m_customAnimation = FindObjectOfType<CustomAnimation>();
         m_customAnimation.Init(m_animator);
 
-        if(m_manoeuvreControllerObjPrefab != null)
+        if (m_manoeuvreControllerObjPrefab != null)
         {
             m_manoeuvreControllerObjStored = Instantiate(m_manoeuvreControllerObjPrefab, transform, false);
             m_manoeuvreController = m_manoeuvreControllerObjStored.GetComponent<ManoeuvreController>();
@@ -304,15 +304,15 @@ public class Character : Entity
     /// </summary>
     public void UpdateAnimationLocomotion()
     {
-        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.CURRENT_VELOCITY, m_splinePhysics.m_splineLocalVelocity.x / m_groundRunVel);
-        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_splinePhysics.m_splineLocalVelocity.x / m_groundRunVel));
+        m_customAnimation.SetVaribleFloat((int)CustomAnimation_Player.VARIBLE_FLOAT.CURRENT_VELOCITY, m_splinePhysics.m_splineLocalVelocity.x / m_groundRunVel);
+        m_customAnimation.SetVaribleFloat((int)CustomAnimation_Player.VARIBLE_FLOAT.ABSOLUTE_VELOCITY, Mathf.Abs(m_splinePhysics.m_splineLocalVelocity.x / m_groundRunVel));
     }
 
     public void SetKnockbackImpact(Manoeuvre.DAMAGE_IMPACT p_impact)
     {
         float knockbackValue = p_impact == Manoeuvre.DAMAGE_IMPACT.LOW ? 0.0f : p_impact == Manoeuvre.DAMAGE_IMPACT.MEDIUM ? 1.0f : 2.0f;
 
-        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.KNOCKBACK_IMPACT, knockbackValue);
+        m_customAnimation.SetVaribleFloat((int)CustomAnimation_Player.VARIBLE_FLOAT.KNOCKBACK_IMPACT, knockbackValue);
     }
 
     /// <summary>
@@ -321,10 +321,20 @@ public class Character : Entity
     public void GetRandomIdlePose()
     {
         int randomPose = Random.Range(0, m_idlePoseCount);
-        m_customAnimation.SetVaribleFloat(CustomAnimation.VARIBLE_FLOAT.RANDOM_IDLE, randomPose);
+        m_customAnimation.SetVaribleFloat((int)CustomAnimation_Player.VARIBLE_FLOAT.RANDOM_IDLE, randomPose);
     }
 
-    #region WEAPON FUNCTIONS - OVERRIDE
+    #region CHARACTER FUNCTIONS REQUIRING OVERRIDE
+    /// <summary>
+    /// Get turning direction for junction navigation, based off current input
+    /// </summary>
+    /// <param name="p_node">junction entity will pass through</param>
+    /// <returns>Path entity will desire to take</returns>
+    public override TURNING_DIR GetDesiredTurning(Pathing_Node p_node)
+    {
+        return TURNING_DIR.CENTER;
+    }
+
     /// <summary>
     /// Function desired to be overridden, should this character be attempting to perform light or heavy attack
     /// Example click by player, or logic for NPC
