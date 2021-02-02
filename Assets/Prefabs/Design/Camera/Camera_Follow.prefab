@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_followTarget: {fileID: 0}
-  m_cameraOffset: {x: 5, y: 2, z: 0}
+  m_cameraOffset: {x: 3, y: 2.5, z: 1}
   m_lookAtOffset: {x: 0, y: 2, z: 0}
   m_cameraLinerarSpeed: 20
   m_linearSpeedDistance: 0.4
   m_dropOffRate: 5
-  m_currentOrientation: 1
+  m_currentOrientation: 0
 --- !u!1001 &327491227375337946
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26,6 +26,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7604433256433018842, guid: eb6854396713cd74196b3af48c0c1e49,
+        type: 3}
+      propertyPath: orthographic
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7604433256433018842, guid: eb6854396713cd74196b3af48c0c1e49,
+        type: 3}
+      propertyPath: field of view
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 7604433256433018842, guid: eb6854396713cd74196b3af48c0c1e49,
+        type: 3}
+      propertyPath: near clip plane
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7741000623975220431, guid: eb6854396713cd74196b3af48c0c1e49,
         type: 3}
       propertyPath: m_Name
