@@ -2,11 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterAerial_Drone : Character_Aerial
+public class CharacterAerial_Drone01 : Character_Aerial
 {
+    protected StateMachine_Drone01 m_droneStateMachine = null;
+
     [Header("Assigned GameObjects")]
     public GameObject m_weaponObject = null;
+
+    [Header("Projectile")]
+    public ObjectPool m_projectileObjectPool = null;
     public GameObject m_projectileSpawnAnchor = null;
+
+    public float m_maxFiringAngle = 40.0f; 
 
     /// <summary>
     /// Initiliase the entity
@@ -15,7 +22,16 @@ public class CharacterAerial_Drone : Character_Aerial
     public override void InitEntity()
     {
         base.InitEntity();
-        //TODO setups statemachine here for each custom NPC 
+
+        m_customAnimation = GetComponent<CustomAnimation_Drone01>();
+
+        //Init
+        m_droneStateMachine = gameObject.AddComponent<StateMachine_Drone01>();
+
+        m_droneStateMachine.InitStateMachine(this);//Run first as animation depends on states being created
+
+        m_projectileObjectPool.Init();
+        m_projectileObjectPool.SetupAsEntities();
     }
 
     /// <summary>
@@ -24,7 +40,9 @@ public class CharacterAerial_Drone : Character_Aerial
     /// </summary>
     public override void UpdateEntity()
     {
-        //TODO update statemachine here for each custom NPC 
+        //Get logic
+        m_droneStateMachine.UpdateStateMachine();
+
         base.UpdateEntity();
     }
 

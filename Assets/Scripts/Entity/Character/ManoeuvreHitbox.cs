@@ -72,7 +72,7 @@ public class ManoeuvreHitbox : MonoBehaviour
                 Vector3 collisionPoint = otherColliderCenter; //Using idea of x,z centered on other colldier, so spawnging inside object
                 collisionPoint.y = m_collider.bounds.center.y; //y is the current colliders y position.
 
-                m_character.DealDamage(m_parentController, otherCharacter, collisionPoint);
+                m_character.DealDamage(otherCharacter, m_parentController.m_manoeuvreDamage, collisionPoint, m_parentController.m_damageImpact, m_parentController.m_damageDirection);
                 m_hitCharacters.Add(otherCharacter);
             }
         }

@@ -86,6 +86,7 @@ public class Character_Player : Character
 
     /// <summary>
     /// Update the possible current interactable
+    /// TODO, ensure works with lots of interatables.
     /// </summary>
     /// <param name="p_interactable">New possible interactable</param>
     /// <param name="p_interactableDistance">Distance to new interactable</param>

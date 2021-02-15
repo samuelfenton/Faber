@@ -48,7 +48,27 @@ public class ObjectPool : MonoBehaviour
 
             objects[objectIndex].SetActive(false);
         }
+
         return true;
+    }
+
+    /// <summary>
+    /// In the case the object pool is full of entities setup them all up as such
+    /// </summary>
+    public void SetupAsEntities()
+    {
+        for (int i = 0; i < m_objectCount; i++)
+        {
+            PoolObject poolObject = m_objectQueue.Dequeue();
+            Entity entity = poolObject.GetComponent<Entity>();
+
+            if(entity != null)
+            {
+                entity.InitEntity();
+            }
+
+            m_objectQueue.Enqueue(poolObject);
+        }
     }
 
     /// <summary>
@@ -82,5 +102,10 @@ public class ObjectPool : MonoBehaviour
             m_objectQueue.Enqueue(p_object);
             p_object.gameObject.SetActive(false);
         }
+    }
+
+    public bool HasSpareObject()
+    {
+        return m_objectQueue.Count > 0;
     }
 }

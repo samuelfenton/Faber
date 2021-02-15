@@ -5,15 +5,28 @@ using UnityEngine.SceneManagement;
 
 public class MOARMaths : MonoBehaviour
 {
+    /// <summary>
+    /// Get the square magnitude for a single vector
+    /// Its faster then getting square root
+    /// </summary>
+    /// <param name="p_val">Vector to measure</param>
+    /// <returns></returns>
     public static float SqrMagnitude(Vector3 p_val)
     {
         return p_val.x * p_val.x + p_val.y * p_val.y + p_val.z * p_val.z;
     }
 
+    /// <summary>
+    /// Get the square distance between two Vectors
+    /// Its faster then getting square root
+    /// </summary>
+    /// <param name="p_lhs">First Vector</param>
+    /// <param name="p_rhs">Second Vector</param>
+    /// <returns></returns>
     public static float SqrDistance(Vector3 p_lhs, Vector3 p_rhs)
     {
         Vector3 distance = p_rhs - p_lhs;
-        return distance.x * distance.x + distance.y * distance.y + distance.z * distance.z;
+        return SqrMagnitude(distance);
     }
 
     /// <summary>
@@ -39,14 +52,24 @@ public class MOARMaths : MonoBehaviour
 
         for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
         {
-            var scenePath = SceneUtility.GetScenePathByBuildIndex(i);
-            var lastSlash = scenePath.LastIndexOf("/");
-            var sceneName = scenePath.Substring(lastSlash + 1, scenePath.LastIndexOf(".") - lastSlash - 1);
+            string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+            int lastSlash = scenePath.LastIndexOf("/");
+            string sceneName = scenePath.Substring(lastSlash + 1, scenePath.LastIndexOf(".") - lastSlash - 1);
 
             if (string.Compare(name, sceneName, true) == 0)
                 return true;
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Given the "2D" nature of the game, Vector3 can be converted into its horizontal and vertical components
+    /// </summary>
+    /// <param name="p_in"></param>
+    /// <returns></returns>
+    public static Vector2 ConvertFromVector3ToVector2(Vector3 p_in)
+    {
+        return new Vector2(Mathf.Sqrt(p_in.x * p_in.x + p_in.z * p_in.z), p_in.y);
     }
 }

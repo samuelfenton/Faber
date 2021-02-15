@@ -84,7 +84,6 @@ public class Character : Entity
 
     [HideInInspector]
     public ManoeuvreController m_manoeuvreController = null;
-    protected Animator m_animator = null;
     protected CustomAnimation m_customAnimation = null;
 
     [HideInInspector]
@@ -104,10 +103,8 @@ public class Character : Entity
         //Get references
         m_characterStatistics = GetComponent<CharacterStatistics>();
 
-        m_animator = GetComponentInChildren<Animator>();
-
-        m_customAnimation = FindObjectOfType<CustomAnimation>();
-        m_customAnimation.Init(m_animator);
+        m_customAnimation = GetComponent<CustomAnimation>();
+        m_customAnimation.Init();
 
         if (m_manoeuvreControllerObjPrefab != null)
         {
@@ -226,10 +223,12 @@ public class Character : Entity
     /// <summary>
     /// Deal dmage to another character, set flags as needed
     /// </summary>
-    /// <param name="p_manoeuvreController">Controller used in dealing damage</param>
     /// <param name="p_targetCharacter"></param>
+    /// <param name="p_damage">Damage to do, should be positive</param>
     /// <param name="p_impactPosition">Position of impact</param>
-    public void DealDamage(Manoeuvre p_manoeuvreController, Character p_targetCharacter, Vector3 p_impactPosition)
+    /// <param name="p_impactForce">Impact level of force</param>
+    /// <param name="p_impactDirection">Direction of impact</param>
+    public void DealDamage(Character p_targetCharacter, float p_damage, Vector3 p_impactPosition, Manoeuvre.DAMAGE_IMPACT p_impactForce = Manoeuvre.DAMAGE_IMPACT.MEDIUM, Manoeuvre.DAMAGE_DIRECTION p_impactDirection = Manoeuvre.DAMAGE_DIRECTION.NONE)
     {
         if (p_targetCharacter == null)
             return;
@@ -240,10 +239,10 @@ public class Character : Entity
         }
         else
         { 
-            p_targetCharacter.ModifyHealth(-p_manoeuvreController.m_manoeuvreDamage);
+            p_targetCharacter.ModifyHealth(-p_damage);
 
             //Setup knockback
-            p_targetCharacter.SetKnockbackImpact(p_manoeuvreController.m_damageImpact);
+            p_targetCharacter.SetKnockbackImpact(p_impactForce);
 
             //Determine knockback or knock forward
             float characterTargetAlignment = Vector3.Dot(transform.forward, p_targetCharacter.transform.forward); 
@@ -257,7 +256,7 @@ public class Character : Entity
             cameraToTarget.y = 0.0f;
             Quaternion hitmarkerRotation = Quaternion.LookRotation(cameraToTarget, Vector3.up);
 
-            m_sceneController.SpawnHitMarker(p_targetCharacter.transform.position + Vector3.up * 2.0f, hitmarkerRotation, Mathf.RoundToInt(p_manoeuvreController.m_manoeuvreDamage));
+            m_sceneController.SpawnHitMarker(p_targetCharacter.transform.position + Vector3.up * 2.0f, hitmarkerRotation, Mathf.RoundToInt(p_damage));
 
             //Setup particle effects
             Vector3 characterToTarget = p_targetCharacter.transform.position - transform.position;
@@ -265,7 +264,7 @@ public class Character : Entity
 
             Quaternion particleRotation = Quaternion.LookRotation(characterToTarget, Vector3.up);
 
-            m_sceneController.SpawnDamageParticles(p_impactPosition, particleRotation, p_manoeuvreController.m_damageDirection, p_targetCharacter.m_effectColor1, p_targetCharacter.m_effectColor2);
+            m_sceneController.SpawnDamageParticles(p_impactPosition, particleRotation, p_impactDirection, p_targetCharacter.m_effectColor1, p_targetCharacter.m_effectColor2);
         }
     }
 

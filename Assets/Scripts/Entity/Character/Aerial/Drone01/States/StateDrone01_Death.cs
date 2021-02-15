@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StatePlayer_Knockback : State_Player
+public class StateDrone01_Death : State_Drone01
 {
+    //NOTE
+    //Although player state runs on the interupt animation layer, it does not behave like a interrupt state
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -21,13 +23,6 @@ public class StatePlayer_Knockback : State_Player
     public override void StateStart()
     {
         base.StateStart();
-
-        float knockBackVal = m_character.m_knockbackFlag ? 1.0f : -1.0f; //Assume 1 is getting hit from front
-        m_customAnimator.SetVaribleFloat((int)CustomAnimation_Player.VARIBLE_FLOAT.KNOCKBACK_IMPACT, knockBackVal);
-
-        m_customAnimator.PlayAnimation((int)CustomAnimation_Player.INTERRUPT_DEFINES.KNOCKBACK, CustomAnimation.LAYER.INTERRUPT);
-
-        m_character.SetDesiredHorizontalVelocity(m_character.AllignedToSpline() ? 1 : -1);
     }
 
     /// <summary>
@@ -38,7 +33,7 @@ public class StatePlayer_Knockback : State_Player
     {
         base.StateUpdate();
 
-        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.INTERRUPT);
+        return false;
     }
 
     /// <summary>
@@ -47,8 +42,6 @@ public class StatePlayer_Knockback : State_Player
     public override void StateEnd()
     {
         base.StateEnd();
-
-        m_character.m_knockbackFlag = false; //Reset flag
     }
 
     /// <summary>
@@ -57,6 +50,6 @@ public class StatePlayer_Knockback : State_Player
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return (m_character.m_knockbackFlag || m_character.m_knockforwardFlag) && !m_inProgressFlag;
+        return false;
     }
 }

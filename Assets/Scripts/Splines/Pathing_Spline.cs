@@ -185,6 +185,17 @@ public class Pathing_Spline : MonoBehaviour
         return p_distanceTravelled / m_splineLength;
     }
 
+    /// <summary>
+    /// Given a current percent and an offset, whats the new percent?
+    /// </summary>
+    /// <param name="p_currentPercent">Current spline percent</param>
+    /// <param name="p_offsetAmount">Offset amount, or forward amount</param>
+    /// <returns>percent value</returns>
+    public float GetSplinePercentFromOffset(float p_currentPercent, float p_offsetAmount)
+    {
+        return p_currentPercent + (p_offsetAmount / m_splineLength);
+    }
+
     #region Rebuild
 
     /// <summary>
@@ -307,7 +318,7 @@ public class Pathing_Spline : MonoBehaviour
     }
 #endregion
 
-#region Getting Forward
+    #region Getting Forward
     /// <summary>
     /// Get a forward based off the spline and what percent
     /// </summary>

@@ -7,6 +7,9 @@ public class Character_NPC : Character
     //Path finding
     protected List<Pathing_Node> m_pathingList = new List<Pathing_Node>();
 
+    [Header("NPC Variables")]
+    public Character m_target = null;
+
     /// <summary>
     /// Initiliase the entity
     /// setup varible/physics
@@ -14,7 +17,7 @@ public class Character_NPC : Character
     public override void InitEntity()
     {
         base.InitEntity();
-        //TODO setups statemachine here for each custom NPC 
+        m_target = FindObjectOfType<Character_Player>();
     }
 
     /// <summary>
@@ -25,6 +28,41 @@ public class Character_NPC : Character
     {
         //TODO update statemachine here for each custom NPC 
         base.UpdateEntity();
+    }
+
+    /// <summary>
+    /// Rotate a give weapon(GameObject towards a target)
+    /// Rotates along the x local axis
+    /// </summary>
+    /// <param name="p_weapon"></param>
+    /// <param name="p_targetPosition"></param>
+    /// <param name="p_maxAngle"></param>
+    public void RotateWeaponTowardsTarget(GameObject p_weapon, Vector3 p_targetPosition, float p_maxAngle = 80.0f)
+    {
+        Vector3 weaponToTarget = p_targetPosition - p_weapon.transform.position;
+
+        float alignment = Vector3.Dot(transform.forward, weaponToTarget.normalized);
+
+        //TODO make sure this lines up right
+        float horizontalDis = alignment == 0.0 ? 0.0f : Mathf.Sqrt(weaponToTarget.x * weaponToTarget.x + weaponToTarget.z * weaponToTarget.z) * alignment;
+
+        float verticalDis = weaponToTarget.y;
+
+        float angle = Mathf.Atan(Mathf.Abs(verticalDis) / Mathf.Abs(horizontalDis)) * Mathf.Rad2Deg;
+
+        angle = Mathf.Clamp(angle, -p_maxAngle, p_maxAngle);
+
+        //Flip when below, looking up is negitive angle
+        if (verticalDis >= 0.0f)
+        {
+            angle = -angle;
+        }
+
+        //Flip when trying to aim backwards
+        if (alignment < 0.0f)
+            angle = -180 - angle;
+
+        p_weapon.transform.localRotation = Quaternion.Euler(angle, 0.0f, 0.0f);
     }
 
     #region CHARACTER FUNCTIONS REQUIRING OVERRIDE

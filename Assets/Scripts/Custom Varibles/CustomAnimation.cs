@@ -51,12 +51,11 @@ public class CustomAnimation : MonoBehaviour
     /// <summary>
     /// Setup dicionaries used
     /// </summary>
-    /// <param name="p_animator">Animator to check against</param>
-    public virtual void Init(Animator p_animator)
+    public virtual void Init()
     {
-        m_animator = p_animator;
+        m_animator = GetComponentInChildren<Animator>();
 
-        if (m_animator != null && p_animator.runtimeAnimatorController != null)
+        if (m_animator != null && m_animator.runtimeAnimatorController != null)
         {
             m_layerToInt[(int)LAYER.BASE] = m_animator.GetLayerIndex(BASE_LAYER_STRING);
             m_layerToInt[(int)LAYER.ATTACK] = m_animator.GetLayerIndex(ATTACK_LAYER_STRING);
@@ -167,7 +166,7 @@ public class CustomAnimation : MonoBehaviour
             case LAYER.BASE:
             case LAYER.ATTACK:
             case LAYER.INTERRUPT:
-                if (p_animationString != "" && HasAnimation(m_animator, p_animationString, m_layerToInt[(int)p_layer]))
+                if (p_animationString != "" && HasAnimation(p_animationString, m_layerToInt[(int)p_layer]))
                     PlayAnimationSetup(p_animationString, p_layer, p_blendTime);
                 break;
             case LAYER.LAYER_COUNT:
@@ -330,15 +329,14 @@ public class CustomAnimation : MonoBehaviour
     /// <summary>
     /// Cehck if the aniamtor has the parameter present
     /// </summary>
-    /// <param name="p_animator">Aniamtor to check against</param>
     /// <param name="p_string">stirng of parameter</param>
     /// <returns>true when parameter is found</returns>
-    public static bool ContainsParam(Animator p_animator, string p_string)
+    public bool ContainsParam(string p_string)
     {
-        if (p_animator == null || p_animator.runtimeAnimatorController == null) //Invalid animator
+        if (m_animator.runtimeAnimatorController == null) //Invalid animator
             return false;
 
-        foreach (AnimatorControllerParameter param in p_animator.parameters)
+        foreach (AnimatorControllerParameter param in m_animator.parameters)
         {
             if (param.name == p_string) return true;
         }
@@ -348,13 +346,12 @@ public class CustomAnimation : MonoBehaviour
     /// <summary>
     /// Does the animator has a given animation
     /// </summary>
-    /// <param name="p_animator">Aniamtor to check against</param>
     /// <param name="p_animation">Animation to check for</param>
     /// <param name="p_layer">Layer to check against</param>
     /// <returns>true when animaiton is found</returns>
-    public static bool HasAnimation(Animator p_animator, string p_animation, int p_layer)
+    public bool HasAnimation(string p_animation, int p_layer)
     {
         int animationID = Animator.StringToHash(p_animation);
-        return p_animator.HasState(p_layer, animationID);
+        return m_animator.HasState(p_layer, animationID);
     }
 }
