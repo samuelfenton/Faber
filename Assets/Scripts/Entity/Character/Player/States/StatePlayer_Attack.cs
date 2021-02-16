@@ -29,7 +29,7 @@ public class StatePlayer_Attack : State_Player
     {
         base.StateStart();
 
-        m_player.SetDesiredHorizontalVelocity(0.0f);
+        m_player.SetDesiredVelocity(new Vector2(0.0f, 0.0f));
         m_attackState = ATTACK_STATE.PERFORMING_ATTACK;
 
         if (m_storedManoeuvre != null)

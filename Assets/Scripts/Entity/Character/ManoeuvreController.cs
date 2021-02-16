@@ -159,7 +159,7 @@ public class ManoeuvreController : MonoBehaviour
             //Apply velocity
             if(m_currentManoeuvre.m_useGravity) //In case of gravity only need to apply horizontal
             {
-                m_character.SetDesiredHorizontalVelocity(m_currentManoeuvre.m_velocityXCurve.Evaluate(sequencePercent));
+                m_character.SetDesiredVelocity(new Vector2(m_currentManoeuvre.m_velocityXCurve.Evaluate(sequencePercent), m_character.m_splinePhysics.m_splineLocalVelocity.y));
             }
             else
             {
@@ -204,7 +204,7 @@ public class ManoeuvreController : MonoBehaviour
             //Apply velocity
             if (m_currentManoeuvre.m_useGravity) //In case of gravity only need to apply horizontal
             {
-                m_character.SetDesiredHorizontalVelocity(m_currentManoeuvre.m_velocityXCurve.Evaluate(currentPercent));
+                m_character.SetDesiredVelocity(new Vector2(m_currentManoeuvre.m_velocityXCurve.Evaluate(currentPercent), m_character.m_splinePhysics.m_splineLocalVelocity.y));
             }
             else
             {

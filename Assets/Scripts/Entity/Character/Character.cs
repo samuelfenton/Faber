@@ -59,6 +59,9 @@ public class Character : Entity
     public float m_knockbackVelocity = 3.0f;
     public float m_knockforwardVelocity = 2.0f;
 
+    [Header("Blocking")]
+    [Range(0.0f,1.0f)]
+    public float m_blockMovementModifer = 0.5f;
     //Velocity stuff
     protected Vector2 m_desiredVelocity = Vector2.zero;
 
@@ -322,15 +325,6 @@ public class Character : Entity
     public void SetDesiredVelocity(Vector2 p_val)
     {
         m_desiredVelocity = p_val;
-    }
-
-    /// <summary>
-    /// Set the desired horizontal velocity
-    /// </summary>
-    /// <param name="p_val">Desired velocity</param>
-    public void SetDesiredHorizontalVelocity(float p_val)
-    {
-        m_desiredVelocity = new Vector2(p_val, m_splinePhysics.m_splineLocalVelocity.y);
     }
 
     /// <summary>

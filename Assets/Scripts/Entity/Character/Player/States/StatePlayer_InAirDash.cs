@@ -28,7 +28,7 @@ public class StatePlayer_InAirDash : State_Player
         m_character.m_splinePhysics.m_gravity = false;
         m_character.m_splinePhysics.HardSetUpwardsVelocity(0.0f);
 
-        m_character.SetDesiredHorizontalVelocity(m_character.m_dashVelocity);
+        m_character.SetDesiredVelocity(new Vector2(m_character.m_dashVelocity, 0.0f));
         m_character.m_splinePhysics.HardSetHorizontalVelocity(m_character.m_dashVelocity);
     }
 
@@ -41,7 +41,7 @@ public class StatePlayer_InAirDash : State_Player
         base.StateUpdate();
 
         //Update continously to avoid friction
-        m_character.SetDesiredHorizontalVelocity(m_character.m_dashVelocity);
+        m_character.SetDesiredVelocity(new Vector2(m_character.m_dashVelocity, 0.0f));
         m_character.m_splinePhysics.HardSetHorizontalVelocity(m_character.m_dashVelocity);
 
         return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE);
@@ -54,7 +54,7 @@ public class StatePlayer_InAirDash : State_Player
     {
         base.StateEnd();
 
-        m_character.SetDesiredHorizontalVelocity(0.0f);
+        m_character.SetDesiredVelocity(new Vector2(0.0f, 0.0f));
         m_character.m_splinePhysics.HardSetHorizontalVelocity(0.0f);
 
         m_character.m_splinePhysics.m_gravity = true;

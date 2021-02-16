@@ -26,8 +26,6 @@ public class StatePlayer_Block : State_Player
 
         m_customAnimator.PlayAnimation((int)CustomAnimation_Player.BASE_DEFINES.BLOCK_FROM_IDLE, CustomAnimation.LAYER.BASE);
         m_currentState = BLOCK_STATE.START;
-
-        m_character.SetDesiredHorizontalVelocity(0.0f);
     }
 
     /// <summary>
@@ -50,6 +48,8 @@ public class StatePlayer_Block : State_Player
                 }
                 break;
             case BLOCK_STATE.BLOCKING:
+                m_player.ApplyHorizontalMovement(false, m_character.m_blockMovementModifer);
+
                 if(!m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.BLOCK))
                 {
                     m_character.m_blockingFlag = false;

@@ -55,7 +55,7 @@ public class StatePlayer_Knockback : State_Player
         }
         else//In air, move downwards
         {
-            m_player.SetDesiredVelocity(new Vector2(knockbackVelocity, -2.0f));
+            m_player.SetDesiredVelocity(new Vector2(knockbackVelocity, -1.0f));
         }
 
     }
@@ -84,7 +84,7 @@ public class StatePlayer_Knockback : State_Player
         m_character.StartKnockbackRecover();
 
         m_player.m_splinePhysics.HardSetHorizontalVelocity(0.0f);
-        m_player.SetDesiredHorizontalVelocity(0.0f);
+        m_player.SetDesiredVelocity(new Vector2(0.0f, m_player.m_splinePhysics.m_splineLocalVelocity.y));
     }
 
     /// <summary>
