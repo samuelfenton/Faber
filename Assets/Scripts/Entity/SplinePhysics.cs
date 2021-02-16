@@ -267,23 +267,6 @@ public class SplinePhysics : MonoBehaviour
     }
 
     /// <summary>
-    /// Swap facing direction
-    /// </summary>
-    public virtual void SwapFacingDirection()
-    {
-        if (m_parentEntity.AllignedToSpline()) //Currently alligned, so face backwards
-        {
-            Vector3 desiredForwards = m_currentSpline.GetForwardDir(m_currentSplinePercent);
-            transform.rotation = Quaternion.Euler(0.0f, 180.0f, 0.0f) * Quaternion.LookRotation(desiredForwards, Vector3.up);
-        }
-        else
-        {
-            Vector3 desiredForwards = m_currentSpline.GetForwardDir(m_currentSplinePercent);
-            transform.rotation = Quaternion.LookRotation(desiredForwards, Vector3.up);
-        }
-    }
-
-    /// <summary>
     /// Hard set the velocity
     /// </summary>
     /// <param name="p_val">velocity</param>

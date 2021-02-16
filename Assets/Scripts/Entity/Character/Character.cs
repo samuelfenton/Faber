@@ -4,7 +4,9 @@ using UnityEngine;
 
 [RequireComponent(typeof(SplinePhysics))]
 public class Character : Entity
-{ 
+{
+    public enum KNOCKBACK_SPLINE_DIR { POSITIVE, NEGATIVE, NONE }
+    public enum KNOCKBACK_DIR {FRONT, BACK, NONE }
     public enum TEAM { PLAYER, NPC, GAIA }
     public enum ATTACK_INPUT_STANCE { LIGHT, HEAVY, NONE }
 
@@ -52,6 +54,11 @@ public class Character : Entity
     [HideInInspector]
     public float m_idleDelayTimer = 0.0f;
 
+    [Header("Knockback")]
+    public float m_knockbackRecoverTime = 1.0f;
+    public float m_knockbackVelocity = 3.0f;
+    public float m_knockforwardVelocity = 2.0f;
+
     //Velocity stuff
     protected Vector2 m_desiredVelocity = Vector2.zero;
 
@@ -69,9 +76,11 @@ public class Character : Entity
     [HideInInspector]
     public bool m_blockingFlag = false;
     [HideInInspector]
-    public bool m_knockbackFlag = false;
+    public KNOCKBACK_SPLINE_DIR m_knockbackSpineDirection = KNOCKBACK_SPLINE_DIR.NONE; //What way the hit came from? This will influence moving direction
     [HideInInspector]
-    public bool m_knockforwardFlag = false;
+    public KNOCKBACK_DIR m_knockbackBodyHitDirection = KNOCKBACK_DIR.NONE; //What side of the body did the hit come from? This will influence the animation
+    [HideInInspector]
+    public bool m_knockbackRecoverFlag = false;
     [HideInInspector]
     public bool m_recoilFlag = false;
     [HideInInspector]
@@ -181,14 +190,6 @@ public class Character : Entity
                 frameVelocity.x = m_desiredVelocity.x;
             else
                 frameVelocity.x += frameVelocity.x < m_desiredVelocity.x ? deltaHorizontalSpeed : -deltaHorizontalSpeed;
-
-            //Check for flip
-            if(frameVelocity.x < 0.0f)
-            {
-                m_splinePhysics.SwapFacingDirection();
-                frameVelocity.x = -frameVelocity.x;
-                m_desiredVelocity.x = -m_desiredVelocity.x;
-            }
         }
 
         //Update y velocity
@@ -201,6 +202,26 @@ public class Character : Entity
             frameVelocity.y += frameVelocity.y < m_desiredVelocity.y ? deltaVerticalSpeed : -deltaVerticalSpeed;
 
         m_splinePhysics.m_splineLocalVelocity = frameVelocity;
+    }
+
+    /// <summary>
+    /// Swap the facing direction
+    /// Inverses velocity due to facing wrong direction 
+    /// </summary>
+    public virtual void SwapFacingDirection()
+    {
+        m_splinePhysics.m_splineLocalVelocity.x = -m_splinePhysics.m_splineLocalVelocity.x;
+
+        Vector3 desiredForwards = m_splinePhysics.m_currentSpline.GetForwardDir(m_splinePhysics.m_currentSplinePercent);
+
+        if (AllignedToSpline()) //Currently alligned, so face backwards
+        {
+            transform.rotation = Quaternion.Euler(0.0f, 180.0f, 0.0f) * Quaternion.LookRotation(desiredForwards, Vector3.up);
+        }
+        else
+        {
+            transform.rotation = Quaternion.LookRotation(desiredForwards, Vector3.up);
+        }
     }
 
     /// <summary>
@@ -238,33 +259,47 @@ public class Character : Entity
             m_recoilFlag = true;
         }
         else
-        { 
-            p_targetCharacter.ModifyHealth(-p_damage);
-
-            //Setup knockback
-            p_targetCharacter.SetKnockbackImpact(p_impactForce);
-
-            //Determine knockback or knock forward
-            float characterTargetAlignment = Vector3.Dot(transform.forward, p_targetCharacter.transform.forward); 
-            if(characterTargetAlignment >= 0.0f)
-                p_targetCharacter.m_knockforwardFlag = true;
+        {
+            if (p_targetCharacter.m_knockbackRecoverFlag)//Target recovering from knockback, take no damage
+            { 
+            
+            }
             else
-                p_targetCharacter.m_knockbackFlag = true;
+            {
+                p_targetCharacter.ModifyHealth(-p_damage);
 
-            //Setup hit marker
-            Vector3 cameraToTarget = p_targetCharacter.transform.position - m_followCamera.transform.position;
-            cameraToTarget.y = 0.0f;
-            Quaternion hitmarkerRotation = Quaternion.LookRotation(cameraToTarget, Vector3.up);
+                //Setup knockback
+                //Determine knockback from direction
+                Vector3 toTargetDir = p_targetCharacter.transform.position - transform.position;
+                Vector3 splineForward = m_splinePhysics.m_currentSpline.GetForwardDir(m_splinePhysics.m_currentSplinePercent);
 
-            m_sceneController.SpawnHitMarker(p_targetCharacter.transform.position + Vector3.up * 2.0f, hitmarkerRotation, Mathf.RoundToInt(p_damage));
+                //Spline travel direction
+                float splineToTargetDirAlignment = Vector3.Dot(toTargetDir, splineForward);
 
-            //Setup particle effects
-            Vector3 characterToTarget = p_targetCharacter.transform.position - transform.position;
-            characterToTarget.y = 0;//Dont care about y
+                p_targetCharacter.m_knockbackSpineDirection = splineToTargetDirAlignment >= 0.0f ? KNOCKBACK_SPLINE_DIR.POSITIVE : KNOCKBACK_SPLINE_DIR.NEGATIVE; //When hit dir alligned with spline dir, push towards end, so positive
 
-            Quaternion particleRotation = Quaternion.LookRotation(characterToTarget, Vector3.up);
+                //Determine knockback body direction
+                float bodyToTargetAlignment = Vector3.Dot(toTargetDir, p_targetCharacter.transform.forward);
+                p_targetCharacter.m_knockbackBodyHitDirection = bodyToTargetAlignment > 0.0f ? KNOCKBACK_DIR.BACK : KNOCKBACK_DIR.FRONT;
 
-            m_sceneController.SpawnDamageParticles(p_impactPosition, particleRotation, p_impactDirection, p_targetCharacter.m_effectColor1, p_targetCharacter.m_effectColor2);
+                p_targetCharacter.SetKnockbackImpact(p_impactForce);
+                
+                //Setup hit marker
+                Vector3 cameraToTarget = p_targetCharacter.transform.position - m_followCamera.transform.position;
+                cameraToTarget.y = 0.0f;
+                Quaternion hitmarkerRotation = Quaternion.LookRotation(cameraToTarget, Vector3.up);
+
+                m_sceneController.SpawnHitMarker(p_targetCharacter.transform.position + Vector3.up * 2.0f, hitmarkerRotation, Mathf.RoundToInt(p_damage));
+
+                //Setup particle effects
+                Vector3 characterToTarget = p_targetCharacter.transform.position - transform.position;
+                characterToTarget.y = 0;//Dont care about y
+
+                Quaternion particleRotation = Quaternion.LookRotation(characterToTarget, Vector3.up);
+
+                m_sceneController.SpawnDamageParticles(p_impactPosition, particleRotation, p_impactDirection, p_targetCharacter.m_effectColor1, p_targetCharacter.m_effectColor2);
+            }
+
         }
     }
 
@@ -321,6 +356,20 @@ public class Character : Entity
     {
         int randomPose = Random.Range(0, m_idlePoseCount);
         m_customAnimation.SetVaribleFloat((int)CustomAnimation_Player.VARIBLE_FLOAT.RANDOM_IDLE, randomPose);
+    }
+    
+    public void StartKnockbackRecover()
+    {
+        m_knockbackRecoverFlag = true;
+
+        StartCoroutine(KnockbackRecoverRoutine());
+    }
+
+    protected IEnumerator KnockbackRecoverRoutine()
+    {
+        yield return new WaitForSeconds(m_knockbackRecoverTime);
+
+        m_knockbackRecoverFlag = false;
     }
 
     #region CHARACTER FUNCTIONS REQUIRING OVERRIDE

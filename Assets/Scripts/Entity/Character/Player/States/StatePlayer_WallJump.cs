@@ -31,7 +31,7 @@ public class StatePlayer_WallJump : State_Player
         m_entity.m_splinePhysics.m_gravity = false;
         m_character.m_splinePhysics.HardSetVelocity(m_character.m_wallJumpVelocity);
 
-        m_character.m_splinePhysics.SwapFacingDirection();
+        m_character.SwapFacingDirection();
     }
 
     /// <summary>

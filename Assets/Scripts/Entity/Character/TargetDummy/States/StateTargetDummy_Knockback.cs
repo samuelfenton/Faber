@@ -21,10 +21,11 @@ public class StateTargetDummy_Knockback : State_TargetDummy
     {
         base.StateStart();
 
-        float knockBackVal = m_character.m_knockbackFlag ? 1.0f : -1.0f; //Assume 1 is getting hit from front
-        m_customAnimator.SetVaribleFloat((int)CustomAnimation_TargetDummy.VARIBLE_FLOAT.KNOCKBACK_IMPACT, knockBackVal);
-
-        m_customAnimator.PlayAnimation((int)CustomAnimation_TargetDummy.INTERRUPT_DEFINES.KNOCKBACK, CustomAnimation.LAYER.INTERRUPT);
+        //Select animation, knockback impact is already set when being hit
+        if(m_character.m_knockbackBodyHitDirection == Character.KNOCKBACK_DIR.FRONT)
+            m_customAnimator.PlayAnimation((int)CustomAnimation_TargetDummy.INTERRUPT_DEFINES.KNOCKBACK, CustomAnimation.LAYER.INTERRUPT);
+        else
+            m_customAnimator.PlayAnimation((int)CustomAnimation_TargetDummy.INTERRUPT_DEFINES.KNOCKFORWARD, CustomAnimation.LAYER.INTERRUPT);
     }
 
     /// <summary>
@@ -45,7 +46,8 @@ public class StateTargetDummy_Knockback : State_TargetDummy
     {
         base.StateEnd();
 
-        m_character.m_knockbackFlag = false; //Reset flag
+        m_character.m_knockbackBodyHitDirection = Character.KNOCKBACK_DIR.NONE; //Reset flag
+        m_character.m_knockbackSpineDirection = Character.KNOCKBACK_SPLINE_DIR.NONE; //Reset flag
     }
 
     /// <summary>
@@ -54,6 +56,6 @@ public class StateTargetDummy_Knockback : State_TargetDummy
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return (m_character.m_knockbackFlag || m_character.m_knockforwardFlag) && !m_inProgressFlag;
+        return m_character.m_knockbackBodyHitDirection != Character.KNOCKBACK_DIR.NONE && !m_inProgressFlag;
     }
 }

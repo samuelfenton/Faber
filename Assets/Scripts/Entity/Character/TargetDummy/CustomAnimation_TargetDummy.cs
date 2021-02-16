@@ -5,7 +5,7 @@ using UnityEngine;
 public class CustomAnimation_TargetDummy : CustomAnimation
 {
     public enum VARIBLE_FLOAT { KNOCKBACK_IMPACT, COUNT }
-    public enum INTERRUPT_DEFINES { KNOCKBACK, COUNT }
+    public enum INTERRUPT_DEFINES { KNOCKBACK, KNOCKFORWARD, COUNT }
 
     /// <summary>
     /// Setup dicionaries used
@@ -21,5 +21,7 @@ public class CustomAnimation_TargetDummy : CustomAnimation
         m_floatToString[(int)VARIBLE_FLOAT.KNOCKBACK_IMPACT] = ContainsParam("KnockbackImpact") ? "KnockbackImpact" : "";
 
         m_interruptToString[(int)INTERRUPT_DEFINES.KNOCKBACK] = HasAnimation("Knockback", m_layerToInt[(int)LAYER.INTERRUPT]) ? "Knockback" : "";
+        m_interruptToString[(int)INTERRUPT_DEFINES.KNOCKFORWARD] = HasAnimation("Knockforward", m_layerToInt[(int)LAYER.INTERRUPT]) ? "Knockforward" : "";
+
     }
 }

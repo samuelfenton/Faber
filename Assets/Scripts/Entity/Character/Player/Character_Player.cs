@@ -57,7 +57,7 @@ public class Character_Player : Character
     /// </summary>
     /// <param name="p_allowSprinting">Should this allow a player to spring during this action</param>
     public void ApplyHorizontalMovement(bool p_allowSprinting)
-    { 
+    {
         float horizontalInput = m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL) * (m_followCamera.m_currentOrientation == FollowCamera.CAMERA_ORIENTATION.FORWARD ? 1.0f : -1.0f);
 
         //Allow player to jump and move
@@ -68,6 +68,11 @@ public class Character_Player : Character
         else
         {
             SetDesiredHorizontalVelocity(horizontalInput * m_groundRunVel);
+        }
+
+        if (m_splinePhysics.m_splineLocalVelocity.x < -0.5f)
+        {
+            SwapFacingDirection();
         }
     }
 
@@ -113,6 +118,17 @@ public class Character_Player : Character
             m_currentInteractable = p_interactable;
             p_interactable.InteractStart();
         }
+    }
+
+    /// <summary>
+    /// Swap the facing direction
+    /// Inverses velocity due to facing wrong direction 
+    /// </summary>
+    public override void SwapFacingDirection()
+    {
+        base.SwapFacingDirection();
+
+        m_followCamera.FlipCamera();
     }
 
     #region CHARACTER FUNCTIONS REQUIRING OVERRIDE
