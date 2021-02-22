@@ -422,7 +422,8 @@ public class Voxeliser_Burst : MonoBehaviour
     [BurstCompile]
     private struct IJob_CalulateTris : IJobParallelFor
     {
-        private const double VOXEL_TO_PLANE_MAX_DISTANCE = 0.8;
+        //private const double VOXEL_TO_PLANE_MAX_DISTANCE = 0.8;
+        private const double ALLOWABLE_OFFSET_DISTANCE = 1.0;
 
         public NativeHashMap<int3, double2>.ParallelWriter m_passThroughTriData;
 
@@ -463,12 +464,35 @@ public class Voxeliser_Burst : MonoBehaviour
             }
 
             //Build max extents of grid
-
             int3 lowerBounds = new int3(GetLowestOf3(vertAGridPos.x, vertBGridPos.x, vertCGridPos.x), GetLowestOf3(vertAGridPos.y, vertBGridPos.y, vertCGridPos.y), GetLowestOf3(vertAGridPos.z, vertBGridPos.z, vertCGridPos.z));
             int3 upperBounds = new int3(GetHighestOf3(vertAGridPos.x, vertBGridPos.x, vertCGridPos.x), GetHighestOf3(vertAGridPos.y, vertBGridPos.y, vertCGridPos.y), GetHighestOf3(vertAGridPos.z, vertBGridPos.z, vertCGridPos.z));
 
             //Run through all possible positions given the extent
 
+            /*Area Calc*/
+            double areaABC = GetArea(vertAGridPos, vertBGridPos, vertCGridPos);
+
+            for (int xIndex = lowerBounds.x; xIndex <= upperBounds.x; xIndex++)
+            {
+                for (int yIndex = lowerBounds.y; yIndex <= upperBounds.y; yIndex++)
+                {
+                    for (int zIndex = lowerBounds.z; zIndex <= upperBounds.z; zIndex++)
+                    {
+                        //Get distance, is it smaller then the size of a voxel?, example found here "https://mathinsight.org/distance_point_plane_examples"
+                        int3 currentPoint = new int3(xIndex, yIndex, zIndex);
+
+                        double pointToVertArea = GetArea(currentPoint, vertAGridPos, vertBGridPos) + GetArea(currentPoint, vertAGridPos, vertCGridPos) + GetArea(currentPoint, vertBGridPos, vertCGridPos);
+
+                        if (pointToVertArea - areaABC <= ALLOWABLE_OFFSET_DISTANCE)
+                        {
+                            m_passThroughTriData.TryAdd(currentPoint, CalculateUV(currentPoint, vertAGridPos, vertBGridPos, vertCGridPos, UVA, UVB, UVC));
+                        }
+                    }
+                }
+            }
+            /* */
+
+            /* Using Plane equation
             //Build plane equation, example found here "http://pi.math.cornell.edu/~froh/231f08e1a.pdf"
             int3 planeVector1 = new int3(vertAGridPos.x - vertBGridPos.x, vertAGridPos.y - vertBGridPos.y, vertAGridPos.z - vertBGridPos.z);//A-B
             int3 planeVector2 = new int3(vertCGridPos.x - vertBGridPos.x, vertCGridPos.y - vertBGridPos.y, vertCGridPos.z - vertBGridPos.z);//C-B
@@ -496,6 +520,7 @@ public class Voxeliser_Burst : MonoBehaviour
                     }
                 }
             }
+            */
         }
 
         /// <summary>
@@ -590,9 +615,9 @@ public class Voxeliser_Burst : MonoBehaviour
         /// <returns>UV basde off distance</returns>
         private double2 CalculateUV(int3 p_pointPos, int3 p_vertAGridPos, int3 p_vertBGridPos, int3 p_vertCGridPos, double2 p_UVA, double2 p_UVB, double2 p_UVC)
         {
-            int vertADistance = SqrDistance(p_pointPos, p_vertAGridPos);
-            int vertBDistance = SqrDistance(p_pointPos, p_vertBGridPos);
-            int vertCDistance = SqrDistance(p_pointPos, p_vertCGridPos);
+            int vertADistance = SqrMagnitude(p_pointPos, p_vertAGridPos);
+            int vertBDistance = SqrMagnitude(p_pointPos, p_vertBGridPos);
+            int vertCDistance = SqrMagnitude(p_pointPos, p_vertCGridPos);
 
             int total = vertADistance + vertBDistance + vertCDistance;
 
@@ -601,13 +626,23 @@ public class Voxeliser_Burst : MonoBehaviour
         }
 
         /// <summary>
+        /// Get the magnitude between two int3's
+        /// </summary>
+        /// <param name="p_val1"></param>
+        /// <returns>Magnitude</returns>
+        private double Magnitude(int3 p_val1)
+        {
+            return math.sqrt(p_val1.x * p_val1.x + p_val1.y * p_val1.y + p_val1.z * p_val1.z);
+        }
+
+        /// <summary>
         /// Get the square distance between two int3's
         /// Faster the true distance
         /// </summary>
         /// <param name="p_val1"></param>
         /// <param name="p_val2"></param>
-        /// <returns></returns>
-        private int SqrDistance(int3 p_val1, int3 p_val2)
+        /// <returns>Square magnitude</returns>
+        private int SqrMagnitude(int3 p_val1, int3 p_val2)
         {
             int3 val1ToVal2Vector = p_val2 - p_val1;
             return val1ToVal2Vector.x * val1ToVal2Vector.x + val1ToVal2Vector.y * val1ToVal2Vector.y + val1ToVal2Vector.z * val1ToVal2Vector.z;
@@ -631,6 +666,21 @@ public class Voxeliser_Burst : MonoBehaviour
         private double3 Convert(Vector3 p_val)
         {
             return new double3(p_val.x, p_val.y, p_val.z);
+        }
+
+        /// <summary>
+        /// Get the area between 3 points
+        /// </summary>
+        /// <param name="p_pointA"></param>
+        /// <param name="p_pointB"></param>
+        /// <param name="p_pointC"></param>
+        /// <returns>Total area</returns>
+        private double GetArea(int3 p_pointA, int3 p_pointB, int3 p_pointC)
+        {
+            int3 ABVec = p_pointB - p_pointA;
+            int3 ACVec = p_pointC - p_pointA;
+
+            return 0.5 * Magnitude(CrossProduct(ABVec, ACVec));
         }
     }                                              
 
