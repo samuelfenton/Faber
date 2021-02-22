@@ -8,6 +8,10 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Collections;
 
+//Faster array copy
+using Unity.Collections.LowLevel.Unsafe;
+
+
 public class Voxeliser_Burst : MonoBehaviour
 {
     //Building Voxel stuff
@@ -44,8 +48,11 @@ public class Voxeliser_Burst : MonoBehaviour
     [Range(1,100)]
     [Tooltip("How many meshes should exist, used for large meshes")]
     public int m_meshesToUse = 1;
+    [Tooltip("Should this voxelised object run via itself")]
+    public bool m_autoInitilise = false;
 
     private bool m_editorBeenChangedFlag = true;
+    private bool m_initilisedFlag = false;
     //End
 
 
@@ -82,13 +89,14 @@ public class Voxeliser_Burst : MonoBehaviour
 
     private NativeHashMap<int3, double2> m_nativePassThroughTriData;
 
-    private NativeArray<double3> m_nativeReturnVerts;
+    private NativeArray<Vector3> m_nativeReturnVerts;
     private NativeArray<int> m_nativeReturnTris;
-    private NativeArray<double2> m_nativeReturnUVs;
+    private NativeArray<Vector2> m_nativeReturnUVs;
+    private NativeArray<Vector3> m_nativeReturnNormals;
 
-    private NativeArray<double3> m_nativeVerts;
+    private NativeArray<Vector3> m_nativeVerts;
     private NativeArray<int> m_nativeTris;
-    private NativeArray<double2> m_nativeUVs;
+    private NativeArray<Vector2> m_nativeUVs;
 
     private JobHandle m_calcTrisJobHandle;
     private JobHandle m_buildMeshJobHandle;
@@ -102,11 +110,32 @@ public class Voxeliser_Burst : MonoBehaviour
 
     private Mesh[] m_voxelisedMeshes;
 
+    private void Start()
+    {
+        if (m_autoInitilise && !m_initilisedFlag)
+            InitVoxeliser();
+    }
+
     //End
     public void InitVoxeliser()
     {
-        if (m_objectWithMesh == null)
-            m_objectWithMesh = gameObject;
+        m_initilisedFlag = true;
+        
+        if (m_objectWithMesh == null)//Atempt to find a mesh renderer, may be the wrong one
+        {
+#if UNITY_EDITOR
+            Debug.LogWarning("No mesh assigned, attempting to find one in child " + name);
+#endif
+            MeshRenderer meshRenderer = GetComponentInChildren<MeshRenderer>();
+            if (meshRenderer != null)
+                m_objectWithMesh = meshRenderer.gameObject;
+            else
+            {
+                SkinnedMeshRenderer skinnedMeshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+                if (skinnedMeshRenderer != null)
+                    m_objectWithMesh = skinnedMeshRenderer.gameObject;
+            }
+        }
 
         m_originalMesh = GetMesh(m_objectWithMesh);
 
@@ -140,11 +169,11 @@ public class Voxeliser_Burst : MonoBehaviour
         }
 
         //Setup Natives
-        m_nativeVerts = new NativeArray<double3>(verts.Length, Allocator.Persistent);
-        m_nativeTris = new NativeArray<int>(tris.Length, Allocator.Persistent);
-        m_nativeUVs = new NativeArray<double2>(UVs.Length, Allocator.Persistent);
-
         m_nativePassThroughTriData = new NativeHashMap<int3, double2>(MAX_VOXEL_COUNT, Allocator.Persistent);
+        
+        m_nativeVerts = new NativeArray<Vector3>(verts.Length, Allocator.Persistent);
+        m_nativeTris = new NativeArray<int>(tris.Length, Allocator.Persistent);
+        m_nativeUVs = new NativeArray<Vector2>(UVs.Length, Allocator.Persistent);
 
         Convert(m_nativeVerts, verts);
         Convert(m_nativeTris, tris);
@@ -260,10 +289,13 @@ public class Voxeliser_Burst : MonoBehaviour
             m_nativeReturnUVs.Dispose();
         if (m_nativeReturnTris.IsCreated)
             m_nativeReturnTris.Dispose();
+        if (m_nativeReturnNormals.IsCreated)
+            m_nativeReturnNormals.Dispose();
 
-        m_nativeReturnVerts = new NativeArray<double3>(m_storedIsHardEdge ? maxPossibleVoxels * VERTS_PER_VOXEL_HARDEDGE : maxPossibleVoxels * VERTS_PER_VOXEL_SOFTEDGE, Allocator.Persistent);
-        m_nativeReturnUVs = new NativeArray<double2>(m_storedIsHardEdge ? maxPossibleVoxels * VERTS_PER_VOXEL_HARDEDGE : maxPossibleVoxels * VERTS_PER_VOXEL_SOFTEDGE, Allocator.Persistent);
+        m_nativeReturnVerts = new NativeArray<Vector3>(m_storedIsHardEdge ? maxPossibleVoxels * VERTS_PER_VOXEL_HARDEDGE : maxPossibleVoxels * VERTS_PER_VOXEL_SOFTEDGE, Allocator.Persistent);
+        m_nativeReturnUVs = new NativeArray<Vector2>(m_storedIsHardEdge ? maxPossibleVoxels * VERTS_PER_VOXEL_HARDEDGE : maxPossibleVoxels * VERTS_PER_VOXEL_SOFTEDGE, Allocator.Persistent);
         m_nativeReturnTris = new NativeArray<int>(maxPossibleVoxels * TRIS_PER_VOXEL, Allocator.Persistent);
+        m_nativeReturnNormals = new NativeArray<Vector3>(m_storedIsHardEdge ? maxPossibleVoxels * VERTS_PER_VOXEL_HARDEDGE : maxPossibleVoxels * VERTS_PER_VOXEL_SOFTEDGE, Allocator.Persistent);
 
         IJob_BuildMeshes buildMeshJob = new IJob_BuildMeshes
         {
@@ -271,6 +303,7 @@ public class Voxeliser_Burst : MonoBehaviour
             m_returnVerts = m_nativeReturnVerts,
             m_returnTris = m_nativeReturnTris,
             m_returnUVs = m_nativeReturnUVs,
+            m_returnNormals = m_nativeReturnNormals,
             m_voxelSize = m_storedVoxelSize,
             m_hardEdges = m_storedIsHardEdge,
             m_voxelsPerMesh = voxelsPerMesh,
@@ -281,13 +314,15 @@ public class Voxeliser_Burst : MonoBehaviour
 
         m_buildMeshJobHandle.Complete();
 
-        double3[] allDoubleVerts = m_nativeReturnVerts.ToArray();
-        double2[] allDoubleUVs = m_nativeReturnUVs.ToArray();
+        Vector3[] allDoubleVerts = m_nativeReturnVerts.ToArray();
+        Vector2[] allDoubleUVs = m_nativeReturnUVs.ToArray();
         int[] allTris = m_nativeReturnTris.ToArray();
+        Vector3[] allDoubleNormals = m_nativeReturnNormals.ToArray();
 
         Vector3[] meshVerts = new Vector3[voxelsPerMesh * (m_storedIsHardEdge ? VERTS_PER_VOXEL_HARDEDGE : VERTS_PER_VOXEL_SOFTEDGE)];
         Vector2[] meshUVs = new Vector2[voxelsPerMesh * (m_storedIsHardEdge ? VERTS_PER_VOXEL_HARDEDGE : VERTS_PER_VOXEL_SOFTEDGE)];
         int[] meshTris = new int[voxelsPerMesh * 36];
+        Vector3[] meshNormals = new Vector3[voxelsPerMesh * (m_storedIsHardEdge ? VERTS_PER_VOXEL_HARDEDGE : VERTS_PER_VOXEL_SOFTEDGE)];
 
         int vertsPerVoxel = (m_storedIsHardEdge ? VERTS_PER_VOXEL_HARDEDGE : VERTS_PER_VOXEL_SOFTEDGE);
         int vertsPerMesh = vertsPerVoxel * voxelsPerMesh;
@@ -301,22 +336,16 @@ public class Voxeliser_Burst : MonoBehaviour
             int vertStartingIndex = meshIndex * vertsPerMesh;
             int triStartingIndex = meshIndex * trisPerMesh;
 
-            for (int vertIndex = 0; vertIndex < vertsPerMesh; vertIndex++)
-            {
-                meshVerts[vertIndex] = Convert(allDoubleVerts[vertStartingIndex + vertIndex]);
-                meshUVs[vertIndex] = Convert(allDoubleUVs[vertStartingIndex + vertIndex]);
-            }
+            System.Array.Copy(allDoubleVerts, vertStartingIndex, meshVerts, 0, vertsPerMesh);
+            System.Array.Copy(allDoubleUVs, vertStartingIndex, meshUVs, 0, vertsPerMesh);
+            System.Array.Copy(allDoubleNormals, vertStartingIndex, meshNormals, 0, vertsPerMesh);
 
-            for (int triIndex = 0; triIndex < trisPerMesh; triIndex++)
-            {
-                meshTris[triIndex] = allTris[triStartingIndex + triIndex] - vertStartingIndex;
-            }
+            System.Array.Copy(allTris, triStartingIndex, meshTris, 0, trisPerMesh);
 
             m_voxelisedMeshes[meshIndex].vertices = meshVerts;
             m_voxelisedMeshes[meshIndex].uv = meshUVs;
             m_voxelisedMeshes[meshIndex].triangles = meshTris;
-
-            m_voxelisedMeshes[meshIndex].RecalculateNormals();
+            m_voxelisedMeshes[meshIndex].normals = meshNormals;
         }
 
         yield return null;
@@ -358,6 +387,8 @@ public class Voxeliser_Burst : MonoBehaviour
             m_nativeReturnTris.Dispose(); 
         if (m_nativeReturnUVs.IsCreated)
             m_nativeReturnUVs.Dispose();
+        if (m_nativeReturnNormals.IsCreated)
+            m_nativeReturnNormals.Dispose();
 
         if (m_nativeVerts.IsCreated)
             m_nativeVerts.Dispose();
@@ -391,14 +422,16 @@ public class Voxeliser_Burst : MonoBehaviour
     [BurstCompile]
     private struct IJob_CalulateTris : IJobParallelFor
     {
+        private const double VOXEL_TO_PLANE_MAX_DISTANCE = 0.8;
+
         public NativeHashMap<int3, double2>.ParallelWriter m_passThroughTriData;
 
         [ReadOnly]
-        public NativeArray<double3> m_nativeVerts;
+        public NativeArray<Vector3> m_nativeVerts;
         [ReadOnly]
         public NativeArray<int> m_nativeTris;
         [ReadOnly]
-        public NativeArray<double2> m_nativeUVs;
+        public NativeArray<Vector2> m_nativeUVs;
         [ReadOnly]
         public double4x4 m_transformMatrix;
         [ReadOnly]
@@ -407,127 +440,61 @@ public class Voxeliser_Burst : MonoBehaviour
         public void Execute(int index)
         {
             //Setup transform matrix
-            double4 vertA = math.mul(m_transformMatrix, new double4(m_nativeVerts[m_nativeTris[index * 3]], 1.0f));
-            double4 vertB = math.mul(m_transformMatrix, new double4(m_nativeVerts[m_nativeTris[index * 3 + 1]], 1.0f));
-            double4 vertC = math.mul(m_transformMatrix, new double4(m_nativeVerts[m_nativeTris[index * 3 + 2]], 1.0f));
+            double4 vertA = math.mul(m_transformMatrix, new double4(Convert(m_nativeVerts[m_nativeTris[index * 3]]), 1.0f));
+            double4 vertB = math.mul(m_transformMatrix, new double4(Convert(m_nativeVerts[m_nativeTris[index * 3 + 1]]), 1.0f));
+            double4 vertC = math.mul(m_transformMatrix, new double4(Convert(m_nativeVerts[m_nativeTris[index * 3 + 2]]), 1.0f));
 
             vertA = SnapToIncrement(vertA);
             vertB = SnapToIncrement(vertB);
             vertC = SnapToIncrement(vertC);
 
-            double2 UVA = m_nativeUVs[m_nativeTris[index * 3]];
-            double2 UVB = m_nativeUVs[m_nativeTris[index * 3 + 1]];
-            double2 UVC = m_nativeUVs[m_nativeTris[index * 3 + 2]];
+            double2 UVA = Convert(m_nativeUVs[m_nativeTris[index * 3]]);
+            double2 UVB = Convert(m_nativeUVs[m_nativeTris[index * 3 + 1]]);
+            double2 UVC = Convert(m_nativeUVs[m_nativeTris[index * 3 + 2]]);
 
             int3 vertAGridPos = PositionToGridPosition(vertA);
             int3 vertBGridPos = PositionToGridPosition(vertB);
             int3 vertCGridPos = PositionToGridPosition(vertC);
 
-            //Build line from Vert A to Vert B, as verts on line are found, build line from line vert to Vert C
-            int3 ABVector = new int3(vertBGridPos.x - vertAGridPos.x, vertBGridPos.y - vertAGridPos.y, vertBGridPos.z - vertAGridPos.z);
-
-            if (ABVector.x == 0 && ABVector.y == 0 && ABVector.z == 0)
+            if (SameInt3(vertAGridPos, vertBGridPos) && SameInt3(vertAGridPos, vertBGridPos) && SameInt3(vertBGridPos, vertCGridPos)) //All same value, add once and end
             {
                 m_passThroughTriData.TryAdd(vertAGridPos, UVA);
                 return;
             }
 
-            int3 absABVector = math.abs(ABVector);
+            //Build max extents of grid
 
-            int steps = absABVector.x > absABVector.y ? (absABVector.x > absABVector.z ? absABVector.x : absABVector.z) : (absABVector.y > absABVector.z ? absABVector.y : absABVector.z); //Get largest out of 3 values
-            int3 currentPathOnABVector = int3.zero;
+            int3 lowerBounds = new int3(GetLowestOf3(vertAGridPos.x, vertBGridPos.x, vertCGridPos.x), GetLowestOf3(vertAGridPos.y, vertBGridPos.y, vertCGridPos.y), GetLowestOf3(vertAGridPos.z, vertBGridPos.z, vertCGridPos.z));
+            int3 upperBounds = new int3(GetHighestOf3(vertAGridPos.x, vertBGridPos.x, vertCGridPos.x), GetHighestOf3(vertAGridPos.y, vertBGridPos.y, vertCGridPos.y), GetHighestOf3(vertAGridPos.z, vertBGridPos.z, vertCGridPos.z));
 
-            int3 signedABVector = new int3(ABVector.x >= 0 ? 1 : -1, ABVector.y >= 0 ? 1 : -1, ABVector.z >= 0 ? 1 : -1);
-            double3 increaseThreshold = new double3((double)absABVector.x / steps, (double)absABVector.y / steps, (double)absABVector.z / steps);
-            double3 currentThreshold = new double3(0.5, 0.5, 0.5); //Added in 0.5 as voxel should be placed in center of grid
+            //Run through all possible positions given the extent
 
-            BuildVertOnLineToVertCEdge(vertAGridPos, vertCGridPos, UVA, UVC);
+            //Build plane equation, example found here "http://pi.math.cornell.edu/~froh/231f08e1a.pdf"
+            int3 planeVector1 = new int3(vertAGridPos.x - vertBGridPos.x, vertAGridPos.y - vertBGridPos.y, vertAGridPos.z - vertBGridPos.z);//A-B
+            int3 planeVector2 = new int3(vertCGridPos.x - vertBGridPos.x, vertCGridPos.y - vertBGridPos.y, vertCGridPos.z - vertBGridPos.z);//C-B
 
-            //Move along the line
-            //Steps will move on "grid" every time
-            //Use threshold to dertermine when youve translated to next grid square
-            for (int alongGridIndex = 1; alongGridIndex < steps; alongGridIndex++)
+            int3 planeNormal = CrossProduct(planeVector1, planeVector2);
+
+            int planeD = -(vertAGridPos.x * planeNormal.x + vertAGridPos.y * planeNormal.y + vertAGridPos.z * planeNormal.z);
+
+            double squareRootFactor = math.sqrt(planeNormal.x * planeNormal.x + planeNormal.y * planeNormal.y + planeNormal.z * planeNormal.z);
+
+            //Based off the plane equation form the three points and each of these possible positions, add when close enough to plane.
+            for (int xIndex = lowerBounds.x; xIndex <= upperBounds.x; xIndex++)
             {
-                currentThreshold.x += increaseThreshold.x;
-                if (currentThreshold.x >= 1)
+                for (int yIndex = lowerBounds.y; yIndex <= upperBounds.y; yIndex++)
                 {
-                    currentPathOnABVector.x += signedABVector.x;
-                    currentThreshold.x -= 1.0;
+                    for (int zIndex = lowerBounds.z; zIndex <= upperBounds.z; zIndex++)
+                    {
+                        //Get distance, is it smaller then the size of a voxel?, example found here "https://mathinsight.org/distance_point_plane_examples"
+                        int3 currentPoint = new int3(xIndex, yIndex, zIndex);
+
+                        if((math.abs((double)currentPoint.x * planeNormal.x + (double)currentPoint.y * planeNormal.y + (double)currentPoint.z * planeNormal.z + planeD)/ squareRootFactor) < VOXEL_TO_PLANE_MAX_DISTANCE) //Requires at least one double value
+                        {
+                            m_passThroughTriData.TryAdd(currentPoint, CalculateUV(currentPoint, vertAGridPos, vertBGridPos, vertCGridPos, UVA, UVB, UVC));
+                        }
+                    }
                 }
-
-                currentThreshold.y += increaseThreshold.y;
-                if (currentThreshold.y >= 1)
-                {
-                    currentPathOnABVector.y += signedABVector.y;
-                    currentThreshold.y -= 1.0;
-                }
-
-                currentThreshold.z += increaseThreshold.z;
-                if (currentThreshold.z >= 1)
-                {
-                    currentPathOnABVector.z += signedABVector.z;
-                    currentThreshold.z -= 1.0;
-                }
-
-                BuildVertOnLineToVertCEdge(vertAGridPos + currentPathOnABVector, vertCGridPos, MergeUV(UVA, UVB, (double)alongGridIndex / steps), UVC);
-            }
-        }
-
-        /// <summary>
-        /// Build a queue for the line form VertA to vertB
-        /// </summary>
-        /// <param name="p_vertOnLine">Vert found on line</param>
-        /// <param name="p_vertC">VertC</param>
-        /// <param name="p_voxelSize">Size of a voxel</param>
-        private void BuildVertOnLineToVertCEdge(int3 p_vertOnLine, int3 p_vertC, double2 p_vertOnLineUV, double2 p_vertCUV)
-        {
-            //Build line from Vert A to Vert B, as verts on line are found, build line from line vert to Vert C
-            int3 lineToCVector = new int3(p_vertC.x - p_vertOnLine.x, p_vertC.y - p_vertOnLine.y, p_vertC.z - p_vertOnLine.z);
-
-            if (lineToCVector.x == 0 && lineToCVector.y == 0 && lineToCVector.z == 0)
-            {
-                m_passThroughTriData.TryAdd(p_vertOnLine, p_vertOnLineUV);
-                return;
-            }
-
-            int3 absLineToCVector = math.abs(lineToCVector);
-
-            int steps = absLineToCVector.x > absLineToCVector.y ? (absLineToCVector.x > absLineToCVector.z ? absLineToCVector.x : absLineToCVector.z) : (absLineToCVector.y > absLineToCVector.z ? absLineToCVector.y : absLineToCVector.z); //Get largest out of 3 values
-            int3 currentPathOnLineToCVector = int3.zero;
-
-            int3 signedLineToCVector = new int3(lineToCVector.x >= 0 ? 1 : -1, lineToCVector.y >= 0 ? 1 : -1, lineToCVector.z >= 0 ? 1 : -1);
-            double3 increaseThreshold = new double3((double)absLineToCVector.x / steps, (double)absLineToCVector.y / steps, (double)absLineToCVector.z / steps);
-            double3 currentThreshold = new double3(0.5, 0.5, 0.5); //Added in 0.5 as voxel should be placed in center of grid
-
-            m_passThroughTriData.TryAdd(p_vertOnLine, p_vertOnLineUV);
-            
-            //Move along the line
-            //Steps will move on "grid" every time
-            //Use threshold to dertermine when youve translated to next grid square
-            for (int alongGridIndex = 1; alongGridIndex < steps; alongGridIndex++)
-            {
-                currentThreshold.x += increaseThreshold.x;
-                if (currentThreshold.x >= 1)
-                {
-                    currentPathOnLineToCVector.x += signedLineToCVector.x ;
-                    currentThreshold.x -= 1.0;
-                }
-
-                currentThreshold.y += increaseThreshold.y;
-                if (currentThreshold.y >= 1)
-                {
-                    currentPathOnLineToCVector.y += signedLineToCVector.y;
-                    currentThreshold.y -= 1.0;
-                }
-
-                currentThreshold.z += increaseThreshold.z;
-                if (currentThreshold.z >= 1)
-                {
-                    currentPathOnLineToCVector.z += signedLineToCVector.z;
-                    currentThreshold.z -= 1.0;
-                }
-
-                m_passThroughTriData.TryAdd(p_vertOnLine + currentPathOnLineToCVector, MergeUV(p_vertOnLineUV, p_vertCUV, (double)alongGridIndex / steps));
             }
         }
 
@@ -545,20 +512,6 @@ public class Voxeliser_Burst : MonoBehaviour
         }
 
         /// <summary>
-        /// Merge two given UVs based off how much one is from another
-        /// </summary>
-        /// <param name="p_UVA">UV for vertA</param>
-        /// <param name="p_UVB">UV for vertB</param>
-        /// <param name="p_percent">Percent through towards UVB</param>
-        /// <returns></returns>
-        private double2 MergeUV(double2 p_UVA, double2 p_UVB, double p_percent)
-        {
-            double2 UVVector = p_UVB - p_UVA;
-
-            return p_UVA + UVVector * p_percent;
-        }
-
-        /// <summary>
         /// Snap a value to an increment
         /// 1.5 of an increment of 0.2 will be 1.4
         /// -0.1 of an incrment of 0.2 wil be -0.2
@@ -573,20 +526,129 @@ public class Voxeliser_Burst : MonoBehaviour
 
             return p_val;
         }
-    }
+
+        /// <summary>
+        /// Determine if 2 int3's are the same value
+        /// </summary>
+        /// <param name="p_val1">First int3</param>
+        /// <param name="p_val2">Second int3</param>
+        /// <returns>True when x,y, z components match</returns>
+        private bool SameInt3(int3 p_val1, int3 p_val2)
+        {
+            return p_val1.x == p_val2.x && p_val1.y == p_val2.y & p_val1.z == p_val2.z;
+        }
+
+        /// <summary>
+        /// Given 3 ints, find the lowest
+        /// </summary>
+        /// <param name="p_val1">Value 1</param>
+        /// <param name="p_val2">Value 2</param>
+        /// <param name="p_val3">Value 3</param>
+        /// <returns>Lowest of the three</returns>
+        private int GetLowestOf3(int p_val1, int p_val2, int p_val3)
+        {
+            ///    1 smaller then 2, so 1 or 3, 1 smaller then 3 => 1/3    2 smaller, so cant be 1, check for 2 or 3      
+            return p_val1 < p_val2 ? (p_val1 < p_val3 ? p_val1 : p_val3) : (p_val2 < p_val3 ? p_val2 : p_val3);
+        }
+
+        /// <summary>
+        /// Given 3 ints, find the highest
+        /// </summary>
+        /// <param name="p_val1">Value 1</param>
+        /// <param name="p_val2">Value 2</param>
+        /// <param name="p_val3">Value 3</param>
+        /// <returns>Highest of the three</returns>
+        private int GetHighestOf3(int p_val1, int p_val2, int p_val3)
+        {
+            ///    1 larger then 2, so 1 or 3, 1 larger then 3 => 1/3    2 larger, so cant be 1, check for 2 or 3      
+            return p_val1 > p_val2 ? (p_val1 > p_val3 ? p_val1 : p_val3) : (p_val2 > p_val3 ? p_val2 : p_val3);
+        }
+
+        /// <summary>
+        /// Get the cross product between 2 vectors
+        /// Note: CrossProduct(Val1, Val2) != CrossProduct(Val2, Val1)
+        /// </summary>
+        /// <param name="p_val1">Value 1</param>
+        /// <param name="p_val2">Value 2</param>
+        /// <returns>Cross product</returns>
+        private int3 CrossProduct(int3 p_val1, int3 p_val2)
+        {
+            // Ay*Bz - Az*By, Az*Bx - Ax*Bz, Ax*By - Ay*Bx
+            return new int3(p_val1.y * p_val2.z - p_val1.z * p_val2.y, p_val1.z * p_val2.x - p_val1.x * p_val2.z, p_val1.x * p_val2.y - p_val1.y * p_val2.x);
+        }
+
+        /// <summary>
+        /// Calculate UV based off points distance to each vert
+        /// </summary>
+        /// <param name="p_pointPos">Point position</param>
+        /// <param name="p_vertAGridPos">VertA position</param>
+        /// <param name="p_vertBGridPos">VertB position</param>
+        /// <param name="p_vertCGridPos">VertC position</param>
+        /// <param name="p_UVA">A verts UV</param>
+        /// <param name="p_UVB">B verts UV</param>
+        /// <param name="p_UVC">C verts UV</param>
+        /// <returns>UV basde off distance</returns>
+        private double2 CalculateUV(int3 p_pointPos, int3 p_vertAGridPos, int3 p_vertBGridPos, int3 p_vertCGridPos, double2 p_UVA, double2 p_UVB, double2 p_UVC)
+        {
+            int vertADistance = SqrDistance(p_pointPos, p_vertAGridPos);
+            int vertBDistance = SqrDistance(p_pointPos, p_vertBGridPos);
+            int vertCDistance = SqrDistance(p_pointPos, p_vertCGridPos);
+
+            int total = vertADistance + vertBDistance + vertCDistance;
+
+            return (double)vertADistance / total * p_UVA + (double)vertBDistance / total * p_UVB + (double)vertCDistance / total * p_UVC;
+
+        }
+
+        /// <summary>
+        /// Get the square distance between two int3's
+        /// Faster the true distance
+        /// </summary>
+        /// <param name="p_val1"></param>
+        /// <param name="p_val2"></param>
+        /// <returns></returns>
+        private int SqrDistance(int3 p_val1, int3 p_val2)
+        {
+            int3 val1ToVal2Vector = p_val2 - p_val1;
+            return val1ToVal2Vector.x * val1ToVal2Vector.x + val1ToVal2Vector.y * val1ToVal2Vector.y + val1ToVal2Vector.z * val1ToVal2Vector.z;
+        }
+
+        /// <summary>
+        /// Convert from Vector2 to double2
+        /// </summary>
+        /// <param name="p_val">Value to convert</param>
+        /// <returns>Converted Value</returns>
+        private double2 Convert(Vector2 p_val)
+        {
+            return new double2(p_val.x, p_val.y);
+        }
+
+        /// <summary>
+        /// Convert from Vector3 to double3
+        /// </summary>
+        /// <param name="p_val">Value to convert</param>
+        /// <returns>Converted Value</returns>
+        private double3 Convert(Vector3 p_val)
+        {
+            return new double3(p_val.x, p_val.y, p_val.z);
+        }
+    }                                              
 
     [BurstCompile]
     private struct IJob_BuildMeshes : IJob
     {
-        public NativeArray<double3> m_returnVerts;
-        public NativeArray<double2> m_returnUVs;
+        private const float NORMAL_COMP_LENGHT = 0.5774f;
+
+        public NativeArray<Vector3> m_returnVerts;
+        public NativeArray<Vector2> m_returnUVs;
         public NativeArray<int> m_returnTris;
-        
+        public NativeArray<Vector3> m_returnNormals;
+
         [ReadOnly]
         public NativeHashMap<int3, double2> m_passThroughTriData;
 
         [ReadOnly]
-        public double m_voxelSize;
+        public float m_voxelSize;
         [ReadOnly]
         public bool m_hardEdges;
         [ReadOnly]
@@ -594,15 +656,53 @@ public class Voxeliser_Burst : MonoBehaviour
         [ReadOnly]
         public int m_meshCount;
 
-        private double3 m_rightVector;
-        private double3 m_upVector;
-        private double3 m_forwardVector;
+        private Vector3 m_rightVector;
+        private Vector3 m_upVector;
+        private Vector3 m_forwardVector;
+
+        //Normal generation
+        private Vector3 m_rightNormal;
+        private Vector3 m_leftNormal;
+        private Vector3 m_upNormal;
+        private Vector3 m_downNormal;
+        private Vector3 m_forwardNormal;
+        private Vector3 m_backwardNormal;
+
+        private Vector3 m_rightUpForwardNormal;
+        private Vector3 m_rightUpBackwardNormal;
+        private Vector3 m_rightDownForwardNormal;
+        private Vector3 m_rightDownBackwardNormal;
+        private Vector3 m_leftUpForwardNormal;
+        private Vector3 m_leftUpBackwardNormal;
+        private Vector3 m_leftDownForwardNormal;
+        private Vector3 m_leftDownBackwardNormal;
 
         public void Execute()
         {
-            m_rightVector = new double3(m_voxelSize / 2.0, 0.0, 0.0);
-            m_upVector = new double3(0.0, m_voxelSize / 2.0, 0.0);
-            m_forwardVector = new double3(0.0, 0.0, m_voxelSize / 2.0);
+            m_rightVector = new Vector3(m_voxelSize / 2.0f, 0.0f, 0.0f);
+            m_upVector = new Vector3(0.0f, m_voxelSize / 2.0f, 0.0f);
+            m_forwardVector = new Vector3(0.0f, 0.0f, m_voxelSize / 2.0f);
+
+            if(m_hardEdges)
+            {
+                m_rightNormal = new Vector3(1.0f, 0.0f, 0.0f);
+                m_leftNormal = new Vector3(-1.0f, 0.0f, 0.0f);
+                m_upNormal = new Vector3(0.0f, 1.0f, 0.0f);
+                m_downNormal = new Vector3(0.0f, -1.0f, 0.0f);
+                m_forwardNormal = new Vector3(0.0f, 0.0f, 1.0f);
+                m_backwardNormal = new Vector3(0.0f, 0.0f, -1.0f);
+            }
+            else
+            {
+                m_rightUpForwardNormal = new Vector3(NORMAL_COMP_LENGHT, NORMAL_COMP_LENGHT, NORMAL_COMP_LENGHT);
+                m_rightUpBackwardNormal = new Vector3(NORMAL_COMP_LENGHT, NORMAL_COMP_LENGHT, -NORMAL_COMP_LENGHT);
+                m_rightDownForwardNormal = new Vector3(NORMAL_COMP_LENGHT, -NORMAL_COMP_LENGHT, NORMAL_COMP_LENGHT);
+                m_rightDownBackwardNormal = new Vector3(NORMAL_COMP_LENGHT, -NORMAL_COMP_LENGHT, -NORMAL_COMP_LENGHT);
+                m_leftUpForwardNormal = new Vector3(-NORMAL_COMP_LENGHT, NORMAL_COMP_LENGHT, NORMAL_COMP_LENGHT);
+                m_leftUpBackwardNormal = new Vector3(-NORMAL_COMP_LENGHT, NORMAL_COMP_LENGHT, -NORMAL_COMP_LENGHT);
+                m_leftDownForwardNormal = new Vector3(-NORMAL_COMP_LENGHT, -NORMAL_COMP_LENGHT, NORMAL_COMP_LENGHT);
+                m_leftDownBackwardNormal = new Vector3(-NORMAL_COMP_LENGHT, -NORMAL_COMP_LENGHT, -NORMAL_COMP_LENGHT);
+            }
 
             //Convert queue into unique array
             NativeArray<int3> uniqueVoxelPositions = m_passThroughTriData.GetKeyArray(Allocator.Temp);
@@ -631,14 +731,16 @@ public class Voxeliser_Burst : MonoBehaviour
         /// <param name="p_meshIndex">meshIndex, used in assigning to multihashmap</param>
         private void BuildVoxel(double3 p_position, double2 p_UV, int voxelIndex, int p_meshIndex)
         {
-            double3 voxelPos = p_position;
+            Vector3 voxelPos = Convert(p_position);
+            Vector2 voxelUV = Convert(p_UV);
+
             voxelPos *= m_voxelSize;
 
             int vertsPerVoxel = (m_hardEdges ? VERTS_PER_VOXEL_HARDEDGE : VERTS_PER_VOXEL_SOFTEDGE);
 
             int vertStartingIndex = p_meshIndex * m_voxelsPerMesh * vertsPerVoxel + voxelIndex * vertsPerVoxel;
-            int triStartingIndex = p_meshIndex * m_voxelsPerMesh * 36  + voxelIndex * 36;
-
+            int triArrayStartingIndex = p_meshIndex * m_voxelsPerMesh * 36  + voxelIndex * 36;
+            int triVoxelStartIndex = voxelIndex * vertsPerVoxel;
             if (m_hardEdges)
             {
                 //build verts, looking at face, start bottom left and move up, right, down. => Bottom Left, Top Left, Top Right, Bottom Right
@@ -679,60 +781,98 @@ public class Voxeliser_Burst : MonoBehaviour
                 m_returnVerts[vertStartingIndex + 23] = voxelPos + (m_rightVector - m_upVector + m_forwardVector);
 
                 //Tris, Goes Bottom left, Top Left, Top Right : Bottom Left, Top Right, Bottom Right
+                //Minus vert starting index due to having multiple meshes 
                 //Front
-                m_returnTris[triStartingIndex + 0] = vertStartingIndex + 0;
-                m_returnTris[triStartingIndex + 1] = vertStartingIndex + 1;
-                m_returnTris[triStartingIndex + 2] = vertStartingIndex + 2;
+                m_returnTris[triArrayStartingIndex + 0] = triVoxelStartIndex + 0;
+                m_returnTris[triArrayStartingIndex + 1] = triVoxelStartIndex + 1;
+                m_returnTris[triArrayStartingIndex + 2] = triVoxelStartIndex + 2;
                                               
-                m_returnTris[triStartingIndex + 3] = vertStartingIndex + 0;
-                m_returnTris[triStartingIndex + 4] = vertStartingIndex + 2;
-                m_returnTris[triStartingIndex + 5] = vertStartingIndex + 3;
+                m_returnTris[triArrayStartingIndex + 3] = triVoxelStartIndex + 0;
+                m_returnTris[triArrayStartingIndex + 4] = triVoxelStartIndex + 2;
+                m_returnTris[triArrayStartingIndex + 5] = triVoxelStartIndex + 3;
                 //Back                        
-                m_returnTris[triStartingIndex + 6] = vertStartingIndex + 4;
-                m_returnTris[triStartingIndex + 7] = vertStartingIndex + 5;
-                m_returnTris[triStartingIndex + 8] = vertStartingIndex + 6;
+                m_returnTris[triArrayStartingIndex + 6] = triVoxelStartIndex + 4;
+                m_returnTris[triArrayStartingIndex + 7] = triVoxelStartIndex + 5;
+                m_returnTris[triArrayStartingIndex + 8] = triVoxelStartIndex + 6;
 
-                m_returnTris[triStartingIndex + 9] = vertStartingIndex + 4;
-                m_returnTris[triStartingIndex + 10] = vertStartingIndex + 6;
-                m_returnTris[triStartingIndex + 11] = vertStartingIndex + 7;
+                m_returnTris[triArrayStartingIndex + 9] = triVoxelStartIndex + 4;
+                m_returnTris[triArrayStartingIndex + 10] = triVoxelStartIndex + 6;
+                m_returnTris[triArrayStartingIndex + 11] = triVoxelStartIndex + 7;
                 //Right                       
-                m_returnTris[triStartingIndex + 12] = vertStartingIndex + 8;
-                m_returnTris[triStartingIndex + 13] = vertStartingIndex + 9;
-                m_returnTris[triStartingIndex + 14] = vertStartingIndex + 10;
+                m_returnTris[triArrayStartingIndex + 12] = triVoxelStartIndex + 8;
+                m_returnTris[triArrayStartingIndex + 13] = triVoxelStartIndex + 9;
+                m_returnTris[triArrayStartingIndex + 14] = triVoxelStartIndex + 10;
 
-                m_returnTris[triStartingIndex + 15] = vertStartingIndex + 8;
-                m_returnTris[triStartingIndex + 16] = vertStartingIndex + 10;
-                m_returnTris[triStartingIndex + 17] = vertStartingIndex + 11;
+                m_returnTris[triArrayStartingIndex + 15] = triVoxelStartIndex + 8;
+                m_returnTris[triArrayStartingIndex + 16] = triVoxelStartIndex + 10;
+                m_returnTris[triArrayStartingIndex + 17] = triVoxelStartIndex + 11;
                 //Left                        
-                m_returnTris[triStartingIndex + 18] = vertStartingIndex + 12;
-                m_returnTris[triStartingIndex + 19] = vertStartingIndex + 13;
-                m_returnTris[triStartingIndex + 20] = vertStartingIndex + 14;
+                m_returnTris[triArrayStartingIndex + 18] = triVoxelStartIndex + 12;
+                m_returnTris[triArrayStartingIndex + 19] = triVoxelStartIndex + 13;
+                m_returnTris[triArrayStartingIndex + 20] = triVoxelStartIndex + 14;
 
-                m_returnTris[triStartingIndex + 21] = vertStartingIndex + 12;
-                m_returnTris[triStartingIndex + 22] = vertStartingIndex + 14;
-                m_returnTris[triStartingIndex + 23] = vertStartingIndex + 15;
+                m_returnTris[triArrayStartingIndex + 21] = triVoxelStartIndex + 12;
+                m_returnTris[triArrayStartingIndex + 22] = triVoxelStartIndex + 14;
+                m_returnTris[triArrayStartingIndex + 23] = triVoxelStartIndex + 15;
                 //Top                         
-                m_returnTris[triStartingIndex + 24] = vertStartingIndex + 16;
-                m_returnTris[triStartingIndex + 25] = vertStartingIndex + 17;
-                m_returnTris[triStartingIndex + 26] = vertStartingIndex + 18;
+                m_returnTris[triArrayStartingIndex + 24] = triVoxelStartIndex + 16;
+                m_returnTris[triArrayStartingIndex + 25] = triVoxelStartIndex + 17;
+                m_returnTris[triArrayStartingIndex + 26] = triVoxelStartIndex + 18;
 
-                m_returnTris[triStartingIndex + 27] = vertStartingIndex + 16;
-                m_returnTris[triStartingIndex + 28] = vertStartingIndex + 18;
-                m_returnTris[triStartingIndex + 29] = vertStartingIndex + 19;
+                m_returnTris[triArrayStartingIndex + 27] = triVoxelStartIndex + 16;
+                m_returnTris[triArrayStartingIndex + 28] = triVoxelStartIndex + 18;
+                m_returnTris[triArrayStartingIndex + 29] = triVoxelStartIndex + 19;
                 //Bottom                      
-                m_returnTris[triStartingIndex + 30] = vertStartingIndex + 20;
-                m_returnTris[triStartingIndex + 31] = vertStartingIndex + 21;
-                m_returnTris[triStartingIndex + 32] = vertStartingIndex + 22;
+                m_returnTris[triArrayStartingIndex + 30] = triVoxelStartIndex + 20;
+                m_returnTris[triArrayStartingIndex + 31] = triVoxelStartIndex + 21;
+                m_returnTris[triArrayStartingIndex + 32] = triVoxelStartIndex + 22;
 
-                m_returnTris[triStartingIndex + 33] = vertStartingIndex + 20;
-                m_returnTris[triStartingIndex + 34] = vertStartingIndex + 22;
-                m_returnTris[triStartingIndex + 35] = vertStartingIndex + 23;
+                m_returnTris[triArrayStartingIndex + 33] = triVoxelStartIndex + 20;
+                m_returnTris[triArrayStartingIndex + 34] = triVoxelStartIndex + 22;
+                m_returnTris[triArrayStartingIndex + 35] = triVoxelStartIndex + 23;
 
                 //UVS
                 for (int vertIndex = 0; vertIndex < VERTS_PER_VOXEL_HARDEDGE; vertIndex++)
                 {
-                    m_returnUVs[vertStartingIndex + vertIndex] = p_UV;
+                    m_returnUVs[vertStartingIndex + vertIndex] = voxelUV;
                 }
+
+                //Normals
+                //Front
+                m_returnNormals[vertStartingIndex + 0] = m_forwardNormal;
+                m_returnNormals[vertStartingIndex + 1] = m_forwardNormal;
+                m_returnNormals[vertStartingIndex + 2] = m_forwardNormal;
+                m_returnNormals[vertStartingIndex + 3] = m_forwardNormal;
+
+                //Back
+                m_returnNormals[vertStartingIndex + 4] = m_backwardNormal;
+                m_returnNormals[vertStartingIndex + 5] = m_backwardNormal;
+                m_returnNormals[vertStartingIndex + 6] = m_backwardNormal;
+                m_returnNormals[vertStartingIndex + 7] = m_backwardNormal;
+
+                //Right
+                m_returnNormals[vertStartingIndex + 8] = m_rightNormal;
+                m_returnNormals[vertStartingIndex + 9] = m_rightNormal;
+                m_returnNormals[vertStartingIndex + 10] = m_rightNormal;
+                m_returnNormals[vertStartingIndex + 11] = m_rightNormal;
+
+                //Left
+                m_returnNormals[vertStartingIndex + 12] = m_leftNormal;
+                m_returnNormals[vertStartingIndex + 13] = m_leftNormal;
+                m_returnNormals[vertStartingIndex + 14] = m_leftNormal;
+                m_returnNormals[vertStartingIndex + 15] = m_leftNormal;
+
+                //Up
+                m_returnNormals[vertStartingIndex + 16] = m_upNormal;
+                m_returnNormals[vertStartingIndex + 17] = m_upNormal;
+                m_returnNormals[vertStartingIndex + 18] = m_upNormal;
+                m_returnNormals[vertStartingIndex + 19] = m_upNormal;
+
+                //Down
+                m_returnNormals[vertStartingIndex + 20] = m_downNormal;
+                m_returnNormals[vertStartingIndex + 21] = m_downNormal;
+                m_returnNormals[vertStartingIndex + 22] = m_downNormal;
+                m_returnNormals[vertStartingIndex + 23] = m_downNormal;
             }
             else
             {
@@ -749,62 +889,95 @@ public class Voxeliser_Burst : MonoBehaviour
 
                 //Tris, Goes Bottom left, Top Left, Top Right : Bottom Left, Top Right, Bottom Right
                 //Front
-                m_returnTris[triStartingIndex + 0] = vertStartingIndex + 0;
-                m_returnTris[triStartingIndex + 1] = vertStartingIndex + 1;
-                m_returnTris[triStartingIndex + 2] = vertStartingIndex + 2;
-                                              
-                m_returnTris[triStartingIndex + 3] = vertStartingIndex + 0;
-                m_returnTris[triStartingIndex + 4] = vertStartingIndex + 2;
-                m_returnTris[triStartingIndex + 5] = vertStartingIndex + 3;
-
-                //Back
-                m_returnTris[triStartingIndex + 6] = vertStartingIndex + 4;
-                m_returnTris[triStartingIndex + 7] = vertStartingIndex + 5;
-                m_returnTris[triStartingIndex + 8] = vertStartingIndex + 6;
-
-                m_returnTris[triStartingIndex + 9] = vertStartingIndex + 4;
-                m_returnTris[triStartingIndex + 10] = vertStartingIndex + 6;
-                m_returnTris[triStartingIndex + 11] = vertStartingIndex + 7;
-                //Right                               
-                m_returnTris[triStartingIndex + 12] = vertStartingIndex + 7;
-                m_returnTris[triStartingIndex + 13] = vertStartingIndex + 6;
-                m_returnTris[triStartingIndex + 14] = vertStartingIndex + 1;
-                                                      
-                m_returnTris[triStartingIndex + 15] = vertStartingIndex + 7;
-                m_returnTris[triStartingIndex + 16] = vertStartingIndex + 1;
-                m_returnTris[triStartingIndex + 17] = vertStartingIndex + 0;
-                //Left                                
-                m_returnTris[triStartingIndex + 18] = vertStartingIndex + 3;
-                m_returnTris[triStartingIndex + 19] = vertStartingIndex + 2;
-                m_returnTris[triStartingIndex + 20] = vertStartingIndex + 5;
-                                                      
-                m_returnTris[triStartingIndex + 21] = vertStartingIndex + 3;
-                m_returnTris[triStartingIndex + 22] = vertStartingIndex + 5;
-                m_returnTris[triStartingIndex + 23] = vertStartingIndex + 4;
-                //Top                    
-                m_returnTris[triStartingIndex + 24] = vertStartingIndex + 5;
-                m_returnTris[triStartingIndex + 25] = vertStartingIndex + 2;
-                m_returnTris[triStartingIndex + 26] = vertStartingIndex + 1;
-
-                m_returnTris[triStartingIndex + 27] = vertStartingIndex + 5;
-                m_returnTris[triStartingIndex + 28] = vertStartingIndex + 1;
-                m_returnTris[triStartingIndex + 29] = vertStartingIndex + 6;
-                                                      
-                //Bottom                              
-                m_returnTris[triStartingIndex + 30] = vertStartingIndex + 3;
-                m_returnTris[triStartingIndex + 31] = vertStartingIndex + 4;
-                m_returnTris[triStartingIndex + 32] = vertStartingIndex + 7;
-                                                      
-                m_returnTris[triStartingIndex + 33] = vertStartingIndex + 3;
-                m_returnTris[triStartingIndex + 34] = vertStartingIndex + 7;
-                m_returnTris[triStartingIndex + 35] = vertStartingIndex + 0;
+                m_returnTris[triArrayStartingIndex + 0] = triVoxelStartIndex + 0;
+                m_returnTris[triArrayStartingIndex + 1] = triVoxelStartIndex + 1;
+                m_returnTris[triArrayStartingIndex + 2] = triVoxelStartIndex + 2;
+                                                          
+                m_returnTris[triArrayStartingIndex + 3] = triVoxelStartIndex + 0;
+                m_returnTris[triArrayStartingIndex + 4] = triVoxelStartIndex + 2;
+                m_returnTris[triArrayStartingIndex + 5] = triVoxelStartIndex + 3;
+                                                          
+                //Back                                    
+                m_returnTris[triArrayStartingIndex + 6] = triVoxelStartIndex + 4;
+                m_returnTris[triArrayStartingIndex + 7] = triVoxelStartIndex + 5;
+                m_returnTris[triArrayStartingIndex + 8] = triVoxelStartIndex + 6;
+                                                          
+                m_returnTris[triArrayStartingIndex + 9] = triVoxelStartIndex + 4;
+                m_returnTris[triArrayStartingIndex + 10] = triVoxelStartIndex + 6;
+                m_returnTris[triArrayStartingIndex + 11] = triVoxelStartIndex + 7;
+                //Right                                    
+                m_returnTris[triArrayStartingIndex + 12] = triVoxelStartIndex + 7;
+                m_returnTris[triArrayStartingIndex + 13] = triVoxelStartIndex + 6;
+                m_returnTris[triArrayStartingIndex + 14] = triVoxelStartIndex + 1;
+                                                           
+                m_returnTris[triArrayStartingIndex + 15] = triVoxelStartIndex + 7;
+                m_returnTris[triArrayStartingIndex + 16] = triVoxelStartIndex + 1;
+                m_returnTris[triArrayStartingIndex + 17] = triVoxelStartIndex + 0;
+                //Left                                     
+                m_returnTris[triArrayStartingIndex + 18] = triVoxelStartIndex + 3;
+                m_returnTris[triArrayStartingIndex + 19] = triVoxelStartIndex + 2;
+                m_returnTris[triArrayStartingIndex + 20] = triVoxelStartIndex + 5;
+                                                           
+                m_returnTris[triArrayStartingIndex + 21] = triVoxelStartIndex + 3;
+                m_returnTris[triArrayStartingIndex + 22] = triVoxelStartIndex + 5;
+                m_returnTris[triArrayStartingIndex + 23] = triVoxelStartIndex + 4;
+                //Top                                      
+                m_returnTris[triArrayStartingIndex + 24] = triVoxelStartIndex + 5;
+                m_returnTris[triArrayStartingIndex + 25] = triVoxelStartIndex + 2;
+                m_returnTris[triArrayStartingIndex + 26] = triVoxelStartIndex + 1;
+                                                           
+                m_returnTris[triArrayStartingIndex + 27] = triVoxelStartIndex + 5;
+                m_returnTris[triArrayStartingIndex + 28] = triVoxelStartIndex + 1;
+                m_returnTris[triArrayStartingIndex + 29] = triVoxelStartIndex + 6;
+                                                           
+                //Bottom                                   
+                m_returnTris[triArrayStartingIndex + 30] = triVoxelStartIndex + 3;
+                m_returnTris[triArrayStartingIndex + 31] = triVoxelStartIndex + 4;
+                m_returnTris[triArrayStartingIndex + 32] = triVoxelStartIndex + 7;
+                                                           
+                m_returnTris[triArrayStartingIndex + 33] = triVoxelStartIndex + 3;
+                m_returnTris[triArrayStartingIndex + 34] = triVoxelStartIndex + 7;
+                m_returnTris[triArrayStartingIndex + 35] = triVoxelStartIndex + 0;
 
                 //UVS
                 for (int vertIndex = 0; vertIndex < VERTS_PER_VOXEL_SOFTEDGE; vertIndex++)
                 {
-                    m_returnUVs[vertStartingIndex + vertIndex] = p_UV;
+                    m_returnUVs[vertStartingIndex + vertIndex] = voxelUV;
                 }
+
+                //Normals
+                //Front Face
+                m_returnNormals[vertStartingIndex + 0] = m_rightDownForwardNormal; //RDF
+                m_returnNormals[vertStartingIndex + 1] = m_rightUpForwardNormal; //RUF
+                m_returnNormals[vertStartingIndex + 2] = m_leftUpForwardNormal; //LUF
+                m_returnNormals[vertStartingIndex + 3] = m_leftDownForwardNormal; //LDF
+
+                //Back Face
+                m_returnNormals[vertStartingIndex + 4] = m_leftDownBackwardNormal; //LDB
+                m_returnNormals[vertStartingIndex + 5] = m_leftUpBackwardNormal; //LUB
+                m_returnNormals[vertStartingIndex + 6] = m_rightUpBackwardNormal; //RUB
+                m_returnNormals[vertStartingIndex + 7] = m_rightDownBackwardNormal; //RDB
             }
+        }
+
+        /// <summary>
+        /// Convert from double2 to Vector2
+        /// </summary>
+        /// <param name="p_val">Value to convert</param>
+        /// <returns>Converted Value</returns>
+        private Vector2 Convert(double2 p_val)
+        {
+            return new Vector2((float)p_val.x, (float)p_val.y);
+        }
+
+        /// <summary>
+        /// Convert from double3 to Vector3
+        /// </summary>
+        /// <param name="p_val">Value to convert</param>
+        /// <returns>Converted Value</returns>
+        private Vector3 Convert(double3 p_val)
+        {
+            return new Vector3((float)p_val.x, (float)p_val.y, (float)p_val.z);
         }
     }
 
@@ -887,59 +1060,53 @@ public class Voxeliser_Burst : MonoBehaviour
             }
         }
     }
-#endregion
+    #endregion
 
 #region Native Maths
 
     /// <summary>
-    /// Convert Array to NativeArray, float3 type
+    /// Convert Array to NativeArray
+    /// See here for full example "https://gist.github.com/LotteMakesStuff/c2f9b764b15f74d14c00ceb4214356b4"
     /// </summary>
     /// <param name="p_fillingArray">Native array to fill</param>
     /// <param name="p_filledFromArray">Array filling from. Should be same size</param>
-    private static void Convert(NativeArray<double3> p_fillingArray, Vector3[] p_filledFromArray)
+    unsafe private static void Convert(NativeArray<Vector3> p_fillingArray, Vector3[] p_filledFromArray)
     {
-        for (int arrayIndex = 0; arrayIndex < p_filledFromArray.Length; arrayIndex++)
+        fixed (void* vertexBufferPointer = p_filledFromArray)
         {
-            Vector3 currentArrayVal = p_filledFromArray[arrayIndex];
-            p_fillingArray[arrayIndex] = new double3(currentArrayVal.x, currentArrayVal.y, currentArrayVal.z);
+            // ...and use memcpy to copy the Vector3[] into a NativeArray<floar3> without casting. whould be fast!
+            UnsafeUtility.MemCpy(NativeArrayUnsafeUtility.GetUnsafeBufferPointerWithoutChecks(p_fillingArray), vertexBufferPointer, p_filledFromArray.Length * (long)UnsafeUtility.SizeOf<float3>());
         }
     }
 
     /// <summary>
-    /// Convert Array to NativeArray, int type
+    /// Convert Array to NativeArray
+    /// See here for full example "https://gist.github.com/LotteMakesStuff/c2f9b764b15f74d14c00ceb4214356b4"
     /// </summary>
     /// <param name="p_fillingArray">Native array to fill</param>
     /// <param name="p_filledFromArray">Array filling from. Should be same size</param>
-    private static void Convert(NativeArray<int> p_fillingArray, int[] p_filledFromArray)
+    unsafe private static void Convert(NativeArray<int> p_fillingArray, int[] p_filledFromArray)
     {
-        for (int arrayIndex = 0; arrayIndex < p_filledFromArray.Length; arrayIndex++)
+        fixed (void* vertexBufferPointer = p_filledFromArray)
         {
-            p_fillingArray[arrayIndex] = p_filledFromArray[arrayIndex];
+            // ...and use memcpy to copy the Vector3[] into a NativeArray<floar3> without casting. whould be fast!
+            UnsafeUtility.MemCpy(NativeArrayUnsafeUtility.GetUnsafeBufferPointerWithoutChecks(p_fillingArray), vertexBufferPointer, p_filledFromArray.Length * (long)UnsafeUtility.SizeOf<int>());
         }
     }
 
     /// <summary>
-    /// Convert Array to NativeArray, double2 type
+    /// Convert Array to NativeArray
+    /// See here for full example "https://gist.github.com/LotteMakesStuff/c2f9b764b15f74d14c00ceb4214356b4"
     /// </summary>
     /// <param name="p_fillingArray">Native array to fill</param>
     /// <param name="p_filledFromArray">Array filling from. Should be same size</param>
-    private static void Convert(NativeArray<double2> p_fillingArray, Vector2[] p_filledFromArray)
+    unsafe private static void Convert(NativeArray<Vector2> p_fillingArray, Vector2[] p_filledFromArray)
     {
-        for (int arrayIndex = 0; arrayIndex < p_filledFromArray.Length; arrayIndex++)
+        fixed (void* vertexBufferPointer = p_filledFromArray)
         {
-            Vector2 currentArrayVal = p_filledFromArray[arrayIndex];
-            p_fillingArray[arrayIndex] = new double2(currentArrayVal.x, currentArrayVal.y);
+            // ...and use memcpy to copy the Vector3[] into a NativeArray<floar3> without casting. whould be fast!
+            UnsafeUtility.MemCpy(NativeArrayUnsafeUtility.GetUnsafeBufferPointerWithoutChecks(p_fillingArray), vertexBufferPointer, p_filledFromArray.Length * (long)UnsafeUtility.SizeOf<float2>());
         }
-    }
-
-    private static Vector3 Convert(double3 p_val)
-    {
-        return new Vector3((float)p_val.x, (float)p_val.y, (float)p_val.z);
-    }
-
-    private static Vector2 Convert(double2 p_val)
-    {
-        return new Vector2((float)p_val.x, (float)p_val.y);
     }
 
     /// <summary>
