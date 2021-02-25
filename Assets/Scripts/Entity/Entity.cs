@@ -81,7 +81,7 @@ public class Entity : MonoBehaviour
     /// <param name="p_val">Translation distance</param>
     public virtual void SplineTranslate(float p_val)
     {
-        if(p_val > 0.0f && !m_splinePhysics.m_forwardCollision || p_val < 0.0f && !m_splinePhysics.m_backCollision)
+        if(p_val > 0.0f && !m_splinePhysics.m_forwardCollision || p_val < 0.0f && !m_splinePhysics.m_backwardCollision)
         {
             if(AllignedToSpline())
             {
@@ -95,7 +95,7 @@ public class Entity : MonoBehaviour
     }
 
     /// <summary>
-    /// Determine if character is alligned to same forward direction as the spline they are on
+    /// Determine if entity is alligned to same forward direction as the spline they are on
     /// </summary>
     /// <returns>True when facing same direction</returns>
     public bool AllignedToSpline()

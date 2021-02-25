@@ -28,7 +28,7 @@ public class StateDrone01_Attack : State_Drone01
 
         m_drone01.RotateWeaponTowardsTarget(m_drone01.m_weaponObject, m_drone01.m_target.transform.position + Vector3.up, m_drone01.m_maxFiringAngle);
 
-        PoolObject projectilePoolObject = m_drone01.m_projectileObjectPool.RentObject(m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_weaponObject.transform.rotation);
+        PoolObject projectilePoolObject = m_drone01.m_objectPoolLightProjectile.RentObject(m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_weaponObject.transform.rotation);
 
         Projectile projectileScript = projectilePoolObject.GetComponent<Projectile>();
         if(projectileScript != null)
@@ -67,6 +67,6 @@ public class StateDrone01_Attack : State_Drone01
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_drone01.m_target != null && m_drone01.m_projectileObjectPool.HasSpareObject();
+        return m_drone01.m_target != null && m_drone01.m_objectPoolLightProjectile.HasSpareObject();
     }
 }

@@ -10,7 +10,8 @@ public class CharacterAerial_Drone01 : Character_Aerial
     public GameObject m_weaponObject = null;
 
     [Header("Projectile")]
-    public ObjectPool m_projectileObjectPool = null;
+    public ObjectPool m_objectPoolLightProjectile = null;
+    public ObjectPool m_objectPoolHeavyProjectile = null;
     public GameObject m_projectileSpawnAnchor = null;
 
     public float m_maxFiringAngle = 40.0f; 
@@ -30,8 +31,17 @@ public class CharacterAerial_Drone01 : Character_Aerial
 
         m_droneStateMachine.InitStateMachine(this);//Run first as animation depends on states being created
 
-        m_projectileObjectPool.Init();
-        m_projectileObjectPool.SetupAsEntities();
+        if(m_objectPoolLightProjectile != null)
+        {
+            m_objectPoolLightProjectile.Init();
+            m_objectPoolLightProjectile.SetupAsEntities();
+        }
+
+        if (m_objectPoolHeavyProjectile != null)
+        {
+            m_objectPoolHeavyProjectile.Init();
+            m_objectPoolHeavyProjectile.SetupAsEntities();
+        }
     }
 
     /// <summary>

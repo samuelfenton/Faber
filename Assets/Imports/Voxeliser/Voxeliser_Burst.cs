@@ -1,5 +1,7 @@
 ﻿#if VOXELISER_MATHEMATICS_ENABLED && VOXELISER_BURST_ENABLED && VOXELISER_COLLECTIONS_ENABLED
 
+//#define VOXELISER_DEBUG_TOOLTIPS
+
 using System.Collections;
 using UnityEngine;
 using Unity.Jobs;
@@ -123,7 +125,7 @@ public class Voxeliser_Burst : MonoBehaviour
         
         if (m_objectWithMesh == null)//Atempt to find a mesh renderer, may be the wrong one
         {
-#if UNITY_EDITOR
+#if UNITY_EDITOR && VOXELISER_DEBUG_TOOLTIPS
             Debug.LogWarning("No mesh assigned, attempting to find one in child " + name);
 #endif
             MeshRenderer meshRenderer = GetComponentInChildren<MeshRenderer>();

@@ -30,6 +30,10 @@ public class Projectile : Entity
     protected Coroutine m_endProjectileRoutine = null;
     protected Coroutine m_fixedFlyTimeRoutine = null;
 
+    protected List<Character> m_collidedCharacters = new List<Character>();
+
+    protected bool m_inUseFlag = false;
+
     /// <summary>
     /// Initiliase this object pool object
     /// </summary>
@@ -57,16 +61,45 @@ public class Projectile : Entity
     }
 
     /// <summary>
-    /// Start of projectile script, example, its just been fired from gun.
+    /// Update an entity, this should be called from scene controller
+    /// Used to handle fixed updates, tranfroms etc
     /// </summary>
-    /// <param name="p_parentCharacter"></param>
-    /// <param name="p_damageModifier"></param>
+    public override void FixedUpdateEntity()
+    {
+        base.FixedUpdateEntity();
+
+        if(m_inUseFlag && m_splinePhysics.AnyCollisions()) //Check if coliding with any enviroments
+        {
+            //Effects
+            if (m_hitEffect != null)
+            {
+                m_hitEffect.SetActive(false);
+                m_hitEffect.SetActive(true);
+            }
+
+            //No more projectile
+            EndProjectile();
+        }
+    }
+
+    /// <summary>
+    /// Start of projectile script, example, its just been fired from gun.
+    /// Assumming that roation/position is already set
+    /// </summary>
+    /// <param name="p_parentCharacter">Character which fired the projectile</param>
+    /// <param name="p_characterToAnchorOffset">Offset form parent to determine spline percent</param>
+    /// <param name="p_damageModifier">Through skills etc, damage modifer can be used, at 2.0f itll be twice the damage etc</param>
     public void ProjectileStart(Character p_parentCharacter, Vector2 p_characterToAnchorOffset, float p_damageModifier)
     {
         //Assign variables
         m_parentCharacter = p_parentCharacter;
         m_damageModifier = p_damageModifier;
         m_collisionCount = 0;
+
+        //Setup varibles to sue
+        m_inUseFlag = true;
+        m_collidedCharacters.Clear();
+        m_collider.enabled = true;
 
         //Setup spline
         m_splinePhysics.m_currentSpline = m_parentCharacter.m_splinePhysics.m_currentSpline;
@@ -82,8 +115,13 @@ public class Projectile : Entity
         transform.position = m_splinePhysics.m_currentSpline.GetPosition(splinePercent) + Vector3.up * p_characterToAnchorOffset.y;
 
         //Physics
-        m_rigidbody.velocity = transform.forward * m_velocity;
-        m_collider.enabled = true;
+        //Velocity
+        float localYAxis = transform.forward.y;
+        float localXAxis = Mathf.Sqrt(1 - localYAxis * localYAxis);
+
+        Vector2 localSplineVelocity = new Vector2(localXAxis, localYAxis);
+        localSplineVelocity = localSplineVelocity.normalized * m_velocity;
+        m_splinePhysics.HardSetVelocity(localSplineVelocity);
 
         //Effects
         if (m_startEffect != null)
@@ -104,6 +142,8 @@ public class Projectile : Entity
     /// </summary>
     protected void EndProjectile()
     {
+        m_inUseFlag = false;
+
         //Effects
         if (m_flyingEffect != null)
             m_flyingEffect.SetActive(false);
@@ -167,7 +207,7 @@ public class Projectile : Entity
         {
             Character otherCharacter = other.GetComponent<Character>();
 
-            if(otherCharacter != null && otherCharacter.m_team != m_parentCharacter.m_team) //Hit other team character
+            if(otherCharacter != null && otherCharacter.m_team != m_parentCharacter.m_team && !m_collidedCharacters.Contains(otherCharacter)) //Hit other team character
             {
                 m_collisionCount++;
 
@@ -181,6 +221,8 @@ public class Projectile : Entity
 
                 if (m_collisionCount >= m_maxCollisions) //Hit max characters, destory here
                     EndProjectile();
+
+                m_collidedCharacters.Add(otherCharacter);
             }
         }
         else if(other.gameObject.layer == CustomLayers.m_enviromentLayer)//Hit enviroment, play effect

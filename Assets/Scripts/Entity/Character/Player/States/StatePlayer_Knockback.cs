@@ -81,8 +81,6 @@ public class StatePlayer_Knockback : State_Player
         m_character.m_knockbackBodyHitDirection = Character.KNOCKBACK_DIR.NONE; //Reset flag
         m_character.m_knockbackSpineDirection = Character.KNOCKBACK_SPLINE_DIR.NONE; //Reset flag
 
-        m_character.StartKnockbackRecover();
-
         m_player.m_splinePhysics.HardSetHorizontalVelocity(0.0f);
         m_player.SetDesiredVelocity(new Vector2(0.0f, m_player.m_splinePhysics.m_splineLocalVelocity.y));
     }

@@ -7,8 +7,6 @@ using UnityEngine;
 [ExecuteAlways]
 public class SplinePhysics : MonoBehaviour
 {
-    public enum COLLISION_TYPE {ENVIROMENT, HURT_BOX }
-
     public const float MIN_SPLINE_PERCENT = -0.001f;
     public const float MAX_SPLINE_PERCENT = 1.001f;
 
@@ -41,16 +39,7 @@ public class SplinePhysics : MonoBehaviour
     [HideInInspector]
     public bool m_forwardCollision = false;
     [HideInInspector]
-    public bool m_backCollision = false;
-
-    [HideInInspector]
-    public COLLISION_TYPE m_upCollisionType = COLLISION_TYPE.ENVIROMENT;
-    [HideInInspector]
-    public COLLISION_TYPE m_downCollisionType = COLLISION_TYPE.ENVIROMENT;
-    [HideInInspector]
-    public COLLISION_TYPE m_forwardCollisionType = COLLISION_TYPE.ENVIROMENT;
-    [HideInInspector]
-    public COLLISION_TYPE m_backCollisionType = COLLISION_TYPE.ENVIROMENT;
+    public bool m_backwardCollision = false;
 
     protected Entity m_parentEntity = null;
 
@@ -168,7 +157,7 @@ public class SplinePhysics : MonoBehaviour
         Vector3 centerPos = transform.position + forward * m_boxCollider.center.z + up * m_boxCollider.center.y;
 
         //UPWARDS
-        m_upCollision = CastCollision(up, centerPos, forward * m_boxCollider.bounds.extents.z, m_boxCollider.bounds.extents.y + DETECTION_RANGE, out m_upCollisionType);
+        m_upCollision = CastCollision(up, centerPos, forward * m_boxCollider.bounds.extents.z, m_boxCollider.bounds.extents.y + DETECTION_RANGE);
 
         if (m_upCollision)//Check Upwards
         {
@@ -177,7 +166,7 @@ public class SplinePhysics : MonoBehaviour
         }
 
         //DOWNWARDS
-        m_downCollision = CastCollision(-up, centerPos, forward * m_boxCollider.bounds.extents.z, m_boxCollider.bounds.extents.y + DETECTION_RANGE, out m_downCollisionType);
+        m_downCollision = CastCollision(-up, centerPos, forward * m_boxCollider.bounds.extents.z, m_boxCollider.bounds.extents.y + DETECTION_RANGE);
 
         if (!m_downCollision) //Check if colliding with spline
         {
@@ -193,7 +182,7 @@ public class SplinePhysics : MonoBehaviour
         }
 
         //FOWARDS
-        m_forwardCollision = CastCollision(forward, centerPos, up * m_boxCollider.bounds.extents.y, m_boxCollider.bounds.extents.z + DETECTION_RANGE, out m_forwardCollisionType);
+        m_forwardCollision = CastCollision(forward, centerPos, up * m_boxCollider.bounds.extents.y, m_boxCollider.bounds.extents.z + DETECTION_RANGE);
         if (m_forwardCollision)//Forwards
         {
             if (m_splineLocalVelocity.x > 0.0f)//Moving up, stop this 
@@ -201,8 +190,8 @@ public class SplinePhysics : MonoBehaviour
         }
 
         //BACKWARDS
-        m_backCollision = CastCollision(-forward, centerPos, up * m_boxCollider.bounds.extents.y, m_boxCollider.bounds.extents.z + DETECTION_RANGE, out m_backCollisionType);
-        if (m_backCollision)//Backwards
+        m_backwardCollision = CastCollision(-forward, centerPos, up * m_boxCollider.bounds.extents.y, m_boxCollider.bounds.extents.z + DETECTION_RANGE);
+        if (m_backwardCollision)//Backwards
         {
             if (m_splineLocalVelocity.x < 0.0f)//Moving up, stop this 
                 m_splineLocalVelocity.x = 0.0f;
@@ -218,7 +207,7 @@ public class SplinePhysics : MonoBehaviour
     /// <param name="p_castFromModifer">Modifer from center cast to offset most</param>
     /// <param name="p_boundingDistance">Distance to edge of collider bounds</param>
     /// <returns>True when any collisions occur</returns>
-    private bool CastCollision(Vector3 p_direction, Vector3 p_centerPos, Vector3 p_castFromModifer, float p_boundingDistance, out COLLISION_TYPE p_collisionType)
+    private bool CastCollision(Vector3 p_direction, Vector3 p_centerPos, Vector3 p_castFromModifer, float p_boundingDistance)
     {
         Vector3 castFromModifier = p_castFromModifer * COLLISION_OFFSET_MODIFIER;
         Vector3 castFromModifierHalf = p_castFromModifer * COLLISION_OFFSET_MODIFIER_HALF;
@@ -226,48 +215,51 @@ public class SplinePhysics : MonoBehaviour
         RaycastHit hit;
 
         //Forward Offset raycast
-        if (Physics.Raycast(p_centerPos + castFromModifier, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask | CustomLayers.m_hurtBoxMask))
+        if (Physics.Raycast(p_centerPos + castFromModifier, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask))
         {
-            p_collisionType = hit.collider.gameObject.layer == CustomLayers.m_enviromentLayer ? COLLISION_TYPE.ENVIROMENT : COLLISION_TYPE.HURT_BOX;//Use layer not mask, when comparing to game object layer
             return true;
         }
 
         //Forward Center raycast
-        if (Physics.Raycast(p_centerPos + castFromModifierHalf, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask | CustomLayers.m_hurtBoxMask))
+        if (Physics.Raycast(p_centerPos + castFromModifierHalf, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask))
         {
-            p_collisionType = hit.collider.gameObject.layer == CustomLayers.m_enviromentLayer ? COLLISION_TYPE.ENVIROMENT : COLLISION_TYPE.HURT_BOX;//Use layer not mask, when comparing to game object layer
             return true;
         }
 
         //Center raycast
-        if (Physics.Raycast(p_centerPos, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask | CustomLayers.m_hurtBoxMask))
+        if (Physics.Raycast(p_centerPos, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask))
         {
-            p_collisionType = hit.collider.gameObject.layer == CustomLayers.m_enviromentLayer ? COLLISION_TYPE.ENVIROMENT : COLLISION_TYPE.HURT_BOX;//Use layer not mask, when comparing to game object layer
             return true;
         }
 
 
         //Back Center raycast
-        if (Physics.Raycast(p_centerPos - castFromModifierHalf, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask | CustomLayers.m_hurtBoxMask))
+        if (Physics.Raycast(p_centerPos - castFromModifierHalf, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask))
         {
-            p_collisionType = hit.collider.gameObject.layer == CustomLayers.m_enviromentLayer ? COLLISION_TYPE.ENVIROMENT : COLLISION_TYPE.HURT_BOX;//Use layer not mask, when comparing to game object layer
             return true;
         }
 
 
         //Back raycast
-        if (Physics.Raycast(p_centerPos - castFromModifier, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask | CustomLayers.m_hurtBoxMask))
+        if (Physics.Raycast(p_centerPos - castFromModifier, p_direction, out hit, p_boundingDistance, CustomLayers.m_enviromentMask))
         {
-            p_collisionType = hit.collider.gameObject.layer == CustomLayers.m_enviromentLayer ? COLLISION_TYPE.ENVIROMENT : COLLISION_TYPE.HURT_BOX;//Use layer not mask, when comparing to game object layer
             return true;
         }
 
-        p_collisionType = COLLISION_TYPE.ENVIROMENT; //Default
         return false;
     }
 
     /// <summary>
-    /// Hard set the velocity
+    /// Has there been any collisions?
+    /// </summary>
+    /// <returns>True when up down, forward or back collisions have occured</returns>
+    public bool AnyCollisions()
+    {
+        return m_upCollision || m_downCollision || m_forwardCollision || m_backwardCollision;
+    }
+
+    /// <summary>
+    /// Hard set the local velocity
     /// </summary>
     /// <param name="p_val">velocity</param>
     public void HardSetVelocity(Vector2 p_val)
@@ -312,7 +304,7 @@ public class SplinePhysics : MonoBehaviour
             CustomDebug.DrawSquare(boxCollider.bounds.center - colliderForwardOffset, DETECTION_RANGE, boxCollider.bounds.size.y, transform.forward, collisionColor, CustomDebug.DEFAULT_LINE_THICKNESS_HALF);
 
             //Backward
-            collisionColor = m_backCollision ? Color.red : Color.green;
+            collisionColor = m_backwardCollision ? Color.red : Color.green;
             CustomDebug.DrawSquare(boxCollider.bounds.center + colliderForwardOffset, DETECTION_RANGE, boxCollider.bounds.size.y, transform.forward, collisionColor, CustomDebug.DEFAULT_LINE_THICKNESS_HALF);
 
             //Up
@@ -326,9 +318,20 @@ public class SplinePhysics : MonoBehaviour
 
         if (!Application.isPlaying)
         {
-            if (MOARDebugging.GetSplinePosition(m_nodeA, m_nodeB, m_currentSplinePercent, out Vector3 position))
+            if (MOARDebugging.GetSplinePosition(m_nodeA, m_nodeB, m_currentSplinePercent, out Vector3 splinePosition)) //Setup position
             {
-                transform.position = position;
+                transform.position = splinePosition;
+            }
+            if (MOARDebugging.GetSplineForward(m_nodeA, m_nodeB, m_currentSplinePercent, out Vector3 splineForward)) //Setup Rotation
+            {
+                if (Vector3.Dot(transform.forward, splineForward) >= 0.0f)
+                {
+                    transform.rotation = Quaternion.LookRotation(splineForward, Vector3.up);
+                }
+                else
+                {
+                    transform.rotation = Quaternion.LookRotation(-splineForward, Vector3.up);
+                }
             }
         }
     }

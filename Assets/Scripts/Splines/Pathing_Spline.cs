@@ -155,11 +155,11 @@ public class Pathing_Spline : MonoBehaviour
         switch (m_splineType)
         {
             case SPLINE_TYPE.STRAIGHT:
-                return GetStraightForward(p_percent);
+                return GetStraightForward(p_percent, m_straightDir);
             case SPLINE_TYPE.BEZIER:
-                return GetBezierForward(p_percent);
+                return GetBezierForward(p_percent, m_bezierPointA, m_bezierPointB, m_bezierControlA, m_bezierControlB);
             case SPLINE_TYPE.CIRCLE:
-                return GetCircleForward(p_percent);
+                return GetCircleForward(p_percent, m_circleDir, m_circleAngle, m_circleHeight, m_circleCenter, m_centerADir);
         }
 
         return Vector3.forward;
@@ -301,7 +301,7 @@ public class Pathing_Spline : MonoBehaviour
     /// Get a position based off the spline and what percent
     /// </summary>
     /// <param name="p_percent">How far along spline are we?</param>
-    /// <param name="p_circleDirection">Waht direction is the circle, clockwise or anit?</param>
+    /// <param name="p_circleDir">Waht direction is the circle, clockwise or anit?</param>
     /// <param name="p_circleAngle">How many degrees is the circle</param>
     /// <param name="p_circleHeight">Height of the given circle</param>
     /// <param name="p_circleCenter">Center position of hte circle</param>
@@ -316,17 +316,18 @@ public class Pathing_Spline : MonoBehaviour
 
         return position;
     }
-#endregion
+    #endregion
 
     #region Getting Forward
     /// <summary>
     /// Get a forward based off the spline and what percent
     /// </summary>
     /// <param name="p_percent">How far along spline are we?</param>
+    /// <param name="p_straightDir">Straight spline direction</param>
     /// <returns>Forward based off spline calcualtions for straight line</returns>
-    private Vector3 GetStraightForward(float p_percent)
+    public static Vector3 GetStraightForward(float p_percent, Vector3 p_straightDir)
     {
-        Vector3 forward = m_straightDir;
+        Vector3 forward = p_straightDir;
         forward.y = 0.0f;
         return forward.normalized;
     }
@@ -335,11 +336,15 @@ public class Pathing_Spline : MonoBehaviour
     /// Get a forward based off the spline and what percent
     /// </summary>
     /// <param name="p_percent">How far along spline are we?</param>
+    /// <param name="p_bezierPointA">Calcualted Bezier Point A</param>
+    /// <param name="p_bezierPointB">Calcualted Bezier Point B</param>
+    /// <param name="p_bezierControlA">Calcualted Bezier Control A</param>
+    /// <param name="p_bezierControlB">Calcualted Bezier Control B</param>
     /// <returns>Forward based off spline calcualtions for bezier curve</returns>
-    private Vector3 GetBezierForward(float p_percent)
+    public static Vector3 GetBezierForward(float p_percent, Vector3 p_bezierPointA, Vector3 p_bezierPointB, Vector3 p_bezierControlA, Vector3 p_bezierControlB)
     {
-        Vector3 currentPos = GetBezierPosition(p_percent, m_bezierPointA, m_bezierPointB, m_bezierControlA, m_bezierControlB);
-        Vector3 offsetPos = GetBezierPosition(p_percent + 0.01f, m_bezierPointA, m_bezierPointB, m_bezierControlA, m_bezierControlB);
+        Vector3 currentPos = GetBezierPosition(p_percent, p_bezierPointA, p_bezierPointB, p_bezierControlA, p_bezierControlB);
+        Vector3 offsetPos = GetBezierPosition(p_percent + 0.01f, p_bezierPointA, p_bezierPointB, p_bezierControlA, p_bezierControlB);
         Vector3 forward = (offsetPos - currentPos);
         forward.y = 0.0f;
         return forward.normalized;
@@ -349,13 +354,18 @@ public class Pathing_Spline : MonoBehaviour
     /// Get a forward based off the spline and what percent
     /// </summary>
     /// <param name="p_percent">How far along spline are we?</param>
+    /// <param name="p_circleDir">Waht direction is the circle, clockwise or anit?</param>
+    /// <param name="p_circleAngle">How many degrees is the circle</param>
+    /// <param name="p_circleHeight">Height of the given circle</param>
+    /// <param name="p_circleCenter">Center position of hte circle</param>
+    /// <param name="p_centerADir">Vector outwards from circle</param>
     /// <returns>Forward based off spline calcualtions for circle</returns>
-    private Vector3 GetCircleForward(float p_percent)
+    public static Vector3 GetCircleForward(float p_percent, CIRCLE_DIR p_circleDir, float p_circleAngle, float p_circleHeight, Vector3 p_circleCenter, Vector3 p_centerADir)
     {
-        Vector3 percentPos = GetCirclePosition(p_percent, m_circleDir, m_circleAngle, m_circleHeight, m_circleCenter, m_centerADir);
-        Vector3 desiredDir = m_circleCenter - percentPos;
+        Vector3 percentPos = GetCirclePosition(p_percent, p_circleDir, p_circleAngle, p_circleHeight, p_circleCenter, p_centerADir);
+        Vector3 desiredDir = p_circleCenter - percentPos;
         desiredDir = new Vector3(desiredDir.z, 0.0f, -desiredDir.x);
-        Vector3 forward = desiredDir * (m_circleDir == CIRCLE_DIR.CLOCKWISE ? -1 : 1);
+        Vector3 forward = desiredDir * (p_circleDir == CIRCLE_DIR.CLOCKWISE ? -1 : 1);
         forward.y = 0.0f;
         return forward.normalized;
     }

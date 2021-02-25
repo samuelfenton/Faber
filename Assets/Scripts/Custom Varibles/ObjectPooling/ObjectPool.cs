@@ -57,6 +57,13 @@ public class ObjectPool : MonoBehaviour
     /// </summary>
     public void SetupAsEntities()
     {
+        if (m_prefab == null || m_objectQueue.Count == 0) //Data verification
+        {
+            return;
+        }
+
+        List<Entity> poolEntities = new List<Entity>();
+
         for (int i = 0; i < m_objectCount; i++)
         {
             PoolObject poolObject = m_objectQueue.Dequeue();
@@ -65,10 +72,14 @@ public class ObjectPool : MonoBehaviour
             if(entity != null)
             {
                 entity.InitEntity();
+
+                poolEntities.Add(entity);
             }
 
             m_objectQueue.Enqueue(poolObject);
         }
+
+        ((SceneController_InGame)MasterController.Instance.m_currentSceneController).AddEntities(poolEntities);
     }
 
     /// <summary>

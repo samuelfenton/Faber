@@ -54,8 +54,11 @@ public class Character : Entity
     [HideInInspector]
     public float m_idleDelayTimer = 0.0f;
 
+    [Header("Recovery")]
+    public float m_damageRecoverTime = 1.0f;
+    public float m_knockbackRecoverTime = 2.0f;
+
     [Header("Knockback")]
-    public float m_knockbackRecoverTime = 1.0f;
     public float m_knockbackVelocity = 3.0f;
     public float m_knockforwardVelocity = 2.0f;
 
@@ -79,17 +82,19 @@ public class Character : Entity
     [HideInInspector]
     public bool m_blockingFlag = false;
     [HideInInspector]
+    public bool m_recoveryFlag = false;
+    [HideInInspector]
     public KNOCKBACK_SPLINE_DIR m_knockbackSpineDirection = KNOCKBACK_SPLINE_DIR.NONE; //What way the hit came from? This will influence moving direction
     [HideInInspector]
     public KNOCKBACK_DIR m_knockbackBodyHitDirection = KNOCKBACK_DIR.NONE; //What side of the body did the hit come from? This will influence the animation
-    [HideInInspector]
-    public bool m_knockbackRecoverFlag = false;
     [HideInInspector]
     public bool m_recoilFlag = false;
     [HideInInspector]
     public bool m_deathFlag = false;
 
     //Stored references
+    [HideInInspector]
+    public Controller_Character_ObjectPool m_controllerCharacterObjectPool = null;
     [Header("Manoeuvre Prefab")]
     public GameObject m_manoeuvreControllerObjPrefab = null;
     protected GameObject m_manoeuvreControllerObjStored = null;
@@ -117,6 +122,10 @@ public class Character : Entity
 
         m_customAnimation = GetComponent<CustomAnimation>();
         m_customAnimation.Init();
+
+        m_controllerCharacterObjectPool = GetComponentInChildren<Controller_Character_ObjectPool>();
+        if (m_controllerCharacterObjectPool != null)
+            m_controllerCharacterObjectPool.InitCharacterObjectPools();
 
         if (m_manoeuvreControllerObjPrefab != null)
         {
@@ -263,7 +272,7 @@ public class Character : Entity
         }
         else
         {
-            if (p_targetCharacter.m_knockbackRecoverFlag)//Target recovering from knockback, take no damage
+            if (p_targetCharacter.m_recoveryFlag)//Target recovering from knockback, take no damage
             { 
             
             }
@@ -271,28 +280,37 @@ public class Character : Entity
             {
                 p_targetCharacter.ModifyHealth(-p_damage);
 
-                //Setup knockback
-                //Determine knockback from direction
-                Vector3 toTargetDir = p_targetCharacter.transform.position - transform.position;
-                Vector3 splineForward = m_splinePhysics.m_currentSpline.GetForwardDir(m_splinePhysics.m_currentSplinePercent);
+                if(p_impactForce == Manoeuvre.DAMAGE_IMPACT.HIGH) //Knockback
+                {
+                    p_targetCharacter.StartRecovery(p_targetCharacter.m_knockbackRecoverTime);
 
-                //Spline travel direction
-                float splineToTargetDirAlignment = Vector3.Dot(toTargetDir, splineForward);
+                    //Setup knockback
+                    //Determine knockback from direction
+                    Vector3 toTargetDir = p_targetCharacter.transform.position - transform.position;
+                    Vector3 splineForward = m_splinePhysics.m_currentSpline.GetForwardDir(m_splinePhysics.m_currentSplinePercent);
 
-                p_targetCharacter.m_knockbackSpineDirection = splineToTargetDirAlignment >= 0.0f ? KNOCKBACK_SPLINE_DIR.POSITIVE : KNOCKBACK_SPLINE_DIR.NEGATIVE; //When hit dir alligned with spline dir, push towards end, so positive
+                    //Spline travel direction
+                    float splineToTargetDirAlignment = Vector3.Dot(toTargetDir, splineForward);
 
-                //Determine knockback body direction
-                float bodyToTargetAlignment = Vector3.Dot(toTargetDir, p_targetCharacter.transform.forward);
-                p_targetCharacter.m_knockbackBodyHitDirection = bodyToTargetAlignment > 0.0f ? KNOCKBACK_DIR.BACK : KNOCKBACK_DIR.FRONT;
+                    p_targetCharacter.m_knockbackSpineDirection = splineToTargetDirAlignment >= 0.0f ? KNOCKBACK_SPLINE_DIR.POSITIVE : KNOCKBACK_SPLINE_DIR.NEGATIVE; //When hit dir alligned with spline dir, push towards end, so positive
 
-                p_targetCharacter.SetKnockbackImpact(p_impactForce);
-                
+                    //Determine knockback body direction
+                    float bodyToTargetAlignment = Vector3.Dot(toTargetDir, p_targetCharacter.transform.forward);
+                    p_targetCharacter.m_knockbackBodyHitDirection = bodyToTargetAlignment > 0.0f ? KNOCKBACK_DIR.BACK : KNOCKBACK_DIR.FRONT;
+
+                    p_targetCharacter.SetKnockbackImpact(p_impactForce);
+                }
+                else//No knockback only damage
+                {
+                    p_targetCharacter.StartRecovery(p_targetCharacter.m_damageRecoverTime);
+                }
+
                 //Setup hit marker
                 Vector3 cameraToTarget = p_targetCharacter.transform.position - m_followCamera.transform.position;
                 cameraToTarget.y = 0.0f;
                 Quaternion hitmarkerRotation = Quaternion.LookRotation(cameraToTarget, Vector3.up);
 
-                m_sceneController.SpawnHitMarker(p_targetCharacter.transform.position + Vector3.up * 2.0f, hitmarkerRotation, Mathf.RoundToInt(p_damage));
+                p_targetCharacter.m_controllerCharacterObjectPool.SpawnHitMarker(p_targetCharacter.transform.position + Vector3.up * 2.0f, hitmarkerRotation, Mathf.RoundToInt(p_damage));
 
                 //Setup particle effects
                 Vector3 characterToTarget = p_targetCharacter.transform.position - transform.position;
@@ -300,7 +318,9 @@ public class Character : Entity
 
                 Quaternion particleRotation = Quaternion.LookRotation(characterToTarget, Vector3.up);
 
-                m_sceneController.SpawnDamageParticles(p_impactPosition, particleRotation, p_impactDirection, p_targetCharacter.m_effectColor1, p_targetCharacter.m_effectColor2);
+                p_targetCharacter.m_controllerCharacterObjectPool.SpawnDamageParticles(p_impactPosition, particleRotation, p_impactDirection, p_targetCharacter.m_effectColor1, p_targetCharacter.m_effectColor2);
+
+
             }
 
         }
@@ -351,19 +371,30 @@ public class Character : Entity
         int randomPose = Random.Range(0, m_idlePoseCount);
         m_customAnimation.SetVaribleFloat((int)CustomAnimation_Player.VARIBLE_FLOAT.RANDOM_IDLE, randomPose);
     }
-    
-    public void StartKnockbackRecover()
-    {
-        m_knockbackRecoverFlag = true;
 
-        StartCoroutine(KnockbackRecoverRoutine());
+
+    /// <summary>
+    /// Used to stop stacking of damage/juggeling of characters
+    /// </summary>
+    /// <param name="p_recovertyTime">How long to take to recover, generally base atack recovery vs knockback recovery</param>
+    public void StartRecovery(float p_recovertyTime)
+    {
+        m_recoveryFlag = true;
+
+        StartCoroutine(KnockbackRecoverRoutine(p_recovertyTime));
     }
 
-    protected IEnumerator KnockbackRecoverRoutine()
+    /// <summary>
+    /// Ienumerator to act as timer for recovery
+    /// Should only ever get called from the function StartRecovery(float p_recovertyTime)
+    /// </summary>
+    /// <param name="p_recovertyTime">How long to take to recover, generally base atack recovery vs knockback recovery</param>
+    /// <returns></returns>
+    protected IEnumerator KnockbackRecoverRoutine(float p_recovertyTime)
     {
-        yield return new WaitForSeconds(m_knockbackRecoverTime);
+        yield return new WaitForSeconds(p_recovertyTime);
 
-        m_knockbackRecoverFlag = false;
+        m_recoveryFlag = false;
     }
 
     #region CHARACTER FUNCTIONS REQUIRING OVERRIDE

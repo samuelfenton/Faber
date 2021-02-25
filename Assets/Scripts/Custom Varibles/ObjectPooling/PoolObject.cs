@@ -13,6 +13,8 @@ public class PoolObject : MonoBehaviour
     public virtual void Init(ObjectPool p_objectPool)
     {
         m_objectPool = p_objectPool;
+
+        gameObject.SetActive(false);
     }
 
     /// <summary>

@@ -9,18 +9,10 @@ public class SceneController_InGame : SceneController
     public GameObject m_splinePrefab = null;
     public Interactable_SavePoint m_defaultSavePoint = null;
 
-    [Header("Object Pooling")]
-    public ObjectPool m_hitmarkerPool = null;
-    public ObjectPool m_damageForwardsPool = null;
-    public ObjectPool m_damageHorizontalRightPool = null;
-    public ObjectPool m_damageHorizontalLeftPool = null;
-    public ObjectPool m_damageVerticalUpwardsPool = null;
-    public ObjectPool m_damageVerticalDownwardsPool = null;
-
     private Character_Player m_playerCharacter = null;
 
-    private Entity[] m_entities;
-    private Interactable[] m_interactables;
+    private List<Entity> m_entities = new List<Entity>();
+    private List<Interactable> m_interactables = new List<Interactable>();
 
     [HideInInspector]
     public CustomInput m_customInput = null;
@@ -28,6 +20,9 @@ public class SceneController_InGame : SceneController
     [HideInInspector]
     public enum INGAME_STATE {IN_GAME, PAUSED}
     private INGAME_STATE m_inGameState = INGAME_STATE.IN_GAME;
+
+    private List<Entity> m_additionalEntities = new List<Entity>();
+    private List<Entity> m_entitiesToRemove = new List<Entity>();
 
     /// <summary>
     /// On setting game state, resets input
@@ -79,8 +74,8 @@ public class SceneController_InGame : SceneController
         m_customInput = gameObject.AddComponent<CustomInput>();
         m_playerCharacter = FindObjectOfType<Character_Player>();
 
-        m_interactables = FindObjectsOfType<Interactable>();
-        m_entities = FindObjectsOfType<Entity>();
+        m_interactables.AddRange(FindObjectsOfType<Interactable>());
+        m_entities.AddRange(FindObjectsOfType<Entity>());
         
         //Pathing
         Pathing_Node[] pathingNodes = FindObjectsOfType<Pathing_Node>();
@@ -90,14 +85,18 @@ public class SceneController_InGame : SceneController
         }
 
         //Entities
-        for (int entityIndex = 0; entityIndex < m_entities.Length; entityIndex++)
+        for (int entityIndex = 0; entityIndex < m_entities.Count; entityIndex++)
         {
             m_entities[entityIndex].InitEntity();
         }
 
+        //Add all additional entities created during original entity initialization
+        //These should already be setup
+        m_entities.AddRange(m_additionalEntities);
+        m_additionalEntities.Clear();
 
         //Interactables
-        for (int interactableIndex = 0; interactableIndex < m_interactables.Length; interactableIndex++)
+        for (int interactableIndex = 0; interactableIndex < m_interactables.Count; interactableIndex++)
         {
             m_interactables[interactableIndex].InitInteractable(m_playerCharacter);
         }
@@ -119,21 +118,6 @@ public class SceneController_InGame : SceneController
                 }
             }
         }
-
-        //Object pooling
-        if (m_hitmarkerPool != null)
-            m_hitmarkerPool.Init();
-
-        if (m_damageForwardsPool != null)
-            m_damageForwardsPool.Init();
-        if (m_damageHorizontalRightPool != null)
-            m_damageHorizontalRightPool.Init();
-        if (m_damageHorizontalLeftPool != null)
-            m_damageHorizontalLeftPool.Init();
-        if (m_damageVerticalUpwardsPool != null)
-            m_damageVerticalUpwardsPool.Init();
-        if (m_damageVerticalDownwardsPool != null)
-            m_damageVerticalDownwardsPool.Init();
     }
 
     /// <summary>
@@ -159,6 +143,13 @@ public class SceneController_InGame : SceneController
                 if (interactable.isActiveAndEnabled)
                     interactable.UpdateInteractable();
             }
+
+            //Remove as needed
+            foreach (Entity entity in m_entitiesToRemove)
+            {
+                m_entities.Remove(entity);
+            }
+            m_entitiesToRemove.Clear();
         }
     }
 
@@ -177,6 +168,24 @@ public class SceneController_InGame : SceneController
                     entity.FixedUpdateEntity();
             }
         }
+    }
+
+    /// <summary>
+    /// Add a list of entities to the in game controllers list. This could be used as entities are created on awake, e.g. object pools
+    /// </summary>
+    /// <param name="p_entitiesToAdd">All entities to adf</param>
+    public void AddEntities(List<Entity> p_entitiesToAdd)
+    {
+        m_additionalEntities.AddRange(p_entitiesToAdd);
+    }
+
+    /// <summary>
+    /// Remove an entity from the list of all entities
+    /// </summary>
+    /// <param name="p_entityToRemove">Entity to remove</param>
+    public void RemoveEntity(Entity p_entityToRemove)
+    {
+        m_entitiesToRemove.Add(p_entityToRemove);
     }
 
     /// <summary>
@@ -240,68 +249,6 @@ public class SceneController_InGame : SceneController
     }
 
     /// <summary>
-    /// Spawn a hit marker at a given location
-    /// </summary>
-    /// <param name="p_position">Position to spawn</param>
-    /// <param name="p_rotation">Rotation to spawn</param>
-    /// <param name="p_hitmarkerVal">Text value of hit marker</param>
-    public void SpawnHitMarker(Vector3 p_position, Quaternion p_rotation, int p_hitmarkerVal)
-    {
-        PoolObject poolObject = m_hitmarkerPool.RentObject(p_position, p_rotation);
-
-        if (poolObject != null)
-        {
-            //Get derived hitmarker class
-            PoolObject_HitMarker hitMarker = poolObject.GetComponent<PoolObject_HitMarker>();
-
-            if (hitMarker != null)
-                hitMarker.SetHitMarkerVal(p_hitmarkerVal);
-        }
-    }
-
-    /// <summary>
-    /// Spawn a hit damage effect at a given location
-    /// </summary>
-    /// <param name="p_position">Position to spawn</param>
-    /// <param name="p_rotation">Rotation to spawn</param>
-    /// <param name="p_hitmarkerVal">Text value of hit marker</param>
-    /// <param name="p_effectColor1">first color to use in particle system</param>
-    /// <param name="p_effectColor1">second color to use in particle system</param>
-    public void SpawnDamageParticles(Vector3 p_position, Quaternion p_rotation, Manoeuvre.DAMAGE_DIRECTION p_direction, Color p_effectColor1, Color p_effectColor2)
-    {
-        PoolObject poolObject = null;
-
-        switch (p_direction)
-        {
-            case Manoeuvre.DAMAGE_DIRECTION.FORWARDS:
-                poolObject = m_damageForwardsPool.RentObject(p_position, p_rotation);
-                break;
-            case Manoeuvre.DAMAGE_DIRECTION.HORIZONTAL_RIGHT:
-                poolObject = m_damageHorizontalRightPool.RentObject(p_position, p_rotation);
-                break;
-            case Manoeuvre.DAMAGE_DIRECTION.HORIZONTAL_LEFT:
-                poolObject = m_damageHorizontalLeftPool.RentObject(p_position, p_rotation);
-                break;
-            case Manoeuvre.DAMAGE_DIRECTION.VERTICAL_UPWARDS:
-                poolObject = m_damageVerticalUpwardsPool.RentObject(p_position, p_rotation);
-                break;
-            case Manoeuvre.DAMAGE_DIRECTION.VERTICAL_DOWNWARDS:
-                poolObject = m_damageVerticalDownwardsPool.RentObject(p_position, p_rotation);
-                break;
-            default:
-                break;
-        }
-
-        if (poolObject != null)
-        {
-            PoolObject_DamageEffect damageEffect = poolObject.GetComponentInChildren<PoolObject_DamageEffect>();
-
-            if (damageEffect != null)
-                damageEffect.SetupDamageEffect(p_effectColor1, p_effectColor2);
-        }
-    }
-
-    /// <summary>
     /// Attempt to get interactive save point
     /// </summary>
     /// <param name="p_uniqueID">ID to look for</param>
@@ -309,7 +256,7 @@ public class SceneController_InGame : SceneController
     public Interactable_SavePoint GetSavePoint(int p_uniqueID)
     {
         //Attempt to find level save point
-        for (int interactableIndex = 0; interactableIndex < m_interactables.Length; interactableIndex++)
+        for (int interactableIndex = 0; interactableIndex < m_interactables.Count; interactableIndex++)
         {
             if (m_interactables[interactableIndex].m_uniqueID.m_val == p_uniqueID)
             {
