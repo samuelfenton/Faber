@@ -6,16 +6,6 @@ public class CharacterAerial_Drone01 : Character_Aerial
 {
     protected StateMachine_Drone01 m_droneStateMachine = null;
 
-    [Header("Assigned GameObjects")]
-    public GameObject m_weaponObject = null;
-
-    [Header("Projectile")]
-    public ObjectPool m_objectPoolLightProjectile = null;
-    public ObjectPool m_objectPoolHeavyProjectile = null;
-    public GameObject m_projectileSpawnAnchor = null;
-
-    public float m_maxFiringAngle = 40.0f; 
-
     /// <summary>
     /// Initiliase the entity
     /// setup varible/physics
@@ -50,10 +40,10 @@ public class CharacterAerial_Drone01 : Character_Aerial
     /// </summary>
     public override void UpdateEntity()
     {
+        base.UpdateEntity();
+        
         //Get logic
         m_droneStateMachine.UpdateStateMachine();
-
-        base.UpdateEntity();
     }
 
     #region CHARACTER FUNCTIONS REQUIRING OVERRIDE

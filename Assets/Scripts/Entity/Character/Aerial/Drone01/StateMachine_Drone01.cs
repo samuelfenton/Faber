@@ -26,7 +26,7 @@ public class StateMachine_Drone01 : StateMachine
         knockback.StateInit(false, p_character);
 
         loco.StateInit(true, p_character);
-        idle.StateInit(false, p_character);
+        idle.StateInit(true, p_character);
 
         attack.StateInit(false, p_character);
 

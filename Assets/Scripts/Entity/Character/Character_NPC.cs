@@ -9,6 +9,11 @@ public class Character_NPC : Character
 
     [Header("NPC Variables")]
     public Character m_target = null;
+    public float m_attackDelay = 1.0f;
+
+    [HideInInspector]
+    public bool m_canAttackFlag = true;
+
 
     /// <summary>
     /// Initiliase the entity
@@ -63,6 +68,41 @@ public class Character_NPC : Character
             angle = -180 - angle;
 
         p_weapon.transform.localRotation = Quaternion.Euler(angle, 0.0f, 0.0f);
+    }
+
+    /// <summary>
+    /// Fire a projectile
+    /// </summary>
+    /// <param name="p_objectPool">Object pool to spawn projectile from</param>
+    /// <param name="p_spawnPosition">Spawn Position</param>
+    /// <param name="p_spawnRotation">Spawn Rotation</param>
+    /// <param name="p_damageModifier">Damage modifier, defualt to 1</param>
+    public void FireProjectile(ObjectPool p_objectPool, Vector3 p_spawnPosition, Quaternion p_spawnRotation, float p_damageModifier = 1.0f)
+    {
+        PoolObject projectilePoolObject = p_objectPool.RentObject(p_spawnPosition, p_spawnRotation);
+
+        Projectile projectileScript = projectilePoolObject.GetComponent<Projectile>();
+        if (projectileScript != null)
+        {
+            projectileScript.ProjectileStart(this, MOARMaths.ConvertFromVector3ToVector2(p_spawnPosition - transform.position, transform.forward), p_damageModifier);
+        }
+    }
+
+    /// <summary>
+    /// Used to start the attacking delay
+    /// </summary>
+    public void StartAttackDelay()
+    {
+        StartCoroutine(AttackingDelayTimer());
+    }
+
+    private IEnumerator AttackingDelayTimer()
+    {
+        m_canAttackFlag = false;
+
+        yield return new WaitForSeconds(m_attackDelay);
+
+        m_canAttackFlag = true;
     }
 
     #region CHARACTER FUNCTIONS REQUIRING OVERRIDE

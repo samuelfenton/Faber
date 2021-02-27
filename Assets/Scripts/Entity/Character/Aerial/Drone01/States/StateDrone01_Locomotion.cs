@@ -23,6 +23,8 @@ public class StateDrone01_Locomotion : State_Drone01
     public override void StateStart()
     {
         base.StateStart();
+
+        m_customAnimator.PlayAnimation((int)CustomAnimation_Drone01.BASE_DEFINES.LOCOMOTION, CustomAnimation.LAYER.BASE, CustomAnimation.BLEND_TIME.INSTANT);
     }
 
     /// <summary>

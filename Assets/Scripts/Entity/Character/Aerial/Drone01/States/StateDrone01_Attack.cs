@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class StateDrone01_Attack : State_Drone01
 {
-    //NOTE
-    //Although player state runs on the interupt animation layer, it does not behave like a interrupt state
-
+    private int m_currentFireCount = 0;
+    private Character.ATTACK_INPUT_STANCE attackStance = Character.ATTACK_INPUT_STANCE.NONE;
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
@@ -24,24 +23,30 @@ public class StateDrone01_Attack : State_Drone01
     {
         base.StateStart();
 
-        m_customAnimator.PlayAnimation(CustomAnimation.BuildManoeuvreString(Manoeuvre.MANOEUVRE_TYPE.INAIR, Manoeuvre.MANOEUVRE_STANCE.LIGHT, 1), CustomAnimation.LAYER.ATTACK, CustomAnimation.BLEND_TIME.INSTANT);
-
         m_drone01.RotateWeaponTowardsTarget(m_drone01.m_weaponObject, m_drone01.m_target.transform.position + Vector3.up, m_drone01.m_maxFiringAngle);
+        
+        //TODO decide on what fire mode to take
+        attackStance = Character.ATTACK_INPUT_STANCE.LIGHT;
 
-        PoolObject projectilePoolObject = m_drone01.m_objectPoolLightProjectile.RentObject(m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_weaponObject.transform.rotation);
-
-        Projectile projectileScript = projectilePoolObject.GetComponent<Projectile>();
-        if(projectileScript != null)
+        if(attackStance == Character.ATTACK_INPUT_STANCE.LIGHT)
         {
-            projectileScript.ProjectileStart(m_drone01, MOARMaths.ConvertFromVector3ToVector2(m_drone01.m_projectileSpawnAnchor.transform.position - transform.position), 1.0f);
+            m_customAnimator.PlayAnimation(CustomAnimation.BuildManoeuvreString(Manoeuvre.MANOEUVRE_TYPE.INAIR, Manoeuvre.MANOEUVRE_STANCE.LIGHT, 1), CustomAnimation.LAYER.ATTACK, CustomAnimation.BLEND_TIME.INSTANT);
+            m_drone01.FireProjectile(m_drone01.m_objectPoolLightProjectile, m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_projectileSpawnAnchor.transform.rotation);
         }
+        else
+        {
+            m_customAnimator.PlayAnimation(CustomAnimation.BuildManoeuvreString(Manoeuvre.MANOEUVRE_TYPE.INAIR, Manoeuvre.MANOEUVRE_STANCE.HEAVY, 1), CustomAnimation.LAYER.ATTACK, CustomAnimation.BLEND_TIME.INSTANT);
+            m_drone01.FireProjectile(m_drone01.m_objectPoolHeavyProjectile, m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_projectileSpawnAnchor.transform.rotation);
+        }
+
+        m_currentFireCount = 1;
     }
 
-    /// <summary>
-    /// State update, perform any actions for the given state
-    /// </summary>
-    /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
-    public override bool StateUpdate()
+/// <summary>
+/// State update, perform any actions for the given state
+/// </summary>
+/// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
+public override bool StateUpdate()
     {
         base.StateUpdate();
 
@@ -50,7 +55,37 @@ public class StateDrone01_Attack : State_Drone01
 
         m_drone01.RotateWeaponTowardsTarget(m_drone01.m_weaponObject, m_drone01.m_target.transform.position + Vector3.up, m_drone01.m_maxFiringAngle);
 
-        return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.ATTACK);
+        if (m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.ATTACK))//End of current attack
+        {
+            if (attackStance == Character.ATTACK_INPUT_STANCE.LIGHT) //Light fire logic
+            {
+                if (m_currentFireCount >= m_drone01.m_lightProjectileCount)//Fired all needed shots
+                {
+                    return true;
+                }
+                else
+                {
+                    m_customAnimator.PlayAnimation(CustomAnimation.BuildManoeuvreString(Manoeuvre.MANOEUVRE_TYPE.INAIR, Manoeuvre.MANOEUVRE_STANCE.LIGHT, 1), CustomAnimation.LAYER.ATTACK, CustomAnimation.BLEND_TIME.INSTANT);
+                    m_drone01.FireProjectile(m_drone01.m_objectPoolLightProjectile, m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_projectileSpawnAnchor.transform.rotation);
+                    m_currentFireCount++;
+                }
+            }
+            else//Heavy fire logic
+            {
+                if (m_currentFireCount >= m_drone01.m_heavyProjectileCount)//Fired all needed shots
+                {
+                    return true;
+                }
+                else
+                {
+                    m_customAnimator.PlayAnimation(CustomAnimation.BuildManoeuvreString(Manoeuvre.MANOEUVRE_TYPE.INAIR, Manoeuvre.MANOEUVRE_STANCE.HEAVY, 1), CustomAnimation.LAYER.ATTACK, CustomAnimation.BLEND_TIME.INSTANT);
+                    m_drone01.FireProjectile(m_drone01.m_objectPoolHeavyProjectile, m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_projectileSpawnAnchor.transform.rotation);
+                    m_currentFireCount++;
+                }
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -59,6 +94,8 @@ public class StateDrone01_Attack : State_Drone01
     public override void StateEnd()
     {
         base.StateEnd();
+
+        m_drone01.StartAttackDelay();
     }
 
     /// <summary>
@@ -67,6 +104,6 @@ public class StateDrone01_Attack : State_Drone01
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_drone01.m_target != null && m_drone01.m_objectPoolLightProjectile.HasSpareObject();
+        return m_drone01.m_canAttackFlag && m_drone01.m_target != null && m_drone01.m_objectPoolLightProjectile.HasSpareObject();
     }
 }

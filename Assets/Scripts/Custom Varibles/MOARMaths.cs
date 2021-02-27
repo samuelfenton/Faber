@@ -66,10 +66,16 @@ public class MOARMaths : MonoBehaviour
     /// <summary>
     /// Given the "2D" nature of the game, Vector3 can be converted into its horizontal and vertical components
     /// </summary>
-    /// <param name="p_in"></param>
+    /// <param name="p_in">Vector3 to convert into a Vector2</param>
+    /// <param name="p_forwards">Relative forwards direction</param>
     /// <returns></returns>
-    public static Vector2 ConvertFromVector3ToVector2(Vector3 p_in)
+    public static Vector2 ConvertFromVector3ToVector2(Vector3 p_in, Vector3 p_forwards)
     {
-        return new Vector2(Mathf.Sqrt(p_in.x * p_in.x + p_in.z * p_in.z), p_in.y);
+        Vector2 convertedVector2 = new Vector2(Mathf.Sqrt(p_in.x * p_in.x + p_in.z * p_in.z), p_in.y);
+
+        if (Vector3.Dot(p_in.normalized, p_forwards.normalized) < 0.0f) //Flip xValue if away form relative forward direction;
+            convertedVector2.x *= -1.0f; 
+
+        return convertedVector2;
     }
 }
