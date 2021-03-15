@@ -89,7 +89,7 @@ public class Projectile : Entity
     /// <param name="p_parentCharacter">Character which fired the projectile</param>
     /// <param name="p_characterToAnchorOffset">Offset form parent to determine spline percent</param>
     /// <param name="p_damageModifier">Through skills etc, damage modifer can be used, at 2.0f itll be twice the damage etc</param>
-    public void ProjectileStart(Character p_parentCharacter, Vector2 p_characterToAnchorOffset, float p_damageModifier)
+    public void ProjectileStart(Character p_parentCharacter, Vector2 p_characterToAnchorOffset,  float p_damageModifier)
     {
         //Assign variables
         m_parentCharacter = p_parentCharacter;

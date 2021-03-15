@@ -6,6 +6,11 @@ public class StateDrone01_Attack : State_Drone01
 {
     private int m_currentFireCount = 0;
     private Character.ATTACK_INPUT_STANCE attackStance = Character.ATTACK_INPUT_STANCE.NONE;
+
+    private int m_totalFireCount = 0;
+    private ObjectPool m_objectPoolToUse = null;
+    private string m_manoeuvreString = "";
+
     /// <summary>
     /// Initilse the state, runs only once at start
     /// </summary>
@@ -28,16 +33,24 @@ public class StateDrone01_Attack : State_Drone01
         //TODO decide on what fire mode to take
         attackStance = Character.ATTACK_INPUT_STANCE.LIGHT;
 
+        //Store variables for later usage
         if(attackStance == Character.ATTACK_INPUT_STANCE.LIGHT)
         {
-            m_customAnimator.PlayAnimation(CustomAnimation.BuildManoeuvreString(Manoeuvre.MANOEUVRE_TYPE.INAIR, Manoeuvre.MANOEUVRE_STANCE.LIGHT, 1), CustomAnimation.LAYER.ATTACK, CustomAnimation.BLEND_TIME.INSTANT);
-            m_drone01.FireProjectile(m_drone01.m_objectPoolLightProjectile, m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_projectileSpawnAnchor.transform.rotation);
+            m_totalFireCount = m_drone01.m_lightProjectileCount;
+            m_objectPoolToUse = m_drone01.m_objectPoolLightProjectile;
+            m_manoeuvreString = CustomAnimation.BuildManoeuvreString(Manoeuvre.MANOEUVRE_TYPE.INAIR, Manoeuvre.MANOEUVRE_STANCE.LIGHT, 1);
         }
         else
         {
-            m_customAnimator.PlayAnimation(CustomAnimation.BuildManoeuvreString(Manoeuvre.MANOEUVRE_TYPE.INAIR, Manoeuvre.MANOEUVRE_STANCE.HEAVY, 1), CustomAnimation.LAYER.ATTACK, CustomAnimation.BLEND_TIME.INSTANT);
-            m_drone01.FireProjectile(m_drone01.m_objectPoolHeavyProjectile, m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_projectileSpawnAnchor.transform.rotation);
+            m_totalFireCount = m_drone01.m_heavyProjectileCount;
+            m_objectPoolToUse = m_drone01.m_objectPoolHeavyProjectile;
+            m_manoeuvreString = CustomAnimation.BuildManoeuvreString(Manoeuvre.MANOEUVRE_TYPE.INAIR, Manoeuvre.MANOEUVRE_STANCE.HEAVY, 1);
         }
+
+        m_customAnimator.PlayAnimation(m_manoeuvreString, CustomAnimation.LAYER.ATTACK, CustomAnimation.BLEND_TIME.INSTANT);
+        m_drone01.FireProjectile(m_objectPoolToUse, m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_projectileSpawnAnchor.transform.rotation);
+
+        m_drone01.SetDesiredVelocity(new Vector2(0.0f, 0.0f));
 
         m_currentFireCount = 1;
     }
@@ -57,32 +70,17 @@ public override bool StateUpdate()
 
         if (m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.ATTACK))//End of current attack
         {
-            if (attackStance == Character.ATTACK_INPUT_STANCE.LIGHT) //Light fire logic
+            if (m_currentFireCount >= m_totalFireCount)//Fired all needed shots
             {
-                if (m_currentFireCount >= m_drone01.m_lightProjectileCount)//Fired all needed shots
-                {
-                    return true;
-                }
-                else
-                {
-                    m_customAnimator.PlayAnimation(CustomAnimation.BuildManoeuvreString(Manoeuvre.MANOEUVRE_TYPE.INAIR, Manoeuvre.MANOEUVRE_STANCE.LIGHT, 1), CustomAnimation.LAYER.ATTACK, CustomAnimation.BLEND_TIME.INSTANT);
-                    m_drone01.FireProjectile(m_drone01.m_objectPoolLightProjectile, m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_projectileSpawnAnchor.transform.rotation);
-                    m_currentFireCount++;
-                }
+                return true;
             }
-            else//Heavy fire logic
+            else
             {
-                if (m_currentFireCount >= m_drone01.m_heavyProjectileCount)//Fired all needed shots
-                {
-                    return true;
-                }
-                else
-                {
-                    m_customAnimator.PlayAnimation(CustomAnimation.BuildManoeuvreString(Manoeuvre.MANOEUVRE_TYPE.INAIR, Manoeuvre.MANOEUVRE_STANCE.HEAVY, 1), CustomAnimation.LAYER.ATTACK, CustomAnimation.BLEND_TIME.INSTANT);
-                    m_drone01.FireProjectile(m_drone01.m_objectPoolHeavyProjectile, m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_projectileSpawnAnchor.transform.rotation);
-                    m_currentFireCount++;
-                }
+                m_customAnimator.PlayAnimation(m_manoeuvreString, CustomAnimation.LAYER.ATTACK, CustomAnimation.BLEND_TIME.INSTANT);
+                m_drone01.FireProjectile(m_objectPoolToUse, m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_projectileSpawnAnchor.transform.rotation);
+                m_currentFireCount++;
             }
+
         }
 
         return false;
@@ -104,6 +102,6 @@ public override bool StateUpdate()
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return m_drone01.m_canAttackFlag && m_drone01.m_target != null && m_drone01.m_objectPoolLightProjectile.HasSpareObject();
+        return m_drone01.m_canAttackFlag && m_drone01.m_target != null && m_drone01.m_target.IsAlive() && m_drone01.m_objectPoolLightProjectile.HasSpareObject() && Pathfinding.GetDistance(m_drone01, m_drone01.m_target) <= m_drone01.m_attackEnterValue;
     }
 }

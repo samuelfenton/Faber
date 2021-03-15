@@ -115,6 +115,10 @@ public class ObjectPool : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Does the pool have any spare obejcts, if not think about increasing max count
+    /// </summary>
+    /// <returns>True when at least one object in pool</returns>
     public bool HasSpareObject()
     {
         return m_objectQueue.Count > 0;

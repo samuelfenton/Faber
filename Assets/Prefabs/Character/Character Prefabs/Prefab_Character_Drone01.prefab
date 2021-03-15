@@ -140,11 +140,17 @@ MonoBehaviour:
   m_manoeuvreController: {fileID: 0}
   m_followCamera: {fileID: 0}
   m_characterStatistics: {fileID: 0}
+  m_pathingList: []
   m_target: {fileID: 0}
-  m_attackDelay: 1
+  m_attackDelay: 3
+  m_approachDistance: 20
+  m_attackEnterValue: 10
+  m_attackExitValue: 12
+  m_attackDesiredDistance: 3
+  m_manoeuvreVelocityModifier: 0.5
   m_canAttackFlag: 1
   m_hoveringModel: {fileID: 4237419612694788559}
-  m_hoverHeight: 2
+  m_hoverHeight: 2.5
   m_weaponObject: {fileID: 4616766521880174304}
   m_objectPoolLightProjectile: {fileID: 2074493094961543469}
   m_objectPoolHeavyProjectile: {fileID: 7600807694791226959}

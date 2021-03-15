@@ -10,11 +10,11 @@ public class Pathing_Spline : MonoBehaviour
 
     //Assigned from editor
     [HideInInspector]
-    public Pathing_Node m_nodePrimary = null;
+    public Pathing_Node m_nodePrimary = null; //Always at percentage 0.0f
     [HideInInspector]
     public SPLINE_POSITION m_nodePositionPrimary = SPLINE_POSITION.MAX_LENGTH;
     [HideInInspector]
-    public Pathing_Node m_nodeSecondary = null;
+    public Pathing_Node m_nodeSecondary = null;  //Always at percentage 1.0f
     [HideInInspector]
     public SPLINE_POSITION m_nodePositionSecondary = SPLINE_POSITION.MAX_LENGTH;
 

@@ -424,8 +424,8 @@ public class Voxeliser_Burst : MonoBehaviour
     [BurstCompile]
     private struct IJob_CalulateTris : IJobParallelFor
     {
-        //private const double VOXEL_TO_PLANE_MAX_DISTANCE = 0.8;
-        private const double ALLOWABLE_OFFSET_DISTANCE = 1.0;
+        private const double ALLOWABLE_DISTANCE_TO_PLANE = 0.55;
+        private const double ALLOWABLE_AREA_GROWTH = 1.05;
 
         public NativeHashMap<int3, double2>.ParallelWriter m_passThroughTriData;
 
@@ -471,7 +471,15 @@ public class Voxeliser_Burst : MonoBehaviour
 
             //Run through all possible positions given the extent
 
-            /*Area Calc*/
+            //Area Calc
+            //Using plane equation for distance https://mathinsight.org/distance_point_plane_examples
+            double4 planeEquation = GetPlaneEquation(vertAGridPos, vertBGridPos, vertCGridPos);
+            double planeMagnitude = math.sqrt(planeEquation.x * planeEquation.x + planeEquation.y * planeEquation.y + planeEquation.z * planeEquation.z);
+
+            //Determining Closest point
+            double denominator = planeEquation.x * planeEquation.x + planeEquation.y * planeEquation.y + planeEquation.z * planeEquation.z;
+
+            //For within plane equations
             double areaABC = GetArea(vertAGridPos, vertBGridPos, vertCGridPos);
 
             for (int xIndex = lowerBounds.x; xIndex <= upperBounds.x; xIndex++)
@@ -481,48 +489,28 @@ public class Voxeliser_Burst : MonoBehaviour
                     for (int zIndex = lowerBounds.z; zIndex <= upperBounds.z; zIndex++)
                     {
                         //Get distance, is it smaller then the size of a voxel?, example found here "https://mathinsight.org/distance_point_plane_examples"
-                        int3 currentPoint = new int3(xIndex, yIndex, zIndex);
+                        double3 currentPoint = new double3(xIndex, yIndex, zIndex);
 
-                        double pointToVertArea = GetArea(currentPoint, vertAGridPos, vertBGridPos) + GetArea(currentPoint, vertAGridPos, vertCGridPos) + GetArea(currentPoint, vertBGridPos, vertCGridPos);
+                        double distanceToPlane = math.abs(planeEquation.x * currentPoint.x + planeEquation.y * currentPoint.y + planeEquation.z * currentPoint.z + planeEquation.w) / planeMagnitude;
 
-                        if (pointToVertArea - areaABC <= ALLOWABLE_OFFSET_DISTANCE)
+                        if (distanceToPlane < ALLOWABLE_DISTANCE_TO_PLANE) //lying on plane, determine if within the triangle
                         {
-                            m_passThroughTriData.TryAdd(currentPoint, CalculateUV(currentPoint, vertAGridPos, vertBGridPos, vertCGridPos, UVA, UVB, UVC));
+                            double numerator = -planeEquation.w - (currentPoint.x * planeEquation.x + currentPoint.y * planeEquation.y + currentPoint.z * planeEquation.z);
+                            double cValue = numerator / denominator;
+
+                            double3 pointOnPlane = GetClosestPoint(currentPoint, planeEquation, cValue);
+
+                            double pointToVertArea = GetArea(currentPoint, vertAGridPos, vertBGridPos) + GetArea(currentPoint, vertAGridPos, vertCGridPos) + GetArea(currentPoint, vertBGridPos, vertCGridPos);
+
+                            if(pointToVertArea/areaABC <= ALLOWABLE_AREA_GROWTH)
+                            {
+                                int3 intValuePoint = new int3(xIndex, yIndex, zIndex);
+                                m_passThroughTriData.TryAdd(intValuePoint, CalculateUV(intValuePoint, vertAGridPos, vertBGridPos, vertCGridPos, UVA, UVB, UVC));
+                            }
                         }
                     }
                 }
             }
-            /* */
-
-            /* Using Plane equation
-            //Build plane equation, example found here "http://pi.math.cornell.edu/~froh/231f08e1a.pdf"
-            int3 planeVector1 = new int3(vertAGridPos.x - vertBGridPos.x, vertAGridPos.y - vertBGridPos.y, vertAGridPos.z - vertBGridPos.z);//A-B
-            int3 planeVector2 = new int3(vertCGridPos.x - vertBGridPos.x, vertCGridPos.y - vertBGridPos.y, vertCGridPos.z - vertBGridPos.z);//C-B
-
-            int3 planeNormal = CrossProduct(planeVector1, planeVector2);
-
-            int planeD = -(vertAGridPos.x * planeNormal.x + vertAGridPos.y * planeNormal.y + vertAGridPos.z * planeNormal.z);
-
-            double squareRootFactor = math.sqrt(planeNormal.x * planeNormal.x + planeNormal.y * planeNormal.y + planeNormal.z * planeNormal.z);
-
-            //Based off the plane equation form the three points and each of these possible positions, add when close enough to plane.
-            for (int xIndex = lowerBounds.x; xIndex <= upperBounds.x; xIndex++)
-            {
-                for (int yIndex = lowerBounds.y; yIndex <= upperBounds.y; yIndex++)
-                {
-                    for (int zIndex = lowerBounds.z; zIndex <= upperBounds.z; zIndex++)
-                    {
-                        //Get distance, is it smaller then the size of a voxel?, example found here "https://mathinsight.org/distance_point_plane_examples"
-                        int3 currentPoint = new int3(xIndex, yIndex, zIndex);
-
-                        if((math.abs((double)currentPoint.x * planeNormal.x + (double)currentPoint.y * planeNormal.y + (double)currentPoint.z * planeNormal.z + planeD)/ squareRootFactor) < VOXEL_TO_PLANE_MAX_DISTANCE) //Requires at least one double value
-                        {
-                            m_passThroughTriData.TryAdd(currentPoint, CalculateUV(currentPoint, vertAGridPos, vertBGridPos, vertCGridPos, UVA, UVB, UVC));
-                        }
-                    }
-                }
-            }
-            */
         }
 
         /// <summary>
@@ -592,16 +580,74 @@ public class Voxeliser_Burst : MonoBehaviour
         }
 
         /// <summary>
+        /// Building of plane equation
+        /// Example here http://pi.math.cornell.edu/~froh/231f08e1a.pdf
+        /// </summary>
+        /// <param name="p_val1"></param>
+        /// <param name="p_val2"></param>
+        /// <param name="p_val3"></param>
+        /// <returns></returns>
+        private double4 GetPlaneEquation(int3 p_val1, int3 p_val2, int3 p_val3)
+        {
+            double3 vector1 = p_val1 - p_val2;
+            double3 vector2 = p_val3 - p_val2;
+
+            double3 normal = CrossProduct(vector1, vector2);
+
+            double dValue = normal.x * p_val1.x + normal.y * p_val1.y + normal.z * p_val1.z;
+
+            return new double4(normal, -dValue); //Invert d value to move to other side of equation
+        }
+
+        /// <summary>
         /// Get the cross product between 2 vectors
         /// Note: CrossProduct(Val1, Val2) != CrossProduct(Val2, Val1)
+        /// Example found here https://www.mathsisfun.com/algebra/vectors-cross-product.html
         /// </summary>
         /// <param name="p_val1">Value 1</param>
         /// <param name="p_val2">Value 2</param>
         /// <returns>Cross product</returns>
-        private int3 CrossProduct(int3 p_val1, int3 p_val2)
+        private double3 CrossProduct(double3 p_val1, double3 p_val2)
         {
             // Ay*Bz - Az*By, Az*Bx - Ax*Bz, Ax*By - Ay*Bx
-            return new int3(p_val1.y * p_val2.z - p_val1.z * p_val2.y, p_val1.z * p_val2.x - p_val1.x * p_val2.z, p_val1.x * p_val2.y - p_val1.y * p_val2.x);
+            return new double3(p_val1.y * p_val2.z - p_val1.z * p_val2.y, p_val1.z * p_val2.x - p_val1.x * p_val2.z, p_val1.x * p_val2.y - p_val1.y * p_val2.x);
+        }
+
+        /// <summary>
+        /// Get the area between 3 points
+        /// </summary>
+        /// <param name="p_pointA"></param>
+        /// <param name="p_pointB"></param>
+        /// <param name="p_pointC"></param>
+        /// <returns>Total area</returns>
+        private double GetArea(double3 p_pointA, double3 p_pointB, double3 p_pointC)
+        {
+            double3 ABVec = p_pointB - p_pointA;
+            double3 ACVec = p_pointC - p_pointA;
+
+            return 0.5 * Magnitude(CrossProduct(ABVec, ACVec));
+        }
+
+        /// <summary>
+        /// Get the magnitude between two int3's
+        /// </summary>
+        /// <param name="p_val1"></param>
+        /// <returns>Magnitude</returns>
+        private double Magnitude(double3 p_val1)
+        {
+            return math.sqrt(p_val1.x * p_val1.x + p_val1.y * p_val1.y + p_val1.z * p_val1.z);
+        }
+
+        /// <summary>
+        /// 
+        /// example found at https://math.stackexchange.com/a/723966
+        /// </summary>
+        /// <param name="p_orginalPoint"></param>
+        /// <param name="p_planeEquation"></param>
+        /// <returns></returns>
+        private double3 GetClosestPoint(double3 p_orginalPoint, double4 p_planeEquation, double p_cValue)
+        {
+            return p_orginalPoint - p_cValue * new double3(p_planeEquation.x, p_planeEquation.y, p_planeEquation.z);
         }
 
         /// <summary>
@@ -625,16 +671,6 @@ public class Voxeliser_Burst : MonoBehaviour
 
             return (double)vertADistance / total * p_UVA + (double)vertBDistance / total * p_UVB + (double)vertCDistance / total * p_UVC;
 
-        }
-
-        /// <summary>
-        /// Get the magnitude between two int3's
-        /// </summary>
-        /// <param name="p_val1"></param>
-        /// <returns>Magnitude</returns>
-        private double Magnitude(int3 p_val1)
-        {
-            return math.sqrt(p_val1.x * p_val1.x + p_val1.y * p_val1.y + p_val1.z * p_val1.z);
         }
 
         /// <summary>
@@ -668,21 +704,6 @@ public class Voxeliser_Burst : MonoBehaviour
         private double3 Convert(Vector3 p_val)
         {
             return new double3(p_val.x, p_val.y, p_val.z);
-        }
-
-        /// <summary>
-        /// Get the area between 3 points
-        /// </summary>
-        /// <param name="p_pointA"></param>
-        /// <param name="p_pointB"></param>
-        /// <param name="p_pointC"></param>
-        /// <returns>Total area</returns>
-        private double GetArea(int3 p_pointA, int3 p_pointB, int3 p_pointC)
-        {
-            int3 ABVec = p_pointB - p_pointA;
-            int3 ACVec = p_pointC - p_pointA;
-
-            return 0.5 * Magnitude(CrossProduct(ABVec, ACVec));
         }
     }                                              
 

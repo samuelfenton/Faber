@@ -35,7 +35,7 @@ public class StateDrone01_Idle : State_Drone01
     {
         base.StateUpdate();
 
-        return false;
+        return true;
     }
 
     /// <summary>
@@ -52,6 +52,6 @@ public class StateDrone01_Idle : State_Drone01
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return false;
+        return true;
     }
 }

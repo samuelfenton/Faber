@@ -57,17 +57,21 @@ public class StateMachine : MonoBehaviour
 
         if (finishedState || m_currentState.m_loopedState)
         {
+            m_currentState.StateEnd();
+
             //Find next valid state
             foreach (State nextState in m_currentState.m_nextStates)
             {
                 if(nextState.IsValid())//Dont reuse state if another is valid
                 {
-                    SwapState(nextState);
+                    m_currentState = nextState;
+                    m_currentState.StateStart();
                     return; //Early break out
                 }
             }
+
             if(finishedState)
-                SwapState(m_currentState); //Attempt own state again, only if not already looping
+                m_currentState.StateStart();
         }
     }
 

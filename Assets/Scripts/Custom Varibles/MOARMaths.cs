@@ -69,13 +69,27 @@ public class MOARMaths : MonoBehaviour
     /// <param name="p_in">Vector3 to convert into a Vector2</param>
     /// <param name="p_forwards">Relative forwards direction</param>
     /// <returns></returns>
-    public static Vector2 ConvertFromVector3ToVector2(Vector3 p_in, Vector3 p_forwards)
+    public static Vector2 ConvertFromVector3ToVector2(Vector3 p_in, Vector3 p_forwards, Vector3 p_splineForwards)
     {
         Vector2 convertedVector2 = new Vector2(Mathf.Sqrt(p_in.x * p_in.x + p_in.z * p_in.z), p_in.y);
 
-        if (Vector3.Dot(p_in.normalized, p_forwards.normalized) < 0.0f) //Flip xValue if away form relative forward direction;
-            convertedVector2.x *= -1.0f; 
+        if (IsAligned(p_in, p_forwards.normalized)) //Flip xValue based off gun direction to character direction
+            convertedVector2.x *= -1.0f;
+
+        if (IsAligned(p_splineForwards, p_forwards.normalized)) //Flip xValue based off spline to character direction
+            convertedVector2.x *= -1.0f;
 
         return convertedVector2;
+    }
+
+    /// <summary>
+    /// Determine if two vectors are alligned within 180 degrees
+    /// </summary>
+    /// <param name="p_lhsVector"></param>
+    /// <param name="p_rhsVector"></param>
+    /// <returns></returns>
+    public static bool IsAligned(Vector3 p_lhsVector, Vector3 p_rhsVector)
+    {
+        return Vector3.Dot(p_lhsVector.normalized, p_rhsVector.normalized) >= 0.0f;
     }
 }

@@ -109,6 +109,8 @@ public class Character : Entity
     [HideInInspector]
     public CharacterStatistics m_characterStatistics = null;
 
+    private Coroutine m_recoverRoutine = null;
+
     /// <summary>
     /// Initiliase the entity
     /// setup varible/physics
@@ -379,9 +381,12 @@ public class Character : Entity
     /// <param name="p_recovertyTime">How long to take to recover, generally base atack recovery vs knockback recovery</param>
     public void StartRecovery(float p_recovertyTime)
     {
+        if (m_recoverRoutine != null)
+            StopCoroutine(m_recoverRoutine);
+    
         m_recoveryFlag = true;
 
-        StartCoroutine(KnockbackRecoverRoutine(p_recovertyTime));
+        m_recoverRoutine = StartCoroutine(RecoverRoutine(p_recovertyTime));
     }
 
     /// <summary>
@@ -390,11 +395,12 @@ public class Character : Entity
     /// </summary>
     /// <param name="p_recovertyTime">How long to take to recover, generally base atack recovery vs knockback recovery</param>
     /// <returns></returns>
-    protected IEnumerator KnockbackRecoverRoutine(float p_recovertyTime)
+    protected IEnumerator RecoverRoutine(float p_recovertyTime)
     {
         yield return new WaitForSeconds(p_recovertyTime);
 
         m_recoveryFlag = false;
+        m_recoverRoutine = null;
     }
 
     #region CHARACTER FUNCTIONS REQUIRING OVERRIDE

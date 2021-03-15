@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StateDrone01_Locomotion : State_Drone01
+public class StateDrone01_MoveTowardsTarget : State_Drone01
 {
-    //NOTE
-    //Although player state runs on the interupt animation layer, it does not behave like a interrupt state
+    private Pathing_Spline m_currentSpline = null;
 
     /// <summary>
     /// Initilse the state, runs only once at start
@@ -25,6 +24,8 @@ public class StateDrone01_Locomotion : State_Drone01
         base.StateStart();
 
         m_customAnimator.PlayAnimation((int)CustomAnimation_Drone01.BASE_DEFINES.LOCOMOTION, CustomAnimation.LAYER.BASE, CustomAnimation.BLEND_TIME.INSTANT);
+
+        m_currentSpline = m_drone01.m_splinePhysics.m_currentSpline;
     }
 
     /// <summary>
@@ -35,7 +36,18 @@ public class StateDrone01_Locomotion : State_Drone01
     {
         base.StateUpdate();
 
-        return true;
+        //Check if done
+        if(Pathfinding.GetDistance(m_drone01, m_drone01.m_target) <= m_drone01.m_attackEnterValue)
+        {
+            return true;
+        }
+
+        if (!m_drone01.MoveTowardsEntity(m_drone01.m_target, m_drone01.m_groundRunVel))
+        {
+            return true; //Unable to move towards target
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -52,6 +64,21 @@ public class StateDrone01_Locomotion : State_Drone01
     /// <returns>True when valid, e.g. Death requires players to have no health</returns>
     public override bool IsValid()
     {
-        return true;
+        if (m_drone01.m_target == null || !m_drone01.m_target.IsAlive()) //No valid targets
+            return false;
+
+        if (Pathfinding.GetDistance(m_drone01, m_drone01.m_target) > m_drone01.m_approachDistance) //Too far to approach
+            return false;
+
+        if (m_drone01.m_splinePhysics.m_currentSpline == m_drone01.m_target.m_splinePhysics.m_currentSpline) //If same spline, move closer
+            return true;
+
+        //Different splines, path find closer
+        if (Pathfinding.ValidPath(m_drone01.m_pathingList, m_drone01, m_drone01.m_target))//Valid target
+            return true;
+
+        m_drone01.m_pathingList = Pathfinding.GetPath(m_drone01, m_drone01.m_target.m_splinePhysics.m_currentSpline); //Attempt to get new path
+
+        return Pathfinding.ValidPath(m_drone01.m_pathingList, m_drone01, m_drone01.m_target);//Valid target
     }
 }

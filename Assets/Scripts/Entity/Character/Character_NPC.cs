@@ -5,15 +5,26 @@ using UnityEngine;
 public class Character_NPC : Character
 {
     //Path finding
-    protected List<Pathing_Node> m_pathingList = new List<Pathing_Node>();
+    public List<Pathing_Spline> m_pathingList = new List<Pathing_Spline>();
 
     [Header("NPC Variables")]
     public Character m_target = null;
     public float m_attackDelay = 1.0f;
+    public float m_approachDistance = 5.0f;
+
+    [Header("Attacking Variables")]
+    public float m_attackEnterValue = 1.0f;
+    public float m_attackExitValue = 2.0f;
+    public float m_attackDesiredDistance = 1.5f;
+
+    [Tooltip("Modifier for manoeuvring")]
+    [Range(0.0f, 1.0f)]
+    public float m_manoeuvreVelocityModifier = 0.5f;
 
     [HideInInspector]
     public bool m_canAttackFlag = true;
 
+    private Coroutine m_attackDelayRoutine = null;
 
     /// <summary>
     /// Initiliase the entity
@@ -34,6 +45,8 @@ public class Character_NPC : Character
         //TODO update statemachine here for each custom NPC 
         base.UpdateEntity();
     }
+
+    #region Attacking with projectile
 
     /// <summary>
     /// Rotate a give weapon(GameObject towards a target)
@@ -84,26 +97,108 @@ public class Character_NPC : Character
         Projectile projectileScript = projectilePoolObject.GetComponent<Projectile>();
         if (projectileScript != null)
         {
-            projectileScript.ProjectileStart(this, MOARMaths.ConvertFromVector3ToVector2(p_spawnPosition - transform.position, transform.forward), p_damageModifier);
+            projectileScript.ProjectileStart(this, MOARMaths.ConvertFromVector3ToVector2(p_spawnPosition - transform.position, transform.forward, m_splinePhysics.m_currentSpline.GetForwardDir(m_splinePhysics.m_currentSplinePercent)), p_damageModifier);
         }
     }
 
+    #endregion
+
+    #region Attacking Delays
     /// <summary>
     /// Used to start the attacking delay
     /// </summary>
     public void StartAttackDelay()
     {
-        StartCoroutine(AttackingDelayTimer());
-    }
+        if (m_attackDelayRoutine != null)
+            StopCoroutine(m_attackDelayRoutine);
 
-    private IEnumerator AttackingDelayTimer()
-    {
         m_canAttackFlag = false;
 
+        m_attackDelayRoutine = StartCoroutine(AttackingDelayRoutine());
+    }
+
+    private IEnumerator AttackingDelayRoutine()
+    {
         yield return new WaitForSeconds(m_attackDelay);
 
         m_canAttackFlag = true;
+        m_attackDelayRoutine = null;
     }
+    #endregion
+
+    #region Pathfinding
+    /// <summary>
+    /// Move towards a given percent on a spline
+    /// </summary>
+    /// <param name="p_percent">Percent to move twards, range 0-1</param>
+    /// <param name="p_movingSpeed">Speed to move towards</param>
+    public void MoveTowardsSplinePercent(float p_percent, float p_movingSpeed)
+    {
+        float horizontalSpeed = m_splinePhysics.m_currentSplinePercent >= p_percent ? -p_movingSpeed : p_movingSpeed; //Current percent larger? Move negative
+
+        if (!AllignedToSpline()) //Flip if not alligned
+        {
+            horizontalSpeed *= -1.0f;
+        }
+
+        SetDesiredVelocity(new Vector2(horizontalSpeed, 0.0f)); //Apply
+    }
+
+    /// <summary>
+    /// Move away from entity
+    /// </summary>
+    /// <param name="p_entity">Entity to move away from</param>
+    /// <param name="p_movingSpeed">Speed to move towards</param>
+    /// <returns></returns>
+    public bool MoveTowardsEntity(Entity p_entity, float p_movingSpeed)
+    {
+        Pathing_Spline currentSpline = m_splinePhysics.m_currentSpline;
+        Pathing_Spline targetSpline = m_target.m_splinePhysics.m_currentSpline;
+
+        if (currentSpline == targetSpline)        //Case on same spline, move away
+        {
+            float percentageDiff = m_splinePhysics.m_currentSplinePercent - m_target.m_splinePhysics.m_currentSplinePercent;
+            if(percentageDiff >= 0.0f)
+            {
+                MoveTowardsSplinePercent(0.0f, p_movingSpeed);
+            }
+            else
+            {
+                MoveTowardsSplinePercent(1.0f, p_movingSpeed);
+            }
+        }
+        else if(currentSpline.m_nodePrimary.ContainsSpline(targetSpline))//Case on adjacent spline, spline towards primary
+        {
+            MoveTowardsSplinePercent(0.0f, p_movingSpeed);
+        }
+        else if(currentSpline.m_nodeSecondary.ContainsSpline(targetSpline))//Case on adjacent spline, spline towards secondary
+        {
+            MoveTowardsSplinePercent(1.0f, p_movingSpeed);
+        }
+        else //Case of too far, attempt to get path and then move backwards
+        {
+            if (!Pathfinding.ValidPath(m_pathingList, this, m_target))//Invalid path, try get new one
+            {
+                m_pathingList = Pathfinding.GetPath(this, targetSpline);
+
+                if (!Pathfinding.ValidPath(m_pathingList, this, m_target))//Invalid path, try get new one
+                    return false; //No valid option to move backwards
+
+                //Have valid path, move away towards
+                Pathing_Spline pathingTarget = m_pathingList[0];
+                if (currentSpline.m_nodePrimary.ContainsSpline(pathingTarget))//Case on adjacent spline, spline towards primary
+                {
+                    MoveTowardsSplinePercent(0.0f, p_movingSpeed);
+                }
+                else if (currentSpline.m_nodeSecondary.ContainsSpline(pathingTarget))//Case on adjacent spline, spline towards secondary
+                {
+                    MoveTowardsSplinePercent(1.0f, p_movingSpeed);
+                }
+            }
+        }
+        return true;
+    }
+    #endregion
 
     #region CHARACTER FUNCTIONS REQUIRING OVERRIDE
     /// <summary>

@@ -101,7 +101,7 @@ public class Entity : MonoBehaviour
     public bool AllignedToSpline()
     {
         Vector3 splineForwards = m_splinePhysics.m_currentSpline.GetForwardDir(m_splinePhysics.m_currentSplinePercent);
-        return (Vector3.Dot(splineForwards, transform.forward) > 0);
+        return MOARMaths.IsAligned(splineForwards, transform.forward);
     }
 
     /// <summary>
