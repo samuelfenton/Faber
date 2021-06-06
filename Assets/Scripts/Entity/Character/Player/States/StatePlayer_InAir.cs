@@ -38,7 +38,7 @@ public class StatePlayer_InAir : State_Player
         base.StateUpdate();
 
         //Allow player to move in air
-        m_player.ApplyHorizontalMovement(true);
+        m_player.ApplyHorizontalMovement(true, 1.0f, true);
 
         switch (m_inAirState)
         {

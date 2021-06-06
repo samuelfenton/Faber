@@ -39,7 +39,7 @@ public class StatePlayer_Locomotion : State_Player
         base.StateUpdate();
 
         //Movement
-        m_player.ApplyHorizontalMovement(true);
+        m_player.ApplyHorizontalMovement(true, 1.0f, true);
 
         //Animation
         switch (m_currentState)

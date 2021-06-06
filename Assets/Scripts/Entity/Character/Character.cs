@@ -340,6 +340,16 @@ public class Character : Entity
             OnDeath();
     }
 
+
+    /// <summary>
+    /// Get the desired velocity
+    /// </summary>
+    /// <returns>returns m_desiredVelocity</returns>
+    public Vector2 GetDesiredVelocity()
+    {
+        return m_desiredVelocity;
+    }
+
     /// <summary>
     /// Set the desired velocity
     /// </summary>

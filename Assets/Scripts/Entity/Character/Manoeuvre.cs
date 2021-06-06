@@ -25,10 +25,10 @@ public class Manoeuvre : MonoBehaviour
 
     [Header("Manoeuvre Details")]
     [Header("Desired Velocity Curves")]
+    public bool m_usingXVelocity = false;
     [Tooltip("Desired velocity curve for horizontal")]
     public AnimationCurve m_velocityXCurve = null;
-    [Tooltip("Should this manoeuvre use gravity? When false itll use the velocity Y Curve")]
-    public bool m_useGravity = true;
+    public bool m_usingYVelocity = false;
     [Tooltip("Desired velocity curve for vertical")]
     public AnimationCurve m_velocityYCurve = null;
     [Tooltip("Will this manoeuvre require a sheathing blend? Example most gorund attacks, whereas in air attacks never sheath")]

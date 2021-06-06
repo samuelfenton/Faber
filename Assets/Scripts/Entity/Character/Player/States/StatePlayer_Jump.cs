@@ -39,7 +39,7 @@ public class StatePlayer_Jump : State_Player
         base.StateUpdate();
 
         //Allow player to jump and move
-        m_player.ApplyHorizontalMovement(true);
+        m_player.ApplyHorizontalMovement(true, 1.0f, true);
 
         return m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.BASE) || m_entity.m_splinePhysics.m_splineLocalVelocity.y <= 0.0f;
     }

@@ -48,7 +48,7 @@ public class StatePlayer_Block : State_Player
                 }
                 break;
             case BLOCK_STATE.BLOCKING:
-                m_player.ApplyHorizontalMovement(false, m_character.m_blockMovementModifer);
+                m_player.ApplyHorizontalMovement(false, m_character.m_blockMovementModifer, true);
 
                 if(!m_player.m_customInput.GetKeyBool(CustomInput.INPUT_KEY.BLOCK))
                 {

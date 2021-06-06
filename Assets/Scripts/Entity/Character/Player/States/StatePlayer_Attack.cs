@@ -29,7 +29,6 @@ public class StatePlayer_Attack : State_Player
     {
         base.StateStart();
 
-        m_player.SetDesiredVelocity(new Vector2(0.0f, 0.0f));
         m_attackState = ATTACK_STATE.PERFORMING_ATTACK;
 
         if (m_storedManoeuvre != null)
@@ -48,6 +47,11 @@ public class StatePlayer_Attack : State_Player
     /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true</returns>
     public override bool StateUpdate()
     {
+        if(m_manoeuvreController.m_currentManoeuvre == null || !m_manoeuvreController.m_currentManoeuvre.m_usingXVelocity)//Not using X, allow for player movement
+        {
+            m_player.ApplyHorizontalMovement(false, 0.5f, false);
+        }
+
         if (m_attackState == ATTACK_STATE.PERFORMING_ATTACK)
         {
             m_manoeuvreController.UpdateManoeuvre();

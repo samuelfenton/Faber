@@ -49,6 +49,22 @@ public class Character_NPC : Character
     #region Attacking with projectile
 
     /// <summary>
+    /// Face the given target
+    /// </summary>
+    /// <param name="p_targetPosition">Target to look towards</param>
+    public void FaceTarget(Vector3 p_targetPosition)
+    {
+        Vector3 targetDir = p_targetPosition - transform.position;
+        targetDir.y = 0.0f; //Ignore any y values
+
+        Vector3 forwardDir = transform.forward;
+        forwardDir.y = 0.0f; //Ignore any y values
+
+        if (Vector3.Dot(targetDir.normalized, forwardDir.normalized) <= 0.0f)
+            SwapFacingDirection();
+    }
+
+    /// <summary>
     /// Rotate a give weapon(GameObject towards a target)
     /// Rotates along the x local axis
     /// </summary>
@@ -141,16 +157,17 @@ public class Character_NPC : Character
             horizontalSpeed *= -1.0f;
         }
 
-        SetDesiredVelocity(new Vector2(horizontalSpeed, 0.0f)); //Apply
+        SetDesiredVelocity(new Vector2(horizontalSpeed, 0.0f)); //Apply velocity
     }
 
     /// <summary>
-    /// Move away from entity
+    /// Move towards an entity
     /// </summary>
-    /// <param name="p_entity">Entity to move away from</param>
+    /// <param name="p_entity">Entity to move towards</param>
     /// <param name="p_movingSpeed">Speed to move towards</param>
-    /// <returns></returns>
-    public bool MoveTowardsEntity(Entity p_entity, float p_movingSpeed)
+    /// <param name="p_shouldFaceTravelDir">When moving should the character face the traving direction</param>
+    /// <returns>false when pathing has failed(No possible paths)</returns>
+    public bool MoveTowardsEntity(Entity p_entity, float p_movingSpeed, bool p_shouldFaceTravelDir)
     {
         Pathing_Spline currentSpline = m_splinePhysics.m_currentSpline;
         Pathing_Spline targetSpline = m_target.m_splinePhysics.m_currentSpline;
@@ -196,6 +213,14 @@ public class Character_NPC : Character
                 }
             }
         }
+
+        if (p_shouldFaceTravelDir && m_splinePhysics.m_splineLocalVelocity.x < -0.05f)
+        {
+            SwapFacingDirection();
+        }
+
+        m_customAnimation.SetVaribleFloat((int)CustomAnimation_Drone01.BASE_DEFINES.LOCOMOTION, m_splinePhysics.m_splineLocalVelocity.x / m_groundRunVel);
+
         return true;
     }
     #endregion

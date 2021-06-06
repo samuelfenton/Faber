@@ -117,6 +117,11 @@ public class ManoeuvreController : MonoBehaviour
     /// </summary>
     public void StartManoeuvre(Manoeuvre p_manoeuvre)
     {
+        if(m_character.m_splinePhysics.m_splineLocalVelocity.x < -0.05f)
+        {
+            m_character.SwapFacingDirection();
+        }
+
         m_currentManoeuvre = p_manoeuvre;
 
         //Reset variables
@@ -129,11 +134,11 @@ public class ManoeuvreController : MonoBehaviour
         {
             m_currentManoeuvre.EnableHitboxes();
         }
-
-        //Setup gravity
-        m_character.m_splinePhysics.m_gravity = m_currentManoeuvre.m_useGravity;
         
         SetBlendShapes(0.0f, 0.0f, 0.0f);
+
+        if (m_currentManoeuvre.m_usingYVelocity)
+            m_character.m_splinePhysics.m_gravity = false;
 
         m_customAnimation.PlayAnimation(m_currentManoeuvre.m_animationString, CustomAnimation.LAYER.ATTACK);
     }
@@ -145,26 +150,17 @@ public class ManoeuvreController : MonoBehaviour
     /// <returns>True when a manoeuvre is completed</returns>
     public void UpdateManoeuvre()
     {
-        m_attackTimer += Time.deltaTime; 
+        m_attackTimer += Time.deltaTime;
 
         float currentPercent = Mathf.Clamp(m_customAnimation.GetAnimationPercent(CustomAnimation.LAYER.ATTACK), 0.0f, 1.0f);
-    
+        float sequencePercent = 0.0f;
+
         //Running through initial sequence, that is the start of an attack, wait till completed
         if (m_currentManoeuvre.m_sequenceAttack)
         {
             //Given its a 3 manouevre sequence, velocity and blendshapes should be divided up into 3, that is, first sequence isnt using percent 0.0f->1.0f, rather 0.0f->0.33f, etc
-            float sequencePercent = currentPercent / 3.0f;
+            sequencePercent = currentPercent / 3.0f;
             sequencePercent += m_currentSequenceState == SEQUENCE_STATE.INITIAL ? 0.0f : (m_currentSequenceState == SEQUENCE_STATE.ATTACK ? 0.33f : 0.66f); //Add on a third for each section, attack then has range 0.33f -> 0.66f, etc
-
-            //Apply velocity
-            if(m_currentManoeuvre.m_useGravity) //In case of gravity only need to apply horizontal
-            {
-                m_character.SetDesiredVelocity(new Vector2(m_currentManoeuvre.m_velocityXCurve.Evaluate(sequencePercent), m_character.m_splinePhysics.m_splineLocalVelocity.y));
-            }
-            else
-            {
-                m_character.SetDesiredVelocity(new Vector2(m_currentManoeuvre.m_velocityXCurve.Evaluate(sequencePercent), m_currentManoeuvre.m_velocityYCurve.Evaluate(sequencePercent)));
-            }
 
             //Blendshapes
             SetBlendShapes(m_currentManoeuvre.m_blendshapeCurve0.Evaluate(sequencePercent), m_currentManoeuvre.m_blendshapeCurve1.Evaluate(sequencePercent), m_currentManoeuvre.m_blendshapeCurve2.Evaluate(sequencePercent));
@@ -201,21 +197,26 @@ public class ManoeuvreController : MonoBehaviour
         }
         else //normal attack
         {
-            //Apply velocity
-            if (m_currentManoeuvre.m_useGravity) //In case of gravity only need to apply horizontal
-            {
-                m_character.SetDesiredVelocity(new Vector2(m_currentManoeuvre.m_velocityXCurve.Evaluate(currentPercent), m_character.m_splinePhysics.m_splineLocalVelocity.y));
-            }
-            else
-            {
-                m_character.SetDesiredVelocity(new Vector2(m_currentManoeuvre.m_velocityXCurve.Evaluate(currentPercent), m_currentManoeuvre.m_velocityYCurve.Evaluate(currentPercent)));
-            }
+            sequencePercent = currentPercent;
 
             //Blendshapes
             SetBlendShapes(m_currentManoeuvre.m_blendshapeCurve0.Evaluate(currentPercent), m_currentManoeuvre.m_blendshapeCurve1.Evaluate(currentPercent), m_currentManoeuvre.m_blendshapeCurve2.Evaluate(currentPercent));
         }
 
-        if(m_nextManoeuvreStance == Manoeuvre.MANOEUVRE_STANCE.NONE && !m_customAnimation.IsAnimatorBlending() && currentPercent > 0.3f) //Get next input
+        //Apply velocity
+        Vector2 desiredVelocity = m_character.GetDesiredVelocity();
+        if (m_currentManoeuvre.m_usingXVelocity)
+        {
+            desiredVelocity.x = m_currentManoeuvre.m_velocityXCurve.Evaluate(sequencePercent);
+        }
+        if (m_currentManoeuvre.m_usingYVelocity)
+        {
+            desiredVelocity.y = m_currentManoeuvre.m_velocityYCurve.Evaluate(sequencePercent);
+        }
+        m_character.SetDesiredVelocity(desiredVelocity);
+
+        //Getting next manouvre
+        if (m_nextManoeuvreStance == Manoeuvre.MANOEUVRE_STANCE.NONE && !m_customAnimation.IsAnimatorBlending() && currentPercent > 0.3f) //Get next input
         {
             Character.ATTACK_INPUT_STANCE nextAttackStance = m_character.DetermineAttackStance();
 

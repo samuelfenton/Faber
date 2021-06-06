@@ -88,7 +88,7 @@ public class CustomAnimation : MonoBehaviour
     /// <param name="p_value">Value of varible to set to</param>
     public void SetVaribleFloat(int p_floatIndex, float p_value)
     {
-        if(p_floatIndex > 0 && p_floatIndex < m_floatToString.Length && m_floatToString[p_floatIndex] != "")
+        if(p_floatIndex >= 0 && p_floatIndex < m_floatToString.Length && m_floatToString[p_floatIndex] != "")
             m_animator.SetFloat(m_floatToString[p_floatIndex], p_value);
     }
 

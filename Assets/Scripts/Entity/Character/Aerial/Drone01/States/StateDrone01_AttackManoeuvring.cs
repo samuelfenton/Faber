@@ -45,16 +45,18 @@ public class StateDrone01_AttackManoeuvring : State_Drone01
 
         if(currentDistance > m_drone01.m_attackDesiredDistance + DISTANCE_SATISFACTION_AMOUNT)//Want to move closer
         {
-            m_drone01.MoveTowardsEntity(m_drone01.m_target, m_drone01.m_groundRunVel * m_drone01.m_manoeuvreVelocityModifier);
+            m_drone01.MoveTowardsEntity(m_drone01.m_target, m_drone01.m_groundRunVel * m_drone01.m_manoeuvreVelocityModifier, false);
         }
         else if (currentDistance < m_drone01.m_attackDesiredDistance - DISTANCE_SATISFACTION_AMOUNT) //Want to move further away
         {
-            m_drone01.MoveTowardsEntity(m_drone01.m_target, -m_drone01.m_groundRunVel * m_drone01.m_manoeuvreVelocityModifier);
+            m_drone01.MoveTowardsEntity(m_drone01.m_target, -m_drone01.m_groundRunVel * m_drone01.m_manoeuvreVelocityModifier, false);
         }
         else //Close enough to being in the right spot
         {
             m_drone01.SetDesiredVelocity(Vector2.zero);
         }
+
+        m_drone01.FaceTarget(m_drone01.m_target.transform.position);
 
         return false;
     }

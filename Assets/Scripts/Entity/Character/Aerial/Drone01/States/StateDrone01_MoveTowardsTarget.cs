@@ -42,7 +42,7 @@ public class StateDrone01_MoveTowardsTarget : State_Drone01
             return true;
         }
 
-        if (!m_drone01.MoveTowardsEntity(m_drone01.m_target, m_drone01.m_groundRunVel))
+        if (!m_drone01.MoveTowardsEntity(m_drone01.m_target, m_drone01.m_groundRunVel, true))
         {
             return true; //Unable to move towards target
         }

@@ -28,6 +28,8 @@ public class StateDrone01_Attack : State_Drone01
     {
         base.StateStart();
 
+        m_drone01.FaceTarget(m_drone01.m_target.transform.position);
+
         m_drone01.RotateWeaponTowardsTarget(m_drone01.m_weaponObject, m_drone01.m_target.transform.position + Vector3.up, m_drone01.m_maxFiringAngle);
         
         //TODO decide on what fire mode to take
@@ -52,14 +54,14 @@ public class StateDrone01_Attack : State_Drone01
 
         m_drone01.SetDesiredVelocity(new Vector2(0.0f, 0.0f));
 
-        m_currentFireCount = 1;
+        m_currentFireCount = 0;
     }
 
-/// <summary>
-/// State update, perform any actions for the given state
-/// </summary>
-/// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
-public override bool StateUpdate()
+    /// <summary>
+    /// State update, perform any actions for the given state
+    /// </summary>
+    /// <returns>Has this state been completed, e.g. Attack has completed, idle would always return true </returns>
+    public override bool StateUpdate()
     {
         base.StateUpdate();
 
@@ -70,7 +72,7 @@ public override bool StateUpdate()
 
         if (m_customAnimator.IsAnimationDone(CustomAnimation.LAYER.ATTACK))//End of current attack
         {
-            if (m_currentFireCount >= m_totalFireCount)//Fired all needed shots
+            if (m_currentFireCount > m_totalFireCount)//Fired all needed shots
             {
                 return true;
             }
@@ -80,7 +82,6 @@ public override bool StateUpdate()
                 m_drone01.FireProjectile(m_objectPoolToUse, m_drone01.m_projectileSpawnAnchor.transform.position, m_drone01.m_projectileSpawnAnchor.transform.rotation);
                 m_currentFireCount++;
             }
-
         }
 
         return false;

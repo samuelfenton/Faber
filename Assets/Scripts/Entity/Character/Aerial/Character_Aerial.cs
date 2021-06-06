@@ -8,6 +8,10 @@ public class Character_Aerial : Character_NPC
     public GameObject m_hoveringModel = null;
     [Tooltip("How high off the ground will the drone hover?")]
     public float m_hoverHeight = 2.0f;
+    [Tooltip("How far the drone will bob up/down?")]
+    public float m_hoverDistance = 0.2f;
+    [Tooltip("How much the drone will bob up/down?")]
+    public float m_hoverErraticness = 1.0f;
 
     [Header("Assigned GameObjects")]
     public GameObject m_weaponObject = null;
@@ -51,5 +55,22 @@ public class Character_Aerial : Character_NPC
         Vector3 currentCenter = collider.center;
         currentCenter.y = m_hoverHeight;
         collider.center = currentCenter;
+    }
+
+    /// <summary>
+    /// Update an entity, this should be called from scene controller
+    /// Used to handle different scene state, pause vs in game etc
+    /// </summary>
+    public override void UpdateEntity()
+    {
+        base.UpdateEntity();
+
+        //Hovering bob up and down
+        if (m_hoveringModel != null)
+        {
+            Vector3 localPosition = m_hoveringModel.transform.localPosition;
+            localPosition.y = m_hoverHeight + Mathf.Sin(Time.time * m_hoverErraticness) * m_hoverDistance;
+            m_hoveringModel.transform.localPosition = localPosition;
+        }
     }
 }

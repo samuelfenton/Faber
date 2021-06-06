@@ -57,7 +57,8 @@ public class Character_Player : Character
     /// </summary>
     /// <param name="p_allowSprinting">Should this allow a player to spring during this action</param>
     /// <param name="p_movementModifer">In the case of sertain actions, movement should slowdown, example blocking</param>
-    public void ApplyHorizontalMovement(bool p_allowSprinting, float p_movementModifer = 1.0f)
+    /// <param name="p_shouldFaceTravelDir">When moving should the character face the traving direction</param>
+    public void ApplyHorizontalMovement(bool p_allowSprinting, float p_movementModifer, bool p_shouldFaceTravelDir)
     {
         float horizontalInput = m_customInput.GetAxis(CustomInput.INPUT_AXIS.HORIZONTAL) * (m_followCamera.m_currentOrientation == FollowCamera.CAMERA_ORIENTATION.FORWARD ? 1.0f : -1.0f);
 
@@ -71,7 +72,7 @@ public class Character_Player : Character
             SetDesiredVelocity(new Vector2(horizontalInput * m_groundRunVel * p_movementModifer, m_splinePhysics.m_splineLocalVelocity.y));
         }
 
-        if (m_splinePhysics.m_splineLocalVelocity.x < -0.5f)
+        if (p_shouldFaceTravelDir && m_splinePhysics.m_splineLocalVelocity.x < -0.5f)
         {
             SwapFacingDirection();
         }
