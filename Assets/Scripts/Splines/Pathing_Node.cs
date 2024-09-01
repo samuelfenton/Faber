@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
+using UnityEditor;
 using UnityEngine;
 
 public class Pathing_Node : MonoBehaviour
@@ -15,6 +16,10 @@ public class Pathing_Node : MonoBehaviour
 
         [SerializeField]
         public Pathing_Spline.SPLINE_TYPE m_splineType;
+
+        [SerializeField]
+        public bool m_YSnapping;
+
         [SerializeField]
         public Pathing_Spline.CIRCLE_DIR m_circleDir;
         [SerializeField]
@@ -29,6 +34,7 @@ public class Pathing_Node : MonoBehaviour
             m_nodePrimary = null;
             m_nodeSecondary = null;
             m_splineType = Pathing_Spline.SPLINE_TYPE.NOT_IN_USE;
+            m_YSnapping = true;
             m_circleDir = Pathing_Spline.CIRCLE_DIR.CLOCKWISE;
             m_circleAngle = 0.0f;
             m_bezierStrength = 0.0f;
@@ -51,7 +57,11 @@ public class Pathing_Node : MonoBehaviour
                 m_nodeSecondary = p_nodeA;
             }
 
+            //General
             m_splineType = p_oldDetails.m_splineType;
+            m_YSnapping = p_oldDetails.m_YSnapping;
+
+            //Curved only
             m_circleDir = p_oldDetails.m_circleDir;
             m_circleAngle = p_oldDetails.m_circleAngle;
             m_bezierStrength = p_oldDetails.m_bezierStrength;
@@ -393,10 +403,30 @@ public class Pathing_Node : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
+        if(MasterController.Instance == null || MasterController.Instance.m_showPathing)
         {
-            DrawSpline(m_pathingSplineDetails[splineIndex]);
+            DrawNode();
+
+            for (int splineIndex = 0; splineIndex < (int)Pathing_Spline.SPLINE_POSITION.MAX_LENGTH; splineIndex++)
+            {
+                DrawSpline(m_pathingSplineDetails[splineIndex]);
+            }
         }
+    }
+
+    /// <summary>
+    /// Draw the given node
+    /// </summary>
+    private void DrawNode()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawCube(transform.position + Vector3.up, new Vector3(0.5f, 2.0f, 0.5f));
+
+        GUIStyle textStle = new GUIStyle();
+        textStle.alignment = TextAnchor.MiddleCenter;
+        textStle.fontSize = 14;
+        Handles.color = Color.black;
+        Handles.Label(transform.position + Vector3.up * 2.5f, name, textStle);
     }
 
     /// <summary>
@@ -405,6 +435,7 @@ public class Pathing_Node : MonoBehaviour
     /// <param name="p_splineDetails">Details describing the spline</param>
     private void DrawSpline(Spline_Details p_splineDetails)
     {
+        //Draw Spline
         if (!p_splineDetails.IsValidSpline() || p_splineDetails.m_nodeSecondary == this) //Validate Data
             return;
 

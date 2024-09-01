@@ -8,27 +8,20 @@ public class Pathing_Spline : MonoBehaviour
     public enum CIRCLE_DIR { CLOCKWISE, COUNTER_CLOCKWISE }
     public enum SPLINE_POSITION {FORWARD = 0, FORWARD_RIGHT, FORWARD_LEFT, BACKWARD, BACKWARD_RIGHT, BACKWARD_LEFT, MAX_LENGTH} //Where on a node is the spline
 
+
     //Assigned from editor
-    [HideInInspector]
     public Pathing_Node m_nodePrimary = null; //Always at percentage 0.0f
-    [HideInInspector]
     public SPLINE_POSITION m_nodePositionPrimary = SPLINE_POSITION.MAX_LENGTH;
-    [HideInInspector]
     public Pathing_Node m_nodeSecondary = null;  //Always at percentage 1.0f
-    [HideInInspector]
     public SPLINE_POSITION m_nodePositionSecondary = SPLINE_POSITION.MAX_LENGTH;
 
-    [HideInInspector]
+    private bool m_YSnapping = true;
     private SPLINE_TYPE m_splineType = SPLINE_TYPE.NOT_IN_USE;
-    [HideInInspector]
     private CIRCLE_DIR m_circleDir = CIRCLE_DIR.CLOCKWISE;
-    [HideInInspector]
     private float m_circleAngle = 90.0f;
-    [HideInInspector]
     private float m_bezierStrength = 10.0f;
 
     //Derived varibles
-    [HideInInspector]
     public float m_splineLength = 1.0f;
 
     //Straight
@@ -57,6 +50,7 @@ public class Pathing_Spline : MonoBehaviour
         m_nodePositionPrimary = m_nodePrimary.DetermineNodePosition(m_nodeSecondary);
         m_nodePositionSecondary = m_nodeSecondary.DetermineNodePosition(m_nodePrimary); ;
 
+        m_YSnapping = p_details.m_YSnapping;
         m_splineType = p_details.m_splineType;
         m_circleDir = p_details.m_circleDir;
         m_circleAngle = p_details.m_circleAngle;
@@ -146,6 +140,15 @@ public class Pathing_Spline : MonoBehaviour
     }
 
     /// <summary>
+    /// Does this spline have YSnapping?
+    /// </summary>
+    /// <returns>True when YSnapping enabled</returns>
+    public bool GetYSnapping()
+    {
+        return m_YSnapping;
+    }
+
+    /// <summary>
     /// Get the forward direction of the spline based off percent
     /// </summary>
     /// <param name="p_percent">What percent along the spline</param>
@@ -208,7 +211,7 @@ public class Pathing_Spline : MonoBehaviour
     public static void RebuildStraight(Pathing_Node p_nodePrimary, Pathing_Node p_nodeSecondary, out Vector3 p_straightDir, out float p_length)
     {
         p_straightDir = p_nodeSecondary.transform.position - p_nodePrimary.transform.position;
-        p_length = p_straightDir.magnitude;
+        p_length = MOARMaths.VectorDistanceNoY(p_straightDir);
     }
 
 

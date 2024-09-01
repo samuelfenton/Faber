@@ -8,7 +8,20 @@ public class MasterController : MonoBehaviour
     //Naming scheme for levels excluding main menu and loading should follow the following "LEVEL_AREA"
     public enum SCENE {MAIN_MENU, LOADING, LEVEL_GREYBOX1}
     private Dictionary<SCENE, string> m_sceneStrings = new Dictionary<SCENE, string>() { {SCENE.MAIN_MENU, "MainMenu" }, { SCENE.LOADING, "Loading" }, { SCENE.LEVEL_GREYBOX1, "Level_GreyBox01" }};
-    public static MasterController Instance { get; private set; }
+
+    private static MasterController m_Instance = null;
+    public static MasterController Instance
+    {
+        get 
+        { 
+            if (m_Instance == null)
+            {
+                m_Instance = FindObjectOfType<MasterController>();
+            }
+            return m_Instance;
+        }
+        private set { m_Instance = value; } 
+    }
 
     //In scene varibles
     [HideInInspector]
@@ -31,6 +44,8 @@ public class MasterController : MonoBehaviour
 #if UNITY_EDITOR || DEVELOPMENT_BUILD 
     [Header("Debug options")]
     public bool m_loadSave = false;
+
+    public bool m_showPathing = false;
 
 #endif
     /// <summary>

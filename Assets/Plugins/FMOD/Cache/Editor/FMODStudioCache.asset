@@ -19,6 +19,27 @@ MonoBehaviour:
   LoadResult: 0
   FileSizes: []
   Exists: 1
+--- !u!114 &-1110060636664272385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Desktop/Master.strings.bank
+  m_EditorClassIdentifier: 
+  Path: ../Faber-Audio/Faber/Build/Desktop/Master.strings.bank
+  Name: Desktop/Master.strings
+  StudioPath: bank:/Master.strings
+  lastModified: 638607996655973402
+  LoadResult: 0
+  FileSizes:
+  - Name: 
+    Value: 700
+  Exists: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32,16 +53,35 @@ MonoBehaviour:
   m_Name: FMODStudioCache
   m_EditorClassIdentifier: 
   EditorBanks:
-  - {fileID: 6717966185050858304}
-  - {fileID: -8856938893600612643}
+  - {fileID: -1110060636664272385}
+  - {fileID: 6137755560778679844}
   EditorEvents: []
   EditorParameters: []
   MasterBanks:
-  - {fileID: -8856938893600612643}
+  - {fileID: 6137755560778679844}
   StringsBanks:
-  - {fileID: 6717966185050858304}
-  stringsBankWriteTime: 637484776447380582
+  - {fileID: -1110060636664272385}
+  stringsBankWriteTime: 638607996655973402
   cacheVersion: 6
+--- !u!114 &6137755560778679844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Master.bank
+  m_EditorClassIdentifier: 
+  Path: ../Faber-Audio/Faber/Build/Desktop/Master.bank
+  Name: Master
+  StudioPath: bank:/Master
+  lastModified: 638607996655963431
+  LoadResult: 0
+  FileSizes: []
+  Exists: 1
 --- !u!114 &6717966185050858304
 MonoBehaviour:
   m_ObjectHideFlags: 0

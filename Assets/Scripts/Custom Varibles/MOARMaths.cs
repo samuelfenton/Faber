@@ -30,6 +30,17 @@ public class MOARMaths : MonoBehaviour
     }
 
     /// <summary>
+    /// Givena  vector, get its distance ignoring any Y values
+    /// </summary>
+    /// <param name="p_val">Vector to check distance</param>
+    /// <returns>Vector magnitude</returns>
+    public static float VectorDistanceNoY(Vector3 p_val)
+    {
+        p_val.y = 0.0f;
+        return p_val.magnitude;
+    }
+
+    /// <summary>
     /// Used to determine just how "positive" a vector is
     /// That is, does it travel thorugh the positive quadrant, and its magnitude.
     /// Done by comparing its allignemnt to Vector(1,1,1) and its magnitude.

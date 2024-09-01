@@ -135,7 +135,7 @@ public class SplinePhysics : MonoBehaviour
 
         //Update to latest spline percentage
         Vector3 splinePosition = m_currentSpline.GetPosition(m_currentSplinePercent);
-        if(splinePosition.y > newPosition.y || (m_downCollision && m_splineLocalVelocity.y <= 0.0f))
+        if(m_currentSpline.GetYSnapping() && (splinePosition.y > newPosition.y || m_downCollision && m_splineLocalVelocity.y < 0.01f)) //If were below the spline, or if were running down and touching ground. Occationally "falls off" so just snap it in place
             newPosition = splinePosition; //Keep y value as spline position ignores this
         else
         {
@@ -170,9 +170,13 @@ public class SplinePhysics : MonoBehaviour
 
         if (!m_downCollision) //Check if colliding with spline
         {
-            float splineOverlap = m_currentSpline.GetPosition(m_currentSplinePercent).y - transform.position.y;
-            if (splineOverlap >= -DETECTION_RANGE)
-                m_downCollision = true;
+
+            if(m_currentSpline.GetYSnapping()) //Only check if colliding with the spline, if we allow for snapping to the splineY
+            {
+                float splineOverlap = m_currentSpline.GetPosition(m_currentSplinePercent).y - transform.position.y;
+                if (splineOverlap >= -DETECTION_RANGE)
+                    m_downCollision = true;
+            }
         }
 
         if (m_downCollision)//Downwards

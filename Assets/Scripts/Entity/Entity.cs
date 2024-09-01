@@ -33,14 +33,6 @@ public class Entity : MonoBehaviour
         }
 
         m_splinePhysics.Init();
-
-        //Use voxeliser as needed
-        Voxeliser_Burst[] voxelisers = GetComponents<Voxeliser_Burst>();
-
-        for (int voxeliserIndex = 0; voxeliserIndex < voxelisers.Length; voxeliserIndex++)
-        {
-            voxelisers[voxeliserIndex].InitVoxeliser();
-        }
     }
 
     /// <summary>
