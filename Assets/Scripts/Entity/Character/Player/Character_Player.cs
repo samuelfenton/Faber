@@ -141,9 +141,15 @@ public class Character_Player : Character
     /// <returns>Path entity will desire to take</returns>
     public override TURNING_DIR GetDesiredTurning(Pathing_Node p_node)
     {
+        //All math on the assumption that the camera is on the right hand side of the player
+        bool cameraOnPositiveXSide = Vector3.Dot(transform.right, (m_followCamera.transform.position - transform.position).normalized) > 0.0f;
+
         float relativeDot = Vector3.Dot(transform.forward, p_node.transform.forward);
 
         float verticalInput = m_customInput.GetAxis(CustomInput.INPUT_AXIS.VERTICAL);
+
+        if (!cameraOnPositiveXSide) //Flip as needed
+            verticalInput = -verticalInput;
 
         if (relativeDot >= 0)//Right is positive on vertical, left is negative
         {

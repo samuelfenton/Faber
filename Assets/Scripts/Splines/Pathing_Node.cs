@@ -18,7 +18,7 @@ public class Pathing_Node : MonoBehaviour
         public Pathing_Spline.SPLINE_TYPE m_splineType;
 
         [SerializeField]
-        public bool m_YSnapping;
+        public bool m_disableYSnapping;
 
         [SerializeField]
         public Pathing_Spline.CIRCLE_DIR m_circleDir;
@@ -34,7 +34,7 @@ public class Pathing_Node : MonoBehaviour
             m_nodePrimary = null;
             m_nodeSecondary = null;
             m_splineType = Pathing_Spline.SPLINE_TYPE.NOT_IN_USE;
-            m_YSnapping = true;
+            m_disableYSnapping = false;
             m_circleDir = Pathing_Spline.CIRCLE_DIR.CLOCKWISE;
             m_circleAngle = 0.0f;
             m_bezierStrength = 0.0f;
@@ -59,7 +59,7 @@ public class Pathing_Node : MonoBehaviour
 
             //General
             m_splineType = p_oldDetails.m_splineType;
-            m_YSnapping = p_oldDetails.m_YSnapping;
+            m_disableYSnapping = p_oldDetails.m_disableYSnapping;
 
             //Curved only
             m_circleDir = p_oldDetails.m_circleDir;
@@ -359,7 +359,7 @@ public class Pathing_Node : MonoBehaviour
     }
 
     #region Editor Specific
-    private const int SPLINE_STEPS = 32;
+    private const float SPLINE_STEPS_EVERY_N = 0.5f;
 
     /// <summary>
     /// Remove the nodes conjoined details
@@ -401,6 +401,7 @@ public class Pathing_Node : MonoBehaviour
         m_conjoinedNodes[(int)p_position] = null;
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if(MasterController.Instance == null || MasterController.Instance.m_showPathing)
@@ -441,22 +442,37 @@ public class Pathing_Node : MonoBehaviour
 
         Gizmos.color = Color.blue;
 
-        float percentStep = 1.0f / SPLINE_STEPS;
+        float length = MOARDebugging.GetSplineLength(p_splineDetails.m_nodePrimary, p_splineDetails.m_nodeSecondary);
+        int expectedSteps = Mathf.CeilToInt(length / SPLINE_STEPS_EVERY_N);
+
+        float percentStep = 1.0f / expectedSteps;
         float currentPercent = percentStep;
         
         Vector3 previous = p_splineDetails.m_nodePrimary.transform.position;
 
         //Loop through approximating circle, every (m_totalDegrees / DEBUG_STEPS) degrees
-        for (int i = 1; i <= SPLINE_STEPS; i++)
+        for (int i = 1; i <= expectedSteps; i++)
         {
             if(MOARDebugging.GetSplinePosition(p_splineDetails.m_nodePrimary, p_splineDetails.m_nodeSecondary, currentPercent, out Vector3 position))
             {
                 Gizmos.DrawLine(previous, position);
 
+                if(!p_splineDetails.m_disableYSnapping) //Draw 'floored' line if snapping
+                {
+                    Vector3 dir = previous - position;
+                    dir.y = 0.0f;
+                    Vector3 angledDir = Vector3.RotateTowards(dir.normalized, Vector3.down, 45.0f * Mathf.Deg2Rad, 0.0f);
+                    Gizmos.DrawLine(previous, previous + angledDir * 0.5f);
+                }
+
+
                 previous = position;
                 currentPercent += percentStep;
             }
+
+
         }
     }
-    #endregion
+#endif
+#endregion
 }

@@ -224,6 +224,9 @@ public class UIController_InGame : UIController
     public void Btn_Quit()
     {
         Time.timeScale = 1.0f;
+        Application.Quit();
+        return;
+
         MasterController.Instance.LoadScene(MasterController.SCENE.MAIN_MENU, false);
     }
     #endregion

@@ -46,22 +46,22 @@ public class Pathing_Node_Editor : Editor
                 //Options for spline usage
                 m_pathingNodeScript.m_pathingSplineDetails[splineIndex].m_splineType = (Pathing_Spline.SPLINE_TYPE)EditorGUILayout.EnumPopup("Spline Type", m_pathingNodeScript.m_pathingSplineDetails[splineIndex].m_splineType);
 
-                SerializedProperty YSnappingSP = m_splineDetailsSP.GetArrayElementAtIndex(splineIndex).FindPropertyRelative("m_YSnapping");
+                SerializedProperty disableYSnappingSP = m_splineDetailsSP.GetArrayElementAtIndex(splineIndex).FindPropertyRelative("m_disableYSnapping");
 
                 switch (m_pathingNodeScript.m_pathingSplineDetails[splineIndex].m_splineType)
                 {
                     case Pathing_Spline.SPLINE_TYPE.STRAIGHT:
-                        YSnappingSP.boolValue = EditorGUILayout.Toggle("Enable Y Snapping", YSnappingSP.boolValue);
+                        disableYSnappingSP.boolValue = EditorGUILayout.Toggle("Disable Y Snapping", disableYSnappingSP.boolValue);
                         break;
 
                     case Pathing_Spline.SPLINE_TYPE.BEZIER:
-                        YSnappingSP.boolValue = EditorGUILayout.Toggle("Enable Y Snapping", YSnappingSP.boolValue);
+                        disableYSnappingSP.boolValue = EditorGUILayout.Toggle("Disable Y Snapping", disableYSnappingSP.boolValue);
                         SerializedProperty bezierStrengthSP = m_splineDetailsSP.GetArrayElementAtIndex(splineIndex).FindPropertyRelative("m_bezierStrength");
                         EditorGUILayout.PropertyField(bezierStrengthSP);
                         break;
 
                     case Pathing_Spline.SPLINE_TYPE.CIRCLE:
-                        YSnappingSP.boolValue = EditorGUILayout.Toggle("Enable Y Snapping", YSnappingSP.boolValue);
+                        disableYSnappingSP.boolValue = EditorGUILayout.Toggle("Disable Y Snapping", disableYSnappingSP.boolValue);
                         SerializedProperty circleDirSP = m_splineDetailsSP.GetArrayElementAtIndex(splineIndex).FindPropertyRelative("m_circleDir");
                         EditorGUILayout.PropertyField(circleDirSP);
                         SerializedProperty circleAngleSP = m_splineDetailsSP.GetArrayElementAtIndex(splineIndex).FindPropertyRelative("m_circleAngle");

@@ -4,6 +4,20 @@ using UnityEngine;
 
 public class FollowCamera : MonoBehaviour
 {
+    private static FollowCamera m_Instance = null;
+    public static FollowCamera Instance
+    {
+        get
+        {
+            if (m_Instance == null)
+            {
+                m_Instance = FindObjectOfType<FollowCamera>();
+            }
+            return m_Instance;
+        }
+        private set { m_Instance = value; }
+    }
+
     [HideInInspector]
     public GameObject m_followTarget = null;
 

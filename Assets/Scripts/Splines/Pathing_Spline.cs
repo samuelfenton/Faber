@@ -15,7 +15,7 @@ public class Pathing_Spline : MonoBehaviour
     public Pathing_Node m_nodeSecondary = null;  //Always at percentage 1.0f
     public SPLINE_POSITION m_nodePositionSecondary = SPLINE_POSITION.MAX_LENGTH;
 
-    private bool m_YSnapping = true;
+    private bool m_disableYSnapping = false;
     private SPLINE_TYPE m_splineType = SPLINE_TYPE.NOT_IN_USE;
     private CIRCLE_DIR m_circleDir = CIRCLE_DIR.CLOCKWISE;
     private float m_circleAngle = 90.0f;
@@ -50,7 +50,7 @@ public class Pathing_Spline : MonoBehaviour
         m_nodePositionPrimary = m_nodePrimary.DetermineNodePosition(m_nodeSecondary);
         m_nodePositionSecondary = m_nodeSecondary.DetermineNodePosition(m_nodePrimary); ;
 
-        m_YSnapping = p_details.m_YSnapping;
+        m_disableYSnapping = p_details.m_disableYSnapping;
         m_splineType = p_details.m_splineType;
         m_circleDir = p_details.m_circleDir;
         m_circleAngle = p_details.m_circleAngle;
@@ -145,7 +145,7 @@ public class Pathing_Spline : MonoBehaviour
     /// <returns>True when YSnapping enabled</returns>
     public bool GetYSnapping()
     {
-        return m_YSnapping;
+        return m_disableYSnapping;
     }
 
     /// <summary>
